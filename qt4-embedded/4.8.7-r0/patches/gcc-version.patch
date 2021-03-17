@@ -1,0 +1,34 @@
+Allow gcc v6 to build webkit. Without this, webkit isn't built
+when gcc v6 is used (silently but then python-pyqt fails to build).
+
+Upstream-Status: Inappropriate [no development on qt4 now]
+RP 2016/5/26
+
+Index: qt-everywhere-opensource-src-4.8.7/configure
+===================================================================
+
+Amend this and change the logic to assume all compilers are suitable
+exept 3.3x resp. 3.2x and older ones.
+Signed-off-by: Max Krummenacher <max.krummenacher@toradex.com>
+
+--- qt-everywhere-opensource-src-4.8.7.orig/configure
++++ qt-everywhere-opensource-src-4.8.7/configure
+@@ -7757,15 +7757,15 @@
+     *-g++*)
+ 	# Check gcc's version
+ 	case "$(${QMAKE_CONF_COMPILER} -dumpversion)" in
+-	    5*|4*|3.4*)
+-		;;
+             3.3*)
+                 canBuildWebKit="no"
+                 ;;
+-	    *)
++	    3.2*|3.1*|3.0*|2*)
+ 		canBuildWebKit="no"
+ 		canBuildQtXmlPatterns="no"
+ 		;;
++	    *)
++		;;
+ 	esac
+ 	;;
+     solaris-cc*)

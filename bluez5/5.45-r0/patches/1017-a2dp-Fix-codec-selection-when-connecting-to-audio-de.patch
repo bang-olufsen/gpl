@@ -1,0 +1,119 @@
+From 27c64a655622bfe23ee16a0586146666b4c6cd00 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Mon, 26 Jun 2017 09:20:01 +0200
+Subject: [PATCH] a2dp: Fix codec selection when connecting to audio device
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ profiles/audio/a2dp.c  | 53 ++++++++++++++++++++++++++++++++++++--------------
+ profiles/audio/avdtp.c |  8 ++++++++
+ profiles/audio/avdtp.h |  2 ++
+ 3 files changed, 48 insertions(+), 15 deletions(-)
+
+diff --git a/profiles/audio/a2dp.c b/profiles/audio/a2dp.c
+index 3a3d239..64b8583 100644
+--- a/profiles/audio/a2dp.c
++++ b/profiles/audio/a2dp.c
+@@ -1801,29 +1801,52 @@ done:
+ 	setup_unref(setup);
+ }
+ 
+-static struct a2dp_sep *a2dp_find_sep(struct avdtp *session, GSList *list,
++static struct a2dp_sep *a2dp_find_sep(struct avdtp *session, GSList *seps,
+ 					const char *sender)
+-{
+-	for (; list; list = list->next) {
+-		struct a2dp_sep *sep = list->data;
++ {
++	GSList *list;
++	int codec;
++	int codecs[4];
++
++	// HACK: We will only do this when remote SEIDs count is more than 2. Some android phones declare
++	//       they play AAC codec but they will send SBC audio (they have only 2 SEIDs)
++	if (avdtp_remote_sep_count(session) > 2) {
++		DBG("Use high quality codecs");
++		codecs[0] = A2DP_CODEC_ATRAC;
++		codecs[1] = A2DP_CODEC_MPEG24;
++		codecs[2] = A2DP_CODEC_MPEG12;
++		codecs[3] = A2DP_CODEC_SBC;
++	} else {
++		codecs[0] = A2DP_CODEC_SBC;
++		codecs[1] = A2DP_CODEC_MPEG12;
++		codecs[2] = A2DP_CODEC_MPEG24;
++		codecs[3] = A2DP_CODEC_ATRAC;
++	}
+ 
+-		/* Use sender's endpoint if available */
+-		if (sender) {
+-			const char *name;
++	for (codec = 0; codec < (sizeof(codecs) / sizeof(int)); ++codec) {
++		for (list = seps; list; list = list->next) {
++			struct a2dp_sep *sep = list->data;
+ 
+-			if (sep->endpoint == NULL)
++			if (sep->codec != codecs[codec])
+ 				continue;
+ 
+-			name = sep->endpoint->get_name(sep, sep->user_data);
+-			if (g_strcmp0(sender, name) != 0)
+-				continue;
+-		}
++			/* Use sender's endpoint if available */
++			if (sender) {
++				const char *name;
+ 
+-		if (avdtp_find_remote_sep(session, sep->lsep) == NULL)
+-			continue;
++				if (sep->endpoint == NULL)
++					continue;
+ 
+-		return sep;
++				name = sep->endpoint->get_name(sep, sep->user_data);
++				if (g_strcmp0(sender, name) != 0)
++					continue;
++			}
+ 
++			if (avdtp_find_remote_sep(session, sep->lsep) == NULL)
++				continue;
++
++			return sep;
++		}
+ 	}
+ 
+ 	return NULL;
+diff --git a/profiles/audio/avdtp.c b/profiles/audio/avdtp.c
+index 11fa376..9775726 100644
+--- a/profiles/audio/avdtp.c
++++ b/profiles/audio/avdtp.c
+@@ -666,6 +666,14 @@ static struct avdtp_stream *find_stream_by_rseid(struct avdtp *session,
+ 	return NULL;
+ }
+ 
++unsigned int avdtp_remote_sep_count(struct avdtp *session)
++{
++	if (!session)
++		return 0;
++
++	return g_slist_length(session->seps);
++}
++
+ static struct avdtp_remote_sep *find_remote_sep(GSList *seps, uint8_t seid)
+ {
+ 	GSList *l;
+diff --git a/profiles/audio/avdtp.h b/profiles/audio/avdtp.h
+index cad95b7..63d089c 100644
+--- a/profiles/audio/avdtp.h
++++ b/profiles/audio/avdtp.h
+@@ -282,6 +282,8 @@ struct avdtp_local_sep *avdtp_register_sep(struct queue *lseps, uint8_t type,
+ 						struct avdtp_sep_cfm *cfm,
+ 						void *user_data);
+ 
++unsigned int avdtp_remote_sep_count(struct avdtp *session);
++
+ /* Find a matching pair of local and remote SEP ID's */
+ struct avdtp_remote_sep *avdtp_find_remote_sep(struct avdtp *session,
+ 						struct avdtp_local_sep *lsep);
+-- 
+2.7.4
+

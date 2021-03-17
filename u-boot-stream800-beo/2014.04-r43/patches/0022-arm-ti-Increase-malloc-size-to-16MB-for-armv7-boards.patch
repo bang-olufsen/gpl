@@ -1,0 +1,31 @@
+From 5f846538ccb7c3e508c216a3cf0359fb79cf0037 Mon Sep 17 00:00:00 2001
+From: Simon Glass <sjg@chromium.org>
+Date: Wed, 16 Apr 2014 08:41:41 -0600
+Subject: [PATCH] arm: ti: Increase malloc size to 16MB for armv7 boards
+
+The current size of 1MB is not enough use to use DFU. Increase it for
+ARMv7 boards, all of which should have 32MB or more SDRAM.
+
+With this change it is possible to do 'dfu mmc 0' on a Beaglebone Black.
+
+Signed-off-by: Simon Glass <sjg@chromium.org>
+---
+ include/configs/ti_armv7_common.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/configs/ti_armv7_common.h b/include/configs/ti_armv7_common.h
+index 69d69a5..a48eef1 100644
+--- a/include/configs/ti_armv7_common.h
++++ b/include/configs/ti_armv7_common.h
+@@ -104,7 +104,7 @@
+  * we are on so we do not need to rely on the command prompt.  We set a
+  * console baudrate of 115200 and use the default baud rate table.
+  */
+-#define CONFIG_SYS_MALLOC_LEN		(1024 << 10)
++#define CONFIG_SYS_MALLOC_LEN		(16 << 20)
+ #define CONFIG_SYS_HUSH_PARSER
+ #define CONFIG_SYS_PROMPT		"U-Boot# "
+ #define CONFIG_SYS_CONSOLE_INFO_QUIET
+-- 
+2.7.4
+

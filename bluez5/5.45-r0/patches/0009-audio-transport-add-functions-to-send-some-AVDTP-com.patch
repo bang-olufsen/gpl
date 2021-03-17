@@ -1,0 +1,80 @@
+From c449d1fde5243256443c9d1f037652ae15f5a962 Mon Sep 17 00:00:00 2001
+From: Bernhard Miller <bernhard.miller@streamunlimited.com>
+Date: Tue, 21 Feb 2017 11:16:32 +0100
+Subject: [PATCH] audio transport: add functions to send some AVDTP commands
+ directly. PTS tests only!
+
+Signed-off-by: Bernhard Miller <bernhard.miller@streamunlimited.com>
+---
+ profiles/audio/transport.c | 48 ++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 48 insertions(+)
+
+diff --git a/profiles/audio/transport.c b/profiles/audio/transport.c
+index b9d357e..3985bd7 100644
+--- a/profiles/audio/transport.c
++++ b/profiles/audio/transport.c
+@@ -546,6 +546,51 @@ static DBusMessage *release(DBusConnection *conn, DBusMessage *msg,
+ 	return NULL;
+ }
+ 
++static DBusMessage *send_delay_report_pts(DBusConnection *conn, DBusMessage *msg,
++					void *data)
++{
++	DBG("Enter");
++	struct media_transport *transport = data;
++	struct a2dp_transport *a2dp = transport->data;
++	struct a2dp_sep *sep = media_endpoint_get_sep(transport->endpoint);
++	struct avdtp_stream *stream;
++
++	stream = a2dp_sep_get_stream(sep);
++	avdtp_delay_report(a2dp->session, stream, 1234);
++
++	return g_dbus_create_reply(msg, DBUS_TYPE_INVALID);
++}
++
++static DBusMessage *send_abort_pts(DBusConnection *conn, DBusMessage *msg,
++					void *data)
++{
++	DBG("Enter");
++	struct media_transport *transport = data;
++	struct a2dp_transport *a2dp = transport->data;
++	struct a2dp_sep *sep = media_endpoint_get_sep(transport->endpoint);
++	struct avdtp_stream *stream;
++
++	stream = a2dp_sep_get_stream(sep);
++	avdtp_abort(a2dp->session, stream);
++
++	return g_dbus_create_reply(msg, DBUS_TYPE_INVALID);
++}
++
++static DBusMessage *send_get_configuration_pts(DBusConnection *conn, DBusMessage *msg,
++					void *data)
++{
++	DBG("Enter");
++	struct media_transport *transport = data;
++	struct a2dp_transport *a2dp = transport->data;
++	struct a2dp_sep *sep = media_endpoint_get_sep(transport->endpoint);
++	struct avdtp_stream *stream;
++
++	stream = a2dp_sep_get_stream(sep);
++	avdtp_get_configuration(a2dp->session, stream);
++
++	return g_dbus_create_reply(msg, DBUS_TYPE_INVALID);
++}
++
+ static gboolean get_device(const GDBusPropertyTable *property,
+ 					DBusMessageIter *iter, void *data)
+ {
+@@ -700,6 +745,9 @@ static const GDBusMethodTable transport_methods[] = {
+ 							{ "mtu_w", "q" }),
+ 			try_acquire) },
+ 	{ GDBUS_ASYNC_METHOD("Release", NULL, NULL, release) },
++	{ GDBUS_METHOD("SendDelayReportPTS", NULL, NULL, send_delay_report_pts) },
++	{ GDBUS_METHOD("SendAbortPTS", NULL, NULL, send_abort_pts) },
++	{ GDBUS_METHOD("SendGetConfigurationPTS", NULL, NULL, send_get_configuration_pts) },
+ 	{ },
+ };
+ 
+-- 
+2.7.4
+

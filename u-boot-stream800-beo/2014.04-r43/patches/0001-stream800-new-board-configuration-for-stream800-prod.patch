@@ -1,0 +1,1137 @@
+From b65d6a3734f5699eef881242e4a0ddbb639f3057 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Thu, 10 Apr 2014 09:03:29 +0200
+Subject: [PATCH] stream800: new board configuration for stream800 products
+ based on am335x
+
+Signed-off-by: Martin Flaska <martin.flaska@streamunlimited.com>
+Signed-off-by: Matus Ujhelyi <matus.ujhelyi@streamunlimited.com>
+---
+ board/streamunlimited/stream800/Makefile |  46 ++++
+ board/streamunlimited/stream800/board.c  | 355 +++++++++++++++++++++++++++++++
+ board/streamunlimited/stream800/board.h  |  58 +++++
+ board/streamunlimited/stream800/mux.c    | 256 ++++++++++++++++++++++
+ boards.cfg                               |   1 +
+ include/configs/stream800.h              | 355 +++++++++++++++++++++++++++++++
+ 6 files changed, 1071 insertions(+)
+ create mode 100644 board/streamunlimited/stream800/Makefile
+ create mode 100644 board/streamunlimited/stream800/board.c
+ create mode 100644 board/streamunlimited/stream800/board.h
+ create mode 100644 board/streamunlimited/stream800/mux.c
+ create mode 100644 include/configs/stream800.h
+
+diff --git a/board/streamunlimited/stream800/Makefile b/board/streamunlimited/stream800/Makefile
+new file mode 100644
+index 0000000..67a87a1
+--- /dev/null
++++ b/board/streamunlimited/stream800/Makefile
+@@ -0,0 +1,46 @@
++#
++# Makefile
++#
++# Copyright (C) 2011 Texas Instruments Incorporated - http://www.ti.com/
++#
++# This program is free software; you can redistribute it and/or
++# modify it under the terms of the GNU General Public License as
++# published by the Free Software Foundation; either version 2 of
++# the License, or (at your option) any later version.
++#
++# This program is distributed "as is" WITHOUT ANY WARRANTY of any
++# kind, whether express or implied; without even the implied warranty
++# of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
++# GNU General Public License for more details.
++#
++
++include $(TOPDIR)/config.mk
++
++LIB	= $(obj)lib$(BOARD).o
++
++ifdef CONFIG_SPL_BUILD
++COBJS	:= mux.o
++endif
++
++COBJS	+= board.o
++SRCS	:= $(SOBJS:.o=.S) $(COBJS:.o=.c)
++OBJS	:= $(addprefix $(obj),$(COBJS))
++SOBJS	:= $(addprefix $(obj),$(SOBJS))
++
++$(LIB):	$(obj).depend $(OBJS) $(SOBJS)
++	$(call cmd_link_o_target, $(OBJS) $(SOBJS))
++
++clean:
++	rm -f $(SOBJS) $(OBJS)
++
++distclean:	clean
++	rm -f $(LIB) core *.bak $(obj).depend
++
++#########################################################################
++
++# defines $(obj).depend target
++include $(SRCTREE)/rules.mk
++
++sinclude $(obj).depend
++
++#########################################################################
+diff --git a/board/streamunlimited/stream800/board.c b/board/streamunlimited/stream800/board.c
+new file mode 100644
+index 0000000..5b22e12
+--- /dev/null
++++ b/board/streamunlimited/stream800/board.c
+@@ -0,0 +1,355 @@
++/*
++ * board.c
++ *
++ * Board functions for TI AM335X based boards
++ *
++ * Copyright (C) 2011, Texas Instruments, Incorporated - http://www.ti.com/
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation; either version 2 of
++ * the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR /PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++#include <common.h>
++#include <errno.h>
++#include <spl.h>
++#include <asm/arch/cpu.h>
++#include <asm/arch/hardware.h>
++#include <asm/arch/omap.h>
++#include <asm/arch/ddr_defs.h>
++#include <asm/arch/clock.h>
++#include <asm/arch/gpio.h>
++#include <asm/arch/mmc_host_def.h>
++#include <asm/arch/sys_proto.h>
++#include <asm/io.h>
++#include <asm/emif.h>
++#include <asm/gpio.h>
++#include <i2c.h>
++#include <miiphy.h>
++#include <cpsw.h>
++#include "board.h"
++
++DECLARE_GLOBAL_DATA_PTR;
++
++static struct wd_timer *wdtimer = (struct wd_timer *)WDT_BASE;
++#ifdef CONFIG_SPL_BUILD
++static struct uart_sys *uart_base = (struct uart_sys *)DEFAULT_UART_BASE;
++#endif
++
++/* MII mode defines
++ * See ONTROL_MODULE Registers: gmii_sel Register (offset = 650h)
++ */
++// gmii1_sel (bites 0-1)
++#define MII1_MODE_ENABLE		0x0
++#define RMII1_MODE_ENABLE		0x1
++#define RGMII1_MODE_ENABLE		0x2
++#define MII1_MODE_NOT_USED		0x3
++// gmii2_sel (bites 2-3)
++#define MII2_MODE_ENABLE		0x0
++#define RMII2_MODE_ENABLE		0x4
++#define RGMII2_MODE_ENABLE		0x8
++#define MII2_MODE_NOT_USED		0xC
++// rgmii1_idmode (bite 4)
++#define RGMII1_NO_INTERNAL_DELAY 0x10
++// rgmii2_idmode (bite 5)
++#define RGMII2_NO_INTERNAL_DELAY 0x20
++// rmii1_io_clk_en (bite 6)
++#define MII1_CLK_FROM_CHIP_PIN	0x40
++#define MII1_CLK_FROM_PLL		0x0
++// rmii1_io_clk_en (bite 7)
++#define MII2_CLK_FROM_CHIP_PIN	0x80
++#define MII2_CLK_FROM_PLL		0x0
++
++
++
++
++/* GPIO that controls power to DDR on EVM-SK */
++#define GPIO_DDR_VTT_EN		7
++
++static struct ctrl_dev *cdev = (struct ctrl_dev *)CTRL_DEVICE_BASE;
++
++static struct Stream800Board __attribute__((section (".data"))) board;
++
++/* UART Defines */
++#ifdef CONFIG_SPL_BUILD
++#define UART_RESET		(0x1 << 1)
++#define UART_CLK_RUNNING_MASK	0x1
++#define UART_SMART_IDLE_EN	(0x1 << 0x3)
++
++static void rtc32k_enable(void)
++{
++	struct rtc_regs *rtc = (struct rtc_regs *)AM335X_RTC_BASE;
++
++	/*
++	 * Unlock the RTC's registers.  For more details please see the
++	 * RTC_SS section of the TRM.  In order to unlock we need to
++	 * write these specific values (keys) in this order.
++	 */
++	writel(0x83e70b13, &rtc->kick0r);
++	writel(0x95a4f1e0, &rtc->kick1r);
++
++	/* Enable the RTC 32K OSC by setting bits 3 and 6. */
++	writel((1 << 3) | (1 << 6), &rtc->osc);
++}
++
++static const struct ddr_data ddr2_data = {
++	.datardsratio0 = ((MT47H128M16RT25E_RD_DQS<<30) |
++			  (MT47H128M16RT25E_RD_DQS<<20) |
++			  (MT47H128M16RT25E_RD_DQS<<10) |
++			  (MT47H128M16RT25E_RD_DQS<<0)),
++	.datawdsratio0 = ((MT47H128M16RT25E_WR_DQS<<30) |
++			  (MT47H128M16RT25E_WR_DQS<<20) |
++			  (MT47H128M16RT25E_WR_DQS<<10) |
++			  (MT47H128M16RT25E_WR_DQS<<0)),
++	.datawiratio0 = ((MT47H128M16RT25E_PHY_WRLVL<<30) |
++			 (MT47H128M16RT25E_PHY_WRLVL<<20) |
++			 (MT47H128M16RT25E_PHY_WRLVL<<10) |
++			 (MT47H128M16RT25E_PHY_WRLVL<<0)),
++	.datagiratio0 = ((MT47H128M16RT25E_PHY_GATELVL<<30) |
++			 (MT47H128M16RT25E_PHY_GATELVL<<20) |
++			 (MT47H128M16RT25E_PHY_GATELVL<<10) |
++			 (MT47H128M16RT25E_PHY_GATELVL<<0)),
++	.datafwsratio0 = ((MT47H128M16RT25E_PHY_FIFO_WE<<30) |
++			  (MT47H128M16RT25E_PHY_FIFO_WE<<20) |
++			  (MT47H128M16RT25E_PHY_FIFO_WE<<10) |
++			  (MT47H128M16RT25E_PHY_FIFO_WE<<0)),
++	.datawrsratio0 = ((MT47H128M16RT25E_PHY_WR_DATA<<30) |
++			  (MT47H128M16RT25E_PHY_WR_DATA<<20) |
++			  (MT47H128M16RT25E_PHY_WR_DATA<<10) |
++			  (MT47H128M16RT25E_PHY_WR_DATA<<0)),
++	.datauserank0delay = MT47H128M16RT25E_PHY_RANK0_DELAY,
++	.datadldiff0 = PHY_DLL_LOCK_DIFF,
++};
++
++static const struct cmd_control ddr2_cmd_ctrl_data = {
++	.cmd0csratio = MT47H128M16RT25E_RATIO,
++	.cmd0dldiff = MT47H128M16RT25E_DLL_LOCK_DIFF,
++	.cmd0iclkout = MT47H128M16RT25E_INVERT_CLKOUT,
++
++	.cmd1csratio = MT47H128M16RT25E_RATIO,
++	.cmd1dldiff = MT47H128M16RT25E_DLL_LOCK_DIFF,
++	.cmd1iclkout = MT47H128M16RT25E_INVERT_CLKOUT,
++
++	.cmd2csratio = MT47H128M16RT25E_RATIO,
++	.cmd2dldiff = MT47H128M16RT25E_DLL_LOCK_DIFF,
++	.cmd2iclkout = MT47H128M16RT25E_INVERT_CLKOUT,
++};
++
++static const struct emif_regs ddr2_emif_reg_data = {
++	.sdram_config = MT47H128M16RT25E_EMIF_SDCFG,
++	.ref_ctrl = MT47H128M16RT25E_EMIF_SDREF,
++	.sdram_tim1 = MT47H128M16RT25E_EMIF_TIM1,
++	.sdram_tim2 = MT47H128M16RT25E_EMIF_TIM2,
++	.sdram_tim3 = MT47H128M16RT25E_EMIF_TIM3,
++	.emif_ddr_phy_ctlr_1 = MT47H128M16RT25E_EMIF_READ_LATENCY,
++};
++#endif
++
++/*
++ * early system init of muxing and clocks.
++ */
++void s_init(void)
++{
++	/* WDT1 is already running when the bootloader gets control
++	 * Disable it to avoid "random" resets
++	 */
++	writel(0xAAAA, &wdtimer->wdtwspr);
++	while (readl(&wdtimer->wdtwwps) != 0x0)
++		;
++	writel(0x5555, &wdtimer->wdtwspr);
++	while (readl(&wdtimer->wdtwwps) != 0x0)
++		;
++
++#ifdef CONFIG_SPL_BUILD
++	/* Setup the PLLs and the clocks for the peripherals */
++	pll_init();
++
++	/* Enable RTC32K clock */
++	rtc32k_enable();
++
++	/* UART softreset */
++	u32 regVal;
++
++#ifdef CONFIG_SERIAL1
++	enable_uart0_pin_mux();
++#endif /* CONFIG_SERIAL1 */
++#ifdef CONFIG_SERIAL2
++	enable_uart1_pin_mux();
++#endif /* CONFIG_SERIAL2 */
++#ifdef CONFIG_SERIAL3
++	enable_uart2_pin_mux();
++#endif /* CONFIG_SERIAL3 */
++#ifdef CONFIG_SERIAL4
++	enable_uart3_pin_mux();
++#endif /* CONFIG_SERIAL4 */
++#ifdef CONFIG_SERIAL5
++	enable_uart4_pin_mux();
++#endif /* CONFIG_SERIAL5 */
++#ifdef CONFIG_SERIAL6
++	enable_uart5_pin_mux();
++#endif /* CONFIG_SERIAL6 */
++
++	regVal = readl(&uart_base->uartsyscfg);
++	regVal |= UART_RESET;
++	writel(regVal, &uart_base->uartsyscfg);
++	while ((readl(&uart_base->uartsyssts) &
++		UART_CLK_RUNNING_MASK) != UART_CLK_RUNNING_MASK)
++		;
++
++	/* Disable smart idle */
++	regVal = readl(&uart_base->uartsyscfg);
++	regVal |= UART_SMART_IDLE_EN;
++	writel(regVal, &uart_base->uartsyscfg);
++
++	gd = &gdata;
++
++	preloader_console_init();
++
++	/* Initalize the board header */
++	// TODO: implement board detection
++	board.moduleVersion = MV_L2;
++	board.carrierBoardType = CBT_LanDock;
++
++	enable_board_pin_mux(&board);
++
++	config_ddr(266, MT47H128M16RT25E_IOCTRL_VALUE, &ddr2_data,
++			   &ddr2_cmd_ctrl_data, &ddr2_emif_reg_data);
++#endif
++}
++
++/*
++ * Basic board specific setup.  Pinmux has been handled already.
++ */
++int board_init(void)
++{
++	//i2c_init(CONFIG_SYS_I2C_SPEED, CONFIG_SYS_I2C_SLAVE);
++
++	// TODO: implement board detection
++	board.moduleVersion = MV_L2;
++	board.carrierBoardType = CBT_LanDock;
++
++	gd->bd->bi_boot_params = PHYS_DRAM_1 + 0x100;
++
++	gpmc_init();
++
++	return 0;
++}
++
++#ifdef CONFIG_BOARD_LATE_INIT
++int board_late_init(void)
++{
++#ifdef CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG
++	// TODO: implement board detection
++	setenv("board_name", "stream800");
++	setenv("board_rev", "L2");
++#endif
++
++	return 0;
++}
++#endif
++
++#ifdef CONFIG_DRIVER_TI_CPSW
++static void cpsw_control(int enabled)
++{
++	/* VTP can be added here */
++
++	return;
++}
++
++static struct cpsw_slave_data cpsw_slaves[] = {
++	{
++		.slave_reg_ofs	= 0x208,
++		.sliver_reg_ofs	= 0xd80,
++		.phy_id		= 0,
++	},
++	{
++		.slave_reg_ofs	= 0x308,
++		.sliver_reg_ofs	= 0xdc0,
++		.phy_id		= 1,
++	},
++};
++
++static struct cpsw_platform_data cpsw_data = {
++	.mdio_base		= AM335X_CPSW_MDIO_BASE,
++	.cpsw_base		= AM335X_CPSW_BASE,
++	.mdio_div		= 0xff,
++	.channels		= 8,
++	.cpdma_reg_ofs		= 0x800,
++	.slaves			= 2,
++	.slave_data		= cpsw_slaves,
++	.ale_reg_ofs		= 0xd00,
++	.ale_entries		= 1024,
++	.host_port_reg_ofs	= 0x108,
++	.hw_stats_reg_ofs	= 0x900,
++	.mac_control		= (1 << 5),
++	.control		= cpsw_control,
++	.host_port_num		= 0,
++	.version		= CPSW_CTRL_VERSION_2,
++};
++#endif
++
++#if defined(CONFIG_DRIVER_TI_CPSW) || \
++	(defined(CONFIG_USB_ETHER) && defined(CONFIG_MUSB_GADGET))
++int board_eth_init(bd_t *bis)
++{
++	int rv, n = 0;
++#ifdef CONFIG_DRIVER_TI_CPSW
++	uint8_t mac_addr[6];
++	uint32_t mac_hi, mac_lo;
++
++	if (!eth_getenv_enetaddr("ethaddr", mac_addr)) {
++		/* try reading mac address from efuse */
++		mac_lo = readl(&cdev->macid0l);
++		mac_hi = readl(&cdev->macid0h);
++		mac_addr[0] = mac_hi & 0xFF;
++		mac_addr[1] = (mac_hi & 0xFF00) >> 8;
++		mac_addr[2] = (mac_hi & 0xFF0000) >> 16;
++		mac_addr[3] = (mac_hi & 0xFF000000) >> 24;
++		mac_addr[4] = mac_lo & 0xFF;
++		mac_addr[5] = (mac_lo & 0xFF00) >> 8;
++
++		if (is_valid_ether_addr(mac_addr)) {
++			eth_setenv_enetaddr("ethaddr", mac_addr);
++			printf("board_eth_init: found mac_addr: '%02x:%02x:%02x:%02x:%02x:%02x'\n",
++				   mac_addr[0], mac_addr[1], mac_addr[2], mac_addr[3], mac_addr[4], mac_addr[5]);
++		} else {
++			puts("board_eth_init: failed to get valid MAC addr, trying USB eth ...\n");
++			goto try_usbether;
++		}
++	}
++
++	writel(RMII1_MODE_ENABLE | MII1_CLK_FROM_CHIP_PIN | RGMII2_MODE_ENABLE, &cdev->miisel);
++	cpsw_slaves[0].phy_if = PHY_INTERFACE_MODE_RMII;
++	cpsw_slaves[0].phy_id = 4;
++	cpsw_slaves[1].phy_if = PHY_INTERFACE_MODE_RGMII;
++	cpsw_slaves[1].phy_id = 0;
++
++	rv = cpsw_register(&cpsw_data);
++	if (rv < 0)
++		printf("Error %d registering CPSW switch\n", rv);
++	else
++		n += rv;
++#endif
++
++try_usbether:
++
++#if defined(CONFIG_USB_ETHER) && !defined(CONFIG_SPL_BUILD)
++	puts("board_eth_init: configuring USB eth ...\n");
++	rv = usb_eth_initialize(bis);
++	if (rv < 0)
++		printf("Error %d registering USB_ETHER\n", rv);
++	else
++		n += rv;
++#else
++	puts("board_eth_init: USB eth not enabled\n");
++#endif
++
++	return n;
++}
++#endif
+diff --git a/board/streamunlimited/stream800/board.h b/board/streamunlimited/stream800/board.h
+new file mode 100644
+index 0000000..3277c22
+--- /dev/null
++++ b/board/streamunlimited/stream800/board.h
+@@ -0,0 +1,58 @@
++/*
++ * board.h
++ *
++ * Stream800 boards information header. Based on TI AM335x.
++ *
++ * Copyright (C) 2012, StreamUnlimited Engineering GmbH, http://www.streamunlimited.com/
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation; either version 2 of
++ * the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR /PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++#ifndef _BOARD_H_
++#define _BOARD_H_
++
++/** Module version
++ * \see https://extern.streamunlimited.com:8443/display/Stream800/Stream800+Hardware+Configuration
++ */
++typedef enum {
++	MV_L0,
++	MV_L1,
++	MV_L2
++} Stream800ModuleVersion;
++
++/** Carrier board type
++ * \see https://extern.streamunlimited.com:8443/display/Stream800/Stream800+Hardware+Configuration
++ */
++typedef enum {
++	CBT_Sue,			///< SUE carrier board
++	CBT_SueFactoryTest,	///< SUE factory test board
++	CBT_SueDemoClient,	///< SUE demo client
++	CBT_LanDock			///< Dictations LAN dock
++} Stream800CarrierBoardType;
++
++
++struct Stream800Board {
++	Stream800ModuleVersion moduleVersion;
++	Stream800CarrierBoardType carrierBoardType;
++};
++
++void enable_board_pin_mux(struct Stream800Board *board);
++
++void enable_uart0_pin_mux(void);
++void enable_uart1_pin_mux(void);
++void enable_uart2_pin_mux(void);
++void enable_uart3_pin_mux(void);
++void enable_uart4_pin_mux(void);
++void enable_uart5_pin_mux(void);
++
++void enable_i2c0_pin_mux(void);
++
++#endif	// _BOARD_H_
+diff --git a/board/streamunlimited/stream800/mux.c b/board/streamunlimited/stream800/mux.c
+new file mode 100644
+index 0000000..564c12d
+--- /dev/null
++++ b/board/streamunlimited/stream800/mux.c
+@@ -0,0 +1,256 @@
++/*
++ * mux.c
++ *
++ * Copyright (C) 2011 Texas Instruments Incorporated - http://www.ti.com/
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation version 2.
++ *
++ * This program is distributed "as is" WITHOUT ANY WARRANTY of any
++ * kind, whether express or implied; without even the implied warranty
++ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
++ * GNU General Public License for more details.
++ */
++
++#include <common.h>
++#include <asm/arch/sys_proto.h>
++#include <asm/arch/hardware.h>
++#include <asm/arch/mux.h>
++#include <asm/io.h>
++#include <i2c.h>
++#include "board.h"
++
++static struct module_pin_mux uart0_pin_mux[] = {
++	{OFFSET(uart0_rxd), (MODE(0) | PULLUP_EN | RXACTIVE)},	/* UART0_RXD */
++	{OFFSET(uart0_txd), (MODE(0) | PULLUDEN)},		/* UART0_TXD */
++	{-1},
++};
++
++static struct module_pin_mux uart1_pin_mux[] = {
++	{OFFSET(uart1_rxd), (MODE(0) | PULLUP_EN | RXACTIVE)},	/* UART1_RXD */
++	{OFFSET(uart1_txd), (MODE(0) | PULLUDEN)},		/* UART1_TXD */
++	{-1},
++};
++
++static struct module_pin_mux uart2_pin_mux[] = {
++	{OFFSET(spi0_sclk), (MODE(1) | PULLUP_EN | RXACTIVE)},	/* UART2_RXD */
++	{OFFSET(spi0_d0), (MODE(1) | PULLUDEN)},		/* UART2_TXD */
++	{-1},
++};
++
++static struct module_pin_mux uart3_pin_mux[] = {
++	{OFFSET(spi0_cs1), (MODE(1) | PULLUP_EN | RXACTIVE)},	/* UART3_RXD */
++	{OFFSET(ecap0_in_pwm0_out), (MODE(1) | PULLUDEN)},	/* UART3_TXD */
++	{-1},
++};
++
++static struct module_pin_mux uart4_pin_mux[] = {
++	{OFFSET(gpmc_wait0), (MODE(6) | PULLUP_EN | RXACTIVE)},	/* UART4_RXD */
++	{OFFSET(gpmc_wpn), (MODE(6) | PULLUDEN)},		/* UART4_TXD */
++	{-1},
++};
++
++static struct module_pin_mux uart5_pin_mux[] = {
++	{OFFSET(lcd_data9), (MODE(4) | PULLUP_EN | RXACTIVE)},	/* UART5_RXD */
++	{OFFSET(lcd_data8), (MODE(4) | PULLUDEN)},		/* UART5_TXD */
++	{-1},
++};
++
++static struct module_pin_mux mmc0_pin_mux[] = {
++	{OFFSET(mmc0_dat3), (MODE(0) | RXACTIVE | PULLUP_EN)},	/* MMC0_DAT3 */
++	{OFFSET(mmc0_dat2), (MODE(0) | RXACTIVE | PULLUP_EN)},	/* MMC0_DAT2 */
++	{OFFSET(mmc0_dat1), (MODE(0) | RXACTIVE | PULLUP_EN)},	/* MMC0_DAT1 */
++	{OFFSET(mmc0_dat0), (MODE(0) | RXACTIVE | PULLUP_EN)},	/* MMC0_DAT0 */
++	{OFFSET(mmc0_clk), (MODE(0) | RXACTIVE | PULLUP_EN)},	/* MMC0_CLK */
++	{OFFSET(mmc0_cmd), (MODE(0) | RXACTIVE | PULLUP_EN)},	/* MMC0_CMD */
++	{OFFSET(mcasp0_aclkr), (MODE(4) | RXACTIVE)},		/* MMC0_WP */
++	{OFFSET(spi0_cs1), (MODE(5) | RXACTIVE | PULLUP_EN)},	/* MMC0_CD */
++	{-1},
++};
++
++static struct module_pin_mux mmc0_no_cd_pin_mux[] = {
++	{OFFSET(mmc0_dat3), (MODE(0) | RXACTIVE | PULLUP_EN)},	/* MMC0_DAT3 */
++	{OFFSET(mmc0_dat2), (MODE(0) | RXACTIVE | PULLUP_EN)},	/* MMC0_DAT2 */
++	{OFFSET(mmc0_dat1), (MODE(0) | RXACTIVE | PULLUP_EN)},	/* MMC0_DAT1 */
++	{OFFSET(mmc0_dat0), (MODE(0) | RXACTIVE | PULLUP_EN)},	/* MMC0_DAT0 */
++	{OFFSET(mmc0_clk), (MODE(0) | RXACTIVE | PULLUP_EN)},	/* MMC0_CLK */
++	{OFFSET(mmc0_cmd), (MODE(0) | RXACTIVE | PULLUP_EN)},	/* MMC0_CMD */
++	{OFFSET(mcasp0_aclkr), (MODE(4) | RXACTIVE)},		/* MMC0_WP */
++	{-1},
++};
++
++static struct module_pin_mux mmc0_pin_mux_sk_evm[] = {
++	{OFFSET(mmc0_dat3), (MODE(0) | RXACTIVE | PULLUP_EN)},	/* MMC0_DAT3 */
++	{OFFSET(mmc0_dat2), (MODE(0) | RXACTIVE | PULLUP_EN)},	/* MMC0_DAT2 */
++	{OFFSET(mmc0_dat1), (MODE(0) | RXACTIVE | PULLUP_EN)},	/* MMC0_DAT1 */
++	{OFFSET(mmc0_dat0), (MODE(0) | RXACTIVE | PULLUP_EN)},	/* MMC0_DAT0 */
++	{OFFSET(mmc0_clk), (MODE(0) | RXACTIVE | PULLUP_EN)},	/* MMC0_CLK */
++	{OFFSET(mmc0_cmd), (MODE(0) | RXACTIVE | PULLUP_EN)},	/* MMC0_CMD */
++	{OFFSET(spi0_cs1), (MODE(5) | RXACTIVE | PULLUP_EN)},	/* MMC0_CD */
++	{-1},
++};
++
++static struct module_pin_mux mmc1_pin_mux[] = {
++	{OFFSET(gpmc_ad3), (MODE(1) | RXACTIVE | PULLUP_EN)},	/* MMC1_DAT3 */
++	{OFFSET(gpmc_ad2), (MODE(1) | RXACTIVE | PULLUP_EN)},	/* MMC1_DAT2 */
++	{OFFSET(gpmc_ad1), (MODE(1) | RXACTIVE | PULLUP_EN)},	/* MMC1_DAT1 */
++	{OFFSET(gpmc_ad0), (MODE(1) | RXACTIVE | PULLUP_EN)},	/* MMC1_DAT0 */
++	{OFFSET(gpmc_csn1), (MODE(2) | RXACTIVE | PULLUP_EN)},	/* MMC1_CLK */
++	{OFFSET(gpmc_csn2), (MODE(2) | RXACTIVE | PULLUP_EN)},	/* MMC1_CMD */
++	{OFFSET(gpmc_csn0), (MODE(7) | RXACTIVE | PULLUP_EN)},	/* MMC1_WP */
++	{OFFSET(gpmc_advn_ale), (MODE(7) | RXACTIVE | PULLUP_EN)},	/* MMC1_CD */
++	{-1},
++};
++
++static struct module_pin_mux i2c0_pin_mux[] = {
++	{OFFSET(i2c0_sda), (MODE(0) | RXACTIVE |
++			PULLUDEN | SLEWCTRL)}, /* I2C_DATA */
++	{OFFSET(i2c0_scl), (MODE(0) | RXACTIVE |
++			PULLUDEN | SLEWCTRL)}, /* I2C_SCLK */
++	{-1},
++};
++
++static struct module_pin_mux i2c1_pin_mux[] = {
++	{OFFSET(spi0_d1), (MODE(2) | RXACTIVE |
++			PULLUDEN | SLEWCTRL)},	/* I2C_DATA */
++	{OFFSET(spi0_cs0), (MODE(2) | RXACTIVE |
++			PULLUDEN | SLEWCTRL)},	/* I2C_SCLK */
++	{-1},
++};
++
++static struct module_pin_mux spi0_pin_mux[] = {
++	{OFFSET(spi0_sclk), (MODE(0) | RXACTIVE | PULLUDEN)},	/* SPI0_SCLK */
++	{OFFSET(spi0_d0), (MODE(0) | RXACTIVE |
++			PULLUDEN | PULLUP_EN)},			/* SPI0_D0 */
++	{OFFSET(spi0_d1), (MODE(0) | RXACTIVE | PULLUDEN)},	/* SPI0_D1 */
++	{OFFSET(spi0_cs0), (MODE(0) | RXACTIVE |
++			PULLUDEN | PULLUP_EN)},			/* SPI0_CS0 */
++	{-1},
++};
++
++static struct module_pin_mux gpio0_7_pin_mux[] = {
++	{OFFSET(ecap0_in_pwm0_out), (MODE(7) | PULLUDEN)},	/* GPIO0_7 */
++	{-1},
++};
++
++static struct module_pin_mux rgmii1_pin_mux[] = {
++	{OFFSET(mii1_txen), MODE(2)},			/* RGMII1_TCTL */
++	{OFFSET(mii1_rxdv), MODE(2) | RXACTIVE},	/* RGMII1_RCTL */
++	{OFFSET(mii1_txd3), MODE(2)},			/* RGMII1_TD3 */
++	{OFFSET(mii1_txd2), MODE(2)},			/* RGMII1_TD2 */
++	{OFFSET(mii1_txd1), MODE(2)},			/* RGMII1_TD1 */
++	{OFFSET(mii1_txd0), MODE(2)},			/* RGMII1_TD0 */
++	{OFFSET(mii1_txclk), MODE(2)},			/* RGMII1_TCLK */
++	{OFFSET(mii1_rxclk), MODE(2) | RXACTIVE},	/* RGMII1_RCLK */
++	{OFFSET(mii1_rxd3), MODE(2) | RXACTIVE},	/* RGMII1_RD3 */
++	{OFFSET(mii1_rxd2), MODE(2) | RXACTIVE},	/* RGMII1_RD2 */
++	{OFFSET(mii1_rxd1), MODE(2) | RXACTIVE},	/* RGMII1_RD1 */
++	{OFFSET(mii1_rxd0), MODE(2) | RXACTIVE},	/* RGMII1_RD0 */
++	{OFFSET(mdio_data), MODE(0) | RXACTIVE | PULLUP_EN},/* MDIO_DATA */
++	{OFFSET(mdio_clk), MODE(0) | PULLUP_EN},	/* MDIO_CLK */
++	{-1},
++};
++
++static struct module_pin_mux rmii1_pin_mux[] = {
++	{OFFSET(mii1_crs), MODE(1) | RXACTIVE},     /* RMII1_CRS */
++	{OFFSET(mii1_rxerr), MODE(1) | RXACTIVE},   /* RMII1_RXERR */
++	{OFFSET(mii1_txen), MODE(1)},           /* RMII1_TXEN */
++	{OFFSET(mii1_txd1), MODE(1)},           /* RMII1_TXD1 */
++	{OFFSET(mii1_txd0), MODE(1)},           /* RMII1_TXD0 */
++	{OFFSET(mii1_rxd1), MODE(1) | RXACTIVE},    /* RMII1_RXD1 */
++	{OFFSET(mii1_rxd0), MODE(1) | RXACTIVE},    /* RMII1_RXD0 */
++	{OFFSET(mdio_data), MODE(0) | RXACTIVE | PULLUP_EN}, /* MDIO_DATA */
++	{OFFSET(mdio_clk), MODE(0) | PULLUP_EN},    /* MDIO_CLK */
++	{OFFSET(rmii1_refclk), MODE(0) | RXACTIVE}, /* RMII1_REFCLK */
++	{-1},
++};
++
++static struct module_pin_mux rgmii2_pin_mux[] = {
++	{OFFSET(gpmc_a0), MODE(2)},			/* RGMII2_TCTL */
++	{OFFSET(gpmc_a1), MODE(2) | RXACTIVE},		/* RGMII2_RCTL */
++	{OFFSET(gpmc_a2), MODE(2)},			/* RGMII2_TD3 */
++	{OFFSET(gpmc_a3), MODE(2)},			/* RGMII2_TD2 */
++	{OFFSET(gpmc_a4), MODE(2)},			/* RGMII2_TD1 */
++	{OFFSET(gpmc_a5), MODE(2)},			/* RGMII2_TD0 */
++	{OFFSET(gpmc_a6), MODE(2)},			/* RGMII2_TCLK */
++	{OFFSET(gpmc_a7), MODE(2) | RXACTIVE},		/* RGMII2_RCLK */
++	{OFFSET(gpmc_a8), MODE(2) | RXACTIVE},		/* RGMII2_RD3 */
++	{OFFSET(gpmc_a9), MODE(2) | RXACTIVE},		/* RGMII2_RD2 */
++	{OFFSET(gpmc_a10), MODE(2) | RXACTIVE},		/* RGMII2_RD1 */
++	{OFFSET(gpmc_a11), MODE(2) | RXACTIVE},		/* RGMII2_RD0 */
++	{OFFSET(mdio_data), MODE(0) | RXACTIVE | PULLUP_EN}, /* MDIO_DATA */
++	{OFFSET(mdio_clk), MODE(0) | PULLUP_EN},	/* MDIO_CLK */
++	{-1},
++};
++
++static struct module_pin_mux suos_asc_phy_reset_pin_mux[] = {
++	{OFFSET(gpmc_ad14), MODE(7) | PULLUP_EN},	/* GPIO1_14 - pull up should be sufficient to keep phy out of reset! */
++	{-1},
++};
++
++static struct module_pin_mux nand_pin_mux[] = {
++	{OFFSET(gpmc_ad0), (MODE(0) | PULLUP_EN | RXACTIVE)},	/* NAND AD0 */
++	{OFFSET(gpmc_ad1), (MODE(0) | PULLUP_EN | RXACTIVE)},	/* NAND AD1 */
++	{OFFSET(gpmc_ad2), (MODE(0) | PULLUP_EN | RXACTIVE)},	/* NAND AD2 */
++	{OFFSET(gpmc_ad3), (MODE(0) | PULLUP_EN | RXACTIVE)},	/* NAND AD3 */
++	{OFFSET(gpmc_ad4), (MODE(0) | PULLUP_EN | RXACTIVE)},	/* NAND AD4 */
++	{OFFSET(gpmc_ad5), (MODE(0) | PULLUP_EN | RXACTIVE)},	/* NAND AD5 */
++	{OFFSET(gpmc_ad6), (MODE(0) | PULLUP_EN | RXACTIVE)},	/* NAND AD6 */
++	{OFFSET(gpmc_ad7), (MODE(0) | PULLUP_EN | RXACTIVE)},	/* NAND AD7 */
++	{OFFSET(gpmc_wait0), (MODE(0) | RXACTIVE | PULLUP_EN)}, /* NAND WAIT */
++	{OFFSET(gpmc_wpn), (MODE(7) | PULLUP_EN | RXACTIVE)},	/* NAND_WPN */
++	{OFFSET(gpmc_csn0), (MODE(0) | PULLUDEN)},	/* NAND_CS0 */
++	{OFFSET(gpmc_advn_ale), (MODE(0) | PULLUDEN)}, /* NAND_ADV_ALE */
++	{OFFSET(gpmc_oen_ren), (MODE(0) | PULLUDEN)},	/* NAND_OE */
++	{OFFSET(gpmc_wen), (MODE(0) | PULLUDEN)},	/* NAND_WEN */
++	{OFFSET(gpmc_be0n_cle), (MODE(0) | PULLUDEN)},	/* NAND_BE_CLE */
++	{-1},
++};
++
++void enable_uart0_pin_mux(void)
++{
++	configure_module_pin_mux(uart0_pin_mux);
++}
++
++void enable_uart1_pin_mux(void)
++{
++	configure_module_pin_mux(uart1_pin_mux);
++}
++
++void enable_uart2_pin_mux(void)
++{
++	configure_module_pin_mux(uart2_pin_mux);
++}
++
++void enable_uart3_pin_mux(void)
++{
++	configure_module_pin_mux(uart3_pin_mux);
++}
++
++void enable_uart4_pin_mux(void)
++{
++	configure_module_pin_mux(uart4_pin_mux);
++}
++
++void enable_uart5_pin_mux(void)
++{
++	configure_module_pin_mux(uart5_pin_mux);
++}
++
++void enable_i2c0_pin_mux(void)
++{
++	configure_module_pin_mux(i2c0_pin_mux);
++}
++
++void enable_board_pin_mux(struct Stream800Board *board)
++{
++	configure_module_pin_mux(i2c1_pin_mux);
++#ifndef CONFIG_NO_ETH
++	configure_module_pin_mux(rmii1_pin_mux);
++	configure_module_pin_mux(rgmii2_pin_mux);
++#endif
++	//configure_module_pin_mux(mmc0_pin_mux);
++	//configure_module_pin_mux(mmc1_pin_mux);
++	configure_module_pin_mux(nand_pin_mux);
++}
+diff --git a/boards.cfg b/boards.cfg
+index b4203f1..aad8e0d 100644
+--- a/boards.cfg
++++ b/boards.cfg
+@@ -275,6 +275,7 @@ Active  arm         armv7          am33xx      ti              am335x
+ Active  arm         armv7          am33xx      ti              am335x              am335x_evm_uart4                     am335x_evm:SERIAL5,CONS_INDEX=5,NAND                                                                                              Tom Rini <trini@ti.com>
+ Active  arm         armv7          am33xx      ti              am335x              am335x_evm_uart5                     am335x_evm:SERIAL6,CONS_INDEX=6,NAND                                                                                              Tom Rini <trini@ti.com>
+ Active  arm         armv7          am33xx      ti              am335x              am335x_evm_usbspl                    am335x_evm:SERIAL1,CONS_INDEX=1,NAND,SPL_USBETH_SUPPORT                                                                           Tom Rini <trini@ti.com>
++Active  arm         armv7          am33xx      streamunlimited stream800           stream800                            stream800:SERIAL1,CONS_INDEX=1
+ Active  arm         armv7          am33xx      ti              am43xx              am43xx_evm                           am43xx_evm:SERIAL1,CONS_INDEX=1                                                                                                   Lokesh Vutla <lokeshvutla@ti.com>
+ Active  arm         armv7          am33xx      ti              ti814x              ti814x_evm                           -                                                                                                                                 Matt Porter <matt.porter@linaro.org>
+ Active  arm         armv7          am33xx      ti              ti816x              ti816x_evm                           -                                                                                                                                 -
+diff --git a/include/configs/stream800.h b/include/configs/stream800.h
+new file mode 100644
+index 0000000..3b5d788
+--- /dev/null
++++ b/include/configs/stream800.h
+@@ -0,0 +1,355 @@
++/*
++ * stream800.h
++ *
++ * Copyright (C) 2011 Texas Instruments Incorporated - http://www.ti.com/
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation version 2.
++ *
++ * This program is distributed "as is" WITHOUT ANY WARRANTY of any
++ * kind, whether express or implied; without even the implied warranty
++ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * Stream800 board based on am335x TI CPU.
++ */
++
++#ifndef __CONFIG_STREAM800_H
++#define __CONFIG_STREAM800_H
++
++#define CONFIG_AM33XX
++
++#include <asm/arch/cpu.h>
++#include <asm/arch/hardware.h>
++
++#define CONFIG_DMA_COHERENT
++#define CONFIG_DMA_COHERENT_SIZE	(1 << 20)
++
++#define CONFIG_ENV_SIZE			(128 << 10)	/* 128 KiB */
++#define CONFIG_SYS_MALLOC_LEN		(1024 << 10)
++#define CONFIG_SYS_LONGHELP		/* undef to save memory */
++#define CONFIG_SYS_HUSH_PARSER		/* use "hush" command parser */
++#define CONFIG_SYS_PROMPT		"U-Boot# "
++#define CONFIG_BOARD_LATE_INIT
++#define CONFIG_SYS_NO_FLASH
++#define MACH_TYPE_TIAM335EVM		3589	/* Until the next sync */
++#define CONFIG_MACH_TYPE		MACH_TYPE_TIAM335EVM
++
++#define CONFIG_OF_LIBFDT
++#define CONFIG_CMDLINE_TAG		/* enable passing of ATAGs */
++#define CONFIG_SETUP_MEMORY_TAGS
++#define CONFIG_INITRD_TAG
++
++#ifdef CONFIG_SPL_BUILD
++#define CONFIG_PANIC_HANG		/* Do halt instead of reseting when calling 'panic' for SPL build */
++#endif
++
++/* commands to include */
++#include <config_cmd_default.h>
++
++#define CONFIG_CMD_ASKENV
++#define CONFIG_VERSION_VARIABLE
++
++/* set to negative value for no autoboot */
++#define CONFIG_BOOTDELAY		1
++#define CONFIG_ENV_VARS_UBOOT_CONFIG
++#define CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG
++#define CONFIG_EXTRA_ENV_SETTINGS \
++	"loadaddr=0x80200000\0" \
++	"fdtaddr=0x80F80000\0" \
++	"rdaddr=0x81000000\0" \
++	"bootfile=uImage\0" \
++	"fdtfile=\0" \
++	"console=ttyO0,115200n8\0" \
++	"optargs=\0" \
++	"mmcdev=0\0" \
++	"mmcroot=/dev/mmcblk0p2 ro\0" \
++	"mmcrootfstype=ext4 rootwait\0" \
++	"ramroot=/dev/ram0 rw ramdisk_size=65536 initrd=${rdaddr},64M\0" \
++	"ramrootfstype=ext2\0" \
++	"bootargs_defaults=setenv bootargs " \
++		"console=${console} " \
++		"${optargs}\0" \
++	"mmcargs=setenv bootargs console=${console} " \
++		"${optargs} " \
++		"root=${mmcroot} " \
++		"rootfstype=${mmcrootfstype}\0" \
++	"bootenv=uEnv.txt\0" \
++	"loadbootenv=fatload mmc ${mmcdev} ${loadaddr} ${bootenv}\0" \
++	"importbootenv=echo Importing environment from mmc ...; " \
++		"env import -t $loadaddr $filesize\0" \
++	"ramargs=setenv bootargs console=${console} " \
++		"${optargs} " \
++		"root=${ramroot} " \
++		"rootfstype=${ramrootfstype}\0" \
++	"loadramdisk=fatload mmc ${mmcdev} ${rdaddr} ramdisk.gz\0" \
++	"loaduimagefat=fatload mmc ${mmcdev} ${loadaddr} ${bootfile}\0" \
++	"loaduimage=ext2load mmc ${mmcdev}:2 ${loadaddr} ${bootfile}\0" \
++	"mmcboot=echo Booting from mmc ...; " \
++		"run mmcargs; " \
++		"bootm ${loadaddr}\0" \
++	"ramboot=echo Booting from ramdisk ...; " \
++		"run ramargs; " \
++		"bootm ${loadaddr}\0" \
++
++#define CONFIG_BOOTCOMMAND \
++	"mmc dev ${mmcdev}; if mmc rescan; then " \
++		"echo SD/MMC found on device ${mmcdev};" \
++		"if run loadbootenv; then " \
++			"echo Loaded environment from ${bootenv};" \
++			"run importbootenv;" \
++		"fi;" \
++		"if test -n $uenvcmd; then " \
++			"echo Running uenvcmd ...;" \
++			"run uenvcmd;" \
++		"fi;" \
++		"if run loaduimage; then " \
++			"run mmcboot;" \
++		"fi;" \
++	"fi;" \
++
++/* Clock Defines */
++#define V_OSCK				25000000  /* Clock output from T2 */
++#define V_SCLK				(V_OSCK)
++
++#define CONFIG_CMD_ECHO
++
++/* max number of command args */
++#define CONFIG_SYS_MAXARGS		16
++
++/* Console I/O Buffer Size */
++#define CONFIG_SYS_CBSIZE		512
++
++/* Print Buffer Size */
++#define CONFIG_SYS_PBSIZE		(CONFIG_SYS_CBSIZE \
++					+ sizeof(CONFIG_SYS_PROMPT) + 16)
++
++/* Boot Argument Buffer Size */
++#define CONFIG_SYS_BARGSIZE		CONFIG_SYS_CBSIZE
++
++/*
++ * memtest works on 8 MB in DRAM after skipping 32MB from
++ * start addr of ram disk
++ */
++#define CONFIG_SYS_MEMTEST_START	(PHYS_DRAM_1 + (64 * 1024 * 1024))
++#define CONFIG_SYS_MEMTEST_END		(CONFIG_SYS_MEMTEST_START \
++					+ (8 * 1024 * 1024))
++
++#define CONFIG_SYS_LOAD_ADDR		0x81000000 /* Default load address */
++#define CONFIG_SYS_HZ			1000 /* 1ms clock */
++
++#define CONFIG_MMC
++#define CONFIG_GENERIC_MMC
++#define CONFIG_OMAP_HSMMC
++#define CONFIG_CMD_MMC
++#define CONFIG_DOS_PARTITION
++#define CONFIG_CMD_FAT
++#define CONFIG_CMD_EXT2
++
++#define CONFIG_SPI
++#define CONFIG_OMAP3_SPI
++#define CONFIG_MTD_DEVICE
++#define CONFIG_SPI_FLASH
++#define CONFIG_SPI_FLASH_WINBOND
++#define CONFIG_CMD_SF
++#define CONFIG_SF_DEFAULT_SPEED		(24000000)
++
++ /* Physical Memory Map */
++#define CONFIG_NR_DRAM_BANKS		1		/*  1 bank of DRAM */
++#define PHYS_DRAM_1			0x80000000	/* DRAM Bank #1 */
++#define CONFIG_MAX_RAM_BANK_SIZE	(1024 << 20)	/* 1GB */
++
++#define CONFIG_SYS_SDRAM_BASE		PHYS_DRAM_1
++#define CONFIG_SYS_INIT_SP_ADDR         (NON_SECURE_SRAM_END - \
++						GENERATED_GBL_DATA_SIZE)
++ /* Platform/Board specific defs */
++#define CONFIG_SYS_TIMERBASE		0x48040000	/* Use Timer2 */
++#define CONFIG_SYS_PTV			2	/* Divisor: 2^(PTV+1) => 8 */
++#define CONFIG_SYS_HZ			1000
++
++/* NS16550 Configuration */
++#define CONFIG_SYS_NS16550
++#define CONFIG_SYS_NS16550_SERIAL
++#define CONFIG_SERIAL_MULTI
++#define CONFIG_SYS_NS16550_REG_SIZE	(-4)
++#define CONFIG_SYS_NS16550_CLK		(48000000)
++#define CONFIG_SYS_NS16550_COM1		0x44e09000	/* Base EVM has UART0 */
++#define CONFIG_SYS_NS16550_COM2		0x48022000	/* UART1 */
++#define CONFIG_SYS_NS16550_COM3		0x48024000	/* UART2 */
++#define CONFIG_SYS_NS16550_COM4		0x481a6000	/* UART3 */
++#define CONFIG_SYS_NS16550_COM5		0x481a8000	/* UART4 */
++#define CONFIG_SYS_NS16550_COM6		0x481aa000	/* UART5 */
++
++/* I2C Configuration */
++#define CONFIG_I2C
++#define CONFIG_CMD_I2C
++#define CONFIG_HARD_I2C
++#define CONFIG_SYS_I2C_SPEED		100000
++#define CONFIG_SYS_I2C_SLAVE		1
++#define CONFIG_I2C_MULTI_BUS
++#define CONFIG_DRIVER_OMAP24XX_I2C
++#define CONFIG_CMD_EEPROM
++#define CONFIG_ENV_EEPROM_IS_ON_I2C
++#define CONFIG_SYS_I2C_EEPROM_ADDR	0x50	/* Main EEPROM */
++#define CONFIG_SYS_I2C_EEPROM_ADDR_LEN	2
++#define CONFIG_SYS_I2C_MULTI_EEPROMS
++
++#define CONFIG_OMAP_GPIO
++
++#define CONFIG_BAUDRATE		115200
++#define CONFIG_SYS_BAUDRATE_TABLE	{ 110, 300, 600, 1200, 2400, \
++4800, 9600, 14400, 19200, 28800, 38400, 56000, 57600, 115200 }
++
++#define CONFIG_ENV_OVERWRITE		1
++#define CONFIG_SYS_CONSOLE_INFO_QUIET
++
++#define CONFIG_ENV_IS_NOWHERE
++
++/* Defines for SPL */
++#define CONFIG_SPL
++#define CONFIG_SPL_FRAMEWORK
++#define CONFIG_SPL_TEXT_BASE		0x402F0400
++#define CONFIG_SPL_MAX_SIZE		(101 * 1024)
++#define CONFIG_SPL_STACK		CONFIG_SYS_INIT_SP_ADDR
++
++#define CONFIG_SPL_BSS_START_ADDR	0x80000000
++#define CONFIG_SPL_BSS_MAX_SIZE		0x80000		/* 512 KB */
++
++#define CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_SECTOR	0x300 /* address 0x60000 */
++#define CONFIG_SYS_U_BOOT_MAX_SIZE_SECTORS	0x200 /* 256 KB */
++#define CONFIG_SYS_MMC_SD_FAT_BOOT_PARTITION	1
++#define CONFIG_SPL_FAT_LOAD_PAYLOAD_NAME	"u-boot.img"
++#define CONFIG_SPL_MMC_SUPPORT
++#define CONFIG_SPL_FAT_SUPPORT
++#define CONFIG_SPL_I2C_SUPPORT
++
++#define CONFIG_SPL_LIBCOMMON_SUPPORT
++#define CONFIG_SPL_LIBDISK_SUPPORT
++#define CONFIG_SPL_LIBGENERIC_SUPPORT
++#define CONFIG_SPL_SERIAL_SUPPORT
++#define CONFIG_SPL_GPIO_SUPPORT
++#define CONFIG_SPL_YMODEM_SUPPORT
++/*#define CONFIG_SPL_NET_SUPPORT*/
++/*#define CONFIG_SPL_NET_VCI_STRING	"AM335x U-Boot SPL"*/
++/*#define CONFIG_SPL_ETH_SUPPORT*/
++#define CONFIG_SPL_SPI_SUPPORT
++#define CONFIG_SPL_SPI_FLASH_SUPPORT
++#define CONFIG_SPL_SPI_LOAD
++#define CONFIG_SPL_SPI_BUS		0
++#define CONFIG_SPL_SPI_CS		0
++#define CONFIG_SYS_SPI_U_BOOT_OFFS	0x20000
++#define CONFIG_SYS_SPI_U_BOOT_SIZE	0x40000
++#define CONFIG_SPL_LDSCRIPT		"$(CPUDIR)/omap-common/u-boot-spl.lds"
++
++#define CONFIG_SPL_BOARD_INIT
++#define CONFIG_SPL_NAND_AM33XX_BCH
++#define CONFIG_SPL_NAND_SUPPORT
++#define CONFIG_SYS_NAND_5_ADDR_CYCLE
++#define CONFIG_SYS_NAND_PAGE_COUNT	(CONFIG_SYS_NAND_BLOCK_SIZE / \
++					 CONFIG_SYS_NAND_PAGE_SIZE)
++#define CONFIG_SYS_NAND_PAGE_SIZE	2048
++#define CONFIG_SYS_NAND_OOBSIZE		64
++#define CONFIG_SYS_NAND_BLOCK_SIZE	(128*1024)
++#define CONFIG_SYS_NAND_BAD_BLOCK_POS	NAND_LARGE_BADBLOCK_POS
++#define CONFIG_SYS_NAND_ECCPOS		{ 2, 3, 4, 5, 6, 7, 8, 9, \
++					 10, 11, 12, 13, 14, 15, 16, 17, \
++					 18, 19, 20, 21, 22, 23, 24, 25, \
++					 26, 27, 28, 29, 30, 31, 32, 33, \
++					 34, 35, 36, 37, 38, 39, 40, 41, \
++					 42, 43, 44, 45, 46, 47, 48, 49, \
++					 50, 51, 52, 53, 54, 55, 56, 57, }
++
++#define CONFIG_SYS_NAND_ECCSIZE		512
++#define CONFIG_SYS_NAND_ECCBYTES	14
++
++#define CONFIG_SYS_NAND_ECCSTEPS	4
++#define	CONFIG_SYS_NAND_ECCTOTAL	(CONFIG_SYS_NAND_ECCBYTES * \
++						CONFIG_SYS_NAND_ECCSTEPS)
++
++#define	CONFIG_SYS_NAND_U_BOOT_START	CONFIG_SYS_TEXT_BASE
++
++#define CONFIG_SYS_NAND_U_BOOT_OFFS	0x80000
++
++/*
++ * 1MB into the SDRAM to allow for SPL's bss at the beginning of SDRAM
++ * 64 bytes before this address should be set aside for u-boot.img's
++ * header. That is 0x800FFFC0--0x80100000 should not be used for any
++ * other needs.
++ */
++#define CONFIG_SYS_TEXT_BASE		0x80800000
++#define CONFIG_SYS_SPL_MALLOC_START	0x80208000
++#define CONFIG_SYS_SPL_MALLOC_SIZE	0x100000
++
++/* Since SPL did pll and ddr initialization for us,
++ * we don't need to do it twice.
++ */
++#ifndef CONFIG_SPL_BUILD
++#define CONFIG_SKIP_LOWLEVEL_INIT
++#endif
++
++/*
++ * USB configuration
++ */
++#define CONFIG_USB_MUSB_DSPS
++#define CONFIG_ARCH_MISC_INIT
++#define CONFIG_MUSB_GADGET
++#define CONFIG_MUSB_PIO_ONLY
++#define CONFIG_USB_GADGET_DUALSPEED
++#define CONFIG_MUSB_HOST
++#define CONFIG_AM335X_USB0
++#define CONFIG_AM335X_USB0_MODE	MUSB_HOST
++#define CONFIG_AM335X_USB1
++#define CONFIG_AM335X_USB1_MODE MUSB_PERIPHERAL
++
++#ifdef CONFIG_MUSB_HOST
++#define CONFIG_CMD_USB
++#define CONFIG_USB_STORAGE
++#endif
++
++#ifdef CONFIG_MUSB_GADGET
++#define CONFIG_USB_ETHER
++#define CONFIG_USB_ETH_RNDIS
++#endif /* CONFIG_MUSB_GADGET */
++
++/* Unsupported features */
++#undef CONFIG_USE_IRQ
++
++#define CONFIG_CMD_NET
++#define CONFIG_CMD_DHCP
++#define CONFIG_CMD_PING
++#define CONFIG_DRIVER_TI_CPSW
++#define CONFIG_MII
++#define CONFIG_CMD_MII
++#define CONFIG_BOOTP_DEFAULT
++#define CONFIG_BOOTP_DNS
++#define CONFIG_BOOTP_DNS2
++#define CONFIG_BOOTP_SEND_HOSTNAME
++#define CONFIG_BOOTP_GATEWAY
++#define CONFIG_BOOTP_SUBNETMASK
++#define CONFIG_NET_RETRY_COUNT         10
++#define CONFIG_NET_MULTI
++#define CONFIG_PHY_GIGE
++#define CONFIG_PHYLIB
++#define CONFIG_PHY_SMSC
++
++#define CONFIG_NAND
++/* NAND support */
++#ifdef CONFIG_NAND
++#define CONFIG_CMD_NAND
++#define CONFIG_NAND_OMAP_GPMC
++#define GPMC_NAND_ECC_LP_x16_LAYOUT	1
++#define CONFIG_SYS_NAND_BASE		(0x08000000)	/* physical address */
++							/* to access nand at */
++							/* CS0 */
++#define CONFIG_SYS_MAX_NAND_DEVICE	1		/* Max number of NAND
++							   devices */
++#undef CONFIG_ENV_IS_NOWHERE
++#define CONFIG_ENV_IS_IN_NAND
++#define CONFIG_ENV_OFFSET		0x260000 /* environment starts here */
++#define CONFIG_SYS_ENV_SECT_SIZE	(128 << 10)	/* 128 KiB */
++#endif
++
++#undef CONFIG_USB_ETHER
++
++#endif	/* ! __CONFIG_STREAM800_H */
+-- 
+2.7.4
+

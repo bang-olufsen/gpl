@@ -1,0 +1,53 @@
+From 71f3787731130603f8e692fa28247da1ceb62bcf Mon Sep 17 00:00:00 2001
+From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Date: Mon, 31 Jul 2017 18:06:02 +0300
+Subject: [PATCH] core: Fallback to LE if BR/EDR connection fails with
+ EHOSTDOWN
+
+This might mean BR/EDR bearer is currently offline but LE be online
+thus this retry connecting of LE.
+---
+ src/device.c | 18 ++++++++++++++++--
+ 1 file changed, 16 insertions(+), 2 deletions(-)
+
+diff --git a/src/device.c b/src/device.c
+index 3702ad2..cc0bc7a 100644
+--- a/src/device.c
++++ b/src/device.c
+@@ -1651,10 +1651,17 @@ done:
+ 
+ 	l = find_service_with_state(dev->services, BTD_SERVICE_STATE_CONNECTED);
+ 
+-	if (err && l == NULL)
++	if (err && l == NULL) {
++		/* Fallback to LE bearer if supported */
++		if (err == -EHOSTDOWN && dev->le && !dev->le_state.connected) {
++			err = device_connect_le(dev);
++			if (err == 0)
++				return;
++		}
++
+ 		g_dbus_send_message(dbus_conn,
+ 				btd_error_failed(dev->connect, strerror(-err)));
+-	else {
++	} else {
+ 		/* Start passive SDP discovery to update known services */
+ 		if (dev->bredr && !dev->svc_refreshed)
+ 			device_browse_sdp(dev, NULL);
+@@ -2306,6 +2313,13 @@ static void browse_request_complete(struct browse_req *req, uint8_t bdaddr_type,
+ 	}
+ 
+ 	if (err) {
++		/* Fallback to LE bearer if supported */
++		if (err == -EHOSTDOWN && bdaddr_type == BDADDR_BREDR &&
++				dev->le && !dev->le_state.connected) {
++			err = device_connect_le(dev);
++			if (err == 0)
++				goto done;
++		}
+ 		reply = btd_error_failed(req->msg, strerror(-err));
+ 		goto done;
+ 	}
+-- 
+2.7.4
+

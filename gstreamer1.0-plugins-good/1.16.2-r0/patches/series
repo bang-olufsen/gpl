@@ -1,0 +1,8 @@
+0001-introspection.m4-prefix-pkgconfig-paths-with-PKG_CON.patch -p1
+0001-GstSoupHttpSrc-Turn-off-strict-SSL-HTTP-mode.patch -p1
+0002-GstFlacDec-Allow-byte-to-time-conversion-in-base-cla.patch -p1
+0003-GstFlacParse-Fix-flac-seeking-to-0-position.patch -p1
+0004-GstIcyDemux-Use-empty-stream-titles.patch -p1
+0005-GstRtpMp4aDepay-Add-mpegv2-depay-implementation.patch -p1
+0006-GstRtpJitterBuffer-check-pt.patch -p1
+gtk-doc-tweaks.patch -p1

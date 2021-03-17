@@ -1,0 +1,45 @@
+From c71a5233f11c266108595d59ab7d2917b1546429 Mon Sep 17 00:00:00 2001
+From: Johan Hedberg <johan.hedberg@intel.com>
+Date: Mon, 2 Nov 2015 14:39:17 +0200
+Subject: [PATCH] Bluetooth: L2CAP: Add missing checks for invalid LE DCID
+
+When receiving a connect response we should make sure that the DCID is
+within the valid range and that we don't already have another channel
+allocated for the same DCID.
+
+Signed-off-by: Johan Hedberg <johan.hedberg@intel.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+---
+ net/bluetooth/l2cap_core.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
+index 6f0800b..3232cc2 100644
+--- a/net/bluetooth/l2cap_core.c
++++ b/net/bluetooth/l2cap_core.c
+@@ -5257,7 +5257,9 @@ static int l2cap_le_connect_rsp(struct l2cap_conn *conn,
+ 	credits = __le16_to_cpu(rsp->credits);
+ 	result  = __le16_to_cpu(rsp->result);
+ 
+-	if (result == L2CAP_CR_SUCCESS && (mtu < 23 || mps < 23))
++	if (result == L2CAP_CR_SUCCESS && (mtu < 23 || mps < 23 ||
++					   dcid < L2CAP_CID_DYN_START ||
++					   dcid > L2CAP_CID_LE_DYN_END))
+ 		return -EPROTO;
+ 
+ 	BT_DBG("dcid 0x%4.4x mtu %u mps %u credits %u result 0x%2.2x",
+@@ -5277,6 +5279,11 @@ static int l2cap_le_connect_rsp(struct l2cap_conn *conn,
+ 
+ 	switch (result) {
+ 	case L2CAP_CR_SUCCESS:
++		if (__l2cap_get_chan_by_dcid(conn, dcid)) {
++			err = -EBADSLT;
++			break;
++		}
++
+ 		chan->ident = 0;
+ 		chan->dcid = dcid;
+ 		chan->omtu = mtu;
+-- 
+2.7.4
+

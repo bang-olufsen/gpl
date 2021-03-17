@@ -1,0 +1,95 @@
+From cee54d364972766b7fcb9cbb4f436cb488a3a805 Mon Sep 17 00:00:00 2001
+From: Simon Glass <sjg@chromium.org>
+Date: Thu, 24 Apr 2014 09:23:01 +0200
+Subject: [PATCH] fdt: Add DEV_TREE_BIN option to specify a device tree binary
+
+In some cases, an externally-built device tree binary is required to be
+attached to U-Boot. An example is when using image signing, since in that
+case the .dtb file must include the public keys.
+
+Add a DEV_TREE_BIN option to the Makefile, and update the documentation.
+
+Usage is something like:
+
+        make DEV_TREE_BIN=boot/am335x-boneblack-pubkey.dtb
+
+Signed-off-by: Simon Glass <sjg@chromium.org>
+---
+ Makefile               |  2 +-
+ doc/README.fdt-control | 16 ++++++++++++++--
+ dts/Makefile           |  4 ++++
+ 3 files changed, 19 insertions(+), 3 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index 580c0fe..a07d4b6 100644
+--- a/Makefile
++++ b/Makefile
+@@ -814,7 +814,7 @@ MKIMAGEFLAGS_u-boot.kwb = -n $(srctree)/$(CONFIG_SYS_KWD_CONFIG:"%"=%) \
+ MKIMAGEFLAGS_u-boot.pbl = -n $(srctree)/$(CONFIG_SYS_FSL_PBL_RCW:"%"=%) \
+ 		-R $(srctree)/$(CONFIG_SYS_FSL_PBL_PBI:"%"=%) -T pblimage
+ 
+-u-boot.img u-boot.kwb u-boot.pbl: u-boot.bin FORCE
++u-boot.img u-boot.kwb u-boot.pbl: u-boot$(if $(CONFIG_OF_SEPARATE),-dtb,).bin FORCE
+ 	$(call if_changed,mkimage)
+ 	ln -sf tools/env/fw_printenv_host fw_printenv
+ 	./fw_printenv -d > $(obj)/u-boot-env.txt
+diff --git a/doc/README.fdt-control b/doc/README.fdt-control
+index 86bae68..8a4aa7a 100644
+--- a/doc/README.fdt-control
++++ b/doc/README.fdt-control
+@@ -122,7 +122,8 @@ This should include your CPU or SOC's device tree file, placed in
+ arch/<arch>/dts, and then make any adjustments required.
+ 
+ If CONFIG_OF_EMBED is defined, then it will be picked up and built into
+-the U-Boot image (including u-boot.bin).
++the U-Boot image (including u-boot.bin). This is suitable for debugging
++and development only and is not recommended for production devices.
+ 
+ If CONFIG_OF_SEPARATE is defined, then it will be built and placed in
+ a u-boot.dtb file alongside u-boot.bin. A common approach is then to
+@@ -130,7 +131,10 @@ join the two:
+ 
+ 	cat u-boot.bin u-boot.dtb >image.bin
+ 
+-and then flash image.bin onto your board.
++and then flash image.bin onto your board. Note that U-Boot creates
++u-boot-dtb.bin which does the above step for you also. If you are using
++CONFIG_SPL_FRAMEWORK, then u-boot.img will be built to include the device
++tree binary.
+ 
+ If CONFIG_OF_HOSTFILE is defined, then it will be read from a file on
+ startup. This is only useful for sandbox. Use the -d flag to U-Boot to
+@@ -138,6 +142,14 @@ specify the file to read.
+ 
+ You cannot use more than one of these options at the same time.
+ 
++To use a device tree file that you have compiled yourself, pass
++DEV_TREE_BIN=<filename> to 'make', as in:
++
++	make DEV_TREE_BIN=boot/am335x-boneblack-pubkey.dtb
++
++Then U-Boot will copy that file to u-boot.dtb, put it in the .img file
++if used, and u-boot-dtb.bin.
++
+ If you wish to put the fdt at a different address in memory, you can
+ define the "fdtcontroladdr" environment variable. This is the hex
+ address of the fdt binary blob, and will override either of the options.
+diff --git a/dts/Makefile b/dts/Makefile
+index e59550c..8bb5212 100644
+--- a/dts/Makefile
++++ b/dts/Makefile
+@@ -12,7 +12,11 @@ ifeq ($(DEVICE_TREE),)
+ DEVICE_TREE := unset
+ endif
+ 
++ifneq ($(DEV_TREE_BIN),)
++DTB := $(DEV_TREE_BIN)
++else
+ DTB := arch/$(ARCH)/dts/$(DEVICE_TREE).dtb
++endif
+ 
+ quiet_cmd_copy = COPY    $@
+       cmd_copy = cp $< $@
+-- 
+2.7.4
+

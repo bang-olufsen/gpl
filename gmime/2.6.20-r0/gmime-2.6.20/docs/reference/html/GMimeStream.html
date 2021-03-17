@@ -1,0 +1,634 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GMimeStream</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="GMime 2.6 Reference Manual">
+<link rel="up" href="Streams.html" title="Streams">
+<link rel="prev" href="Streams.html" title="Streams">
+<link rel="next" href="GMimeStreamFile.html" title="GMimeStreamFile">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="Streams.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="Streams.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">GMime 2.6 Reference Manual</th>
+<td><a accesskey="n" href="GMimeStreamFile.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#GMimeStream.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#GMimeStream.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#GMimeStream.object-hierarchy" class="shortcut">Object Hierarchy</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="GMimeStream"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="GMimeStream.top_of_page"></a>GMimeStream</span></h2>
+<p>GMimeStream — Abstract stream class</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="GMimeStream.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">enum                <a class="link" href="GMimeStream.html#GMimeSeekWhence" title="enum GMimeSeekWhence">GMimeSeekWhence</a>;
+                    <a class="link" href="GMimeStream.html#GMimeStreamIOVector" title="GMimeStreamIOVector">GMimeStreamIOVector</a>;
+struct              <a class="link" href="GMimeStream.html#GMimeStream-struct" title="struct GMimeStream">GMimeStream</a>;
+<span class="returnvalue">void</span>                <a class="link" href="GMimeStream.html#g-mime-stream-construct" title="g_mime_stream_construct ()">g_mime_stream_construct</a>             (<em class="parameter"><code><a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a> *stream</code></em>,
+                                                         <em class="parameter"><code><span class="type">gint64</span> start</code></em>,
+                                                         <em class="parameter"><code><span class="type">gint64</span> end</code></em>);
+<span class="returnvalue">ssize_t</span>             <a class="link" href="GMimeStream.html#g-mime-stream-read" title="g_mime_stream_read ()">g_mime_stream_read</a>                  (<em class="parameter"><code><a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a> *stream</code></em>,
+                                                         <em class="parameter"><code><span class="type">char</span> *buf</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> len</code></em>);
+<span class="returnvalue">ssize_t</span>             <a class="link" href="GMimeStream.html#g-mime-stream-write" title="g_mime_stream_write ()">g_mime_stream_write</a>                 (<em class="parameter"><code><a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a> *stream</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *buf</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> len</code></em>);
+<span class="returnvalue">int</span>                 <a class="link" href="GMimeStream.html#g-mime-stream-flush" title="g_mime_stream_flush ()">g_mime_stream_flush</a>                 (<em class="parameter"><code><a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a> *stream</code></em>);
+<span class="returnvalue">gint64</span>              <a class="link" href="GMimeStream.html#g-mime-stream-seek" title="g_mime_stream_seek ()">g_mime_stream_seek</a>                  (<em class="parameter"><code><a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a> *stream</code></em>,
+                                                         <em class="parameter"><code><span class="type">gint64</span> offset</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeStream.html#GMimeSeekWhence" title="enum GMimeSeekWhence"><span class="type">GMimeSeekWhence</span></a> whence</code></em>);
+<span class="returnvalue">gint64</span>              <a class="link" href="GMimeStream.html#g-mime-stream-tell" title="g_mime_stream_tell ()">g_mime_stream_tell</a>                  (<em class="parameter"><code><a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a> *stream</code></em>);
+<span class="returnvalue">int</span>                 <a class="link" href="GMimeStream.html#g-mime-stream-reset" title="g_mime_stream_reset ()">g_mime_stream_reset</a>                 (<em class="parameter"><code><a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a> *stream</code></em>);
+<span class="returnvalue">gboolean</span>            <a class="link" href="GMimeStream.html#g-mime-stream-eos" title="g_mime_stream_eos ()">g_mime_stream_eos</a>                   (<em class="parameter"><code><a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a> *stream</code></em>);
+<span class="returnvalue">int</span>                 <a class="link" href="GMimeStream.html#g-mime-stream-close" title="g_mime_stream_close ()">g_mime_stream_close</a>                 (<em class="parameter"><code><a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a> *stream</code></em>);
+<span class="returnvalue">gint64</span>              <a class="link" href="GMimeStream.html#g-mime-stream-length" title="g_mime_stream_length ()">g_mime_stream_length</a>                (<em class="parameter"><code><a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a> *stream</code></em>);
+<a class="link" href="GMimeStream.html" title="GMimeStream"><span class="returnvalue">GMimeStream</span></a> *       <a class="link" href="GMimeStream.html#g-mime-stream-substream" title="g_mime_stream_substream ()">g_mime_stream_substream</a>             (<em class="parameter"><code><a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a> *stream</code></em>,
+                                                         <em class="parameter"><code><span class="type">gint64</span> start</code></em>,
+                                                         <em class="parameter"><code><span class="type">gint64</span> end</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimeStream.html#g-mime-stream-set-bounds" title="g_mime_stream_set_bounds ()">g_mime_stream_set_bounds</a>            (<em class="parameter"><code><a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a> *stream</code></em>,
+                                                         <em class="parameter"><code><span class="type">gint64</span> start</code></em>,
+                                                         <em class="parameter"><code><span class="type">gint64</span> end</code></em>);
+<span class="returnvalue">ssize_t</span>             <a class="link" href="GMimeStream.html#g-mime-stream-write-string" title="g_mime_stream_write_string ()">g_mime_stream_write_string</a>          (<em class="parameter"><code><a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a> *stream</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *str</code></em>);
+<span class="returnvalue">ssize_t</span>             <a class="link" href="GMimeStream.html#g-mime-stream-printf" title="g_mime_stream_printf ()">g_mime_stream_printf</a>                (<em class="parameter"><code><a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a> *stream</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *fmt</code></em>,
+                                                         <em class="parameter"><code>...</code></em>);
+<span class="returnvalue">ssize_t</span>             <a class="link" href="GMimeStream.html#g-mime-stream-write-to-stream" title="g_mime_stream_write_to_stream ()">g_mime_stream_write_to_stream</a>       (<em class="parameter"><code><a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a> *src</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a> *dest</code></em>);
+<span class="returnvalue">ssize_t</span>             <a class="link" href="GMimeStream.html#g-mime-stream-writev" title="g_mime_stream_writev ()">g_mime_stream_writev</a>                (<em class="parameter"><code><a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a> *stream</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeStream.html#GMimeStreamIOVector" title="GMimeStreamIOVector"><span class="type">GMimeStreamIOVector</span></a> *vector</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> count</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="GMimeStream.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  GObject
+   +----GMimeStream
+         +----<a class="link" href="GMimeStreamBuffer.html" title="GMimeStreamBuffer">GMimeStreamBuffer</a>
+         +----<a class="link" href="GMimeStreamCat.html" title="GMimeStreamCat">GMimeStreamCat</a>
+         +----<a class="link" href="GMimeStreamFile.html" title="GMimeStreamFile">GMimeStreamFile</a>
+         +----<a class="link" href="GMimeStreamFilter.html" title="GMimeStreamFilter">GMimeStreamFilter</a>
+         +----<a class="link" href="GMimeStreamFs.html" title="GMimeStreamFs">GMimeStreamFs</a>
+         +----<a class="link" href="GMimeStreamMem.html" title="GMimeStreamMem">GMimeStreamMem</a>
+         +----<a class="link" href="GMimeStreamMmap.html" title="GMimeStreamMmap">GMimeStreamMmap</a>
+         +----<a class="link" href="GMimeStreamNull.html" title="GMimeStreamNull">GMimeStreamNull</a>
+         +----<a class="link" href="GMimeStreamPipe.html" title="GMimeStreamPipe">GMimeStreamPipe</a>
+</pre>
+</div>
+<div class="refsect1">
+<a name="GMimeStream.description"></a><h2>Description</h2>
+<p>
+Streams are the fundamental method for reading and writing data
+used by GMime. You'll probably notice that the basic API is similar
+to that of the low-level Unix I/O layer (<code class="function">read()</code>, <code class="function">write()</code>, <code class="function">lseek()</code>,
+etc) with some additional nicities such as a printf-like function.
+</p>
+</div>
+<div class="refsect1">
+<a name="GMimeStream.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="GMimeSeekWhence"></a><h3>enum GMimeSeekWhence</h3>
+<pre class="programlisting">typedef enum {
+	GMIME_STREAM_SEEK_SET = SEEK_SET,
+	GMIME_STREAM_SEEK_CUR = SEEK_CUR,
+	GMIME_STREAM_SEEK_END = SEEK_END
+} GMimeSeekWhence;
+</pre>
+<p>
+Relative seek position.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><a name="GMIME-STREAM-SEEK-SET:CAPS"></a><span class="term"><code class="literal">GMIME_STREAM_SEEK_SET</code></span></p></td>
+<td>Seek relative to the beginning of the stream.
+</td>
+</tr>
+<tr>
+<td><p><a name="GMIME-STREAM-SEEK-CUR:CAPS"></a><span class="term"><code class="literal">GMIME_STREAM_SEEK_CUR</code></span></p></td>
+<td>Seek relative to the current position in the stream.
+</td>
+</tr>
+<tr>
+<td><p><a name="GMIME-STREAM-SEEK-END:CAPS"></a><span class="term"><code class="literal">GMIME_STREAM_SEEK_END</code></span></p></td>
+<td>Seek relative to the end of the stream.
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GMimeStreamIOVector"></a><h3>GMimeStreamIOVector</h3>
+<pre class="programlisting">typedef struct {
+	void *data;
+	size_t len;
+} GMimeStreamIOVector;
+</pre>
+<p>
+An I/O vector for use with <a class="link" href="GMimeStream.html#g-mime-stream-writev" title="g_mime_stream_writev ()"><code class="function">g_mime_stream_writev()</code></a>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><span class="type">void</span> *<em class="structfield"><code><a name="GMimeStreamIOVector.data"></a>data</code></em>;</span></p></td>
+<td>data to pass to the I/O function.</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">size_t</span> <em class="structfield"><code><a name="GMimeStreamIOVector.len"></a>len</code></em>;</span></p></td>
+<td>length of the data, in bytes.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GMimeStream-struct"></a><h3>struct GMimeStream</h3>
+<pre class="programlisting">struct GMimeStream;</pre>
+<p>
+Abstract I/O stream class.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-stream-construct"></a><h3>g_mime_stream_construct ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_stream_construct             (<em class="parameter"><code><a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a> *stream</code></em>,
+                                                         <em class="parameter"><code><span class="type">gint64</span> start</code></em>,
+                                                         <em class="parameter"><code><span class="type">gint64</span> end</code></em>);</pre>
+<p>
+Initializes a new stream with bounds <em class="parameter"><code>start</code></em> and <em class="parameter"><code>end</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>stream</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>start</code></em> :</span></p></td>
+<td>start boundary</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>end</code></em> :</span></p></td>
+<td>end boundary</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-stream-read"></a><h3>g_mime_stream_read ()</h3>
+<pre class="programlisting"><span class="returnvalue">ssize_t</span>             g_mime_stream_read                  (<em class="parameter"><code><a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a> *stream</code></em>,
+                                                         <em class="parameter"><code><span class="type">char</span> *buf</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> len</code></em>);</pre>
+<p>
+Attempts to read up to <em class="parameter"><code>len</code></em> bytes from <em class="parameter"><code>stream</code></em> into <em class="parameter"><code>buf</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>stream</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>buf</code></em> :</span></p></td>
+<td>buffer. <span class="annotation">[<a href="http://foldoc.org/array"><span class="acronym">array</span></a> length=len][<a href="http://foldoc.org/element-type"><span class="acronym">element-type</span></a> guint8]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>len</code></em> :</span></p></td>
+<td>buffer length</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the number of bytes read or <code class="literal">-1</code> on fail.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-stream-write"></a><h3>g_mime_stream_write ()</h3>
+<pre class="programlisting"><span class="returnvalue">ssize_t</span>             g_mime_stream_write                 (<em class="parameter"><code><a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a> *stream</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *buf</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> len</code></em>);</pre>
+<p>
+Attempts to write up to <em class="parameter"><code>len</code></em> bytes of <em class="parameter"><code>buf</code></em> to <em class="parameter"><code>stream</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>stream</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>buf</code></em> :</span></p></td>
+<td>buffer</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>len</code></em> :</span></p></td>
+<td>buffer length</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the number of bytes written or <code class="literal">-1</code> on fail.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-stream-flush"></a><h3>g_mime_stream_flush ()</h3>
+<pre class="programlisting"><span class="returnvalue">int</span>                 g_mime_stream_flush                 (<em class="parameter"><code><a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a> *stream</code></em>);</pre>
+<p>
+Sync's the stream to disk.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>stream</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>
+<code class="literal">0</code> on success or <code class="literal">-1</code> on fail.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-stream-seek"></a><h3>g_mime_stream_seek ()</h3>
+<pre class="programlisting"><span class="returnvalue">gint64</span>              g_mime_stream_seek                  (<em class="parameter"><code><a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a> *stream</code></em>,
+                                                         <em class="parameter"><code><span class="type">gint64</span> offset</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeStream.html#GMimeSeekWhence" title="enum GMimeSeekWhence"><span class="type">GMimeSeekWhence</span></a> whence</code></em>);</pre>
+<p>
+Repositions the offset of the stream <em class="parameter"><code>stream</code></em> to
+the argument <em class="parameter"><code>offset</code></em> according to the
+directive <em class="parameter"><code>whence</code></em> as follows:
+</p>
+<p>
+    <a class="link" href="GMimeStream.html#GMIME-STREAM-SEEK-SET:CAPS"><span class="type">GMIME_STREAM_SEEK_SET</span></a>: Seek <em class="parameter"><code>offset</code></em> bytes relative to
+    the beginning (bound_start) of the stream.
+</p>
+<p>
+    <a class="link" href="GMimeStream.html#GMIME-STREAM-SEEK-CUR:CAPS"><span class="type">GMIME_STREAM_SEEK_CUR</span></a>: Seek <em class="parameter"><code>offset</code></em> bytes relative to the
+    current offset of the stream.
+</p>
+<p>
+    <a class="link" href="GMimeStream.html#GMIME-STREAM-SEEK-END:CAPS"><span class="type">GMIME_STREAM_SEEK_END</span></a>: Seek <em class="parameter"><code>offset</code></em> bytes relative to the
+    end of the stream (bound_end if non-negative).
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>stream</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>offset</code></em> :</span></p></td>
+<td>positional offset</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>whence</code></em> :</span></p></td>
+<td>seek directive</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the resultant position on success or <code class="literal">-1</code> on fail.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-stream-tell"></a><h3>g_mime_stream_tell ()</h3>
+<pre class="programlisting"><span class="returnvalue">gint64</span>              g_mime_stream_tell                  (<em class="parameter"><code><a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a> *stream</code></em>);</pre>
+<p>
+Gets the current offset within the stream.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>stream</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the current position within the stream or <code class="literal">-1</code> on fail.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-stream-reset"></a><h3>g_mime_stream_reset ()</h3>
+<pre class="programlisting"><span class="returnvalue">int</span>                 g_mime_stream_reset                 (<em class="parameter"><code><a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a> *stream</code></em>);</pre>
+<p>
+Resets the stream.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>stream</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>
+<code class="literal">0</code> on success or <code class="literal">-1</code> on fail.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-stream-eos"></a><h3>g_mime_stream_eos ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>            g_mime_stream_eos                   (<em class="parameter"><code><a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a> *stream</code></em>);</pre>
+<p>
+Tests the end-of-stream indicator for <em class="parameter"><code>stream</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>stream</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>
+<code class="literal">TRUE</code> on EOS or <code class="literal">FALSE</code> otherwise.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-stream-close"></a><h3>g_mime_stream_close ()</h3>
+<pre class="programlisting"><span class="returnvalue">int</span>                 g_mime_stream_close                 (<em class="parameter"><code><a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a> *stream</code></em>);</pre>
+<p>
+Closes the stream.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>stream</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>
+<code class="literal">0</code> on success or <code class="literal">-1</code> on fail.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-stream-length"></a><h3>g_mime_stream_length ()</h3>
+<pre class="programlisting"><span class="returnvalue">gint64</span>              g_mime_stream_length                (<em class="parameter"><code><a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a> *stream</code></em>);</pre>
+<p>
+Gets the length of the stream.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>stream</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the length of the stream or <code class="literal">-1</code> if unknown.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-stream-substream"></a><h3>g_mime_stream_substream ()</h3>
+<pre class="programlisting"><a class="link" href="GMimeStream.html" title="GMimeStream"><span class="returnvalue">GMimeStream</span></a> *       g_mime_stream_substream             (<em class="parameter"><code><a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a> *stream</code></em>,
+                                                         <em class="parameter"><code><span class="type">gint64</span> start</code></em>,
+                                                         <em class="parameter"><code><span class="type">gint64</span> end</code></em>);</pre>
+<p>
+Creates a new substream of <em class="parameter"><code>stream</code></em> with bounds <em class="parameter"><code>start</code></em> and <em class="parameter"><code>end</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>stream</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>start</code></em> :</span></p></td>
+<td>start boundary</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>end</code></em> :</span></p></td>
+<td>end boundary</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a substream of <em class="parameter"><code>stream</code></em> with bounds <em class="parameter"><code>start</code></em>
+and <em class="parameter"><code>end</code></em>. <span class="annotation">[<a href="http://foldoc.org/transfer%20full"><span class="acronym">transfer full</span></a>]</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-stream-set-bounds"></a><h3>g_mime_stream_set_bounds ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_stream_set_bounds            (<em class="parameter"><code><a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a> *stream</code></em>,
+                                                         <em class="parameter"><code><span class="type">gint64</span> start</code></em>,
+                                                         <em class="parameter"><code><span class="type">gint64</span> end</code></em>);</pre>
+<p>
+Set the bounds on a stream.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>stream</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>start</code></em> :</span></p></td>
+<td>start boundary</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>end</code></em> :</span></p></td>
+<td>end boundary</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-stream-write-string"></a><h3>g_mime_stream_write_string ()</h3>
+<pre class="programlisting"><span class="returnvalue">ssize_t</span>             g_mime_stream_write_string          (<em class="parameter"><code><a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a> *stream</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *str</code></em>);</pre>
+<p>
+Writes <em class="parameter"><code>string</code></em> to <em class="parameter"><code>stream</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>stream</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>str</code></em> :</span></p></td>
+<td>string to write</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the number of bytes written or <code class="literal">-1</code> on fail.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-stream-printf"></a><h3>g_mime_stream_printf ()</h3>
+<pre class="programlisting"><span class="returnvalue">ssize_t</span>             g_mime_stream_printf                (<em class="parameter"><code><a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a> *stream</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *fmt</code></em>,
+                                                         <em class="parameter"><code>...</code></em>);</pre>
+<p>
+Write formatted output to a stream.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>stream</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>fmt</code></em> :</span></p></td>
+<td>format</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the number of bytes written or <code class="literal">-1</code> on fail.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-stream-write-to-stream"></a><h3>g_mime_stream_write_to_stream ()</h3>
+<pre class="programlisting"><span class="returnvalue">ssize_t</span>             g_mime_stream_write_to_stream       (<em class="parameter"><code><a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a> *src</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a> *dest</code></em>);</pre>
+<p>
+Attempts to write the source stream to the destination stream.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>src</code></em> :</span></p></td>
+<td>source stream</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>dest</code></em> :</span></p></td>
+<td>destination stream</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the number of bytes written or <code class="literal">-1</code> on fail.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-stream-writev"></a><h3>g_mime_stream_writev ()</h3>
+<pre class="programlisting"><span class="returnvalue">ssize_t</span>             g_mime_stream_writev                (<em class="parameter"><code><a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a> *stream</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeStream.html#GMimeStreamIOVector" title="GMimeStreamIOVector"><span class="type">GMimeStreamIOVector</span></a> *vector</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> count</code></em>);</pre>
+<p>
+Writes at most <em class="parameter"><code>count</code></em> blocks described by <em class="parameter"><code>vector</code></em> to <em class="parameter"><code>stream</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>stream</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>vector</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeStream.html#GMimeStreamIOVector" title="GMimeStreamIOVector"><span class="type">GMimeStreamIOVector</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>count</code></em> :</span></p></td>
+<td>number of vector elements</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the number of bytes written or <code class="literal">-1</code> on fail.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

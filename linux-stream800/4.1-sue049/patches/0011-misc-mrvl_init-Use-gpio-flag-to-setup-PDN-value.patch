@@ -1,0 +1,70 @@
+From 4971ee5629caab6a40153bad1775fa03e69734f9 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@gmail.com>
+Date: Wed, 7 Oct 2015 14:53:23 +0200
+Subject: [PATCH] misc: mrvl_init: Use gpio flag to setup PDN value
+
+In previous version we first call gpio_output(0) and then gpio_output(1).
+This change adds possibility to define first state in devicetree gpio flag
+and reuse that.
+
+Signed-off-by: Marek Belisko <marek.belisko@gmail.com>
+---
+ drivers/misc/mrvl_init.c | 8 ++++++--
+ include/misc/mrvl_init.h | 1 +
+ 2 files changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/misc/mrvl_init.c b/drivers/misc/mrvl_init.c
+index cc83120..6d45efc 100644
+--- a/drivers/misc/mrvl_init.c
++++ b/drivers/misc/mrvl_init.c
+@@ -54,6 +54,7 @@ static int mrvl_init_get_devtree_pdata(struct device *dev,
+ 	}
+ 
+ 	pdata->gpio_nr = gpio;
++	pdata->gpio_flag = flags;
+ 	/* probe() takes care of clock_name == NULL */
+ 	pdata->clock_name = of_get_property(np, "linux,clock-name", NULL);
+ 
+@@ -71,6 +72,7 @@ static int mrvl_init_probe(struct platform_device *pdev)
+ 					pdev->dev.platform_data;
+ 	int ret = 0;
+ 	struct clk *ck_32;
++	int gpio_value = 0;
+ 
+ 	if (pdev->dev.of_node) {
+ 		struct mrvl_init_platform_data *dtpdata =
+@@ -102,7 +104,9 @@ static int mrvl_init_probe(struct platform_device *pdev)
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	gpio_direction_output(pdata->gpio_nr, 0);
++	gpio_value = pdata->gpio_flag;
++
++	gpio_direction_output(pdata->gpio_nr, gpio_value);
+ 
+ 	ck_32 = clk_get(NULL, pdata->clock_name);
+         if (IS_ERR(ck_32)) {
+@@ -122,7 +126,7 @@ static int mrvl_init_probe(struct platform_device *pdev)
+ 
+ 	/* reset chip */
+ 	udelay(2000);
+-	gpio_set_value(pdata->gpio_nr, 1);
++	gpio_set_value(pdata->gpio_nr, !gpio_value);
+ 
+ 	dev_info(&pdev->dev, "Marvel init probed\n");
+ 	return 0;
+diff --git a/include/misc/mrvl_init.h b/include/misc/mrvl_init.h
+index 3a34f82..8faaaf9 100644
+--- a/include/misc/mrvl_init.h
++++ b/include/misc/mrvl_init.h
+@@ -16,6 +16,7 @@
+ 
+ struct mrvl_init_platform_data {
+ 	int		gpio_nr;
++	int		gpio_flag;
+ 	const char	*clock_name;
+ };
+ 
+-- 
+1.9.1
+

@@ -1,0 +1,139 @@
+From a8320f6795d6f6142bb19d9ad0d0573ae52f172c Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Thu, 28 Jul 2016 16:03:20 +0200
+Subject: [PATCH] Implement wait_for_avail_min (wait on poll descriptors)
+
+We are using /dev/null fd which is always ready for writing. That's why
+we do artificial sleep in poll_revents function when buffer is full.
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+
+%% original patch: 0009-Implement-wait_for_avail_min-wait-on-poll-descriptor.patch
+---
+ src/pcm/pcm_switch.c | 47 ++++++++++++++++++++++++++++++++++++++++-------
+ 1 file changed, 40 insertions(+), 7 deletions(-)
+
+diff --git a/src/pcm/pcm_switch.c b/src/pcm/pcm_switch.c
+index 3a1f54b..c8c0f41 100644
+--- a/src/pcm/pcm_switch.c
++++ b/src/pcm/pcm_switch.c
+@@ -62,6 +62,7 @@ typedef struct {
+ 	snd_pcm_chmap_query_t **chmap;
+ 	struct timespec clock;
+ 	unsigned clock_diff_usec;
++	int poll_fd;
+ } snd_pcm_switch_t;
+ #endif
+ 
+@@ -124,6 +125,8 @@ inline void switch_free(snd_pcm_switch_t *swtch)
+ 		snd_config_delete(swtch->conf);
+ 	if (swtch->root)
+ 		snd_config_delete(swtch->root);
++	if (swtch->poll_fd)
++		close(swtch->poll_fd);
+ 	free(swtch);
+ }
+ 
+@@ -1046,7 +1049,7 @@ static int snd_pcm_switch_may_wait_for_avail_min(snd_pcm_t *pcm, snd_pcm_uframes
+ 		return snd_pcm_generic_may_wait_for_avail_min(pcm, avail);
+ 	}
+ 	else {
+-		return 0;
++		return avail >= pcm->avail_min ? 0 : 1;
+ 	}
+ }
+ 
+@@ -1059,7 +1062,7 @@ int snd_pcm_switch_poll_descriptors_count(snd_pcm_t *pcm)
+ 		return snd_pcm_generic_poll_descriptors_count(pcm);
+ 	}
+ 	else {
+-		return 0;
++		return 1;
+ 	}
+ }
+ 
+@@ -1072,13 +1075,18 @@ static int snd_pcm_switch_poll_descriptors(snd_pcm_t *pcm, struct pollfd *pfds,
+ 		return snd_pcm_generic_poll_descriptors(pcm, pfds, space);
+ 	}
+ 	else {
+-		return 0;
++		if (space < 1)
++			return -ENOMEM;
++		pfds[0].fd = swtch->poll_fd;
++		pfds[0].events = POLLOUT | POLLERR | POLLNVAL;
++		return 1;
+ 	}
+ }
+ 
+ static int snd_pcm_switch_poll_revents(snd_pcm_t *pcm, struct pollfd *pfds, unsigned int nfds, unsigned short *revents)
+ {
+ 	snd_pcm_switch_t *swtch = pcm->private_data;
++	unsigned short events;
+ 
+ 	if (swtch->gen.slave) {
+ 		TRACE("copy");
+@@ -1086,11 +1094,28 @@ static int snd_pcm_switch_poll_revents(snd_pcm_t *pcm, struct pollfd *pfds, unsi
+ 	}
+ 	else {
+ 		TRACE("null");
+-		if (nfds == 1) {
+-			*revents = pfds->revents;
+-			return 0;
++		if (nfds != 1 || pfds[0].fd != swtch->poll_fd )
++			return -EINVAL;
++
++		events = pfds[0].revents;
++		update_softvare_clock(pcm);
++		if (snd_pcm_mmap_avail(pcm) > pcm->avail_min)
++			events |= POLLOUT;
++		else {
++			/* We must wait some time because /dev/null fd is always "write ready"
++			 * and this causes forever loop when alsa buffer is full.
++			 */
++			usleep(((__useconds_t)(pcm->avail_min - snd_pcm_mmap_avail(pcm)) * (1000000 / pcm->rate)));
++
++			update_softvare_clock(pcm);
++			if (snd_pcm_mmap_avail(pcm) > pcm->avail_min)
++				events |= POLLOUT;
++			else
++				events &= ~POLLOUT;
+ 		}
+-		return -EINVAL;
++
++		*revents = events;
++		return 0;
+ 	}
+ }
+ 
+@@ -1285,6 +1310,7 @@ int snd_pcm_switch_open(snd_pcm_t **pcmp, const char *name,
+ 	DEBUG("");
+ 	snd_pcm_t *pcm;
+ 	snd_pcm_switch_t *swtch;
++	int fd;
+ 	int err;
+ 
+ 	assert(pcmp);
+@@ -1295,6 +1321,12 @@ int snd_pcm_switch_open(snd_pcm_t **pcmp, const char *name,
+ 		return -EINVAL;
+ 	}
+ 
++	fd = open("/dev/null", O_WRONLY);
++	if (fd < 0) {
++		SYSERR("Cannot open /dev/null");
++		return -errno;
++	}
++
+ 	swtch = calloc(1, sizeof(snd_pcm_switch_t));
+ 	if (!swtch) {
+ 		return -ENOMEM;
+@@ -1305,6 +1337,7 @@ int snd_pcm_switch_open(snd_pcm_t **pcmp, const char *name,
+ 	swtch->cchannels = cchannels;
+ 	swtch->gen.slave = slave;
+ 	swtch->gen.close_slave = close_slave;
++	swtch->poll_fd = fd;
+ 
+ 	err = snd_pcm_new(&pcm, SND_PCM_TYPE_SWITCH, name,
+ 	                  slave->stream, slave->mode);
+-- 
+2.7.4
+

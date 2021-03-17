@@ -1,0 +1,81 @@
+From bb19e2e9fa92df7742b1353c8e87f0b13f66c1e1 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Thu, 24 Apr 2014 09:45:18 +0200
+Subject: [PATCH] ase: Enable CONFIG_OF_CONTROL
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ arch/arm/dts/Makefile             |  3 ++-
+ arch/arm/dts/am33xx-beo-ase-0.dts | 29 +++++++++++++++++++++++++++++
+ include/configs/stream800.h       |  5 +++++
+ 3 files changed, 36 insertions(+), 1 deletion(-)
+ create mode 100644 arch/arm/dts/am33xx-beo-ase-0.dts
+
+diff --git a/arch/arm/dts/Makefile b/arch/arm/dts/Makefile
+index da68a4f..86cdd42 100644
+--- a/arch/arm/dts/Makefile
++++ b/arch/arm/dts/Makefile
+@@ -30,7 +30,8 @@ dtb-$(CONFIG_ZYNQ) += zynq-zc702.dtb \
+ 	zynq-zc770-xm010.dtb \
+ 	zynq-zc770-xm012.dtb \
+ 	zynq-zc770-xm013.dtb
+-dtb-$(CONFIG_AM33XX) += am335x-boneblack.dtb
++dtb-$(CONFIG_AM33XX) += am335x-boneblack.dtb \
++			am33xx-beo-ase-0.dtb
+ 
+ targets += $(dtb-y)
+ 
+diff --git a/arch/arm/dts/am33xx-beo-ase-0.dts b/arch/arm/dts/am33xx-beo-ase-0.dts
+new file mode 100644
+index 0000000..c4ed1c8
+--- /dev/null
++++ b/arch/arm/dts/am33xx-beo-ase-0.dts
+@@ -0,0 +1,29 @@
++/*
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++/dts-v1/;
++
++#include "am33xx.dtsi"
++
++/ {
++	model = "Bang&Olufsen ASE (AM33xx)";
++	compatible = "ti,am335x-beo-hh1", "ti,am33xx";
++
++	chosen {
++		bootargs = "console=ttyO0,115200n8";
++	};
++
++	memory {
++		device_type = "memory";
++		reg = <0x80000000 0x10000000>; /* 256 MB */
++	};
++
++	ocp {
++		uart0: serial@44e09000 {
++			status = "okay";
++		};
++	};
++};
+diff --git a/include/configs/stream800.h b/include/configs/stream800.h
+index 4ca429b..0684e5c 100644
+--- a/include/configs/stream800.h
++++ b/include/configs/stream800.h
+@@ -54,6 +54,11 @@
+ 
+ #ifdef CONFIG_SPL_BUILD
+ #define CONFIG_PANIC_HANG		/* Do halt instead of reseting when calling 'panic' for SPL build */
++#else
++/* enable devicetree */
++#define CONFIG_OF_CONTROL
++#define CONFIG_OF_SEPARATE
++#define CONFIG_DEFAULT_DEVICE_TREE am33xx-beo-ase-0
+ #endif
+ 
+ /* commands to include */
+-- 
+2.7.4
+

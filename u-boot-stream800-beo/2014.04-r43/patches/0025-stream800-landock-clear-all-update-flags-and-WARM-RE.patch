@@ -1,0 +1,48 @@
+From 372df5d1f77105671c5cbbaedca35e18765bb707 Mon Sep 17 00:00:00 2001
+From: Matus Ujhelyi <matus.ujhelyi@streamunlimited.com>
+Date: Fri, 8 Mar 2013 08:14:38 +0100
+Subject: [PATCH] stream800: landock: clear all update flags and WARM-RESET
+ flag
+
+Signed-off-by: Martin Flaska <martin.flaska@streamunlimited.com>
+Signed-off-by: Matus Ujhelyi <matus.ujhelyi@streamunlimited.com>
+---
+ board/streamunlimited/stream800/board-lan_dock_board.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
+
+diff --git a/board/streamunlimited/stream800/board-lan_dock_board.c b/board/streamunlimited/stream800/board-lan_dock_board.c
+index 78c27a2..0f87b96 100644
+--- a/board/streamunlimited/stream800/board-lan_dock_board.c
++++ b/board/streamunlimited/stream800/board-lan_dock_board.c
+@@ -30,6 +30,8 @@
+ #include <asm-generic/gpio.h>
+ #include <asm/arch/mux.h>
+ 
++#include "fwupdate.h"
++
+ static struct ctrl_dev *cdev = (struct ctrl_dev *)CTRL_DEVICE_BASE;
+ 
+ /* LED 1 : LAN status (active in low) */
+@@ -105,6 +107,19 @@ void lan_dock__init(const struct Stream800Board *board)
+ 	if (gpio_request(RESET_BUTTON_STATUS_GPIO, "Reset status"))
+ 		printf("error: cannot request GPIO %d\n", RESET_BUTTON_STATUS_GPIO);
+ 	gpio_direction_input(RESET_BUTTON_STATUS_GPIO);
++
++	/* Clear all update flags when the device is restarted by the reset button */
++	if (readl(PRM_RSTST) & PRM_RSTST_EXTERNAL_WARM_RST) {
++		puts("External reset detected, clearing all FW update flags and boot counter ...\n");
++		fwupdate_setBootCount(0);
++		fwupdate_setUpdateFlag(0);
++		fwupdate_setFailFlag(0);
++
++		/* Clear external warm reset flag.
++		 * (after reset during FW update we sometime detect unwanted external warm reset)
++		 */
++		writel(PRM_RSTST_EXTERNAL_WARM_RST, PRM_RSTST);
++	}
+ }
+ 
+ void lan_dock__late_init(const struct Stream800Board *board)
+-- 
+2.7.4
+

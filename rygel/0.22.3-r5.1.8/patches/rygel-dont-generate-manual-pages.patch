@@ -1,0 +1,23 @@
+From aa78e4ef234d13f8da1946ada83bad85e986c5b2 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Fri, 6 Mar 2020 16:27:57 +0100
+Subject: [PATCH] oe-rygel: Don't generate manual pages
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ Makefile.am | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Makefile.am b/Makefile.am
+index 175f9da..3fdff48 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -1,4 +1,4 @@
+-SUBDIRS = src data tests po doc examples
++SUBDIRS = src data tests po examples
+ 
+ pkgconfig_DATA= rygel-core-2.2.pc rygel-renderer-2.2.pc rygel-server-2.2.pc
+ pkgconfigdir = $(libdir)/pkgconfig
+-- 
+2.7.4
+

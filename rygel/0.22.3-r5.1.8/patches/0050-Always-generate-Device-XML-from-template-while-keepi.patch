@@ -1,0 +1,548 @@
+From d7e22ba987bae6e1ff9784b5a6c533f27f23c843 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Wed, 6 May 2015 16:08:26 +0200
+Subject: [PATCH] Always generate Device XML from template while keeping same
+ UDN
+
+Rygel will try to get UDN from already generated XML. If it fails then
+will generate new UDN.
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ src/librygel-core/rygel-root-device-factory.c    | 340 +++++++++++------------
+ src/librygel-core/rygel-root-device-factory.vala |  34 +--
+ 2 files changed, 176 insertions(+), 198 deletions(-)
+
+diff --git a/src/librygel-core/rygel-root-device-factory.c b/src/librygel-core/rygel-root-device-factory.c
+index 47db48f..d1fa9f6 100644
+--- a/src/librygel-core/rygel-root-device-factory.c
++++ b/src/librygel-core/rygel-root-device-factory.c
+@@ -250,7 +250,6 @@ GUPnPContext* rygel_root_device_factory_get_context (RygelRootDeviceFactory* sel
+ RygelRootDevice* rygel_root_device_new (GUPnPContext* context, RygelPlugin* plugin, GUPnPXMLDoc* description_doc, const gchar* description_path, const gchar* description_dir);
+ RygelRootDevice* rygel_root_device_construct (GType object_type, GUPnPContext* context, RygelPlugin* plugin, GUPnPXMLDoc* description_doc, const gchar* description_path, const gchar* description_dir);
+ void rygel_plugin_apply_hacks (RygelPlugin* self, RygelRootDevice* device, const gchar* description_path, GError** error);
+-static GUPnPXMLDoc* rygel_root_device_factory_get_latest_doc (RygelRootDeviceFactory* self, const gchar* path1, const gchar* path2, GError** error);
+ GType rygel_description_file_get_type (void) G_GNUC_CONST;
+ RygelDescriptionFile* rygel_description_file_new_from_xml_document (GUPnPXMLDoc* doc);
+ RygelDescriptionFile* rygel_description_file_construct_from_xml_document (GType object_type, GUPnPXMLDoc* doc);
+@@ -263,9 +262,10 @@ void rygel_description_file_set_dlna_caps (RygelDescriptionFile* self, RygelPlug
+ RygelPluginCapabilities rygel_plugin_get_capabilities (RygelPlugin* self);
+ const gchar* rygel_plugin_get_description (RygelPlugin* self);
+ void rygel_description_file_set_model_description (RygelDescriptionFile* self, const gchar* model_description);
+-gchar* rygel_description_file_get_udn (RygelDescriptionFile* self);
++static gchar* rygel_root_device_factory_get_udn_from_file (RygelRootDeviceFactory* self, const gchar* path, GError** error);
+ void rygel_description_file_set_udn (RygelDescriptionFile* self, const gchar* udn);
+ void rygel_description_file_save (RygelDescriptionFile* self, const gchar* path, GError** error);
++gchar* rygel_description_file_get_udn (RygelDescriptionFile* self);
+ gchar* rygel_configuration_get_title (RygelConfiguration* self, const gchar* section, GError** error);
+ const gchar* rygel_plugin_get_title (RygelPlugin* self);
+ void rygel_description_file_clear_service_list (RygelDescriptionFile* self);
+@@ -879,123 +879,187 @@ static GUPnPXMLDoc* rygel_root_device_factory_create_desc (RygelRootDeviceFactor
+ 	GUPnPXMLDoc* result = NULL;
+ 	GUPnPXMLDoc* doc = NULL;
+ 	const gchar* _tmp0_ = NULL;
+-	const gchar* _tmp1_ = NULL;
+-	GUPnPXMLDoc* _tmp2_ = NULL;
++	GUPnPXMLDoc* _tmp1_ = NULL;
+ 	RygelDescriptionFile* file = NULL;
+-	GUPnPXMLDoc* _tmp3_ = NULL;
++	GUPnPXMLDoc* _tmp2_ = NULL;
++	RygelDescriptionFile* _tmp3_ = NULL;
+ 	RygelDescriptionFile* _tmp4_ = NULL;
+-	RygelDescriptionFile* _tmp5_ = NULL;
+-	RygelPlugin* _tmp6_ = NULL;
+-	RygelDescriptionFile* _tmp7_ = NULL;
+-	RygelPlugin* _tmp8_ = NULL;
+-	RygelDescriptionFile* _tmp9_ = NULL;
+-	RygelPlugin* _tmp10_ = NULL;
++	RygelPlugin* _tmp5_ = NULL;
++	RygelDescriptionFile* _tmp6_ = NULL;
++	RygelPlugin* _tmp7_ = NULL;
++	RygelDescriptionFile* _tmp8_ = NULL;
++	RygelPlugin* _tmp9_ = NULL;
++	gchar* _tmp10_ = NULL;
+ 	gchar* _tmp11_ = NULL;
+-	gchar* _tmp12_ = NULL;
+-	RygelDescriptionFile* _tmp13_ = NULL;
+-	RygelPlugin* _tmp14_ = NULL;
++	RygelDescriptionFile* _tmp12_ = NULL;
++	RygelPlugin* _tmp13_ = NULL;
++	RygelPluginCapabilities _tmp14_ = 0;
+ 	RygelPluginCapabilities _tmp15_ = 0;
+-	RygelPluginCapabilities _tmp16_ = 0;
+-	RygelPlugin* _tmp17_ = NULL;
++	RygelPlugin* _tmp16_ = NULL;
++	const gchar* _tmp17_ = NULL;
+ 	const gchar* _tmp18_ = NULL;
+-	const gchar* _tmp19_ = NULL;
+-	gchar* udn = NULL;
+-	RygelDescriptionFile* _tmp24_ = NULL;
+-	gchar* _tmp25_ = NULL;
+-	gboolean _tmp26_ = FALSE;
+-	const gchar* _tmp27_ = NULL;
+-	RygelDescriptionFile* _tmp34_ = NULL;
+-	const gchar* _tmp35_ = NULL;
++	RygelDescriptionFile* _tmp32_ = NULL;
++	const gchar* _tmp33_ = NULL;
+ 	GError * _inner_error_ = NULL;
+ 	g_return_val_if_fail (self != NULL, NULL);
+ 	g_return_val_if_fail (plugin != NULL, NULL);
+ 	g_return_val_if_fail (desc_path != NULL, NULL);
+ 	g_return_val_if_fail (template_path != NULL, NULL);
+-	_tmp0_ = desc_path;
+-	_tmp1_ = template_path;
+-	_tmp2_ = rygel_root_device_factory_get_latest_doc (self, _tmp0_, _tmp1_, &_inner_error_);
+-	doc = _tmp2_;
++	_tmp0_ = template_path;
++	_tmp1_ = gupnp_xml_doc_new_from_path (_tmp0_, &_inner_error_);
++	doc = _tmp1_;
+ 	if (_inner_error_ != NULL) {
+ 		g_propagate_error (error, _inner_error_);
+ 		return NULL;
+ 	}
+-	_tmp3_ = doc;
+-	_tmp4_ = rygel_description_file_new_from_xml_document (_tmp3_);
+-	file = _tmp4_;
+-	_tmp5_ = file;
+-	_tmp6_ = plugin;
+-	rygel_root_device_factory_add_services_to_desc (self, _tmp5_, _tmp6_);
+-	_tmp7_ = file;
+-	_tmp8_ = plugin;
+-	rygel_root_device_factory_add_icons_to_desc (self, _tmp7_, _tmp8_);
+-	_tmp9_ = file;
+-	_tmp10_ = plugin;
+-	_tmp11_ = rygel_root_device_factory_get_friendly_name (self, _tmp10_);
+-	_tmp12_ = _tmp11_;
+-	rygel_description_file_set_friendly_name (_tmp9_, _tmp12_);
+-	_g_free0 (_tmp12_);
+-	_tmp13_ = file;
+-	_tmp14_ = plugin;
+-	_tmp15_ = rygel_plugin_get_capabilities (_tmp14_);
+-	_tmp16_ = _tmp15_;
+-	rygel_description_file_set_dlna_caps (_tmp13_, _tmp16_);
+-	_tmp17_ = plugin;
+-	_tmp18_ = rygel_plugin_get_description (_tmp17_);
+-	_tmp19_ = _tmp18_;
+-	if (_tmp19_ != NULL) {
+-		RygelDescriptionFile* _tmp20_ = NULL;
+-		RygelPlugin* _tmp21_ = NULL;
++	_tmp2_ = doc;
++	_tmp3_ = rygel_description_file_new_from_xml_document (_tmp2_);
++	file = _tmp3_;
++	_tmp4_ = file;
++	_tmp5_ = plugin;
++	rygel_root_device_factory_add_services_to_desc (self, _tmp4_, _tmp5_);
++	_tmp6_ = file;
++	_tmp7_ = plugin;
++	rygel_root_device_factory_add_icons_to_desc (self, _tmp6_, _tmp7_);
++	_tmp8_ = file;
++	_tmp9_ = plugin;
++	_tmp10_ = rygel_root_device_factory_get_friendly_name (self, _tmp9_);
++	_tmp11_ = _tmp10_;
++	rygel_description_file_set_friendly_name (_tmp8_, _tmp11_);
++	_g_free0 (_tmp11_);
++	_tmp12_ = file;
++	_tmp13_ = plugin;
++	_tmp14_ = rygel_plugin_get_capabilities (_tmp13_);
++	_tmp15_ = _tmp14_;
++	rygel_description_file_set_dlna_caps (_tmp12_, _tmp15_);
++	_tmp16_ = plugin;
++	_tmp17_ = rygel_plugin_get_description (_tmp16_);
++	_tmp18_ = _tmp17_;
++	if (_tmp18_ != NULL) {
++		RygelDescriptionFile* _tmp19_ = NULL;
++		RygelPlugin* _tmp20_ = NULL;
++		const gchar* _tmp21_ = NULL;
+ 		const gchar* _tmp22_ = NULL;
+-		const gchar* _tmp23_ = NULL;
+-		_tmp20_ = file;
+-		_tmp21_ = plugin;
+-		_tmp22_ = rygel_plugin_get_description (_tmp21_);
+-		_tmp23_ = _tmp22_;
+-		rygel_description_file_set_model_description (_tmp20_, _tmp23_);
++		_tmp19_ = file;
++		_tmp20_ = plugin;
++		_tmp21_ = rygel_plugin_get_description (_tmp20_);
++		_tmp22_ = _tmp21_;
++		rygel_description_file_set_model_description (_tmp19_, _tmp22_);
+ 	}
+-	_tmp24_ = file;
+-	_tmp25_ = rygel_description_file_get_udn (_tmp24_);
+-	udn = _tmp25_;
+-	_tmp27_ = udn;
+-	if (_tmp27_ == NULL) {
+-		_tmp26_ = TRUE;
+-	} else {
+-		const gchar* _tmp28_ = NULL;
+-		_tmp28_ = udn;
+-		_tmp26_ = g_strcmp0 (_tmp28_, "") == 0;
++	{
++		gchar* _tmp23_ = NULL;
++		const gchar* _tmp24_ = NULL;
++		gchar* _tmp25_ = NULL;
++		RygelDescriptionFile* _tmp26_ = NULL;
++		_tmp24_ = desc_path;
++		_tmp25_ = rygel_root_device_factory_get_udn_from_file (self, _tmp24_, &_inner_error_);
++		_tmp23_ = _tmp25_;
++		if (_inner_error_ != NULL) {
++			goto __catch8_g_error;
++		}
++		_tmp26_ = file;
++		rygel_description_file_set_udn (_tmp26_, _tmp23_);
++		_g_free0 (_tmp23_);
+ 	}
+-	if (_tmp26_) {
+-		RygelDescriptionFile* _tmp29_ = NULL;
++	goto __finally8;
++	__catch8_g_error:
++	{
++		GError* _error_ = NULL;
++		RygelDescriptionFile* _tmp27_ = NULL;
++		gchar* _tmp28_ = NULL;
++		gchar* _tmp29_ = NULL;
+ 		gchar* _tmp30_ = NULL;
+ 		gchar* _tmp31_ = NULL;
+-		gchar* _tmp32_ = NULL;
+-		gchar* _tmp33_ = NULL;
+-		_tmp29_ = file;
+-		_tmp30_ = uuid_get ();
++		_error_ = _inner_error_;
++		_inner_error_ = NULL;
++		_tmp27_ = file;
++		_tmp28_ = uuid_get ();
++		_tmp29_ = _tmp28_;
++		_tmp30_ = g_strconcat ("uuid:", _tmp29_, NULL);
+ 		_tmp31_ = _tmp30_;
+-		_tmp32_ = g_strconcat ("uuid:", _tmp31_, NULL);
+-		_tmp33_ = _tmp32_;
+-		rygel_description_file_set_udn (_tmp29_, _tmp33_);
+-		_g_free0 (_tmp33_);
++		rygel_description_file_set_udn (_tmp27_, _tmp31_);
+ 		_g_free0 (_tmp31_);
++		_g_free0 (_tmp29_);
++		_g_error_free0 (_error_);
+ 	}
+-	_tmp34_ = file;
+-	_tmp35_ = desc_path;
+-	rygel_description_file_save (_tmp34_, _tmp35_, &_inner_error_);
++	__finally8:
++	if (_inner_error_ != NULL) {
++		g_propagate_error (error, _inner_error_);
++		_g_object_unref0 (file);
++		_g_object_unref0 (doc);
++		return NULL;
++	}
++	_tmp32_ = file;
++	_tmp33_ = desc_path;
++	rygel_description_file_save (_tmp32_, _tmp33_, &_inner_error_);
+ 	if (_inner_error_ != NULL) {
+ 		g_propagate_error (error, _inner_error_);
+-		_g_free0 (udn);
+ 		_g_object_unref0 (file);
+ 		_g_object_unref0 (doc);
+ 		return NULL;
+ 	}
+ 	result = doc;
+-	_g_free0 (udn);
+ 	_g_object_unref0 (file);
+ 	return result;
+ }
+ 
+ 
++static gchar* rygel_root_device_factory_get_udn_from_file (RygelRootDeviceFactory* self, const gchar* path, GError** error) {
++	gchar* result = NULL;
++	GUPnPXMLDoc* doc = NULL;
++	const gchar* _tmp0_ = NULL;
++	GUPnPXMLDoc* _tmp1_ = NULL;
++	RygelDescriptionFile* desc_file = NULL;
++	GUPnPXMLDoc* _tmp2_ = NULL;
++	RygelDescriptionFile* _tmp3_ = NULL;
++	gchar* udn = NULL;
++	RygelDescriptionFile* _tmp4_ = NULL;
++	gchar* _tmp5_ = NULL;
++	gboolean _tmp6_ = FALSE;
++	const gchar* _tmp7_ = NULL;
++	GError * _inner_error_ = NULL;
++	g_return_val_if_fail (self != NULL, NULL);
++	g_return_val_if_fail (path != NULL, NULL);
++	_tmp0_ = path;
++	_tmp1_ = gupnp_xml_doc_new_from_path (_tmp0_, &_inner_error_);
++	doc = _tmp1_;
++	if (_inner_error_ != NULL) {
++		g_propagate_error (error, _inner_error_);
++		return NULL;
++	}
++	_tmp2_ = doc;
++	_tmp3_ = rygel_description_file_new_from_xml_document (_tmp2_);
++	desc_file = _tmp3_;
++	_tmp4_ = desc_file;
++	_tmp5_ = rygel_description_file_get_udn (_tmp4_);
++	udn = _tmp5_;
++	_tmp7_ = udn;
++	if (_tmp7_ == NULL) {
++		_tmp6_ = TRUE;
++	} else {
++		const gchar* _tmp8_ = NULL;
++		_tmp8_ = udn;
++		_tmp6_ = g_strcmp0 (_tmp8_, "") == 0;
++	}
++	if (_tmp6_) {
++		const gchar* _tmp9_ = NULL;
++		GError* _tmp10_ = NULL;
++		_tmp9_ = path;
++		_tmp10_ = g_error_new (G_IO_ERROR, G_IO_ERROR_FAILED, "Cannot get UDN from file!", _tmp9_);
++		_inner_error_ = _tmp10_;
++		g_propagate_error (error, _inner_error_);
++		_g_free0 (udn);
++		_g_object_unref0 (desc_file);
++		_g_object_unref0 (doc);
++		return NULL;
++	}
++	result = udn;
++	_g_object_unref0 (desc_file);
++	_g_object_unref0 (doc);
++	return result;
++}
++
++
+ static gchar* string_replace (const gchar* self, const gchar* old, const gchar* replacement) {
+ 	gchar* result = NULL;
+ 	GError * _inner_error_ = NULL;
+@@ -1023,7 +1087,7 @@ static gchar* string_replace (const gchar* self, const gchar* old, const gchar*
+ 		regex = _tmp4_;
+ 		if (_inner_error_ != NULL) {
+ 			if (_inner_error_->domain == G_REGEX_ERROR) {
+-				goto __catch9_g_regex_error;
++				goto __catch10_g_regex_error;
+ 			}
+ 			g_critical ("file %s: line %d: unexpected error: %s (%s, %d)", __FILE__, __LINE__, _inner_error_->message, g_quark_to_string (_inner_error_->domain), _inner_error_->code);
+ 			g_clear_error (&_inner_error_);
+@@ -1036,7 +1100,7 @@ static gchar* string_replace (const gchar* self, const gchar* old, const gchar*
+ 		if (_inner_error_ != NULL) {
+ 			_g_regex_unref0 (regex);
+ 			if (_inner_error_->domain == G_REGEX_ERROR) {
+-				goto __catch9_g_regex_error;
++				goto __catch10_g_regex_error;
+ 			}
+ 			_g_regex_unref0 (regex);
+ 			g_critical ("file %s: line %d: unexpected error: %s (%s, %d)", __FILE__, __LINE__, _inner_error_->message, g_quark_to_string (_inner_error_->domain), _inner_error_->code);
+@@ -1050,8 +1114,8 @@ static gchar* string_replace (const gchar* self, const gchar* old, const gchar*
+ 		_g_regex_unref0 (regex);
+ 		return result;
+ 	}
+-	goto __finally9;
+-	__catch9_g_regex_error:
++	goto __finally10;
++	__catch10_g_regex_error:
+ 	{
+ 		GError* e = NULL;
+ 		e = _inner_error_;
+@@ -1059,7 +1123,7 @@ static gchar* string_replace (const gchar* self, const gchar* old, const gchar*
+ 		g_assert_not_reached ();
+ 		_g_error_free0 (e);
+ 	}
+-	__finally9:
++	__finally10:
+ 	if (_inner_error_ != NULL) {
+ 		g_critical ("file %s: line %d: uncaught error: %s (%s, %d)", __FILE__, __LINE__, _inner_error_->message, g_quark_to_string (_inner_error_->domain), _inner_error_->code);
+ 		g_clear_error (&_inner_error_);
+@@ -1102,7 +1166,7 @@ static gchar* rygel_root_device_factory_get_friendly_name (RygelRootDeviceFactor
+ 		_tmp5_ = rygel_configuration_get_title (_tmp1_, _tmp4_, &_inner_error_);
+ 		_tmp0_ = _tmp5_;
+ 		if (_inner_error_ != NULL) {
+-			goto __catch8_g_error;
++			goto __catch9_g_error;
+ 		}
+ 		_tmp6_ = _tmp0_;
+ 		_tmp0_ = NULL;
+@@ -1110,8 +1174,8 @@ static gchar* rygel_root_device_factory_get_friendly_name (RygelRootDeviceFactor
+ 		title = _tmp6_;
+ 		_g_free0 (_tmp0_);
+ 	}
+-	goto __finally8;
+-	__catch8_g_error:
++	goto __finally9;
++	__catch9_g_error:
+ 	{
+ 		GError* err = NULL;
+ 		RygelPlugin* _tmp7_ = NULL;
+@@ -1128,7 +1192,7 @@ static gchar* rygel_root_device_factory_get_friendly_name (RygelRootDeviceFactor
+ 		title = _tmp10_;
+ 		_g_error_free0 (err);
+ 	}
+-	__finally8:
++	__finally9:
+ 	if (_inner_error_ != NULL) {
+ 		_g_free0 (title);
+ 		g_critical ("file %s: line %d: uncaught error: %s (%s, %d)", __FILE__, __LINE__, _inner_error_->message, g_quark_to_string (_inner_error_->domain), _inner_error_->code);
+@@ -1382,7 +1446,7 @@ static void rygel_root_device_factory_add_icons_to_desc (RygelRootDeviceFactory*
+ 		_tmp9_ = plugin;
+ 		_tmp10_ = rygel_plugin_get_name (_tmp9_);
+ 		_tmp11_ = _tmp10_;
+-		g_debug ("rygel-root-device-factory.vala:180: No icon provided by plugin '%s'. U" \
++		g_debug ("rygel-root-device-factory.vala:194: No icon provided by plugin '%s'. U" \
+ "sing Rygel logo.", _tmp11_);
+ 		_tmp12_ = plugin;
+ 		_tmp13_ = rygel_plugin_get_default_icons (_tmp12_);
+@@ -1606,92 +1670,6 @@ static gchar* rygel_root_device_factory_get_icon_remote_path (RygelRootDeviceFac
+ }
+ 
+ 
+-static GUPnPXMLDoc* rygel_root_device_factory_get_latest_doc (RygelRootDeviceFactory* self, const gchar* path1, const gchar* path2, GError** error) {
+-	GUPnPXMLDoc* result = NULL;
+-	GFile* file = NULL;
+-	const gchar* _tmp0_ = NULL;
+-	GFile* _tmp1_ = NULL;
+-	GFile* _tmp2_ = NULL;
+-	gboolean _tmp3_ = FALSE;
+-	GError * _inner_error_ = NULL;
+-	g_return_val_if_fail (self != NULL, NULL);
+-	g_return_val_if_fail (path1 != NULL, NULL);
+-	g_return_val_if_fail (path2 != NULL, NULL);
+-	_tmp0_ = path1;
+-	_tmp1_ = g_file_new_for_path (_tmp0_);
+-	file = _tmp1_;
+-	_tmp2_ = file;
+-	_tmp3_ = g_file_query_exists (_tmp2_, NULL);
+-	if (!_tmp3_) {
+-		GUPnPXMLDoc* _tmp4_ = NULL;
+-		const gchar* _tmp5_ = NULL;
+-		GUPnPXMLDoc* _tmp6_ = NULL;
+-		GUPnPXMLDoc* _tmp7_ = NULL;
+-		_tmp5_ = path2;
+-		_tmp6_ = gupnp_xml_doc_new_from_path (_tmp5_, &_inner_error_);
+-		_tmp4_ = _tmp6_;
+-		if (_inner_error_ != NULL) {
+-			g_propagate_error (error, _inner_error_);
+-			_g_object_unref0 (file);
+-			return NULL;
+-		}
+-		_tmp7_ = _tmp4_;
+-		_tmp4_ = NULL;
+-		result = _tmp7_;
+-		_g_object_unref0 (_tmp4_);
+-		_g_object_unref0 (file);
+-		return result;
+-	}
+-	{
+-		GUPnPXMLDoc* _tmp8_ = NULL;
+-		const gchar* _tmp9_ = NULL;
+-		GUPnPXMLDoc* _tmp10_ = NULL;
+-		GUPnPXMLDoc* _tmp11_ = NULL;
+-		_tmp9_ = path1;
+-		_tmp10_ = gupnp_xml_doc_new_from_path (_tmp9_, &_inner_error_);
+-		_tmp8_ = _tmp10_;
+-		if (_inner_error_ != NULL) {
+-			goto __catch10_g_error;
+-		}
+-		_tmp11_ = _tmp8_;
+-		_tmp8_ = NULL;
+-		result = _tmp11_;
+-		_g_object_unref0 (_tmp8_);
+-		_g_object_unref0 (file);
+-		return result;
+-	}
+-	goto __finally10;
+-	__catch10_g_error:
+-	{
+-		GError* _error_ = NULL;
+-		GUPnPXMLDoc* _tmp12_ = NULL;
+-		const gchar* _tmp13_ = NULL;
+-		GUPnPXMLDoc* _tmp14_ = NULL;
+-		GUPnPXMLDoc* _tmp15_ = NULL;
+-		_error_ = _inner_error_;
+-		_inner_error_ = NULL;
+-		_tmp13_ = path2;
+-		_tmp14_ = gupnp_xml_doc_new_from_path (_tmp13_, &_inner_error_);
+-		_tmp12_ = _tmp14_;
+-		if (_inner_error_ != NULL) {
+-			_g_error_free0 (_error_);
+-			goto __finally10;
+-		}
+-		_tmp15_ = _tmp12_;
+-		_tmp12_ = NULL;
+-		result = _tmp15_;
+-		_g_object_unref0 (_tmp12_);
+-		_g_error_free0 (_error_);
+-		_g_object_unref0 (file);
+-		return result;
+-	}
+-	__finally10:
+-	g_propagate_error (error, _inner_error_);
+-	_g_object_unref0 (file);
+-	return NULL;
+-}
+-
+-
+ static void rygel_root_device_factory_ensure_dir_exists (RygelRootDeviceFactory* self, const gchar* dir_path, GError** error) {
+ 	GFile* file = NULL;
+ 	const gchar* _tmp0_ = NULL;
+diff --git a/src/librygel-core/rygel-root-device-factory.vala b/src/librygel-core/rygel-root-device-factory.vala
+index a2ae959..ce3f54f 100644
+--- a/src/librygel-core/rygel-root-device-factory.vala
++++ b/src/librygel-core/rygel-root-device-factory.vala
+@@ -121,7 +121,8 @@ public class Rygel.RootDeviceFactory : Object,
+     private XMLDoc create_desc (Plugin plugin,
+                                 string desc_path,
+                                 string template_path) throws GLib.Error {
+-        var doc = this.get_latest_doc (desc_path, template_path);
++        /* Always use template doc */
++        var doc = new XMLDoc.from_path (template_path);
+ 
+         /* Modify description to include Plugin-specific stuff */
+ 
+@@ -135,8 +136,11 @@ public class Rygel.RootDeviceFactory : Object,
+         if (plugin.description != null) {
+             file.set_model_description (plugin.description);
+         }
+-        var udn = file.get_udn ();
+-        if (udn == null || udn == "") {
++
++        /* Try to get UDN from generated file in desc_path else create new */
++        try {
++            file.set_udn (get_udn_from_file (desc_path));
++        } catch (Error error) {
+             file.set_udn ("uuid:" + UUID.get());
+         }
+ 
+@@ -145,6 +149,16 @@ public class Rygel.RootDeviceFactory : Object,
+         return doc;
+     }
+ 
++    private string get_udn_from_file (string path) throws Error {
++        var doc = new XMLDoc.from_path (path);
++        var desc_file = new DescriptionFile.from_xml_document (doc);
++        var udn = desc_file.get_udn ();
++        if (udn == null || udn == "") {
++            throw new IOError.FAILED ("Cannot get UDN from file!", path);
++        }
++        return udn;
++    }
++
+     private string get_friendly_name (Plugin plugin) {
+         string title;
+         try {
+@@ -211,20 +225,6 @@ public class Rygel.RootDeviceFactory : Object,
+         }
+     }
+ 
+-    private XMLDoc get_latest_doc (string path1,
+-                                   string path2) throws GLib.Error {
+-        var file = File.new_for_path (path1);
+-        if (!file.query_exists (null)) {
+-            return new XMLDoc.from_path (path2);
+-        }
+-
+-        try {
+-            return new XMLDoc.from_path (path1);
+-        } catch (Error error) {
+-            return new XMLDoc.from_path (path2);
+-        }
+-    }
+-
+     private void ensure_dir_exists (string dir_path) throws Error {
+         var file = File.new_for_path (dir_path);
+         if (!file.query_exists (null)) {
+-- 
+1.9.1
+

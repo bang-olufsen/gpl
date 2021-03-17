@@ -1,0 +1,137 @@
+From 732da929b75e78996d6ec78821fdc875ada0772e Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Fri, 6 Nov 2020 13:01:34 +0100
+Subject: [PATCH] Implement gst_bus_discard_filtered
+
+---
+ gst/gstbus.c | 102 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ gst/gstbus.h |   3 ++
+ 2 files changed, 105 insertions(+)
+
+diff --git a/gst/gstbus.c b/gst/gstbus.c
+index cddaf39..61f7a41 100644
+--- a/gst/gstbus.c
++++ b/gst/gstbus.c
+@@ -650,6 +650,108 @@ gst_bus_pop_filtered (GstBus * bus, GstMessageType types)
+   return gst_bus_timed_pop_filtered (bus, 0, types);
+ }
+ 
++
++/**
++ * gst_bus_discard_filtered:
++ * @bus:   a #GstBus to clean from defined messages
++ * @types: a mask of bitwise combined #GstMessageType values which will define messages
++ *         that will be removed from from bus.
++ *
++ *         NB! Be careful with masking, if you have assigned a #sync_handler callback which
++ *         will return #GST_BUS_ASYNC then you should take care of releasing conditional 
++ *         wait in #gst_bus_post() as well.
++ *
++ * Filter out and remove messages from given #bus matched with #types mask.
++ *
++ * MT safe.
++ */
++void
++gst_bus_discard_filtered (GstBus * bus, GstMessageType types)
++{
++  GstMessage* message = NULL;
++  GSList    * tail    = NULL;
++  GSList    * head    = NULL;
++  GSList    * next    = NULL;
++  guint       count   = 0;
++  guint       q_lngt  = 0;
++
++  g_return_if_fail (GST_IS_BUS (bus));
++  g_return_if_fail (types != 0);
++
++  /* Check if the bus is flushing */
++  if (GST_OBJECT_FLAG_IS_SET (bus, GST_BUS_FLUSHING)) {
++    GST_DEBUG_OBJECT (bus, "Bus is already flushing, return.");
++    return;
++  }
++  /* Lock bus to keep transaction as whole, because we don't want to be interrupted
++   * by #gst_bus_post() after we have popped out all messages */
++  GST_OBJECT_LOCK (bus);
++
++  /* Check whether bus queue is empty */
++  if (!(q_lngt = gst_atomic_queue_length(bus->priv->queue))) {
++    GST_DEBUG_OBJECT (bus, "Bus is empty, return.");
++    GST_OBJECT_UNLOCK (bus);
++    return;
++  }
++
++  GST_DEBUG_OBJECT (bus, "Begin popping with mask: 0x%X, bus queue size: %u", types, q_lngt);
++
++  /* Pop all messages in a loop */
++  while ((message = gst_bus_timed_pop_filtered (bus, 0, GST_MESSAGE_ANY))) {
++
++    GST_DEBUG_OBJECT (bus, "Got message with seq_nr %u, type %s from element %s"
++                        , gst_message_get_seqnum(message)
++                        , GST_MESSAGE_TYPE_NAME (message)
++                        , GST_MESSAGE_SRC_NAME (message));
++
++    /* Match each message against given mask */
++    if ((GST_MESSAGE_TYPE (message) & types) != 0) {
++
++      GST_DEBUG_OBJECT (bus, "Matching mask, discard message");
++      gst_message_unref (message);
++      message = NULL;
++      ++count;
++    }
++    else {
++
++      GST_DEBUG_OBJECT (bus, "Push to backlog for restoring");
++
++      if (!head) {
++        /* On first hit remember the head and initialise the tail */
++        head = tail = g_slist_append(head, message);
++      }
++      else {
++        /* Keep tail pointing to the end to avoid traversing through whole list while appending */
++        tail->next = g_slist_append(tail->next, message);
++      }
++    }
++  }
++
++  GST_DEBUG_OBJECT (bus, "Removed %u messages, begin to push remaining back.", count);
++  /* Begin from head */
++  next  = head;
++  count = 0;
++
++  while (next) {
++    /* Just push remaining msg back. No need to cond wait here for GST_BUS_ASYNC msg,
++     * since this is expected in #gst_bus_post() already
++     * and GST_BUS_DROP msg are dropped as well in #gst_bus_post(). */
++    gst_atomic_queue_push (bus->priv->queue, next->data);
++    gst_poll_write_control (bus->priv->poll);
++
++    next = g_slist_next(next);
++    ++count;
++  }
++
++  GST_DEBUG_OBJECT (bus, "Restored %u msg.", count);
++  GST_OBJECT_UNLOCK (bus);
++
++  // Free list nodes
++  g_slist_free(head);
++  head = next = tail = NULL;
++}
++
++
+ /**
+  * gst_bus_pop:
+  * @bus: a #GstBus to pop
+diff --git a/gst/gstbus.h b/gst/gstbus.h
+index 1f14246..4267f77 100644
+--- a/gst/gstbus.h
++++ b/gst/gstbus.h
+@@ -162,6 +162,9 @@ GstMessage *            gst_bus_timed_pop_filtered      (GstBus * bus, GstClockT
+ GST_API
+ void                    gst_bus_set_flushing            (GstBus * bus, gboolean flushing);
+ 
++GST_API
++void                    gst_bus_discard_filtered        (GstBus * bus, GstMessageType types);
++
+ /* synchronous dispatching */
+ 
+ GST_API

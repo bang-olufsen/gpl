@@ -1,0 +1,260 @@
+<!-- ##### SECTION Title ##### -->
+gmime-signature
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### ENUM GMimeSignatureStatus ##### -->
+<para>
+
+</para>
+
+@GMIME_SIGNATURE_STATUS_GOOD: 
+@GMIME_SIGNATURE_STATUS_ERROR: 
+@GMIME_SIGNATURE_STATUS_BAD: 
+
+<!-- ##### ENUM GMimeSignatureError ##### -->
+<para>
+
+</para>
+
+@GMIME_SIGNATURE_ERROR_NONE: 
+@GMIME_SIGNATURE_ERROR_EXPSIG: 
+@GMIME_SIGNATURE_ERROR_NO_PUBKEY: 
+@GMIME_SIGNATURE_ERROR_EXPKEYSIG: 
+@GMIME_SIGNATURE_ERROR_REVKEYSIG: 
+@GMIME_SIGNATURE_ERROR_UNSUPP_ALGO: 
+
+<!-- ##### STRUCT GMimeSignature ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION g_mime_signature_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_signature_get_certificate ##### -->
+<para>
+
+</para>
+
+@sig: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_signature_set_certificate ##### -->
+<para>
+
+</para>
+
+@sig: 
+@cert: 
+
+
+<!-- ##### FUNCTION g_mime_signature_get_status ##### -->
+<para>
+
+</para>
+
+@sig: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_signature_set_status ##### -->
+<para>
+
+</para>
+
+@sig: 
+@status: 
+
+
+<!-- ##### FUNCTION g_mime_signature_get_errors ##### -->
+<para>
+
+</para>
+
+@sig: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_signature_set_errors ##### -->
+<para>
+
+</para>
+
+@sig: 
+@errors: 
+
+
+<!-- ##### FUNCTION g_mime_signature_get_created ##### -->
+<para>
+
+</para>
+
+@sig: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_signature_set_created ##### -->
+<para>
+
+</para>
+
+@sig: 
+@created: 
+
+
+<!-- ##### FUNCTION g_mime_signature_get_expires ##### -->
+<para>
+
+</para>
+
+@sig: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_signature_set_expires ##### -->
+<para>
+
+</para>
+
+@sig: 
+@expires: 
+
+
+<!-- ##### STRUCT GMimeSignatureList ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION g_mime_signature_list_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_signature_list_length ##### -->
+<para>
+
+</para>
+
+@list: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_signature_list_clear ##### -->
+<para>
+
+</para>
+
+@list: 
+
+
+<!-- ##### FUNCTION g_mime_signature_list_add ##### -->
+<para>
+
+</para>
+
+@list: 
+@sig: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_signature_list_insert ##### -->
+<para>
+
+</para>
+
+@list: 
+@index: 
+@sig: 
+
+
+<!-- ##### FUNCTION g_mime_signature_list_remove ##### -->
+<para>
+
+</para>
+
+@list: 
+@sig: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_signature_list_remove_at ##### -->
+<para>
+
+</para>
+
+@list: 
+@index: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_signature_list_contains ##### -->
+<para>
+
+</para>
+
+@list: 
+@sig: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_signature_list_index_of ##### -->
+<para>
+
+</para>
+
+@list: 
+@sig: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_signature_list_get_signature ##### -->
+<para>
+
+</para>
+
+@list: 
+@index: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_signature_list_set_signature ##### -->
+<para>
+
+</para>
+
+@list: 
+@index: 
+@sig: 
+
+

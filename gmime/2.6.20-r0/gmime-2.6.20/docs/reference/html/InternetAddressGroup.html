@@ -1,0 +1,190 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>InternetAddressGroup</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="GMime 2.6 Reference Manual">
+<link rel="up" href="InternetAddresses.html" title="Internet Addresses">
+<link rel="prev" href="InternetAddress.html" title="InternetAddress">
+<link rel="next" href="InternetAddressMailbox.html" title="InternetAddressMailbox">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="InternetAddress.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="InternetAddresses.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">GMime 2.6 Reference Manual</th>
+<td><a accesskey="n" href="InternetAddressMailbox.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#InternetAddressGroup.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#InternetAddressGroup.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#InternetAddressGroup.object-hierarchy" class="shortcut">Object Hierarchy</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="InternetAddressGroup"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="InternetAddressGroup.top_of_page"></a>InternetAddressGroup</span></h2>
+<p>InternetAddressGroup — rfc822 'group' address</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="InternetAddressGroup.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">struct              <a class="link" href="InternetAddressGroup.html#InternetAddressGroup-struct" title="struct InternetAddressGroup">InternetAddressGroup</a>;
+<a class="link" href="InternetAddress.html" title="InternetAddress"><span class="returnvalue">InternetAddress</span></a> *   <a class="link" href="InternetAddressGroup.html#internet-address-group-new" title="internet_address_group_new ()">internet_address_group_new</a>          (<em class="parameter"><code>const <span class="type">char</span> *name</code></em>);
+<a class="link" href="InternetAddressList.html" title="InternetAddressList"><span class="returnvalue">InternetAddressList</span></a> * <a class="link" href="InternetAddressGroup.html#internet-address-group-get-members" title="internet_address_group_get_members ()">internet_address_group_get_members</a>
+                                                        (<em class="parameter"><code><a class="link" href="InternetAddressGroup.html" title="InternetAddressGroup"><span class="type">InternetAddressGroup</span></a> *group</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="InternetAddressGroup.html#internet-address-group-set-members" title="internet_address_group_set_members ()">internet_address_group_set_members</a>  (<em class="parameter"><code><a class="link" href="InternetAddressGroup.html" title="InternetAddressGroup"><span class="type">InternetAddressGroup</span></a> *group</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="InternetAddressList.html" title="InternetAddressList"><span class="type">InternetAddressList</span></a> *members</code></em>);
+<span class="returnvalue">int</span>                 <a class="link" href="InternetAddressGroup.html#internet-address-group-add-member" title="internet_address_group_add_member ()">internet_address_group_add_member</a>   (<em class="parameter"><code><a class="link" href="InternetAddressGroup.html" title="InternetAddressGroup"><span class="type">InternetAddressGroup</span></a> *group</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="InternetAddress.html" title="InternetAddress"><span class="type">InternetAddress</span></a> *member</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="InternetAddressGroup.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  GObject
+   +----<a class="link" href="InternetAddress.html" title="InternetAddress">InternetAddress</a>
+         +----InternetAddressGroup
+</pre>
+</div>
+<div class="refsect1">
+<a name="InternetAddressGroup.description"></a><h2>Description</h2>
+<p>
+An <a class="link" href="InternetAddressGroup.html" title="InternetAddressGroup"><span class="type">InternetAddressGroup</span></a> represents an rfc822 'group' address.
+</p>
+</div>
+<div class="refsect1">
+<a name="InternetAddressGroup.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="InternetAddressGroup-struct"></a><h3>struct InternetAddressGroup</h3>
+<pre class="programlisting">struct InternetAddressGroup;</pre>
+<p>
+An RFC 2822 Group address.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="internet-address-group-new"></a><h3>internet_address_group_new ()</h3>
+<pre class="programlisting"><a class="link" href="InternetAddress.html" title="InternetAddress"><span class="returnvalue">InternetAddress</span></a> *   internet_address_group_new          (<em class="parameter"><code>const <span class="type">char</span> *name</code></em>);</pre>
+<p>
+Creates a new <a class="link" href="InternetAddressGroup.html" title="InternetAddressGroup"><span class="type">InternetAddressGroup</span></a> object with the specified
+<em class="parameter"><code>name</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>name</code></em> :</span></p></td>
+<td>group name</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new <a class="link" href="InternetAddressGroup.html" title="InternetAddressGroup"><span class="type">InternetAddressGroup</span></a> object.
+Note: The <em class="parameter"><code>name</code></em> string should be in UTF-8.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="internet-address-group-get-members"></a><h3>internet_address_group_get_members ()</h3>
+<pre class="programlisting"><a class="link" href="InternetAddressList.html" title="InternetAddressList"><span class="returnvalue">InternetAddressList</span></a> * internet_address_group_get_members
+                                                        (<em class="parameter"><code><a class="link" href="InternetAddressGroup.html" title="InternetAddressGroup"><span class="type">InternetAddressGroup</span></a> *group</code></em>);</pre>
+<p>
+Gets the <a class="link" href="InternetAddressList.html" title="InternetAddressList"><span class="type">InternetAddressList</span></a> containing the group members of an
+rfc822 group address.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>group</code></em> :</span></p></td>
+<td>a <a class="link" href="InternetAddressGroup.html" title="InternetAddressGroup"><span class="type">InternetAddressGroup</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a <a class="link" href="InternetAddressList.html" title="InternetAddressList"><span class="type">InternetAddressList</span></a> containing the
+members of <em class="parameter"><code>group</code></em>. <span class="annotation">[<a href="http://foldoc.org/transfer%20none"><span class="acronym">transfer none</span></a>]</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="internet-address-group-set-members"></a><h3>internet_address_group_set_members ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                internet_address_group_set_members  (<em class="parameter"><code><a class="link" href="InternetAddressGroup.html" title="InternetAddressGroup"><span class="type">InternetAddressGroup</span></a> *group</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="InternetAddressList.html" title="InternetAddressList"><span class="type">InternetAddressList</span></a> *members</code></em>);</pre>
+<p>
+Set the members of the internet address group.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>group</code></em> :</span></p></td>
+<td>a <a class="link" href="InternetAddressGroup.html" title="InternetAddressGroup"><span class="type">InternetAddressGroup</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>members</code></em> :</span></p></td>
+<td>a <a class="link" href="InternetAddressList.html" title="InternetAddressList"><span class="type">InternetAddressList</span></a>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="internet-address-group-add-member"></a><h3>internet_address_group_add_member ()</h3>
+<pre class="programlisting"><span class="returnvalue">int</span>                 internet_address_group_add_member   (<em class="parameter"><code><a class="link" href="InternetAddressGroup.html" title="InternetAddressGroup"><span class="type">InternetAddressGroup</span></a> *group</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="InternetAddress.html" title="InternetAddress"><span class="type">InternetAddress</span></a> *member</code></em>);</pre>
+<p>
+Add a contact to the internet address group.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>group</code></em> :</span></p></td>
+<td>a <a class="link" href="InternetAddressGroup.html" title="InternetAddressGroup"><span class="type">InternetAddressGroup</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>member</code></em> :</span></p></td>
+<td>a <a class="link" href="InternetAddress.html" title="InternetAddress"><span class="type">InternetAddress</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the index of the newly added member.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<div class="refsect1">
+<a name="InternetAddressGroup.see-also"></a><h2>See Also</h2>
+<a class="link" href="InternetAddress.html" title="InternetAddress"><span class="type">InternetAddress</span></a>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

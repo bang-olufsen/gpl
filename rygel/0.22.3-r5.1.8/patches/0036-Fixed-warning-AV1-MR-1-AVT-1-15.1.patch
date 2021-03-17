@@ -1,0 +1,44 @@
+From e7ddf5e084f0ef01199ba0f6bd833d3e7a3f3abb Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Mon, 23 Feb 2015 13:02:15 +0100
+Subject: [PATCH] Fixed warning AV1-MR:1-AVT:1-15.1
+
+Return from set_play_mode_cb(): 712 Play mode not supported
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ src/librygel-renderer/rygel-av-transport.c    | 4 ++--
+ src/librygel-renderer/rygel-av-transport.vala | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/src/librygel-renderer/rygel-av-transport.c b/src/librygel-renderer/rygel-av-transport.c
+index 942cb0b..e20e893 100644
+--- a/src/librygel-renderer/rygel-av-transport.c
++++ b/src/librygel-renderer/rygel-av-transport.c
+@@ -3164,8 +3164,8 @@ static void rygel_av_transport_set_play_mode_cb (RygelAVTransport* self, GUPnPSe
+ 				GUPnPServiceAction* _tmp14_ = NULL;
+ 				const gchar* _tmp15_ = NULL;
+ 				_tmp14_ = action;
+-				_tmp15_ = _ ("Invocation Error");
+-				gupnp_service_action_return_error (_tmp14_, (guint) 600, _tmp15_);
++				_tmp15_ = _ ("Play mode not supported");
++				gupnp_service_action_return_error (_tmp14_, (guint) 712, _tmp15_);
+ 				_g_free0 (_play_mode);
+ 				return;
+ 			}
+diff --git a/src/librygel-renderer/rygel-av-transport.vala b/src/librygel-renderer/rygel-av-transport.vala
+index c74bbf4..ee60576 100644
+--- a/src/librygel-renderer/rygel-av-transport.vala
++++ b/src/librygel-renderer/rygel-av-transport.vala
+@@ -909,7 +909,7 @@ internal class Rygel.AVTransport : Service {
+             this.controller.set_play_mode(_play_mode);
+             break;
+         default:
+-            action.return_error (600, _("Invocation Error"));
++            action.return_error (712, _("Play mode not supported"));
+             return;
+         }
+         action.return ();
+-- 
+1.9.1
+

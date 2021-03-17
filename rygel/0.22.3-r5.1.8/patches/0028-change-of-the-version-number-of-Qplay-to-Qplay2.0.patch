@@ -1,0 +1,92 @@
+From 743ae8d8f8740f840ea106f3f77e16db7499785d Mon Sep 17 00:00:00 2001
+From: Andrii Markhaichuk <andrii.markhaichuk@streamunlimited.com>
+Date: Fri, 23 Jan 2015 10:45:44 +0100
+Subject: [PATCH] change of the version number of Qplay to Qplay2.0
+
+Signed-off-by: Andrii Markhaichuk <andrii.markhaichuk@streamunlimited.com>
+---
+ data/xml/MediaRenderer2.xml.in.in                   | 2 +-
+ src/librygel-renderer/rygel-media-renderer-plugin.c | 2 +-
+ src/librygel-renderer/rygel-qplay.c                 | 6 +++---
+ src/librygel-renderer/rygel-qplay.vala              | 6 +++---
+ 4 files changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/data/xml/MediaRenderer2.xml.in.in b/data/xml/MediaRenderer2.xml.in.in
+index f879b39..d545adc 100644
+--- a/data/xml/MediaRenderer2.xml.in.in
++++ b/data/xml/MediaRenderer2.xml.in.in
+@@ -5,7 +5,7 @@
+     <minor>0</minor>
+   </specVersion>
+   <device>
+-    <qq:X_QPlay_SoftwareCapability>QPlay:1</qq:X_QPlay_SoftwareCapability>
++    <qq:X_QPlay_SoftwareCapability>QPlay:2</qq:X_QPlay_SoftwareCapability>
+     <deviceType>urn:schemas-upnp-org:device:MediaRenderer:2</deviceType>
+     <friendlyName></friendlyName>
+     <manufacturer>Rygel Developers</manufacturer>
+diff --git a/src/librygel-renderer/rygel-media-renderer-plugin.c b/src/librygel-renderer/rygel-media-renderer-plugin.c
+index 2fca240..6eda198 100644
+--- a/src/librygel-renderer/rygel-media-renderer-plugin.c
++++ b/src/librygel-renderer/rygel-media-renderer-plugin.c
+@@ -258,7 +258,7 @@ GType rygel_av_transport_get_type (void) G_GNUC_CONST;
+ #define RYGEL_RENDERING_CONTROL_DESCRIPTION_PATH "xml/RenderingControl2.xml"
+ GType rygel_rendering_control_get_type (void) G_GNUC_CONST;
+ #define QPLAY_UPNP_ID "urn:tencent-com:serviceId:QPlay"
+-#define QPLAY_UPNP_TYPE "urn:tencent-com:service:QPlay:1"
++#define QPLAY_UPNP_TYPE "urn:tencent-com:service:QPlay:2"
+ #define QPLAY_DESCRIPTION_PATH "xml/QPlayDescription.xml"
+ GType qplay_get_type (void) G_GNUC_CONST;
+ RygelMediaPlayer* rygel_media_renderer_plugin_get_player (RygelMediaRendererPlugin* self);
+diff --git a/src/librygel-renderer/rygel-qplay.c b/src/librygel-renderer/rygel-qplay.c
+index 832445d..afb382f 100644
+--- a/src/librygel-renderer/rygel-qplay.c
++++ b/src/librygel-renderer/rygel-qplay.c
+@@ -153,8 +153,8 @@ enum  {
+ 	QPLAY_DUMMY_PROPERTY
+ };
+ #define QPLAY_UPNP_ID "urn:tencent-com:serviceId:QPlay"
+-#define QPLAY_UPNP_TYPE "urn:tencent-com:service:QPlay:1"
+-#define QPLAY_COMPAT_TYPE "urn:schemas-tencent-com:service:QPlay:1"
++#define QPLAY_UPNP_TYPE "urn:tencent-com:service:QPlay:2"
++#define QPLAY_COMPAT_TYPE "urn:schemas-tencent-com:service:QPlay:2"
+ #define QPLAY_DESCRIPTION_PATH "xml/QPlayDescription.xml"
+ static void qplay_real_constructed (GObject* base);
+ GType rygel_media_renderer_plugin_get_type (void) G_GNUC_CONST;
+@@ -1043,7 +1043,7 @@ static void qplay_finalize (GObject* obj) {
+ 
+ 
+ /**
+- * Basic implementation of QPlay service version 1.
++ * Basic implementation of QPlay service version 2.
+  */
+ GType qplay_get_type (void) {
+ 	static volatile gsize qplay_type_id__volatile = 0;
+diff --git a/src/librygel-renderer/rygel-qplay.vala b/src/librygel-renderer/rygel-qplay.vala
+index cc1767c..ffbc2f1 100644
+--- a/src/librygel-renderer/rygel-qplay.vala
++++ b/src/librygel-renderer/rygel-qplay.vala
+@@ -24,18 +24,18 @@ using GUPnP;
+ using Rygel;
+ 
+ /**
+- * Basic implementation of QPlay service version 1.
++ * Basic implementation of QPlay service version 2.
+  */
+ internal class QPlay: Service {
+     public const string UPNP_ID =
+                     "urn:tencent-com:serviceId:QPlay";
+     // UPnP requires that points replaced by hyphens in domain names
+     public const string UPNP_TYPE =
+-                    "urn:tencent-com:service:QPlay:1";
++                    "urn:tencent-com:service:QPlay:2";
+     // The XBox however doesn't like that so we replace it in the service
+     // description later
+     public const string COMPAT_TYPE =
+-                    "urn:schemas-tencent-com:service:QPlay:1";
++                    "urn:schemas-tencent-com:service:QPlay:2";
+     public const string DESCRIPTION_PATH =
+                     "xml/QPlayDescription.xml";
+ 
+-- 
+1.9.1
+

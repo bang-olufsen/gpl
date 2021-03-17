@@ -1,0 +1,77 @@
+From 7861b7e4a563e069bae70461ee09c0a2b9f2b48e Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Tue, 14 Nov 2017 14:22:26 +0100
+Subject: [PATCH] adapter: Remove paired LE device when emitting undirected
+ advertisements
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ src/adapter.c | 12 +++++++++++-
+ src/device.c  | 15 +++++++++++++++
+ src/device.h  |  1 +
+ 3 files changed, 27 insertions(+), 1 deletion(-)
+
+diff --git a/src/adapter.c b/src/adapter.c
+index f98ef74..b130ee8 100644
+--- a/src/adapter.c
++++ b/src/adapter.c
+@@ -5660,7 +5660,17 @@ static void update_found_devices(struct btd_adapter *adapter,
+ 	ba2str(bdaddr, addr);
+ 
+ 	dev = btd_adapter_find_device(adapter, bdaddr, bdaddr_type);
+-	if (!dev) {
++	if (dev) {
++		/*
++		 * When we found paired device we will unpair it because
++		 * device is in "pairing mode"
++		 */
++		if (bdaddr_type != BDADDR_BREDR && device_is_paired(dev, bdaddr_type)) {
++			DBG("Remove paired device %s because in pairing state", addr);
++			btd_adapter_remove_device(adapter, dev);
++			return;
++		}
++	} else {
+ 		/*
+ 		 * If no client has requested discovery or the device is
+ 		 * not marked as discoverable, then do not create new
+diff --git a/src/device.c b/src/device.c
+index 9a6a249..948c120 100644
+--- a/src/device.c
++++ b/src/device.c
+@@ -5488,6 +5488,21 @@ void device_set_unpaired(struct btd_device *dev, uint8_t bdaddr_type)
+ 		btd_adapter_remove_device(dev->adapter, dev);
+ }
+ 
++void device_set_unpaired_no_delete(struct btd_device *dev, uint8_t bdaddr_type)
++{
++	struct bearer_state *state = get_state(dev, bdaddr_type);
++
++	if (!state->paired)
++		return;
++
++	state->paired = false;
++
++	g_dbus_emit_property_changed(dbus_conn, dev->path,
++						DEVICE_INTERFACE, "Paired");
++
++	btd_device_set_temporary(dev, true);
++}
++
+ static void device_auth_req_free(struct btd_device *device)
+ {
+ 	struct authentication_req *authr = device->authr;
+diff --git a/src/device.h b/src/device.h
+index ddb3f19..06505f9 100644
+--- a/src/device.h
++++ b/src/device.h
+@@ -89,6 +89,7 @@ bool device_is_bonded(struct btd_device *device, uint8_t bdaddr_type);
+ gboolean device_is_trusted(struct btd_device *device);
+ void device_set_paired(struct btd_device *dev, uint8_t bdaddr_type);
+ void device_set_unpaired(struct btd_device *dev, uint8_t bdaddr_type);
++void device_set_unpaired_no_delete(struct btd_device *dev, uint8_t bdaddr_type);
+ void btd_device_set_temporary(struct btd_device *device, bool temporary);
+ void device_set_disconnect_reason(struct btd_device *device, int reason);
+ void btd_device_set_trusted(struct btd_device *device, gboolean trusted);
+-- 
+2.7.4
+

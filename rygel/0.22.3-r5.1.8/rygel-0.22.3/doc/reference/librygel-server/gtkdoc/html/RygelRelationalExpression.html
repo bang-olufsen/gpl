@@ -1,0 +1,252 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>librygel-server Reference Manual: RygelRelationalExpression</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="index.html" title="librygel-server Reference Manual">
+<link rel="up" href="api-main-list.html" title="librygel-server API Reference">
+<link rel="prev" href="RygelPhotoItem.html" title="RygelPhotoItem">
+<link rel="next" href="RygelSearchExpression.html" title="RygelSearchExpression">
+<meta name="generator" content="GTK-Doc V1.20.1 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#RygelRelationalExpression.description" class="shortcut">Description</a></span><span id="nav_hierarchy">  <span class="dim">|</span> 
+                  <a href="#RygelRelationalExpression.object-hierarchy" class="shortcut">Object Hierarchy</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="api-main-list.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="RygelPhotoItem.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="RygelSearchExpression.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry">
+<a name="RygelRelationalExpression"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="RygelRelationalExpression.top_of_page"></a>RygelRelationalExpression</span></h2>
+<p>RygelRelationalExpression — This is a parsed UPnP search expression consisting of two strings joined by a relational operator such as such &lt;, &lt;=, ==, !=, &gt;, &gt;=, derivedFrom or exists.</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1">
+<a name="RygelRelationalExpression.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="functions_return">
+<col class="functions_name">
+</colgroup>
+<tbody>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a class="link" href="RygelRelationalExpression.html#RYGEL-TYPE-RELATIONAL-EXPRESSION:CAPS" title="RYGEL_TYPE_RELATIONAL_EXPRESSION">RYGEL_TYPE_RELATIONAL_EXPRESSION</a></td>
+</tr>
+<tr>
+<td class="function_type">
+<a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>
+</td>
+<td class="function_name">
+<a class="link" href="RygelRelationalExpression.html#rygel-relational-expression-compare-string" title="rygel_relational_expression_compare_string ()">rygel_relational_expression_compare_string</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>
+</td>
+<td class="function_name">
+<a class="link" href="RygelRelationalExpression.html#rygel-relational-expression-compare-int" title="rygel_relational_expression_compare_int ()">rygel_relational_expression_compare_int</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>
+</td>
+<td class="function_name">
+<a class="link" href="RygelRelationalExpression.html#rygel-relational-expression-compare-uint" title="rygel_relational_expression_compare_uint ()">rygel_relational_expression_compare_uint</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="RygelRelationalExpression.html" title="RygelRelationalExpression"><span class="returnvalue">RygelRelationalExpression</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="RygelRelationalExpression.html#rygel-relational-expression-new" title="rygel_relational_expression_new ()">rygel_relational_expression_new</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="RygelRelationalExpression.other"></a><h2>Types and Values</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="name">
+<col class="description">
+</colgroup>
+<tbody>
+<tr>
+<td class="datatype_keyword">struct</td>
+<td class="function_name"><a class="link" href="RygelRelationalExpression.html#RygelRelationalExpression-struct" title="struct RygelRelationalExpression">RygelRelationalExpression</a></td>
+</tr>
+<tr>
+<td class="datatype_keyword">struct</td>
+<td class="function_name"><a class="link" href="RygelRelationalExpression.html#RygelRelationalExpressionClass" title="struct RygelRelationalExpressionClass">RygelRelationalExpressionClass</a></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="RygelRelationalExpression.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="screen">    <a class="link" href="RygelSearchExpression.html" title="RygelSearchExpression">RygelSearchExpression</a>
+    <span class="lineart">╰──</span> RygelRelationalExpression
+</pre>
+</div>
+<div class="refsect1">
+<a name="RygelRelationalExpression.description"></a><h2>Description</h2>
+</div>
+<div class="refsect1">
+<a name="RygelRelationalExpression.functions_details"></a><h2>Functions</h2>
+<div class="refsect2">
+<a name="RYGEL-TYPE-RELATIONAL-EXPRESSION:CAPS"></a><h3>RYGEL_TYPE_RELATIONAL_EXPRESSION</h3>
+<pre class="programlisting">#define RYGEL_TYPE_RELATIONAL_EXPRESSION (rygel_relational_expression_get_type ())
+</pre>
+<p>The type for <a class="link" href="RygelRelationalExpression.html" title="RygelRelationalExpression"><span class="type">RygelRelationalExpression</span></a>.</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-relational-expression-compare-string"></a><h3>rygel_relational_expression_compare_string ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>
+rygel_relational_expression_compare_string
+                               (<em class="parameter"><code><a class="link" href="RygelRelationalExpression.html" title="RygelRelationalExpression"><span class="type">RygelRelationalExpression</span></a> *self</code></em>,
+                                <em class="parameter"><code>const <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *str</code></em>);</pre>
+<div class="refsect3">
+<a name="id-1.6.17.7.3.4"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelRelationalExpression.html" title="RygelRelationalExpression"><span class="type">RygelRelationalExpression</span></a> instance</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>str</p></td>
+<td class="parameter_description"><p> </p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-relational-expression-compare-int"></a><h3>rygel_relational_expression_compare_int ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>
+rygel_relational_expression_compare_int
+                               (<em class="parameter"><code><a class="link" href="RygelRelationalExpression.html" title="RygelRelationalExpression"><span class="type">RygelRelationalExpression</span></a> *self</code></em>,
+                                <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gint"><span class="type">gint</span></a> integer</code></em>);</pre>
+<div class="refsect3">
+<a name="id-1.6.17.7.4.4"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelRelationalExpression.html" title="RygelRelationalExpression"><span class="type">RygelRelationalExpression</span></a> instance</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>integer</p></td>
+<td class="parameter_description"><p> </p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-relational-expression-compare-uint"></a><h3>rygel_relational_expression_compare_uint ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>
+rygel_relational_expression_compare_uint
+                               (<em class="parameter"><code><a class="link" href="RygelRelationalExpression.html" title="RygelRelationalExpression"><span class="type">RygelRelationalExpression</span></a> *self</code></em>,
+                                <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> integer</code></em>);</pre>
+<div class="refsect3">
+<a name="id-1.6.17.7.5.4"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelRelationalExpression.html" title="RygelRelationalExpression"><span class="type">RygelRelationalExpression</span></a> instance</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>integer</p></td>
+<td class="parameter_description"><p> </p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-relational-expression-new"></a><h3>rygel_relational_expression_new ()</h3>
+<pre class="programlisting"><a class="link" href="RygelRelationalExpression.html" title="RygelRelationalExpression"><span class="returnvalue">RygelRelationalExpression</span></a> *
+rygel_relational_expression_new (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+</div>
+</div>
+<div class="refsect1">
+<a name="RygelRelationalExpression.other_details"></a><h2>Types and Values</h2>
+<div class="refsect2">
+<a name="RygelRelationalExpression-struct"></a><h3>struct RygelRelationalExpression</h3>
+<pre class="programlisting">struct RygelRelationalExpression;</pre>
+<p>This is a parsed UPnP search expression consisting of two strings joined by a relational operator such as such &lt;, &lt;=, ==, !=, &gt;, &gt;=, derivedFrom or exists.</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelRelationalExpressionClass"></a><h3>struct RygelRelationalExpressionClass</h3>
+<pre class="programlisting">struct RygelRelationalExpressionClass {
+	RygelSearchExpressionClass parent_class;
+};
+</pre>
+<p>The class structure for <a class="link" href="RygelRelationalExpression.html#RYGEL-TYPE-RELATIONAL-EXPRESSION:CAPS" title="RYGEL_TYPE_RELATIONAL_EXPRESSION"><code class="literal">RYGEL_TYPE_RELATIONAL_EXPRESSION</code></a>. All the fields in this structure are private and should never be accessed directly.</p>
+<div class="refsect3">
+<a name="id-1.6.17.8.3.5"></a><h4>Members</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="300px" class="struct_members_name">
+<col class="struct_members_description">
+<col width="200px" class="struct_members_annotations">
+</colgroup>
+<tbody><tr>
+<td class="struct_member_name"><p><a class="link" href="RygelSearchExpression.html#RygelSearchExpressionClass" title="struct RygelSearchExpressionClass"><span class="type">RygelSearchExpressionClass</span></a> <em class="structfield"><code><a name="RygelRelationalExpressionClass.parent-class"></a>parent_class</code></em>;</p></td>
+<td class="struct_member_description"><p>the parent class structure</p></td>
+<td class="struct_member_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.20.1</div>
+</body>
+</html>

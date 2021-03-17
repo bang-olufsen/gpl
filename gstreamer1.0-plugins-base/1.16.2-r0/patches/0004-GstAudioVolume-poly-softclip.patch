@@ -1,0 +1,722 @@
+From 67e3821003dd853dd8660eb73a5e982eede3fe87 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Fri, 6 Nov 2020 13:20:02 +0100
+Subject: [PATCH] GstAudioVolume:poly-softclip
+
+---
+ gst/volume/gstvolume.c         |  94 +++++++++-
+ gst/volume/gstvolume.h         |   2 +
+ gst/volume/gstvolumeorc-dist.c | 407 +++++++++++++++++++++++++++++++++++++++++
+ gst/volume/gstvolumeorc-dist.h |   1 +
+ gst/volume/gstvolumeorc.orc    |  31 ++++
+ 5 files changed, 527 insertions(+), 8 deletions(-)
+
+diff --git a/gst/volume/gstvolume.c b/gst/volume/gstvolume.c
+index fc10191..41f8c11 100644
+--- a/gst/volume/gstvolume.c
++++ b/gst/volume/gstvolume.c
+@@ -79,6 +79,10 @@
+ #define VOLUME_MAX_INT32             G_MAXINT32
+ #define VOLUME_MIN_INT32             G_MININT32
+ 
++#define POLY_SOFTCLIP_COEF1          0.0161817283951f
++#define POLY_SOFTCLIP_COEF3          -0.18962962963f
++#define POLY_SOFTCLIP_COEF5          1.0f
++
+ #define GST_CAT_DEFAULT gst_volume_debug
+ GST_DEBUG_CATEGORY_STATIC (GST_CAT_DEFAULT);
+ 
+@@ -91,12 +95,14 @@ enum
+ 
+ #define DEFAULT_PROP_MUTE       FALSE
+ #define DEFAULT_PROP_VOLUME     1.0
++#define DEFAULT_PROP_POLY_SOFTCLIP   FALSE
+ 
+ enum
+ {
+   PROP_0,
+   PROP_MUTE,
+-  PROP_VOLUME
++  PROP_VOLUME,
++  PROP_POLY_SOFTCLIP
+ };
+ 
+ #if G_BYTE_ORDER == G_LITTLE_ENDIAN
+@@ -153,6 +159,10 @@ static void volume_process_int16_clamp (GstVolume * self, gpointer bytes,
+     guint n_bytes);
+ static void volume_process_controlled_int16_clamp (GstVolume * self,
+     gpointer bytes, gdouble * volume, guint channels, guint n_bytes);
++static void volume_process_int16_poly_clamp (GstVolume * self, gpointer bytes,
++    guint n_bytes);
++static void volume_process_controlled_int16_poly_clamp (GstVolume * self,
++    gpointer bytes, gdouble * volume, guint channels, guint n_bytes);
+ static void volume_process_int8 (GstVolume * self, gpointer bytes,
+     guint n_bytes);
+ static void volume_process_int8_clamp (GstVolume * self, gpointer bytes,
+@@ -198,11 +208,19 @@ volume_choose_func (GstVolume * self, const GstAudioInfo * info)
+     case GST_AUDIO_FORMAT_S16:
+       /* only clamp if the gain is greater than 1.0 */
+       if (self->current_vol_i16 > VOLUME_UNITY_INT16) {
+-        self->process = volume_process_int16_clamp;
++	if (self->poly_softclip) {
++	  self->process = volume_process_int16_poly_clamp;
++	} else {
++	  self->process = volume_process_int16_clamp;
++	}
+       } else {
+         self->process = volume_process_int16;
+       }
+-      self->process_controlled = volume_process_controlled_int16_clamp;
++      if (self->poly_softclip) {
++	self->process_controlled = volume_process_controlled_int16_poly_clamp;
++      } else {
++	self->process_controlled = volume_process_controlled_int16_clamp;
++      }
+       break;
+     case GST_AUDIO_FORMAT_S8:
+       /* only clamp if the gain is greater than 1.0 */
+@@ -230,7 +248,7 @@ volume_choose_func (GstVolume * self, const GstAudioInfo * info)
+ 
+ static gboolean
+ volume_update_volume (GstVolume * self, const GstAudioInfo * info,
+-    gdouble volume, gboolean mute)
++		      gdouble volume, gboolean mute, gboolean poly_softclip)
+ {
+   gboolean passthrough;
+   gboolean res;
+@@ -240,7 +258,8 @@ volume_update_volume (GstVolume * self, const GstAudioInfo * info,
+   if (mute) {
+     self->current_mute = TRUE;
+     self->current_volume = 0.0;
+-
++    self->current_poly_softclip = FALSE;
++    
+     self->current_vol_i8 = 0;
+     self->current_vol_i16 = 0;
+     self->current_vol_i24 = 0;
+@@ -250,6 +269,7 @@ volume_update_volume (GstVolume * self, const GstAudioInfo * info,
+   } else {
+     self->current_mute = FALSE;
+     self->current_volume = volume;
++    self->current_poly_softclip = poly_softclip;
+ 
+     self->current_vol_i8 =
+         (gint) ((gdouble) volume * (gdouble) VOLUME_UNITY_INT8);
+@@ -323,6 +343,12 @@ gst_volume_class_init (GstVolumeClass * klass)
+           0.0, VOLUME_MAX_DOUBLE, DEFAULT_PROP_VOLUME,
+           G_PARAM_READWRITE | GST_PARAM_CONTROLLABLE | G_PARAM_STATIC_STRINGS));
+ 
++  g_object_class_install_property (gobject_class, PROP_POLY_SOFTCLIP,
++      g_param_spec_boolean ("poly-softclip", "Polynomial Soft-clipping", "polynomial soft-clipping",
++          DEFAULT_PROP_POLY_SOFTCLIP,
++          G_PARAM_READWRITE | GST_PARAM_CONTROLLABLE | G_PARAM_STATIC_STRINGS));
++
++
+   gst_element_class_set_static_metadata (element_class, "Volume",
+       "Filter/Effect/Audio",
+       "Set volume on audio/raw streams", "Andy Wingo <wingo@pobox.com>");
+@@ -592,6 +618,43 @@ volume_process_controlled_int16_clamp (GstVolume * self, gpointer bytes,
+ }
+ 
+ static void
++volume_process_int16_poly_clamp (GstVolume * self, gpointer bytes, guint n_bytes)
++{
++  gint16 *data = (gint16 *) bytes;
++  guint num_samples = n_bytes / sizeof (gint16);
++
++  /* hard coded in volume.orc */
++  g_assert (VOLUME_UNITY_INT16_BIT_SHIFT == 11);
++
++  volume_orc_process_int16_poly_clamp (data, self->current_volume / (float)G_MAXINT16,
++				       POLY_SOFTCLIP_COEF1, POLY_SOFTCLIP_COEF3,
++				       POLY_SOFTCLIP_COEF5, (float)G_MAXINT16, num_samples);
++}
++
++static void
++volume_process_controlled_int16_poly_clamp (GstVolume * self, gpointer bytes,
++    gdouble * volume, guint channels, guint n_bytes)
++{
++  gint16 *data = (gint16 *) bytes;
++  guint i, j;
++  guint num_samples = n_bytes / (sizeof (gint16) * channels);
++  gdouble vol, out, tmp;
++
++  for (i = 0; i < num_samples; i++) {
++    vol = *volume++;
++    for (j = 0; j < channels; j++) {
++      tmp = *data * vol;
++      out = POLY_SOFTCLIP_COEF1 * tmp;
++      out = out * tmp;
++      out = out * tmp + POLY_SOFTCLIP_COEF3;
++      out = out * tmp;
++      out = out * tmp + POLY_SOFTCLIP_COEF5;
++      *data++ = (gint16) out;
++    }
++  }
++}
++
++static void
+ volume_process_int8 (GstVolume * self, gpointer bytes, guint n_bytes)
+ {
+   gint8 *data = (gint8 *) bytes;
+@@ -649,13 +712,15 @@ volume_setup (GstAudioFilter * filter, const GstAudioInfo * info)
+   GstVolume *self = GST_VOLUME (filter);
+   gdouble volume;
+   gboolean mute;
++  gboolean poly_softclip;
+ 
+   GST_OBJECT_LOCK (self);
+   volume = self->volume;
+   mute = self->mute;
++  poly_softclip = self->poly_softclip;
+   GST_OBJECT_UNLOCK (self);
+ 
+-  res = volume_update_volume (self, info, volume, mute);
++  res = volume_update_volume (self, info, volume, mute, poly_softclip);
+   if (!res) {
+     GST_ELEMENT_ERROR (self, CORE, NEGOTIATION,
+         ("Invalid incoming format"), (NULL));
+@@ -689,6 +754,7 @@ volume_before_transform (GstBaseTransform * base, GstBuffer * buffer)
+   GstVolume *self = GST_VOLUME (base);
+   gdouble volume;
+   gboolean mute;
++  gboolean poly_softclip;
+ 
+   timestamp = GST_BUFFER_TIMESTAMP (buffer);
+   timestamp =
+@@ -704,12 +770,14 @@ volume_before_transform (GstBaseTransform * base, GstBuffer * buffer)
+   GST_OBJECT_LOCK (self);
+   volume = self->volume;
+   mute = self->mute;
++  poly_softclip = self->poly_softclip;
+   GST_OBJECT_UNLOCK (self);
+ 
+-  if ((volume != self->current_volume) || (mute != self->current_mute)) {
++  if ((volume != self->current_volume) || (mute != self->current_mute) ||
++      (poly_softclip != self->poly_softclip)) {
+     /* the volume or mute was updated, update our internal state before
+      * we continue processing. */
+-    volume_update_volume (self, GST_AUDIO_FILTER_INFO (self), volume, mute);
++    volume_update_volume (self, GST_AUDIO_FILTER_INFO (self), volume, mute, poly_softclip);
+   }
+ }
+ 
+@@ -831,6 +899,11 @@ volume_set_property (GObject * object, guint prop_id, const GValue * value,
+       self->volume = g_value_get_double (value);
+       GST_OBJECT_UNLOCK (self);
+       break;
++    case PROP_POLY_SOFTCLIP:
++      GST_OBJECT_LOCK (self);
++      self->poly_softclip = g_value_get_boolean (value);
++      GST_OBJECT_UNLOCK (self);
++      break;
+     default:
+       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+       break;
+@@ -854,6 +927,11 @@ volume_get_property (GObject * object, guint prop_id, GValue * value,
+       g_value_set_double (value, self->volume);
+       GST_OBJECT_UNLOCK (self);
+       break;
++    case PROP_POLY_SOFTCLIP:
++      GST_OBJECT_LOCK (self);
++      g_value_set_boolean (value, self->poly_softclip);
++      GST_OBJECT_UNLOCK (self);
++      break;
+     default:
+       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+       break;
+diff --git a/gst/volume/gstvolume.h b/gst/volume/gstvolume.h
+index 0b0466d..bc89ae6 100644
+--- a/gst/volume/gstvolume.h
++++ b/gst/volume/gstvolume.h
+@@ -59,9 +59,11 @@ struct _GstVolume {
+ 
+   gboolean mute;
+   gfloat volume;
++  gboolean poly_softclip;
+ 
+   gboolean current_mute;
+   gdouble current_volume;
++  gboolean current_poly_softclip;
+ 
+   gint   current_vol_i32;
+   gint   current_vol_i24; /* the _i(nt) values get synchronized with the */
+diff --git a/gst/volume/gstvolumeorc-dist.c b/gst/volume/gstvolumeorc-dist.c
+index 0fa1a0a..796e044 100644
+--- a/gst/volume/gstvolumeorc-dist.c
++++ b/gst/volume/gstvolumeorc-dist.c
+@@ -102,6 +102,8 @@ void volume_orc_process_int32 (gint32 * ORC_RESTRICT d1, int p1, int n);
+ void volume_orc_process_int32_clamp (gint32 * ORC_RESTRICT d1, int p1, int n);
+ void volume_orc_process_int16 (gint16 * ORC_RESTRICT d1, int p1, int n);
+ void volume_orc_process_int16_clamp (gint16 * ORC_RESTRICT d1, int p1, int n);
++void volume_orc_process_int16_poly_clamp (gint16 * ORC_RESTRICT d1, float p1,
++    float p2, float p3, float p4, float p5, int n);
+ void volume_orc_process_int8 (gint8 * ORC_RESTRICT d1, int p1, int n);
+ void volume_orc_process_int8_clamp (gint8 * ORC_RESTRICT d1, int p1, int n);
+ void volume_orc_memset_f64 (gdouble * ORC_RESTRICT d1, double p1, int n);
+@@ -934,6 +936,411 @@ volume_orc_process_int16_clamp (gint16 * ORC_RESTRICT d1, int p1, int n)
+ #endif
+ 
+ 
++/* volume_orc_process_int16_poly_clamp */
++#ifdef DISABLE_ORC
++void
++volume_orc_process_int16_poly_clamp (gint16 * ORC_RESTRICT d1, float p1,
++    float p2, float p3, float p4, float p5, int n)
++{
++  int i;
++  orc_union16 *ORC_RESTRICT ptr0;
++  orc_union16 var34;
++  orc_union32 var35;
++  orc_union32 var36;
++  orc_union32 var37;
++  orc_union32 var38;
++  orc_union32 var39;
++  orc_union16 var40;
++  orc_union32 var41;
++  orc_union32 var42;
++  orc_union32 var43;
++  orc_union32 var44;
++  orc_union32 var45;
++  orc_union32 var46;
++  orc_union32 var47;
++  orc_union32 var48;
++  orc_union32 var49;
++  orc_union32 var50;
++  orc_union32 var51;
++  orc_union32 var52;
++
++  ptr0 = (orc_union16 *) d1;
++
++  /* 3: loadpl */
++  var35.f = p1;
++  /* 5: loadpl */
++  var36.f = p2;
++  /* 8: loadpl */
++  var37.f = p3;
++  /* 12: loadpl */
++  var38.f = p4;
++  /* 15: loadpl */
++  var39.f = p5;
++
++  for (i = 0; i < n; i++) {
++    /* 0: loadw */
++    var34 = ptr0[i];
++    /* 1: convswl */
++    var41.i = var34.i;
++    /* 2: convlf */
++    var42.f = var41.i;
++    /* 4: mulf */
++    {
++      orc_union32 _src1;
++      orc_union32 _src2;
++      orc_union32 _dest1;
++      _src1.i = ORC_DENORMAL (var42.i);
++      _src2.i = ORC_DENORMAL (var35.i);
++      _dest1.f = _src1.f * _src2.f;
++      var43.i = ORC_DENORMAL (_dest1.i);
++    }
++    /* 6: mulf */
++    {
++      orc_union32 _src1;
++      orc_union32 _src2;
++      orc_union32 _dest1;
++      _src1.i = ORC_DENORMAL (var43.i);
++      _src2.i = ORC_DENORMAL (var36.i);
++      _dest1.f = _src1.f * _src2.f;
++      var44.i = ORC_DENORMAL (_dest1.i);
++    }
++    /* 7: mulf */
++    {
++      orc_union32 _src1;
++      orc_union32 _src2;
++      orc_union32 _dest1;
++      _src1.i = ORC_DENORMAL (var44.i);
++      _src2.i = ORC_DENORMAL (var43.i);
++      _dest1.f = _src1.f * _src2.f;
++      var45.i = ORC_DENORMAL (_dest1.i);
++    }
++    /* 9: addf */
++    {
++      orc_union32 _src1;
++      orc_union32 _src2;
++      orc_union32 _dest1;
++      _src1.i = ORC_DENORMAL (var45.i);
++      _src2.i = ORC_DENORMAL (var37.i);
++      _dest1.f = _src1.f + _src2.f;
++      var46.i = ORC_DENORMAL (_dest1.i);
++    }
++    /* 10: mulf */
++    {
++      orc_union32 _src1;
++      orc_union32 _src2;
++      orc_union32 _dest1;
++      _src1.i = ORC_DENORMAL (var46.i);
++      _src2.i = ORC_DENORMAL (var43.i);
++      _dest1.f = _src1.f * _src2.f;
++      var47.i = ORC_DENORMAL (_dest1.i);
++    }
++    /* 11: mulf */
++    {
++      orc_union32 _src1;
++      orc_union32 _src2;
++      orc_union32 _dest1;
++      _src1.i = ORC_DENORMAL (var47.i);
++      _src2.i = ORC_DENORMAL (var43.i);
++      _dest1.f = _src1.f * _src2.f;
++      var48.i = ORC_DENORMAL (_dest1.i);
++    }
++    /* 13: addf */
++    {
++      orc_union32 _src1;
++      orc_union32 _src2;
++      orc_union32 _dest1;
++      _src1.i = ORC_DENORMAL (var48.i);
++      _src2.i = ORC_DENORMAL (var38.i);
++      _dest1.f = _src1.f + _src2.f;
++      var49.i = ORC_DENORMAL (_dest1.i);
++    }
++    /* 14: mulf */
++    {
++      orc_union32 _src1;
++      orc_union32 _src2;
++      orc_union32 _dest1;
++      _src1.i = ORC_DENORMAL (var49.i);
++      _src2.i = ORC_DENORMAL (var43.i);
++      _dest1.f = _src1.f * _src2.f;
++      var50.i = ORC_DENORMAL (_dest1.i);
++    }
++    /* 16: mulf */
++    {
++      orc_union32 _src1;
++      orc_union32 _src2;
++      orc_union32 _dest1;
++      _src1.i = ORC_DENORMAL (var50.i);
++      _src2.i = ORC_DENORMAL (var39.i);
++      _dest1.f = _src1.f * _src2.f;
++      var51.i = ORC_DENORMAL (_dest1.i);
++    }
++    /* 17: convfl */
++    {
++      int tmp;
++      tmp = (int) var51.f;
++      if (tmp == 0x80000000 && !(var51.i & 0x80000000))
++        tmp = 0x7fffffff;
++      var52.i = tmp;
++    }
++    /* 18: convssslw */
++    var40.i = ORC_CLAMP_SW (var52.i);
++    /* 19: storew */
++    ptr0[i] = var40;
++  }
++
++}
++
++#else
++static void
++_backup_volume_orc_process_int16_poly_clamp (OrcExecutor * ORC_RESTRICT ex)
++{
++  int i;
++  int n = ex->n;
++  orc_union16 *ORC_RESTRICT ptr0;
++  orc_union16 var34;
++  orc_union32 var35;
++  orc_union32 var36;
++  orc_union32 var37;
++  orc_union32 var38;
++  orc_union32 var39;
++  orc_union16 var40;
++  orc_union32 var41;
++  orc_union32 var42;
++  orc_union32 var43;
++  orc_union32 var44;
++  orc_union32 var45;
++  orc_union32 var46;
++  orc_union32 var47;
++  orc_union32 var48;
++  orc_union32 var49;
++  orc_union32 var50;
++  orc_union32 var51;
++  orc_union32 var52;
++
++  ptr0 = (orc_union16 *) ex->arrays[0];
++
++  /* 3: loadpl */
++  var35.i = ex->params[24];
++  /* 5: loadpl */
++  var36.i = ex->params[25];
++  /* 8: loadpl */
++  var37.i = ex->params[26];
++  /* 12: loadpl */
++  var38.i = ex->params[27];
++  /* 15: loadpl */
++  var39.i = ex->params[28];
++
++  for (i = 0; i < n; i++) {
++    /* 0: loadw */
++    var34 = ptr0[i];
++    /* 1: convswl */
++    var41.i = var34.i;
++    /* 2: convlf */
++    var42.f = var41.i;
++    /* 4: mulf */
++    {
++      orc_union32 _src1;
++      orc_union32 _src2;
++      orc_union32 _dest1;
++      _src1.i = ORC_DENORMAL (var42.i);
++      _src2.i = ORC_DENORMAL (var35.i);
++      _dest1.f = _src1.f * _src2.f;
++      var43.i = ORC_DENORMAL (_dest1.i);
++    }
++    /* 6: mulf */
++    {
++      orc_union32 _src1;
++      orc_union32 _src2;
++      orc_union32 _dest1;
++      _src1.i = ORC_DENORMAL (var43.i);
++      _src2.i = ORC_DENORMAL (var36.i);
++      _dest1.f = _src1.f * _src2.f;
++      var44.i = ORC_DENORMAL (_dest1.i);
++    }
++    /* 7: mulf */
++    {
++      orc_union32 _src1;
++      orc_union32 _src2;
++      orc_union32 _dest1;
++      _src1.i = ORC_DENORMAL (var44.i);
++      _src2.i = ORC_DENORMAL (var43.i);
++      _dest1.f = _src1.f * _src2.f;
++      var45.i = ORC_DENORMAL (_dest1.i);
++    }
++    /* 9: addf */
++    {
++      orc_union32 _src1;
++      orc_union32 _src2;
++      orc_union32 _dest1;
++      _src1.i = ORC_DENORMAL (var45.i);
++      _src2.i = ORC_DENORMAL (var37.i);
++      _dest1.f = _src1.f + _src2.f;
++      var46.i = ORC_DENORMAL (_dest1.i);
++    }
++    /* 10: mulf */
++    {
++      orc_union32 _src1;
++      orc_union32 _src2;
++      orc_union32 _dest1;
++      _src1.i = ORC_DENORMAL (var46.i);
++      _src2.i = ORC_DENORMAL (var43.i);
++      _dest1.f = _src1.f * _src2.f;
++      var47.i = ORC_DENORMAL (_dest1.i);
++    }
++    /* 11: mulf */
++    {
++      orc_union32 _src1;
++      orc_union32 _src2;
++      orc_union32 _dest1;
++      _src1.i = ORC_DENORMAL (var47.i);
++      _src2.i = ORC_DENORMAL (var43.i);
++      _dest1.f = _src1.f * _src2.f;
++      var48.i = ORC_DENORMAL (_dest1.i);
++    }
++    /* 13: addf */
++    {
++      orc_union32 _src1;
++      orc_union32 _src2;
++      orc_union32 _dest1;
++      _src1.i = ORC_DENORMAL (var48.i);
++      _src2.i = ORC_DENORMAL (var38.i);
++      _dest1.f = _src1.f + _src2.f;
++      var49.i = ORC_DENORMAL (_dest1.i);
++    }
++    /* 14: mulf */
++    {
++      orc_union32 _src1;
++      orc_union32 _src2;
++      orc_union32 _dest1;
++      _src1.i = ORC_DENORMAL (var49.i);
++      _src2.i = ORC_DENORMAL (var43.i);
++      _dest1.f = _src1.f * _src2.f;
++      var50.i = ORC_DENORMAL (_dest1.i);
++    }
++    /* 16: mulf */
++    {
++      orc_union32 _src1;
++      orc_union32 _src2;
++      orc_union32 _dest1;
++      _src1.i = ORC_DENORMAL (var50.i);
++      _src2.i = ORC_DENORMAL (var39.i);
++      _dest1.f = _src1.f * _src2.f;
++      var51.i = ORC_DENORMAL (_dest1.i);
++    }
++    /* 17: convfl */
++    {
++      int tmp;
++      tmp = (int) var51.f;
++      if (tmp == 0x80000000 && !(var51.i & 0x80000000))
++        tmp = 0x7fffffff;
++      var52.i = tmp;
++    }
++    /* 18: convssslw */
++    var40.i = ORC_CLAMP_SW (var52.i);
++    /* 19: storew */
++    ptr0[i] = var40;
++  }
++
++}
++
++void
++volume_orc_process_int16_poly_clamp (gint16 * ORC_RESTRICT d1, float p1,
++    float p2, float p3, float p4, float p5, int n)
++{
++  OrcExecutor _ex, *ex = &_ex;
++  static volatile int p_inited = 0;
++  static OrcCode *c = 0;
++  void (*func) (OrcExecutor *);
++
++  if (!p_inited) {
++    orc_once_mutex_lock ();
++    if (!p_inited) {
++      OrcProgram *p;
++
++      p = orc_program_new ();
++      orc_program_set_name (p, "volume_orc_process_int16_poly_clamp");
++      orc_program_set_backup_function (p,
++          _backup_volume_orc_process_int16_poly_clamp);
++      orc_program_add_destination (p, 2, "d1");
++      orc_program_add_parameter_float (p, 4, "p1");
++      orc_program_add_parameter_float (p, 4, "p2");
++      orc_program_add_parameter_float (p, 4, "p3");
++      orc_program_add_parameter_float (p, 4, "p4");
++      orc_program_add_parameter_float (p, 4, "p5");
++      orc_program_add_temporary (p, 4, "t1");
++      orc_program_add_temporary (p, 4, "t2");
++
++      orc_program_append_2 (p, "convswl", 0, ORC_VAR_T1, ORC_VAR_D1, ORC_VAR_D1,
++          ORC_VAR_D1);
++      orc_program_append_2 (p, "convlf", 0, ORC_VAR_T1, ORC_VAR_T1, ORC_VAR_D1,
++          ORC_VAR_D1);
++      orc_program_append_2 (p, "mulf", 0, ORC_VAR_T1, ORC_VAR_T1, ORC_VAR_P1,
++          ORC_VAR_D1);
++      orc_program_append_2 (p, "mulf", 0, ORC_VAR_T2, ORC_VAR_T1, ORC_VAR_P2,
++          ORC_VAR_D1);
++      orc_program_append_2 (p, "mulf", 0, ORC_VAR_T2, ORC_VAR_T2, ORC_VAR_T1,
++          ORC_VAR_D1);
++      orc_program_append_2 (p, "addf", 0, ORC_VAR_T2, ORC_VAR_T2, ORC_VAR_P3,
++          ORC_VAR_D1);
++      orc_program_append_2 (p, "mulf", 0, ORC_VAR_T2, ORC_VAR_T2, ORC_VAR_T1,
++          ORC_VAR_D1);
++      orc_program_append_2 (p, "mulf", 0, ORC_VAR_T2, ORC_VAR_T2, ORC_VAR_T1,
++          ORC_VAR_D1);
++      orc_program_append_2 (p, "addf", 0, ORC_VAR_T2, ORC_VAR_T2, ORC_VAR_P4,
++          ORC_VAR_D1);
++      orc_program_append_2 (p, "mulf", 0, ORC_VAR_T2, ORC_VAR_T2, ORC_VAR_T1,
++          ORC_VAR_D1);
++      orc_program_append_2 (p, "mulf", 0, ORC_VAR_T2, ORC_VAR_T2, ORC_VAR_P5,
++          ORC_VAR_D1);
++      orc_program_append_2 (p, "convfl", 0, ORC_VAR_T2, ORC_VAR_T2, ORC_VAR_D1,
++          ORC_VAR_D1);
++      orc_program_append_2 (p, "convssslw", 0, ORC_VAR_D1, ORC_VAR_T2,
++          ORC_VAR_D1, ORC_VAR_D1);
++
++      orc_program_compile (p);
++      c = orc_program_take_code (p);
++      orc_program_free (p);
++    }
++    p_inited = TRUE;
++    orc_once_mutex_unlock ();
++  }
++  ex->arrays[ORC_VAR_A2] = c;
++  ex->program = 0;
++
++  ex->n = n;
++  ex->arrays[ORC_VAR_D1] = d1;
++  {
++    orc_union32 tmp;
++    tmp.f = p1;
++    ex->params[ORC_VAR_P1] = tmp.i;
++  }
++  {
++    orc_union32 tmp;
++    tmp.f = p2;
++    ex->params[ORC_VAR_P2] = tmp.i;
++  }
++  {
++    orc_union32 tmp;
++    tmp.f = p3;
++    ex->params[ORC_VAR_P3] = tmp.i;
++  }
++  {
++    orc_union32 tmp;
++    tmp.f = p4;
++    ex->params[ORC_VAR_P4] = tmp.i;
++  }
++  {
++    orc_union32 tmp;
++    tmp.f = p5;
++    ex->params[ORC_VAR_P5] = tmp.i;
++  }
++
++  func = c->exec;
++  func (ex);
++}
++#endif
++
++
+ /* volume_orc_process_int8 */
+ #ifdef DISABLE_ORC
+ void
+diff --git a/gst/volume/gstvolumeorc-dist.h b/gst/volume/gstvolumeorc-dist.h
+index 60ef688..27acef4 100644
+--- a/gst/volume/gstvolumeorc-dist.h
++++ b/gst/volume/gstvolumeorc-dist.h
+@@ -86,6 +86,7 @@ void volume_orc_process_int32 (gint32 * ORC_RESTRICT d1, int p1, int n);
+ void volume_orc_process_int32_clamp (gint32 * ORC_RESTRICT d1, int p1, int n);
+ void volume_orc_process_int16 (gint16 * ORC_RESTRICT d1, int p1, int n);
+ void volume_orc_process_int16_clamp (gint16 * ORC_RESTRICT d1, int p1, int n);
++void volume_orc_process_int16_poly_clamp (gint16 * ORC_RESTRICT d1, float p1, float p2, float p3, float p4, float p5, int n);
+ void volume_orc_process_int8 (gint8 * ORC_RESTRICT d1, int p1, int n);
+ void volume_orc_process_int8_clamp (gint8 * ORC_RESTRICT d1, int p1, int n);
+ void volume_orc_memset_f64 (gdouble * ORC_RESTRICT d1, double p1, int n);
+diff --git a/gst/volume/gstvolumeorc.orc b/gst/volume/gstvolumeorc.orc
+index e22ea62..4963fac 100644
+--- a/gst/volume/gstvolumeorc.orc
++++ b/gst/volume/gstvolumeorc.orc
+@@ -48,6 +48,37 @@ mulswl t1, d1, p1
+ shrsl t1, t1, 11
+ convssslw d1, t1
+ 
++.function volume_orc_process_int16_poly_clamp
++.dest 2 d1 gint16
++.floatparam 4 volume
++.floatparam 4 coef1
++.floatparam 4 coef3
++.floatparam 4 coef5
++.floatparam 4 scale
++.temp 4 t1
++.temp 4 t2
++
++# move from 16 bits to float
++convswl t1, d1
++convlf t1, t1
++
++# multiply with volume
++mulf t1, t1, volume
++
++# calculate poly
++mulf t2, t1, coef1
++mulf t2, t2, t1
++addf t2, t2, coef3
++mulf t2, t2, t1
++mulf t2, t2, t1
++addf t2, t2, coef5
++mulf t2, t2, t1
++
++# convert back to 16 bits
++mulf t2, t2, scale
++convfl t2, t2
++convssslw d1, t2
++
+ .function volume_orc_process_int8
+ .dest 1 d1 gint8
+ .param 1 p1

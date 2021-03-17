@@ -1,0 +1,2 @@
+no-examples.patch -p1
+test-install-makefile.patch -p1

@@ -1,0 +1,356 @@
+From 6901647b422bc4285c74652ac0958700e99f103f Mon Sep 17 00:00:00 2001
+From: Fionn Cleary <fionn.cleary@streamunlimited.com>
+Date: Tue, 12 Aug 2014 18:41:33 +0200
+Subject: [PATCH] stream800: Easy compiler warning fixes
+
+Should all be uncontroversial, all are either unused variables or
+functions, missing includes, incorrect declarations () vs (void).
+
+Signed-off-by: Fionn Cleary <fionn.cleary@streamunlimited.com>
+---
+ board/streamunlimited/stream800/adc.c                         |  1 -
+ board/streamunlimited/stream800/board-spl.c                   |  1 +
+ board/streamunlimited/stream800/board-sue_demo_client_board.c |  4 ++--
+ board/streamunlimited/stream800/board-sue_demo_client_board.h |  1 -
+ .../streamunlimited/stream800/board-sue_factory_test_board.c  |  4 ++--
+ .../streamunlimited/stream800/board-sue_factory_test_board.h  |  2 +-
+ .../streamunlimited/stream800/board-sue_first_carrier_board.c |  4 ++--
+ .../streamunlimited/stream800/board-sue_first_carrier_board.h |  1 -
+ board/streamunlimited/stream800/board.c                       |  9 ++++-----
+ board/streamunlimited/stream800/board.h                       |  1 +
+ board/streamunlimited/stream800/fwupdate.c                    |  4 ++--
+ board/streamunlimited/stream800/mux.c                         |  3 ++-
+ board/streamunlimited/stream800/omap_wdt.c                    | 11 ++++++-----
+ board/streamunlimited/stream800/sfu_parser.c                  |  6 +-----
+ board/streamunlimited/stream800/sfu_parser.h                  |  3 ++-
+ 15 files changed, 26 insertions(+), 29 deletions(-)
+
+diff --git a/board/streamunlimited/stream800/adc.c b/board/streamunlimited/stream800/adc.c
+index 99fc405..8e6413f 100644
+--- a/board/streamunlimited/stream800/adc.c
++++ b/board/streamunlimited/stream800/adc.c
+@@ -105,7 +105,6 @@ int init_adc(void)
+ 
+ int read_adc_channel(int channel)
+ {
+-	unsigned long reg;
+ 	unsigned timeout = 1000;
+ 
+ 	/* make step config regs writeable */
+diff --git a/board/streamunlimited/stream800/board-spl.c b/board/streamunlimited/stream800/board-spl.c
+index e91ed0e..2211d2f 100644
+--- a/board/streamunlimited/stream800/board-spl.c
++++ b/board/streamunlimited/stream800/board-spl.c
+@@ -17,6 +17,7 @@
+  */
+ 
+ #include <common.h>
++#include <cpsw.h>
+ #include <errno.h>
+ #include <spl.h>
+ #include <asm/arch/cpu.h>
+diff --git a/board/streamunlimited/stream800/board-sue_demo_client_board.c b/board/streamunlimited/stream800/board-sue_demo_client_board.c
+index 9d5f363..b68930b 100755
+--- a/board/streamunlimited/stream800/board-sue_demo_client_board.c
++++ b/board/streamunlimited/stream800/board-sue_demo_client_board.c
+@@ -14,12 +14,11 @@
+  * GNU General Public License for more details.
+  */
+ 
+-#include "board-sue_demo_client_board.h"
+-
+ /*
+  * "SUE demo client" - board specific initialization
+  */
+ 
++#include "board-sue_demo_client_board.h"
+ #include <common.h>
+ #include <asm/io.h>
+ #include <asm/arch/cpu.h>
+@@ -29,6 +28,7 @@
+ #include <asm/arch-am33xx/phy.h>
+ #include <asm-generic/gpio.h>
+ #include <asm/arch/mux.h>
++#include <cpsw.h>
+ 
+ static struct ctrl_dev *cdev = (struct ctrl_dev *)CTRL_DEVICE_BASE;
+ 
+diff --git a/board/streamunlimited/stream800/board-sue_demo_client_board.h b/board/streamunlimited/stream800/board-sue_demo_client_board.h
+index a65f1d8..496df24 100644
+--- a/board/streamunlimited/stream800/board-sue_demo_client_board.h
++++ b/board/streamunlimited/stream800/board-sue_demo_client_board.h
+@@ -19,7 +19,6 @@
+ 
+ #include <common.h>
+ #include "board.h"
+-#include <cpsw.h>
+ 
+ void demo_client__set_board_interface(void);
+ 
+diff --git a/board/streamunlimited/stream800/board-sue_factory_test_board.c b/board/streamunlimited/stream800/board-sue_factory_test_board.c
+index 7438452..b0791ab 100644
+--- a/board/streamunlimited/stream800/board-sue_factory_test_board.c
++++ b/board/streamunlimited/stream800/board-sue_factory_test_board.c
+@@ -14,13 +14,13 @@
+  * GNU General Public License for more details.
+  */
+ 
+-#include "board-sue_factory_test_board.h"
+-
+ /*
+  * "SUE Carrier Board" - board specific initialization
+  */
+ 
++#include "board-sue_factory_test_board.h"
+ #include <common.h>
++#include <cpsw.h>
+ #include <asm/io.h>
+ #include <asm/arch/cpu.h>
+ #include <asm/arch/clock.h>
+diff --git a/board/streamunlimited/stream800/board-sue_factory_test_board.h b/board/streamunlimited/stream800/board-sue_factory_test_board.h
+index f4c20db..065b19f 100644
+--- a/board/streamunlimited/stream800/board-sue_factory_test_board.h
++++ b/board/streamunlimited/stream800/board-sue_factory_test_board.h
+@@ -18,8 +18,8 @@
+ #define __BOARD_SUE_FACTORY_TEST_BOARD_H
+ 
+ #include <common.h>
+-#include "board.h"
+ #include <cpsw.h>
++#include "board.h"
+ 
+ void factory_test__set_board_interface(void);
+ 
+diff --git a/board/streamunlimited/stream800/board-sue_first_carrier_board.c b/board/streamunlimited/stream800/board-sue_first_carrier_board.c
+index f59a79b..6ae3ce2 100644
+--- a/board/streamunlimited/stream800/board-sue_first_carrier_board.c
++++ b/board/streamunlimited/stream800/board-sue_first_carrier_board.c
+@@ -14,13 +14,13 @@
+  * GNU General Public License for more details.
+  */
+ 
+-#include "board-sue_first_carrier_board.h"
+-
+ /*
+  * "SUE Carrier Board" - board specific initialization
+  */
+ 
++#include "board-sue_first_carrier_board.h"
+ #include <common.h>
++#include <cpsw.h>
+ #include <asm/io.h>
+ #include <asm/arch/cpu.h>
+ #include <asm/arch/clock.h>
+diff --git a/board/streamunlimited/stream800/board-sue_first_carrier_board.h b/board/streamunlimited/stream800/board-sue_first_carrier_board.h
+index c127cdc..3e06f25 100644
+--- a/board/streamunlimited/stream800/board-sue_first_carrier_board.h
++++ b/board/streamunlimited/stream800/board-sue_first_carrier_board.h
+@@ -19,7 +19,6 @@
+ 
+ #include <common.h>
+ #include "board.h"
+-#include <cpsw.h>
+ 
+ void first_carrier__set_board_interface(void);
+ 
+diff --git a/board/streamunlimited/stream800/board.c b/board/streamunlimited/stream800/board.c
+index 99b74ee..0ba3984 100755
+--- a/board/streamunlimited/stream800/board.c
++++ b/board/streamunlimited/stream800/board.c
+@@ -16,6 +16,7 @@
+  * GNU General Public License for more details.
+  */
+ 
++#include "board.h"
+ #include <common.h>
+ #include <errno.h>
+ #include <spl.h>
+@@ -35,7 +36,8 @@
+ #include <cpsw.h>
+ #include <os.h>
+ #include <nand.h>
+-#include "board.h"
++#include <malloc.h>
++#include <linux/err.h>
+ #include "mux.h"
+ #include "board-sue_demo_client_board.h"
+ #include "board-sue_first_carrier_board.h"
+@@ -44,7 +46,6 @@
+ #include "fwupdate.h"
+ #include "si5351x.h"
+ #include "partitions.h"
+-#include <linux/err.h>
+ 
+ #ifdef CONFIG_SPL_BUILD
+ #error This file should not be built for SPL
+@@ -69,8 +70,6 @@ extern int ubi_remove(char* vol_name);
+ 
+ DECLARE_GLOBAL_DATA_PTR;
+ 
+-static struct wd_timer *wdtimer = (struct wd_timer *)WDT_BASE;
+-
+ static struct ctrl_dev *cdev = (struct ctrl_dev *)CTRL_DEVICE_BASE;
+ 
+ static struct Stream800Board __attribute__((section (".data"))) board = {moduleVersion : MV_unknown, carrierBoardType : CBT_unknown};
+@@ -236,7 +235,7 @@ static int create_mtd_part(char *buf, struct partition part)
+  * Detect flash size and setup mtdparts variable
+  * accordingly from defined partition table
+  */
+-static int detect_flash()
++static int detect_flash(void)
+ {
+ 	struct mtd_info *mtd = get_mtd_device_nm("nand0");
+ 	enum s800_flash_size size = FLASH_SIZE_UNKNOWN;
+diff --git a/board/streamunlimited/stream800/board.h b/board/streamunlimited/stream800/board.h
+index 06ab038..e9bdf52 100644
+--- a/board/streamunlimited/stream800/board.h
++++ b/board/streamunlimited/stream800/board.h
+@@ -20,6 +20,7 @@
+ #define _BOARD_H_
+ 
+ #include <common.h>
++#include <cpsw.h>
+ #include "board_defines.h"
+ 
+ struct StreamBoardInterface {
+diff --git a/board/streamunlimited/stream800/fwupdate.c b/board/streamunlimited/stream800/fwupdate.c
+index 43c44ae..4e1997d 100644
+--- a/board/streamunlimited/stream800/fwupdate.c
++++ b/board/streamunlimited/stream800/fwupdate.c
+@@ -21,13 +21,13 @@
+  */
+ 
+ #include "fwupdate.h"
+-#include "board.h"
+-
+ #include <common.h>
++#include <cpsw.h>
+ #include <hush.h>
+ #include <asm/arch/cpu.h>
+ #include <asm/arch/hardware.h>
+ #include <asm/io.h>
++#include "board.h"
+ 
+ #ifdef CONFIG_CMD_SFU_PARSER
+ #include "sfu_parser.h"
+diff --git a/board/streamunlimited/stream800/mux.c b/board/streamunlimited/stream800/mux.c
+index 887a17a..3885c18 100644
+--- a/board/streamunlimited/stream800/mux.c
++++ b/board/streamunlimited/stream800/mux.c
+@@ -13,13 +13,14 @@
+  * GNU General Public License for more details.
+  */
+ 
++#include "mux.h"
+ #include <common.h>
+ #include <asm/arch/sys_proto.h>
+ #include <asm/arch/hardware.h>
+ #include <asm/arch/mux.h>
+ #include <asm/io.h>
+ #include <i2c.h>
+-#include "mux.h"
++#include <cpsw.h>
+ 
+ static struct module_pin_mux uart0_pin_mux[] = {
+ 	{OFFSET(uart0_rxd), (MODE(0) | PULLUP_EN | RXACTIVE)},	/* UART0_RXD */
+diff --git a/board/streamunlimited/stream800/omap_wdt.c b/board/streamunlimited/stream800/omap_wdt.c
+index ea83088..4890f13 100644
+--- a/board/streamunlimited/stream800/omap_wdt.c
++++ b/board/streamunlimited/stream800/omap_wdt.c
+@@ -26,17 +26,18 @@
+  *	Use the driver model and standard identifiers; handle bigger timeouts.
+  */
+ 
++#include "omap_wdt.h"
+ #include <common.h>
++#include <cpsw.h>
+ #include <asm/io.h>
+ #include <asm/arch/cpu.h>
+-#include "omap_wdt.h"
+ #include <watchdog.h>
+ #include "board.h"
+ 
+ #ifndef CONFIG_STREAM800_WDT_TIMEOUT
+ #error CONFIG_STREAM800_WDT_TIMEOUT must be specified when watchdog is enabled
+ #endif
+- 
++
+ /*
+  * OMAP watchdog runs a 32-bit counter @ 32kHz,
+  * upward counting and triggers warm reset when
+@@ -85,6 +86,7 @@ static void omap_wdt_enable(void)
+     printf("Watchdog enabled...\n");
+ }
+ 
++static void omap_wdt_disable(void) __attribute__((unused));
+ static void omap_wdt_disable(void)
+ {
+ 	/* sequence required to disable watchdog */
+@@ -126,7 +128,7 @@ void watchdog_start(void)
+ {
+     char* wdt_timeout_str;
+     unsigned long wdt_timeout;
+-    
++
+     /* get watchdog timeout from environment */
+     wdt_timeout_str = getenv("wdt_timeout");
+     if (NULL != wdt_timeout_str) {
+@@ -141,7 +143,7 @@ void watchdog_start(void)
+         printf("Specify watchdog timeout via env \"wdt_timeout\" variable\n");
+     }
+     omap_wdt_adjust_timeout(wdt_timeout);
+-    
++
+ 	/* initialize prescaler */
+     wait_for_command_complete();
+ 
+@@ -152,4 +154,3 @@ void watchdog_start(void)
+ 	omap_wdt_ping(); /* trigger loading of new timeout value */
+ 	omap_wdt_enable();
+ }
+-
+diff --git a/board/streamunlimited/stream800/sfu_parser.c b/board/streamunlimited/stream800/sfu_parser.c
+index ce8e71f..001fb88 100644
+--- a/board/streamunlimited/stream800/sfu_parser.c
++++ b/board/streamunlimited/stream800/sfu_parser.c
+@@ -23,8 +23,8 @@
+  *
+  */
+ 
+-#include <common.h>
+ #include "sfu_parser.h"
++#include <common.h>
+ #include <const_env_common.h>
+ 
+ #ifdef CONFIG_SFU_FILE
+@@ -559,10 +559,7 @@ int32_t sfu_ImageValid(
+ 	uint32_t                 num_chunks;
+ 	uint32_t                 chunk;
+ 	sfu_cpuhdr_t             chunk_hdr;
+-	char            sfubuf[SFU_BUF_LEN];
+ 	uint32_t        chnk_data_addr;
+-	int             idx;
+-	char            hexchar[3];
+ 	char            md5_output[16];
+ 	char            sha256_output[32];
+ 	sha256_context sha256;
+@@ -1081,4 +1078,3 @@ static int32_t ExtractChunkSfuHdr(
+ 
+ 	return status;
+ } // end ExtractChunkSfuHdr
+-
+diff --git a/board/streamunlimited/stream800/sfu_parser.h b/board/streamunlimited/stream800/sfu_parser.h
+index 5a431d4..fe44e89 100644
+--- a/board/streamunlimited/stream800/sfu_parser.h
++++ b/board/streamunlimited/stream800/sfu_parser.h
+@@ -203,5 +203,6 @@ int32_t sfu_Decrypt(uint32_t data,
+ #endif // CONFIG_BLOWFISH
+ #endif // CONFIG_SFU_RAM
+ 
+-#endif /* _SFU_PARSER_H_ */
++int set_hush_var_with_str_value(const char *var_name, char *var_value);
+ 
++#endif /* _SFU_PARSER_H_ */
+-- 
+2.7.4
+

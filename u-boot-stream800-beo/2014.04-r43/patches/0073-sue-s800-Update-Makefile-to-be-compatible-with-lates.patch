@@ -1,0 +1,55 @@
+From 99450bc98b4fd0c806a015b5666d9139fd79d45b Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Fri, 11 Apr 2014 07:24:00 +0200
+Subject: [PATCH] sue:s800: Update Makefile to be compatible with latest
+ version
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ board/streamunlimited/stream800/Makefile | 28 ++--------------------------
+ 1 file changed, 2 insertions(+), 26 deletions(-)
+
+diff --git a/board/streamunlimited/stream800/Makefile b/board/streamunlimited/stream800/Makefile
+index 097a8bd..a96cfb4 100644
+--- a/board/streamunlimited/stream800/Makefile
++++ b/board/streamunlimited/stream800/Makefile
+@@ -14,34 +14,10 @@
+ # GNU General Public License for more details.
+ #
+ 
+-include $(TOPDIR)/config.mk
+-
+-LIB	= $(obj)lib$(BOARD).o
+-
+ ifdef CONFIG_SPL_BUILD
+-COBJS	:= board-spl.o mux.o
++obj-y += mux.o board-spl.o
+ else
+-COBJS	:= board.o mux.o adc.o board-sue_demo_client_board.o board-sue_first_carrier_board.o board-sue_factory_test_board.o fwupdate.o sfu_parser.o omap_wdt.o tftp_update.o
++obj-y += board.o mux.o adc.o board-sue_demo_client_board.o board-sue_first_carrier_board.o board-sue_factory_test_board.o fwupdate.o sfu_parser.o omap_wdt.o tftp_update.o
+ endif
+ 
+-SRCS	:= $(SOBJS:.o=.S) $(COBJS:.o=.c)
+-OBJS	:= $(addprefix $(obj),$(COBJS))
+-SOBJS	:= $(addprefix $(obj),$(SOBJS))
+-
+-$(LIB):	$(obj).depend $(OBJS) $(SOBJS)
+-	$(call cmd_link_o_target, $(OBJS) $(SOBJS))
+-
+-clean:
+-	rm -f $(SOBJS) $(OBJS)
+-
+-distclean:	clean
+-	rm -f $(LIB) core *.bak $(obj).depend
+-
+-#########################################################################
+-
+-# defines $(obj).depend target
+-include $(SRCTREE)/rules.mk
+-
+-sinclude $(obj).depend
+ 
+-#########################################################################
+-- 
+2.7.4
+

@@ -1,0 +1,3 @@
+remove_plus_from_invalid_characters_list.patch -p1
+unable-connect-dbus.patch -p1
+create_config_directory.patch -p1

@@ -1,0 +1,1182 @@
+<!-- ##### SECTION ./tmpl/gmime-cipher-context.sgml:Image ##### -->
+
+
+
+<!-- ##### SECTION ./tmpl/gmime-cipher-context.sgml:Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/gmime-cipher-context.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/gmime-cipher-context.sgml:Short_Description ##### -->
+
+
+
+<!-- ##### SECTION ./tmpl/gmime-cipher-context.sgml:Stability_Level ##### -->
+
+
+
+<!-- ##### SECTION ./tmpl/gmime-cipher-context.sgml:Title ##### -->
+gmime-cipher-context
+
+
+<!-- ##### SECTION ./tmpl/gmime-session-simple.sgml:Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/gmime-session-simple.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/gmime-session-simple.sgml:Short_Description ##### -->
+
+
+
+<!-- ##### SECTION ./tmpl/gmime-session-simple.sgml:Stability_Level ##### -->
+
+
+
+<!-- ##### SECTION ./tmpl/gmime-session-simple.sgml:Title ##### -->
+gmime-session-simple
+
+
+<!-- ##### SECTION ./tmpl/gmime-session.sgml:Long_Description ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/gmime-session.sgml:See_Also ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SECTION ./tmpl/gmime-session.sgml:Short_Description ##### -->
+
+
+
+<!-- ##### SECTION ./tmpl/gmime-session.sgml:Stability_Level ##### -->
+
+
+
+<!-- ##### SECTION ./tmpl/gmime-session.sgml:Title ##### -->
+gmime-session
+
+
+<!-- ##### ENUM GMimeBestEncoding ##### -->
+<para>
+
+</para>
+
+@GMIME_BEST_ENCODING_7BIT: 
+@GMIME_BEST_ENCODING_8BIT: 
+@GMIME_BEST_ENCODING_BINARY: 
+
+<!-- ##### STRUCT GMimeCipherContext ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ENUM GMimeCipherHash ##### -->
+<para>
+
+</para>
+
+@GMIME_CIPHER_HASH_DEFAULT: 
+@GMIME_CIPHER_HASH_MD2: 
+@GMIME_CIPHER_HASH_MD5: 
+@GMIME_CIPHER_HASH_SHA1: 
+@GMIME_CIPHER_HASH_SHA224: 
+@GMIME_CIPHER_HASH_SHA256: 
+@GMIME_CIPHER_HASH_SHA384: 
+@GMIME_CIPHER_HASH_SHA512: 
+@GMIME_CIPHER_HASH_RIPEMD160: 
+@GMIME_CIPHER_HASH_TIGER192: 
+@GMIME_CIPHER_HASH_HAVAL5160: 
+
+<!-- ##### ENUM GMimeCryptoCipherAlgo ##### -->
+<para>
+
+</para>
+
+@GMIME_CRYPTO_CIPHER_ALGO_DEFAULT: 
+@GMIME_CRYPTO_CIPHER_ALGO_IDEA: 
+@GMIME_CRYPTO_CIPHER_ALGO_3DES: 
+@GMIME_CRYPTO_CIPHER_ALGO_CAST5: 
+@GMIME_CRYPTO_CIPHER_ALGO_BLOWFISH: 
+@GMIME_CRYPTO_CIPHER_ALGO_AES: 
+@GMIME_CRYPTO_CIPHER_ALGO_AES192: 
+@GMIME_CRYPTO_CIPHER_ALGO_AES256: 
+@GMIME_CRYPTO_CIPHER_ALGO_TWOFISH: 
+@GMIME_CRYPTO_CIPHER_ALGO_CAMELLIA128: 
+@GMIME_CRYPTO_CIPHER_ALGO_CAMELLIA196: 
+@GMIME_CRYPTO_CIPHER_ALGO_CAMELLIA256: 
+
+<!-- ##### ENUM GMimeCryptoHash ##### -->
+<para>
+
+</para>
+
+@GMIME_CRYPTO_HASH_DEFAULT: 
+@GMIME_CRYPTO_HASH_MD5: 
+@GMIME_CRYPTO_HASH_SHA1: 
+@GMIME_CRYPTO_HASH_RIPEMD160: 
+@GMIME_CRYPTO_HASH_MD2: 
+@GMIME_CRYPTO_HASH_TIGER192: 
+@GMIME_CRYPTO_HASH_HAVAL5160: 
+@GMIME_CRYPTO_HASH_SHA256: 
+@GMIME_CRYPTO_HASH_SHA384: 
+@GMIME_CRYPTO_HASH_SHA512: 
+@GMIME_CRYPTO_HASH_SHA224: 
+@GMIME_CRYPTO_HASH_MD4: 
+
+<!-- ##### STRUCT GMimeCryptoKey ##### -->
+<para>
+
+</para>
+
+@pubkey_algo: 
+@issuer_serial: 
+@issuer_name: 
+@fingerprint: 
+@created: 
+@expires: 
+@keyid: 
+@email: 
+@name: 
+
+<!-- ##### ENUM GMimeCryptoPubKeyAlgo ##### -->
+<para>
+
+</para>
+
+@GMIME_CRYPTO_PUBKEY_ALGO_DEFAULT: 
+@GMIME_CRYPTO_PUBKEY_ALGO_RSA: 
+@GMIME_CRYPTO_PUBKEY_ALGO_RSA_E: 
+@GMIME_CRYPTO_PUBKEY_ALGO_RSA_S: 
+@GMIME_CRYPTO_PUBKEY_ALGO_ELG_E: 
+@GMIME_CRYPTO_PUBKEY_ALGO_DSA: 
+@GMIME_CRYPTO_PUBKEY_ALGO_ELG: 
+
+<!-- ##### STRUCT GMimeCryptoRecipient ##### -->
+<para>
+
+</para>
+
+@next: 
+@pubkey_algo: 
+@keyid: 
+
+<!-- ##### STRUCT GMimeDecryptionResult ##### -->
+<para>
+
+</para>
+
+@validity: 
+@recipients: 
+@cipher: 
+@mdc: 
+
+<!-- ##### STRUCT GMimeSession ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### STRUCT GMimeSessionSimple ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### STRUCT GMimeSignatureValidity ##### -->
+<para>
+
+</para>
+
+@status: 
+@signers: 
+@details: 
+
+<!-- ##### STRUCT GMimeSigner ##### -->
+<para>
+
+</para>
+
+@next: 
+@status: 
+@errors: 
+@trust: 
+@unused: 
+@issuer_serial: 
+@issuer_name: 
+@fingerprint: 
+@sig_created: 
+@sig_expires: 
+@key_created: 
+@key_expires: 
+@keyid: 
+@email: 
+@name: 
+
+<!-- ##### ENUM GMimeSignerError ##### -->
+<para>
+
+</para>
+
+@GMIME_SIGNER_ERROR_NONE: 
+@GMIME_SIGNER_ERROR_EXPSIG: 
+@GMIME_SIGNER_ERROR_NO_PUBKEY: 
+@GMIME_SIGNER_ERROR_EXPKEYSIG: 
+@GMIME_SIGNER_ERROR_REVKEYSIG: 
+
+<!-- ##### ENUM GMimeSignerStatus ##### -->
+<para>
+
+</para>
+
+@GMIME_SIGNER_STATUS_NONE: 
+@GMIME_SIGNER_STATUS_GOOD: 
+@GMIME_SIGNER_STATUS_BAD: 
+@GMIME_SIGNER_STATUS_ERROR: 
+
+<!-- ##### ENUM GMimeSignerTrust ##### -->
+<para>
+
+</para>
+
+@GMIME_SIGNER_TRUST_NONE: 
+@GMIME_SIGNER_TRUST_NEVER: 
+@GMIME_SIGNER_TRUST_UNDEFINED: 
+@GMIME_SIGNER_TRUST_MARGINAL: 
+@GMIME_SIGNER_TRUST_FULLY: 
+@GMIME_SIGNER_TRUST_ULTIMATE: 
+
+<!-- ##### FUNCTION g_mime_cipher_context_decrypt ##### -->
+<para>
+
+</para>
+
+@ctx: 
+@istream: 
+@ostream: 
+@err: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_cipher_context_encrypt ##### -->
+<para>
+
+</para>
+
+@ctx: 
+@sign: 
+@userid: 
+@recipients: 
+@istream: 
+@ostream: 
+@err: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_cipher_context_export_keys ##### -->
+<para>
+
+</para>
+
+@ctx: 
+@keys: 
+@ostream: 
+@err: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_cipher_context_hash_id ##### -->
+<para>
+
+</para>
+
+@ctx: 
+@hash: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_cipher_context_hash_name ##### -->
+<para>
+
+</para>
+
+@ctx: 
+@hash: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_cipher_context_import_keys ##### -->
+<para>
+
+</para>
+
+@ctx: 
+@istream: 
+@err: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_cipher_context_set_request_password ##### -->
+<para>
+
+</para>
+
+@ctx: 
+@request_passwd: 
+
+<!-- ##### FUNCTION g_mime_cipher_context_sign ##### -->
+<para>
+
+</para>
+
+@ctx: 
+@userid: 
+@hash: 
+@istream: 
+@ostream: 
+@err: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_cipher_context_verify ##### -->
+<para>
+
+</para>
+
+@ctx: 
+@hash: 
+@istream: 
+@sigstream: 
+@err: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_crypto_context_hash_id ##### -->
+<para>
+
+</para>
+
+@ctx: 
+@hash: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_crypto_context_hash_name ##### -->
+<para>
+
+</para>
+
+@ctx: 
+@hash: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_crypto_key_get_creation_date ##### -->
+<para>
+
+</para>
+
+@key: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_crypto_key_get_email ##### -->
+<para>
+
+</para>
+
+@key: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_crypto_key_get_expiration_date ##### -->
+<para>
+
+</para>
+
+@key: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_crypto_key_get_fingerprint ##### -->
+<para>
+
+</para>
+
+@key: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_crypto_key_get_issuer_name ##### -->
+<para>
+
+</para>
+
+@key: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_crypto_key_get_issuer_serial ##### -->
+<para>
+
+</para>
+
+@key: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_crypto_key_get_key_id ##### -->
+<para>
+
+</para>
+
+@key: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_crypto_key_get_name ##### -->
+<para>
+
+</para>
+
+@key: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_crypto_key_get_pubkey_algo ##### -->
+<para>
+
+</para>
+
+@key: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_crypto_key_set_creation_date ##### -->
+<para>
+
+</para>
+
+@key: 
+@created: 
+
+<!-- ##### FUNCTION g_mime_crypto_key_set_email ##### -->
+<para>
+
+</para>
+
+@key: 
+@email: 
+
+<!-- ##### FUNCTION g_mime_crypto_key_set_expiration_date ##### -->
+<para>
+
+</para>
+
+@key: 
+@expires: 
+
+<!-- ##### FUNCTION g_mime_crypto_key_set_fingerprint ##### -->
+<para>
+
+</para>
+
+@key: 
+@fingerprint: 
+
+<!-- ##### FUNCTION g_mime_crypto_key_set_issuer_name ##### -->
+<para>
+
+</para>
+
+@key: 
+@issuer_name: 
+
+<!-- ##### FUNCTION g_mime_crypto_key_set_issuer_serial ##### -->
+<para>
+
+</para>
+
+@key: 
+@issuer_serial: 
+
+<!-- ##### FUNCTION g_mime_crypto_key_set_key_id ##### -->
+<para>
+
+</para>
+
+@key: 
+@key_id: 
+
+<!-- ##### FUNCTION g_mime_crypto_key_set_name ##### -->
+<para>
+
+</para>
+
+@key: 
+@name: 
+
+<!-- ##### FUNCTION g_mime_crypto_key_set_pubkey_algo ##### -->
+<para>
+
+</para>
+
+@key: 
+@pubkey_algo: 
+
+<!-- ##### FUNCTION g_mime_crypto_recipient_free ##### -->
+<para>
+
+</para>
+
+@recipient: 
+
+<!-- ##### FUNCTION g_mime_crypto_recipient_get_key_id ##### -->
+<para>
+
+</para>
+
+@recipient: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_crypto_recipient_get_pubkey_algo ##### -->
+<para>
+
+</para>
+
+@recipient: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_crypto_recipient_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_crypto_recipient_next ##### -->
+<para>
+
+</para>
+
+@recipient: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_crypto_recipient_set_key_id ##### -->
+<para>
+
+</para>
+
+@recipient: 
+@key_id: 
+
+<!-- ##### FUNCTION g_mime_crypto_recipient_set_pubkey_algo ##### -->
+<para>
+
+</para>
+
+@recipient: 
+@pubkey_algo: 
+
+<!-- ##### FUNCTION g_mime_decryption_result_add_recipient ##### -->
+<para>
+
+</para>
+
+@result: 
+@recipient: 
+
+<!-- ##### FUNCTION g_mime_decryption_result_free ##### -->
+<para>
+
+</para>
+
+@result: 
+
+<!-- ##### FUNCTION g_mime_decryption_result_get_cipher ##### -->
+<para>
+
+</para>
+
+@result: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_decryption_result_get_mdc ##### -->
+<para>
+
+</para>
+
+@result: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_decryption_result_get_recipients ##### -->
+<para>
+
+</para>
+
+@result: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_decryption_result_get_validity ##### -->
+<para>
+
+</para>
+
+@result: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_decryption_result_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_decryption_result_set_cipher ##### -->
+<para>
+
+</para>
+
+@result: 
+@cipher: 
+
+<!-- ##### FUNCTION g_mime_decryption_result_set_mdc ##### -->
+<para>
+
+</para>
+
+@result: 
+@mdc: 
+
+<!-- ##### FUNCTION g_mime_decryption_result_set_validity ##### -->
+<para>
+
+</para>
+
+@result: 
+@validity: 
+
+<!-- ##### FUNCTION g_mime_header_list_has_raw ##### -->
+<para>
+
+</para>
+
+@headers: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_header_list_set_raw ##### -->
+<para>
+
+</para>
+
+@headers: 
+@raw: 
+
+<!-- ##### FUNCTION g_mime_multipart_encrypted_get_signature_validity ##### -->
+<para>
+
+</para>
+
+@mpe: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_session_forget_passwd ##### -->
+<para>
+
+</para>
+
+@session: 
+@item: 
+@err: 
+
+<!-- ##### FUNCTION g_mime_session_is_online ##### -->
+<para>
+
+</para>
+
+@session: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_session_request_passwd ##### -->
+<para>
+
+</para>
+
+@session: 
+@prompt: 
+@secret: 
+@item: 
+@err: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_session_simple_set_forget_passwd ##### -->
+<para>
+
+</para>
+
+@session: 
+@forget_passwd: 
+
+<!-- ##### FUNCTION g_mime_session_simple_set_is_online ##### -->
+<para>
+
+</para>
+
+@session: 
+@is_online: 
+
+<!-- ##### FUNCTION g_mime_session_simple_set_request_passwd ##### -->
+<para>
+
+</para>
+
+@session: 
+@request_passwd: 
+
+<!-- ##### FUNCTION g_mime_signature_validity_add_signer ##### -->
+<para>
+
+</para>
+
+@validity: 
+@signer: 
+
+<!-- ##### FUNCTION g_mime_signature_validity_free ##### -->
+<para>
+
+</para>
+
+@validity: 
+
+<!-- ##### FUNCTION g_mime_signature_validity_get_details ##### -->
+<para>
+
+</para>
+
+@validity: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_signature_validity_get_signers ##### -->
+<para>
+
+</para>
+
+@validity: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_signature_validity_get_status ##### -->
+<para>
+
+</para>
+
+@validity: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_signature_validity_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_signature_validity_set_details ##### -->
+<para>
+
+</para>
+
+@validity: 
+@details: 
+
+<!-- ##### FUNCTION g_mime_signature_validity_set_status ##### -->
+<para>
+
+</para>
+
+@validity: 
+@status: 
+
+<!-- ##### FUNCTION g_mime_signer_free ##### -->
+<para>
+
+</para>
+
+@signer: 
+
+<!-- ##### FUNCTION g_mime_signer_get_created ##### -->
+<para>
+
+</para>
+
+@signer: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_signer_get_creation_date ##### -->
+<para>
+
+</para>
+
+@signer: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_signer_get_email ##### -->
+<para>
+
+</para>
+
+@signer: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_signer_get_errors ##### -->
+<para>
+
+</para>
+
+@signer: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_signer_get_expiration_date ##### -->
+<para>
+
+</para>
+
+@signer: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_signer_get_expires ##### -->
+<para>
+
+</para>
+
+@signer: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_signer_get_fingerprint ##### -->
+<para>
+
+</para>
+
+@signer: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_signer_get_hash ##### -->
+<para>
+
+</para>
+
+@signer: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_signer_get_hash_algo ##### -->
+<para>
+
+</para>
+
+@signer: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_signer_get_issuer_name ##### -->
+<para>
+
+</para>
+
+@signer: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_signer_get_issuer_serial ##### -->
+<para>
+
+</para>
+
+@signer: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_signer_get_key ##### -->
+<para>
+
+</para>
+
+@signer: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_signer_get_key_created ##### -->
+<para>
+
+</para>
+
+@signer: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_signer_get_key_expires ##### -->
+<para>
+
+</para>
+
+@signer: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_signer_get_key_id ##### -->
+<para>
+
+</para>
+
+@signer: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_signer_get_name ##### -->
+<para>
+
+</para>
+
+@signer: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_signer_get_pubkey_algo ##### -->
+<para>
+
+</para>
+
+@signer: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_signer_get_sig_class ##### -->
+<para>
+
+</para>
+
+@signer: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_signer_get_sig_created ##### -->
+<para>
+
+</para>
+
+@signer: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_signer_get_sig_expires ##### -->
+<para>
+
+</para>
+
+@signer: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_signer_get_sig_version ##### -->
+<para>
+
+</para>
+
+@signer: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_signer_get_status ##### -->
+<para>
+
+</para>
+
+@signer: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_signer_get_trust ##### -->
+<para>
+
+</para>
+
+@signer: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_signer_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_signer_next ##### -->
+<para>
+
+</para>
+
+@signer: 
+@Returns: 
+
+<!-- ##### FUNCTION g_mime_signer_set_created ##### -->
+<para>
+
+</para>
+
+@signer: 
+@created: 
+
+<!-- ##### FUNCTION g_mime_signer_set_creation_date ##### -->
+<para>
+
+</para>
+
+@signer: 
+@created: 
+
+<!-- ##### FUNCTION g_mime_signer_set_email ##### -->
+<para>
+
+</para>
+
+@signer: 
+@email: 
+
+<!-- ##### FUNCTION g_mime_signer_set_errors ##### -->
+<para>
+
+</para>
+
+@signer: 
+@error: 
+
+<!-- ##### FUNCTION g_mime_signer_set_expiration_date ##### -->
+<para>
+
+</para>
+
+@signer: 
+@expires: 
+
+<!-- ##### FUNCTION g_mime_signer_set_expires ##### -->
+<para>
+
+</para>
+
+@signer: 
+@expires: 
+
+<!-- ##### FUNCTION g_mime_signer_set_fingerprint ##### -->
+<para>
+
+</para>
+
+@signer: 
+@fingerprint: 
+
+<!-- ##### FUNCTION g_mime_signer_set_hash ##### -->
+<para>
+
+</para>
+
+@signer: 
+@hash: 
+
+<!-- ##### FUNCTION g_mime_signer_set_hash_algo ##### -->
+<para>
+
+</para>
+
+@signer: 
+@hash: 
+
+<!-- ##### FUNCTION g_mime_signer_set_issuer_name ##### -->
+<para>
+
+</para>
+
+@signer: 
+@issuer_name: 
+
+<!-- ##### FUNCTION g_mime_signer_set_issuer_serial ##### -->
+<para>
+
+</para>
+
+@signer: 
+@issuer_serial: 
+
+<!-- ##### FUNCTION g_mime_signer_set_key_created ##### -->
+<para>
+
+</para>
+
+@signer: 
+@created: 
+
+<!-- ##### FUNCTION g_mime_signer_set_key_expires ##### -->
+<para>
+
+</para>
+
+@signer: 
+@expires: 
+
+<!-- ##### FUNCTION g_mime_signer_set_key_id ##### -->
+<para>
+
+</para>
+
+@signer: 
+@key_id: 
+
+<!-- ##### FUNCTION g_mime_signer_set_name ##### -->
+<para>
+
+</para>
+
+@signer: 
+@name: 
+
+<!-- ##### FUNCTION g_mime_signer_set_pubkey_algo ##### -->
+<para>
+
+</para>
+
+@signer: 
+@pubkey_algo: 
+
+<!-- ##### FUNCTION g_mime_signer_set_sig_class ##### -->
+<para>
+
+</para>
+
+@signer: 
+@sig_class: 
+
+<!-- ##### FUNCTION g_mime_signer_set_sig_created ##### -->
+<para>
+
+</para>
+
+@signer: 
+@created: 
+
+<!-- ##### FUNCTION g_mime_signer_set_sig_expires ##### -->
+<para>
+
+</para>
+
+@signer: 
+@expires: 
+
+<!-- ##### FUNCTION g_mime_signer_set_sig_version ##### -->
+<para>
+
+</para>
+
+@signer: 
+@version: 
+
+<!-- ##### FUNCTION g_mime_signer_set_status ##### -->
+<para>
+
+</para>
+
+@signer: 
+@status: 
+
+<!-- ##### FUNCTION g_mime_signer_set_trust ##### -->
+<para>
+
+</para>
+
+@signer: 
+@trust: 
+

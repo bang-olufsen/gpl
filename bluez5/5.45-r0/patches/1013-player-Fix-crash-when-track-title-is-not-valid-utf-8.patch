@@ -1,0 +1,100 @@
+From ca8741cd9a5bf397c99a887d668e25db6465be50 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Sat, 27 May 2017 11:01:41 +0200
+Subject: [PATCH] player: Fix crash when track title is not valid utf-8 string
+
+This was needed for test cases:
+AVRCP/CT/RCR/BV-01-C
+AVRCP/CT/RCR/BV-03-C
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ profiles/audio/player.c | 56 +++++++++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 54 insertions(+), 2 deletions(-)
+
+diff --git a/profiles/audio/player.c b/profiles/audio/player.c
+index 2a5eed8..104f21e 100644
+--- a/profiles/audio/player.c
++++ b/profiles/audio/player.c
+@@ -103,6 +103,50 @@ struct media_player {
+ 	GSList			*folders;
+ };
+ 
++// Included in GLib 2.52
++gchar * g_utf8_make_valid (const gchar *str, gssize len)
++{
++	GString *string;
++	const gchar *remainder, *invalid;
++	gsize remaining_bytes, valid_bytes;
++
++	g_return_val_if_fail (str != NULL, NULL);
++
++	if (len < 0)
++		len = strlen (str);
++
++	string = NULL;
++	remainder = str;
++	remaining_bytes = len;
++
++	while (remaining_bytes != 0)
++	{
++		if (g_utf8_validate (remainder, remaining_bytes, &invalid))
++			break;
++		valid_bytes = invalid - remainder;
++
++		if (string == NULL)
++			string = g_string_sized_new (remaining_bytes);
++
++		g_string_append_len (string, remainder, valid_bytes);
++		/* append U+FFFD REPLACEMENT CHARACTER */
++		g_string_append (string, "\357\277\275");
++
++		remaining_bytes -= valid_bytes + 1;
++		remainder = invalid + 1;
++	}
++
++	if (string == NULL)
++		return g_strndup (str, len);
++
++	g_string_append (string, remainder);
++	g_string_append_c (string, '\0');
++
++	g_assert (g_utf8_validate (string->str, -1, NULL));
++
++	return g_string_free (string, FALSE);
++}
++
+ static void append_track(void *key, void *value, void *user_data)
+ {
+ 	DBusMessageIter *dict = user_data;
+@@ -115,8 +159,12 @@ static void append_track(void *key, void *value, void *user_data)
+ 		dict_append_entry(dict, key, DBUS_TYPE_UINT32, &num);
+ 	} else if (strcasecmp(strkey, "Item") == 0) {
+ 		dict_append_entry(dict, key, DBUS_TYPE_OBJECT_PATH, &value);
+-	} else {
++	} else if (g_utf8_validate((const char *) value, -1, NULL) == TRUE) {
+ 		dict_append_entry(dict, key, DBUS_TYPE_STRING, &value);
++	} else {
++		gchar *string = g_utf8_make_valid(value, -1);
++		dict_append_entry(dict, key, DBUS_TYPE_STRING, &string);
++		g_free(string);
+ 	}
+ }
+ 
+@@ -1720,8 +1768,12 @@ static void append_metadata(void *key, void *value, void *user_data)
+ 			strcasecmp(strkey, "NumberOfTracks") == 0)  {
+ 		uint32_t num = atoi(value);
+ 		dict_append_entry(dict, key, DBUS_TYPE_UINT32, &num);
+-	} else {
++	} else if (g_utf8_validate((const char *) value, -1, NULL) == TRUE) {
+ 		dict_append_entry(dict, key, DBUS_TYPE_STRING, &value);
++	} else {
++		gchar *string = g_utf8_make_valid(value, -1);
++		dict_append_entry(dict, key, DBUS_TYPE_STRING, &string);
++		g_free(string);
+ 	}
+ }
+ 
+-- 
+2.7.4
+

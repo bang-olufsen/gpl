@@ -1,0 +1,26 @@
+From 8b58619bcfd0c3e9645ecf741a716c558ffd33b6 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Thu, 24 Apr 2014 09:46:59 +0200
+Subject: [PATCH] ase: Enable secure boot with CONFIG_FIT_SIGNATURE
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ include/configs/stream800.h | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/include/configs/stream800.h b/include/configs/stream800.h
+index fdca6c8..5f52d1d 100644
+--- a/include/configs/stream800.h
++++ b/include/configs/stream800.h
+@@ -59,6 +59,8 @@
+ #define CONFIG_OF_CONTROL
+ #define CONFIG_OF_SEPARATE
+ #define CONFIG_FIT
++#define CONFIG_FIT_SIGNATURE
++#define CONFIG_RSA
+ #define CONFIG_DEFAULT_DEVICE_TREE am33xx-beo-ase-0
+ #endif
+ 
+-- 
+2.7.4
+

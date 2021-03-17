@@ -1,0 +1,82 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>librygel-server Reference Manual: Object Hierarchy</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="index.html" title="librygel-server Reference Manual">
+<link rel="up" href="index.html" title="librygel-server Reference Manual">
+<link rel="prev" href="RygelWritableContainer.html" title="RygelWritableContainer">
+<link rel="next" href="api-index-full.html" title="API Index">
+<meta name="generator" content="GTK-Doc V1.20.1 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts"></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><img src="up-insensitive.png" width="16" height="16" border="0"></td>
+<td><a accesskey="p" href="RygelWritableContainer.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="api-index-full.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="chapter">
+<div class="titlepage"><div><div><h1 class="title">
+<a name="object-tree"></a>Object Hierarchy</h1></div></div></div>
+<pre class="screen">
+    <a href="../gobject/gobject-The-Base-Object-Type.html#GObject">GObject</a>
+    <span class="lineart">├──</span> <a class="link" href="RygelMediaObject.html" title="RygelMediaObject">RygelMediaObject</a>
+    <span class="lineart">│</span>   <span class="lineart">├──</span> <a class="link" href="RygelMediaItem.html" title="RygelMediaItem">RygelMediaItem</a>
+    <span class="lineart">│</span>   <span class="lineart">│</span>   <span class="lineart">├──</span> <a class="link" href="RygelAudioItem.html" title="RygelAudioItem">RygelAudioItem</a>
+    <span class="lineart">│</span>   <span class="lineart">│</span>   <span class="lineart">│</span>   <span class="lineart">├──</span> <a class="link" href="RygelMusicItem.html" title="RygelMusicItem">RygelMusicItem</a>
+    <span class="lineart">│</span>   <span class="lineart">│</span>   <span class="lineart">│</span>   <span class="lineart">╰──</span> <a class="link" href="RygelVideoItem.html" title="RygelVideoItem">RygelVideoItem</a>
+    <span class="lineart">│</span>   <span class="lineart">│</span>   <span class="lineart">├──</span> <a class="link" href="RygelImageItem.html" title="RygelImageItem">RygelImageItem</a>
+    <span class="lineart">│</span>   <span class="lineart">│</span>   <span class="lineart">│</span>   <span class="lineart">╰──</span> <a class="link" href="RygelPhotoItem.html" title="RygelPhotoItem">RygelPhotoItem</a>
+    <span class="lineart">│</span>   <span class="lineart">│</span>   <span class="lineart">╰──</span> RygelPlaylistItem
+    <span class="lineart">│</span>   <span class="lineart">╰──</span> <a class="link" href="RygelMediaContainer.html" title="RygelMediaContainer">RygelMediaContainer</a>
+    <span class="lineart">│</span>       <span class="lineart">╰──</span> <a class="link" href="RygelSimpleContainer.html" title="RygelSimpleContainer">RygelSimpleContainer</a>
+    <span class="lineart">├──</span> <a href="../gupnp/GUPnPServiceInfo.html">GUPnPServiceInfo</a>
+    <span class="lineart">│</span>   <span class="lineart">╰──</span> <a href="../gupnp/GUPnPService.html">GUPnPService</a>
+    <span class="lineart">│</span>       <span class="lineart">╰──</span> RygelContentDirectory
+    <span class="lineart">├──</span> <a class="link" href="RygelHTTPSeek.html" title="RygelHTTPSeek">RygelHTTPSeek</a>
+    <span class="lineart">├──</span> <a class="link" href="RygelTranscodeManager.html" title="RygelTranscodeManager">RygelTranscodeManager</a>
+    <span class="lineart">│</span>   <span class="lineart">╰──</span> RygelHTTPServer
+    <span class="lineart">├──</span> <a class="link" href="RygelMediaArtStore.html" title="RygelMediaArtStore">RygelMediaArtStore</a>
+    <span class="lineart">├──</span> <a class="link" href="RygelMediaEngine.html" title="RygelMediaEngine">RygelMediaEngine</a>
+    <span class="lineart">├──</span> GeeAbstractCollection
+    <span class="lineart">│</span>   <span class="lineart">╰──</span> GeeAbstractList
+    <span class="lineart">│</span>       <span class="lineart">╰──</span> GeeAbstractBidirList
+    <span class="lineart">│</span>           <span class="lineart">╰──</span> GeeArrayList
+    <span class="lineart">│</span>               <span class="lineart">╰──</span> <a class="link" href="RygelMediaObjects.html" title="RygelMediaObjects">RygelMediaObjects</a>
+    <span class="lineart">├──</span> <a href="../librygel-core/RygelMediaDevice.html">RygelMediaDevice</a>
+    <span class="lineart">│</span>   <span class="lineart">╰──</span> <a class="link" href="RygelMediaServer.html" title="RygelMediaServer">RygelMediaServer</a>
+    <span class="lineart">├──</span> <a href="../gupnp/GUPnPResourceFactory.html">GUPnPResourceFactory</a>
+    <span class="lineart">│</span>   <span class="lineart">╰──</span> <a href="../librygel-core/RygelPlugin.html">RygelPlugin</a>
+    <span class="lineart">│</span>       <span class="lineart">╰──</span> <a class="link" href="RygelMediaServerPlugin.html" title="RygelMediaServerPlugin">RygelMediaServerPlugin</a>
+    <span class="lineart">├──</span> RygelSerializer
+    <span class="lineart">╰──</span> <a class="link" href="RygelTranscoder.html" title="RygelTranscoder">RygelTranscoder</a>
+    <a href="/opt/rygel-stable/share/gtk-doc/html/gobject/GTypeModule.html">GInterface</a>
+    <span class="lineart">├──</span> <a class="link" href="RygelDataSource.html" title="RygelDataSource">RygelDataSource</a>
+    <span class="lineart">├──</span> <a class="link" href="RygelVisualItem.html" title="RygelVisualItem">RygelVisualItem</a>
+    <span class="lineart">├──</span> <a class="link" href="RygelSearchableContainer.html" title="RygelSearchableContainer">RygelSearchableContainer</a>
+    <span class="lineart">├──</span> <a class="link" href="RygelTrackableContainer.html" title="RygelTrackableContainer">RygelTrackableContainer</a>
+    <span class="lineart">├──</span> RygelTrackableItem
+    <span class="lineart">├──</span> RygelUpdatableObject
+    <span class="lineart">╰──</span> <a class="link" href="RygelWritableContainer.html" title="RygelWritableContainer">RygelWritableContainer</a>
+    <a href="/opt/rygel-stable/share/gtk-doc/html/gobject/gobject-Enumeration-and-Flag-Types.html">GEnum</a>
+    <span class="lineart">├──</span> <a class="link" href="RygelHTTPSeek.html#RygelHTTPSeekType" title="enum RygelHTTPSeekType">RygelHTTPSeekType</a>
+    <span class="lineart">├──</span> <a class="link" href="RygelLogicalExpression.html#RygelLogicalOperator" title="enum RygelLogicalOperator">RygelLogicalOperator</a>
+    <span class="lineart">├──</span> <a class="link" href="RygelMediaContainer.html#RygelObjectEventType" title="enum RygelObjectEventType">RygelObjectEventType</a>
+    <span class="lineart">╰──</span> SerializerType
+    <a class="link" href="RygelSearchExpression.html" title="RygelSearchExpression">RygelSearchExpression</a>
+    <span class="lineart">├──</span> <a class="link" href="RygelLogicalExpression.html" title="RygelLogicalExpression">RygelLogicalExpression</a>
+    <span class="lineart">╰──</span> <a class="link" href="RygelRelationalExpression.html" title="RygelRelationalExpression">RygelRelationalExpression</a>
+    <a class="link" href="RygelSubtitle.html" title="RygelSubtitle">RygelSubtitle</a>
+    <a href="../librygel-core/RygelIconInfo.html">RygelIconInfo</a>
+    <span class="lineart">╰──</span> <a class="link" href="RygelThumbnail.html" title="RygelThumbnail">RygelThumbnail</a>
+</pre>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.20.1</div>
+</body>
+</html>

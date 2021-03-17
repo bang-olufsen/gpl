@@ -1,0 +1,31 @@
+From a39f0d1d94dd1f616e7dcc25d76bfcfb9fa70350 Mon Sep 17 00:00:00 2001
+From: Fionn Cleary <fionn.cleary@streamunlimited.com>
+Date: Tue, 12 Aug 2014 18:53:42 +0200
+Subject: [PATCH] sha256: Add const to pointer type
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Code is #ifdef’d by CONFIG_WATCHDOG.
+
+Signed-off-by: Fionn Cleary <fionn.cleary@streamunlimited.com>
+---
+ lib/sha256.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/lib/sha256.c b/lib/sha256.c
+index 7348162..5766de2 100644
+--- a/lib/sha256.c
++++ b/lib/sha256.c
+@@ -258,7 +258,7 @@ void sha256_csum_wd(const unsigned char *input, unsigned int ilen,
+ {
+ 	sha256_context ctx;
+ #if defined(CONFIG_HW_WATCHDOG) || defined(CONFIG_WATCHDOG)
+-	unsigned char *end, *curr;
++	const unsigned char *end, *curr;
+ 	int chunk;
+ #endif
+ 
+-- 
+2.7.4
+

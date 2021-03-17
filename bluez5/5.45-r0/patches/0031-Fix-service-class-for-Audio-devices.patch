@@ -1,0 +1,29 @@
+From 9eecb4f661a6302c6b36544ad8854dcccd17e827 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Wed, 31 Jul 2019 11:38:17 +0200
+Subject: [PATCH] Fix service class for Audio devices
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ src/adapter.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/src/adapter.c b/src/adapter.c
+index 6feb9e8..5806216 100644
+--- a/src/adapter.c
++++ b/src/adapter.c
+@@ -1064,9 +1064,11 @@ static uint8_t get_uuid_mask(uuid_t *uuid)
+ 	case HANDSFREE_AGW_SVCLASS_ID:
+ 		return 0x40;	/* Telephony */
+ 	case AUDIO_SOURCE_SVCLASS_ID:
++		return 0x24;	/* Audio & Capturing */
+ 	case VIDEO_SOURCE_SVCLASS_ID:
+ 		return 0x08;	/* Capturing */
+ 	case AUDIO_SINK_SVCLASS_ID:
++		return 0x24;	/* Audio & Rendering */
+ 	case VIDEO_SINK_SVCLASS_ID:
+ 		return 0x04;	/* Rendering */
+ 	case PANU_SVCLASS_ID:
+-- 
+2.7.4
+

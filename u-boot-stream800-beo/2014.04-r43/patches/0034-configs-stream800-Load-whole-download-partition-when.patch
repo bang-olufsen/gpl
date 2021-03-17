@@ -1,0 +1,27 @@
+From 8ae40b02c396f48ad30e311317b7e228cdcf1429 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@gmail.com>
+Date: Wed, 7 May 2014 15:45:14 +0200
+Subject: [PATCH] configs: stream800: Load whole download partition when
+ checking magic
+
+Because we have sfupdate in FIT container we need to load whole partition to get correct data offsets.
+---
+ include/configs/stream800.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/configs/stream800.h b/include/configs/stream800.h
+index 358b2a8..98b26cc 100644
+--- a/include/configs/stream800.h
++++ b/include/configs/stream800.h
+@@ -829,7 +829,7 @@
+                 "VALID_IMAGE=yes; " \
+             "else " \
+                 "echo \"INFO: Need to read the sfupdate from download partition...\"; " \
+-                "if nand read ${sfu_load_addr} download 0x10; " \
++                "if nand read ${sfu_load_addr} download; " \
+                     "then " \
+                     "if sfu magic ${sfu_load_addr}; " \
+                         "then " \
+-- 
+2.7.4
+

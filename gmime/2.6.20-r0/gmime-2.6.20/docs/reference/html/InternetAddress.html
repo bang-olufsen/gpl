@@ -1,0 +1,168 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>InternetAddress</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="GMime 2.6 Reference Manual">
+<link rel="up" href="InternetAddresses.html" title="Internet Addresses">
+<link rel="prev" href="InternetAddresses.html" title="Internet Addresses">
+<link rel="next" href="InternetAddressGroup.html" title="InternetAddressGroup">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="InternetAddresses.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="InternetAddresses.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">GMime 2.6 Reference Manual</th>
+<td><a accesskey="n" href="InternetAddressGroup.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#InternetAddress.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#InternetAddress.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#InternetAddress.object-hierarchy" class="shortcut">Object Hierarchy</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="InternetAddress"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="InternetAddress.top_of_page"></a>InternetAddress</span></h2>
+<p>InternetAddress — Internet addresses</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="InternetAddress.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">struct              <a class="link" href="InternetAddress.html#InternetAddress-struct" title="struct InternetAddress">InternetAddress</a>;
+const <span class="returnvalue">char</span> *        <a class="link" href="InternetAddress.html#internet-address-get-name" title="internet_address_get_name ()">internet_address_get_name</a>           (<em class="parameter"><code><a class="link" href="InternetAddress.html" title="InternetAddress"><span class="type">InternetAddress</span></a> *ia</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="InternetAddress.html#internet-address-set-name" title="internet_address_set_name ()">internet_address_set_name</a>           (<em class="parameter"><code><a class="link" href="InternetAddress.html" title="InternetAddress"><span class="type">InternetAddress</span></a> *ia</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *name</code></em>);
+<span class="returnvalue">char</span> *              <a class="link" href="InternetAddress.html#internet-address-to-string" title="internet_address_to_string ()">internet_address_to_string</a>          (<em class="parameter"><code><a class="link" href="InternetAddress.html" title="InternetAddress"><span class="type">InternetAddress</span></a> *ia</code></em>,
+                                                         <em class="parameter"><code><span class="type">gboolean</span> encode</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="InternetAddress.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  GObject
+   +----InternetAddress
+         +----<a class="link" href="InternetAddressGroup.html" title="InternetAddressGroup">InternetAddressGroup</a>
+         +----<a class="link" href="InternetAddressMailbox.html" title="InternetAddressMailbox">InternetAddressMailbox</a>
+</pre>
+</div>
+<div class="refsect1">
+<a name="InternetAddress.description"></a><h2>Description</h2>
+<p>
+An <a class="link" href="InternetAddress.html" title="InternetAddress"><span class="type">InternetAddress</span></a> is the base class for <a class="link" href="InternetAddressGroup.html" title="InternetAddressGroup"><span class="type">InternetAddressGroup</span></a> and
+<a class="link" href="InternetAddressMailbox.html" title="InternetAddressMailbox"><span class="type">InternetAddressMailbox</span></a>.
+</p>
+</div>
+<div class="refsect1">
+<a name="InternetAddress.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="InternetAddress-struct"></a><h3>struct InternetAddress</h3>
+<pre class="programlisting">struct InternetAddress;</pre>
+<p>
+An RFC 2822 Address object.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="internet-address-get-name"></a><h3>internet_address_get_name ()</h3>
+<pre class="programlisting">const <span class="returnvalue">char</span> *        internet_address_get_name           (<em class="parameter"><code><a class="link" href="InternetAddress.html" title="InternetAddress"><span class="type">InternetAddress</span></a> *ia</code></em>);</pre>
+<p>
+Gets the display name of the <a class="link" href="InternetAddress.html" title="InternetAddress"><span class="type">InternetAddress</span></a>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>ia</code></em> :</span></p></td>
+<td>a <a class="link" href="InternetAddress.html" title="InternetAddress"><span class="type">InternetAddress</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the name of the mailbox or group in a form suitable for
+display if available or <code class="literal">NULL</code> otherwise. If the name is available,
+the returned string will be in UTF-8.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="internet-address-set-name"></a><h3>internet_address_set_name ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                internet_address_set_name           (<em class="parameter"><code><a class="link" href="InternetAddress.html" title="InternetAddress"><span class="type">InternetAddress</span></a> *ia</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *name</code></em>);</pre>
+<p>
+Set the display name of the <a class="link" href="InternetAddress.html" title="InternetAddress"><span class="type">InternetAddress</span></a>.
+</p>
+<p>
+Note: The <em class="parameter"><code>name</code></em> string should be in UTF-8.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>ia</code></em> :</span></p></td>
+<td>a <a class="link" href="InternetAddress.html" title="InternetAddress"><span class="type">InternetAddress</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>name</code></em> :</span></p></td>
+<td>the display name for the address group or mailbox</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="internet-address-to-string"></a><h3>internet_address_to_string ()</h3>
+<pre class="programlisting"><span class="returnvalue">char</span> *              internet_address_to_string          (<em class="parameter"><code><a class="link" href="InternetAddress.html" title="InternetAddress"><span class="type">InternetAddress</span></a> *ia</code></em>,
+                                                         <em class="parameter"><code><span class="type">gboolean</span> encode</code></em>);</pre>
+<p>
+Allocates a string containing the contents of the <a class="link" href="InternetAddress.html" title="InternetAddress"><span class="type">InternetAddress</span></a>
+object.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>ia</code></em> :</span></p></td>
+<td>Internet Address object</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>encode</code></em> :</span></p></td>
+<td>
+<code class="literal">TRUE</code> if the address should be rfc2047 encoded</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the <a class="link" href="InternetAddress.html" title="InternetAddress"><span class="type">InternetAddress</span></a> object as an allocated string in
+rfc822 format.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<div class="refsect1">
+<a name="InternetAddress.see-also"></a><h2>See Also</h2>
+<a class="link" href="InternetAddressGroup.html" title="InternetAddressGroup"><span class="type">InternetAddressGroup</span></a>, <a class="link" href="InternetAddressMailbox.html" title="InternetAddressMailbox"><span class="type">InternetAddressMailbox</span></a>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

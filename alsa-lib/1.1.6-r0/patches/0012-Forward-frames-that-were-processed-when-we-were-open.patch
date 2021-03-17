@@ -1,0 +1,118 @@
+From 971855a4b569d697b4213917836f3044e5d227ba Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Thu, 11 Aug 2016 09:05:46 +0200
+Subject: [PATCH] Forward frames that were processed when we were opening slave
+ pcm on swtich change
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+
+%% original patch: 0012-Forward-frames-that-were-processed-when-we-were-open.patch
+---
+ src/pcm/pcm_switch.c | 34 +++++++++++++++++++++-------------
+ 1 file changed, 21 insertions(+), 13 deletions(-)
+
+diff --git a/src/pcm/pcm_switch.c b/src/pcm/pcm_switch.c
+index b58d8ff..c0f119d 100644
+--- a/src/pcm/pcm_switch.c
++++ b/src/pcm/pcm_switch.c
+@@ -67,16 +67,17 @@ typedef struct {
+ } snd_pcm_switch_t;
+ #endif
+ 
+-static void update_softvare_clock(snd_pcm_t *pcm)
++static int update_softvare_clock(snd_pcm_t *pcm, int forward_hw_ptr)
+ {
+ 	TRACE("");
++	int forward = 0;
+ 	snd_pcm_switch_t *swtch = pcm->private_data;
+ 
+ 	struct timespec clock;
+ 	gettimestamp(&clock, pcm->tstamp_type);
+ 
+-	if (!swtch->gen.slave && swtch->clock.tv_sec > 0) {
+-		u_int64_t forward_usec, diff_nsec, forward;
++	if ((!swtch->gen.slave || !forward_hw_ptr) && swtch->clock.tv_sec > 0) {
++		u_int64_t forward_usec, diff_nsec;
+ 		signed long long comp, drift;
+ 
+ 		/* Handle drift compensator <-5000, 5000> */
+@@ -90,10 +91,12 @@ static void update_softvare_clock(snd_pcm_t *pcm)
+ 		forward = forward_usec / 1000000ULL;
+ 		swtch->clock_diff_usec = forward_usec % 1000000ULL;
+ 
+-		snd_pcm_mmap_hw_forward(pcm, forward);
++		if (forward_hw_ptr)
++			snd_pcm_mmap_hw_forward(pcm, forward);
+ 	}
+ 
+ 	swtch->clock = clock;
++	return forward;
+ }
+ 
+ static void update_switch_value(snd_pcm_switch_t *swtch)
+@@ -404,7 +407,7 @@ static snd_pcm_sframes_t snd_pcm_switch_avail_update(snd_pcm_t *pcm)
+ 	snd_pcm_sframes_t avail;
+ 
+ 	check_switch_value(pcm);
+-	update_softvare_clock(pcm);
++	update_softvare_clock(pcm, 1);
+ 
+ 	if (swtch->gen.slave) {
+ 		avail = snd_pcm_avail_update(swtch->gen.slave);
+@@ -736,7 +739,8 @@ static void apply_switch_value(snd_pcm_t *pcm)
+ 	snd_pcm_switch_t *swtch = pcm->private_data;
+ 	snd_pcm_t *slave;
+ 	snd_pcm_state_t pcm_state;
+-	snd_pcm_uframes_t avail_playback;
++	snd_pcm_uframes_t avail_playback, waiting_playback;
++	int err;
+ 
+ 	swtch->needs_update = 0;
+ 
+@@ -788,16 +792,20 @@ static void apply_switch_value(snd_pcm_t *pcm)
+ 	}
+ 
+ 	if (pcm_state == SND_PCM_STATE_RUNNING) {
++		waiting_playback = pcm->buffer_size - avail_playback;
+ 
+ 		/* Don't drop audio when on switch value change */
+ 		if (swtch->cur_switch != SWITCH_CTL_ON) {
+ 			snd_pcm_switch_start(pcm);
+-			if (avail_playback > 0)
+-				snd_pcm_mmap_appl_forward(pcm, pcm->buffer_size - avail_playback);
++			if (waiting_playback > 0)
++				snd_pcm_mmap_appl_forward(pcm, waiting_playback);
+ 		} else {
+-			if (avail_playback > 0) {
+-				void *buffer = calloc(pcm->buffer_size - avail_playback, pcm->frame_bits / 8);
+-				snd_pcm_switch_writei(pcm, buffer, pcm->buffer_size - avail_playback);
++			/* Forward frames that were processed when we were opening hw pcm */
++			waiting_playback -= update_softvare_clock(pcm, 0);
++
++			if (waiting_playback > 0) {
++				void *buffer = calloc(waiting_playback, pcm->frame_bits / 8);
++				snd_pcm_switch_writei(pcm, buffer, waiting_playback);
+ 				free(buffer);
+ 			}
+ 			snd_pcm_switch_start(pcm);
+@@ -1113,7 +1121,7 @@ static int snd_pcm_switch_poll_revents(snd_pcm_t *pcm, struct pollfd *pfds, unsi
+ 			return -EINVAL;
+ 
+ 		events = pfds[0].revents;
+-		update_softvare_clock(pcm);
++		update_softvare_clock(pcm, 1);
+ 		if (snd_pcm_mmap_avail(pcm) > pcm->avail_min)
+ 			events |= POLLOUT;
+ 		else {
+@@ -1122,7 +1130,7 @@ static int snd_pcm_switch_poll_revents(snd_pcm_t *pcm, struct pollfd *pfds, unsi
+ 			 */
+ 			usleep(((__useconds_t)(pcm->avail_min - snd_pcm_mmap_avail(pcm)) * (1000000 / pcm->rate)));
+ 
+-			update_softvare_clock(pcm);
++			update_softvare_clock(pcm, 1);
+ 			if (snd_pcm_mmap_avail(pcm) > pcm->avail_min)
+ 				events |= POLLOUT;
+ 			else
+-- 
+2.7.4
+

@@ -1,0 +1,37 @@
+From 31a8920bf90a056ee51c7483d0e65d401ebd2d26 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Fri, 11 Apr 2014 07:27:13 +0200
+Subject: [PATCH] sue:s800: board: Fix various name changes
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ board/streamunlimited/stream800/board.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/board/streamunlimited/stream800/board.c b/board/streamunlimited/stream800/board.c
+index 884d8b8..4851b52 100755
+--- a/board/streamunlimited/stream800/board.c
++++ b/board/streamunlimited/stream800/board.c
+@@ -158,7 +158,7 @@ int board_init(void)
+ 
+ 	set_board_state(BS_Normal);
+ 
+-	gd->bd->bi_boot_params = PHYS_DRAM_1 + 0x100;
++	gd->bd->bi_boot_params = CONFIG_SYS_SDRAM_BASE + 0x100;
+ 	gd->bd->bi_arch_number = MACH_TYPE_TIAM335EVM;
+ 
+ 	gpmc_init();
+@@ -495,8 +495,8 @@ static void cpsw_control(int enabled)
+ }
+ 
+ static struct cpsw_platform_data cpsw_data = {
+-	.mdio_base		= AM335X_CPSW_MDIO_BASE,
+-	.cpsw_base		= AM335X_CPSW_BASE,
++	.mdio_base		= CPSW_MDIO_BASE,
++	.cpsw_base		= CPSW_BASE,
+ 	.mdio_div		= 0xff,
+ 	.channels		= 8,
+ 	.cpdma_reg_ofs		= 0x800,
+-- 
+2.7.4
+

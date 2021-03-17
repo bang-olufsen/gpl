@@ -1,0 +1,38 @@
+From 9b5edece0ec1d814d0714b20b5229f528ea5d5bb Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Thu, 6 Feb 2020 15:38:52 +0100
+Subject: [PATCH] linux/types.h: add typedef of uintptr_t
+ [STREAMEIGHT-3041](thud)
+
+commit 1c4b453ad2a62d0243ae5fd6657f2d6b7eb7332d upstream.
+
+Add this typedef in the same place as in Linux.  This is necessary
+to refactor libfdt inclusion.
+
+U-Boot also defines it in include/compiler.h.  Of course it should
+not do that, but I do not want to open a can of worms.
+
+Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
+Signed-off-by: Andriy Danylovskyy <andriy.danylovskyy@streamunlimited.com>
+[polished commit message]
+Signed-off-by: Radek Dostal <radek.dostal@streamunlimited.com>
+---
+ include/linux/types.h | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/include/linux/types.h b/include/linux/types.h
+index 9aebc4e..0d3b608 100644
+--- a/include/linux/types.h
++++ b/include/linux/types.h
+@@ -24,6 +24,8 @@ typedef __kernel_gid32_t	gid_t;
+ typedef __kernel_uid16_t        uid16_t;
+ typedef __kernel_gid16_t        gid16_t;
+ 
++typedef unsigned long		uintptr_t;
++
+ #ifdef CONFIG_UID16
+ /* This is defined by include/asm-{arch}/posix_types.h */
+ typedef __kernel_old_uid_t	old_uid_t;
+-- 
+2.7.4
+

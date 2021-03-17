@@ -1,0 +1,33 @@
+From 37cd9dbf7d5dc93abcac3f65177602b4faf2e844 Mon Sep 17 00:00:00 2001
+From: Radek Dostal <radek.dostal@streamunlimited.com>
+Date: Mon, 19 Oct 2015 13:51:13 +0200
+Subject: [PATCH] inline: use the gcc inline version instead of the c99 one.
+
+downloaded from http://lists.denx.de/pipermail/u-boot/2014-May/180709.html
+
+Signed-off-by: Radek Dostal <radek.dostal@streamunlimited.com>
+---
+ include/linux/compiler-gcc.h | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/include/linux/compiler-gcc.h b/include/linux/compiler-gcc.h
+index 9896e54..99c6dcc 100644
+--- a/include/linux/compiler-gcc.h
++++ b/include/linux/compiler-gcc.h
+@@ -44,9 +44,10 @@
+  */
+ #if !defined(CONFIG_ARCH_SUPPORTS_OPTIMIZED_INLINING) || \
+     !defined(CONFIG_OPTIMIZE_INLINING) || (__GNUC__ < 4)
+-# define inline		inline		__attribute__((always_inline))
+-# define __inline__	__inline__	__attribute__((always_inline))
+-# define __inline	__inline	__attribute__((always_inline))
++/* XXX: check __GNUC_STDC_INLINE__, fix line length */
++# define inline		inline		__attribute__((always_inline)) __attribute__((__gnu_inline__))
++# define __inline__	__inline__	__attribute__((always_inline)) __attribute__((__gnu_inline__))
++# define __inline	__inline	__attribute__((always_inline)) __attribute__((__gnu_inline__))
+ #endif
+ 
+ #define __deprecated			__attribute__((deprecated))
+-- 
+2.7.4
+

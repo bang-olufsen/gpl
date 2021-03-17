@@ -1,0 +1,131 @@
+From 4c5d12d57e53b711dd43c862860c94fa56a871fc Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Mon, 30 Jun 2014 16:38:06 +0200
+Subject: [PATCH] stream800: Fix leds blinking in various u-boot states
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ board/streamunlimited/stream800/ase_fep.c          | 72 ++++++++++++++++++----
+ .../stream800/board-beo_ase_board.c                |  2 +-
+ 2 files changed, 61 insertions(+), 13 deletions(-)
+
+diff --git a/board/streamunlimited/stream800/ase_fep.c b/board/streamunlimited/stream800/ase_fep.c
+index df85179..edf612c 100644
+--- a/board/streamunlimited/stream800/ase_fep.c
++++ b/board/streamunlimited/stream800/ase_fep.c
+@@ -131,32 +131,75 @@ bool is_pressed_update_button(struct ase_fep *fep)
+ 	return true;
+ }
+ 
++static void disable_net_leds(struct ase_fep *fep)
++{
++	/* disable all network colors leds */
++	int led; // network led start at index 0 and end at 3
++	u8 stateLedCmd[] = { 0x20,0x80,0x10,0x00,0x04,0x00,0x00,0x00,0x00,0x00,0x00,0x0,0x00,0x0,0x0,0x0 };
++	u8 stateReply[20];
++
++	for (led = 0; led < 4; led ++) {
++		stateLedCmd[8] = led;
++		send_ase_fep(fep, stateLedCmd, 16);
++		receive_ase_fep(fep, stateReply, 20);
++	}
++}
++
++static void disable_prod_leds(struct ase_fep *fep)
++{
++	/* disable all production colors leds */
++	int led; // production led start at index 4 and end at 6
++	u8 stateLedCmd[] = { 0x20,0x80,0x10,0x00,0x04,0x00,0x00,0x00,0x00,0x00,0x00,0x0,0x00,0x0,0x0,0x0 };
++	u8 stateReply[20];
++
++	for (led = 0; led < 3; led ++) {
++		stateLedCmd[8] = led + 4;
++		send_ase_fep(fep, stateLedCmd, 16);
++		receive_ase_fep(fep, stateReply, 20);
++	}
++}
++
+ void set_boot_state_ase_fep(struct ase_fep *fep)
+ {
+-	// WIFI_white, slow blink (600/200ms)
+-	const u8 bootingStateLedCmd[] = { 0x20,0x80,0x10,0x00,0x04,0x00,0x00,0x00,0x04,0x00,0x01,0x0,0x26,0x0,0x0,0x0 };
+-	u8 bootStateReplay[20];
+-	send_ase_fep(fep, bootingStateLedCmd, 16);
+-	receive_ase_fep(fep, bootStateReplay, 20);
++	// Prod_white and Net_white, slow blink (600/200ms)
++	const u8 bootingStateLedCmd[] = { 0x20,0x80,0x18,0x00,0x04,0x00,0x00,0x00,0x04,0x00,0x01,0x0,0x26,0x0,0x0,0x0,0x00,0x00,0x01,0x0,0x26,0x0,0x0,0x0 };
++	u8 bootStateReplay[28];
++
++	/* disable all leds */
++	disable_net_leds(fep);
++	disable_prod_leds(fep);
++
++	send_ase_fep(fep, bootingStateLedCmd, 24);
++	receive_ase_fep(fep, bootStateReplay, 28);
+ }
+ 
+ void set_error_state_ase_fep(struct ase_fep *fep)
+ {
+-	// WIFI_red, fast blink (200/100ms)
+-	const u8 failureStateLedCmd[] = { 0x20,0x80,0x10,0x00,0x04,0x00,0x00,0x00,0x09,0x00,0x01,0x0,0x12,0x0,0x0,0x0 };
++	// Prod_red, fast blink (200/100ms)
++	const u8 failureStateLedCmd[] = { 0x20,0x80,0x10,0x00,0x04,0x00,0x00,0x00,0x05,0x00,0x01,0x0,0x12,0x0,0x0,0x0 };
+ 	u8 bootStateReplay[20];
++
++	/* disable all leds */
++	disable_net_leds(fep);
++	disable_prod_leds(fep);
++
+ 	send_ase_fep(fep, failureStateLedCmd, 16);
+ 	receive_ase_fep(fep, bootStateReplay, 20);
+ }
+ 
+ void set_flashing_on_state_ase_fep(struct ase_fep *fep)
+ {
+-	// ON_red, fast blink (100/100ms)
++	// Prod_red + Net_red, fast blink (100/100ms)
+ 	int received;
+-	const u8 flashingStateLedCmd[] = { 0x20,0x80,0x10,0x00,0x04,0x00,0x00,0x00,0x01,0x00,0x01,0x0,0x11,0x0,0x0,0x0 };
+-	u8 bootStateReplay[20];
+-	send_ase_fep(fep, flashingStateLedCmd, 16);
+-	int s = receive_ase_fep(fep, bootStateReplay, 20);
++	const u8 flashingStateLedCmd[] = { 0x20,0x80,0x18,0x00,0x04,0x00,0x00,0x00,0x02,0x00,0x01,0x0,0x11,0x0,0x0, 0x0,0x05,0x00,0x01,0x0,0x11,0x0,0x0,0x0 };
++	u8 bootStateReplay[28];
++
++	/* disable all leds */
++	disable_net_leds(fep);
++	disable_prod_leds(fep);
++
++	send_ase_fep(fep, flashingStateLedCmd, 24);
++	int s = receive_ase_fep(fep, bootStateReplay, 28);
+ 	dump_data(bootStateReplay, s);
+ }
+ 
+@@ -165,6 +208,11 @@ void set_flashing_off_state_ase_fep(struct ase_fep *fep)
+ 	// ON_red, off
+ 	const u8 flashingOffStateLedCmd[] = { 0x20,0x80,0x10,0x00,0x04,0x00,0x00,0x00,0x01,0x00,0x00,0x00,0x00,0x0,0x0,0x0 };
+ 	u8 bootStateReplay[20];
++
++	/* disable all leds */
++	disable_net_leds(fep);
++	disable_prod_leds(fep);
++
+ 	send_ase_fep(fep, flashingOffStateLedCmd, 16);
+ 	receive_ase_fep(fep, bootStateReplay, 20);
+ }
+diff --git a/board/streamunlimited/stream800/board-beo_ase_board.c b/board/streamunlimited/stream800/board-beo_ase_board.c
+index 7937bfa..7deffc8 100644
+--- a/board/streamunlimited/stream800/board-beo_ase_board.c
++++ b/board/streamunlimited/stream800/board-beo_ase_board.c
+@@ -124,7 +124,7 @@ void beo_ase__on_board_state_changed(const struct Stream800Board *board, BoardSt
+ 		}
+ 		break;
+ 	case BS_HardFailure:
+-		set_flashing_off_state_ase_fep(fep_mcu);
++//		set_flashing_off_state_ase_fep(fep_mcu);
+ 		set_error_state_ase_fep(fep_mcu);
+ 		break;
+ 	default:
+-- 
+2.7.4
+

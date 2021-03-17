@@ -1,0 +1,429 @@
+0.10.5
+======
+
+- Fix AAC ISO formats with recent GStreamer
+
+All contributors to this release:
+ - Jens Georg <mail@jensge.org>
+
+0.10.4
+======
+- Call setlocale in commandline tools.
+- Include VAPI in tarball.
+
+Bugs fixed in this release:
+ - https://bugzilla.gnome.org/show_bug.cgi?id=760431
+
+All contributors to this release:
+ - Jens Georg <mail@jensge.org>
+ - Ting-Wei Lan <lantw@src.gnome.org>
+
+0.10.3
+======
+- Fix potential crash if gupnp_dlna_value_list_new failed.
+- Fix hang if no meta-data back-end is available.
+- Remove use of gnome-common, add compiler warnings and fix const
+  correctness.
+- Fix memory leak in gst-audio-information.
+- Fix unit tests for new automake
+- Make it possible to override the DLNA profile dir using
+  GUPNP_DLNA_PROFILE_DIR environment variable
+- Fix discoverer testsuite to run completely uninstalled.
+- Fix gupnp-dlna-info -a to be stuck if profile guesser does not work.
+
+Bugs fixed in this release:
+ - https://bugzilla.gnome.org/show_bug.cgi?id=704096
+ - https://bugzilla.gnome.org/show_bug.cgi?id=707909
+ - https://bugzilla.gnome.org/show_bug.cgi?id=750929
+ - https://bugzilla.gnome.org/show_bug.cgi?id=751295
+ - https://bugzilla.gnome.org/show_bug.cgi?id=751634
+
+All contributors to this release:
+ - Jens Georg <mail@jensge.org>
+ - Philip Withnall <philip@tecnocode.co.uk>
+ - Mark Ryan <mark.d.ryan@intel.com>
+ - Ludovic Ferrandis <ludovic.ferrandis@intel.com>
+
+0.10.2
+======
+- Fix vapi generation with GObject-introspection >= 1.36.
+- Minor build clean-up.
+- Check the XML profiles against their schema on make check-profiles.
+- Re-enable some of the old tests on make check.
+- Fix format detection for ADTS audio streams.
+- Fix WMA bitrate detection.
+- Fix gtk-doc warnings.
+
+Profiles:
+- Fix MPEG_TS_*_EU audio profiles to include proper bitrates and audio
+  formats.
+- Remove depth matching in PNG profiles.
+- Fix AAC level for MULT5 AAC.
+- Add MPEG_TS_{SD,HD}_{EU,NA} profiles.
+- Add MPEG_PS_{NTSC,PAL} profiles.
+
+All contributors to this release:
+  Jens Georg <jensg@openismus.com>
+
+0.10.1
+======
+- Add functionality to let the meta-data back-end provide a profile on its
+  own.
+
+All contributors to this release:
+  Jens Georg <jensg@openismus.com>
+
+0.10.0
+======
+- Various fixes for the GStreamer 0.10 meta-data back-end.
+
+All contributors to this release:
+  Krzesimir Nowak <krnowak@openismus.com>
+  Jens Georg <mail@jensge.org>
+
+0.9.5
+=====
+- Add --disable-maintainer-mode option.
+- Add a GStreamer 0.10 meta-data back-end.
+
+All contributors to this release:
+  Jens Georg <jensg@openismus.com>
+
+0.9.4
+=====
+- Introduce new API to guess a DLNA profile from existing
+  GUPnPDLNAInformation.
+- Introduce a new library to create GUPnPDLNAInformation from
+  GstDiscovererInfo.
+- Fix an issue with GValue conversion.
+- Get rid of the old profile backend and move most of it to the library
+  itself.
+- Introduce single-include header file.
+
+All contributors to this release:
+  Krzesimir Nowak <krnowak@openismus.com>
+  Jens Georg <jensg@openismus.com>
+
+Changes in dependencies:
+ - vapigen >= 0.18 for GStreamer 1.0 vapis.
+
+0.9.3
+=====
+- Fix underlinking of gstreamer plug-in.
+- Fix out-of-srcdir build with --enable-gtk-doc.
+- Fix signal G-I annotation.
+- Link meta-data back-end as a plug-in.
+
+All contributors to this release:
+  Jens Georg <mail@jensge.org>
+  Krzesimir Nowak <krnowak@openismus.com>
+
+0.9.2
+=====
+- Remove the old gupnp-dlna-1.1.pc.in file.
+- Remove gupnp and gstreamer-* dependencies from VAPI file generation.
+- Lower vapigen requirements.
+
+All contributors to this release:
+  Jens Georg <jensg@openismus.com>
+
+Changes in dependencies:
+ - vapigen >= 0.14 instead of 0.18
+
+0.9.1
+=====
+- Fix a potential crash in profile guessing.
+- Fix issues from static code check.
+- Lower GLib dependency to 2.32.
+
+All contributors to this release:
+  Krzesimir Nowak <krnowak@openismus.com>
+  Mark Ryan <mark.d.ryan@intel.com>
+  Jens Georg <jensg@openismus.com>
+
+Bugs fixed in this release:
+ - https://bugzilla.gnome.org/show_bug.cgi?id=689596
+ - https://bugzilla.gnome.org/show_bug.cgi?id=689598
+ - https://bugzilla.gnome.org/show_bug.cgi?id=689612
+ - https://bugzilla.gnome.org/show_bug.cgi?id=689615
+ - https://bugzilla.gnome.org/show_bug.cgi?id=689616
+
+Changes in dependencies:
+ - GLib >= 2.32
+
+0.9.0
+=====
+- Make DLNA profile handling independant from GStreamer.
+- Add plugin architecture to support different meta-data extraction back-ends.
+- Make GStreamer default implementation of meta-data extraction back-end.
+- Split API docs into users and back-end implementers API.
+
+All contributors to this release:
+  Krzesimir Nowak <krnowak@openismus.com>
+  Jens Georg <jensg@openismus.com>
+
+Changes in API:
+ - so version bump
+ - API version bump to 2.0
+
+Changes in dependencies:
+ - GStreamer 1.0
+ - GLib >= 2.34
+
+0.7.0
+=====
+- Port to GStreamer 1.0
+- Add parallel installability with gstreamer-0.10-based gupnp-dlna.
+
+All contributors to this release:
+
+Jens Georg <mail@jensge.org>
+Riko Yamada <rik0yamada@yahoo.co.jp>
+Dominique Leuenberger <dimstar@opensuse.org>
+
+Changes in API:
+ - so version bump
+ - API version bump to 1.1
+
+0.6.6
+=====
+- Fix minor issues found by static code analysis
+- Add MKV profiles
+- Add AVC_MP4_*_EAC3 profiles from Harmattan
+
+All contributors to this release:
+
+Jens Georg <mail@jensge.org>
+
+0.6.5
+=====
+- Update autotools integration.
+- Add missing functions to documentation.
+- Fix warnings during GIR generation.
+- Fix GIR namespace to not clash with GUPnP's.
+
+All contributors to this release:
+
+Javier Jardón <jjardon@gnome.org>
+Jens Georg <mail@jensge.org>
+
+0.6.4
+=====
+
+- Add profile for MPEG4_P2_MP4_SP_L5_AAC.
+- Fix ADTS profiles
+- Fix MPEG4_P2_MP4_SP_L6_AAC
+
+All contributors to this release:
+
+Jens Georg <mail@jensge.org>
+Arun Raghavan <arun.raghavan@collabora.co.uk>
+
+0.6.3
+=====
+
+- Add profile for MPEG4_P2_MP4_SP_L6_AAC.
+- Respect ACLOCAL_FLAGS environment variable
+
+All contributors to this release:
+
+Jens Georg <mail@jensge.org>
+Lukasz Pawlik <lucas.pawlik@gmail.com>
+
+Bugs fixed:
+- bgo#655504
+
+0.6.2
+=====
+
+- Fix mime types for AAC_* profiles.
+- Fix AAC_ADTS_* profiles to be matchable in strict mode.
+- Initial GObject-introspection support
+
+All contributors to this release:
+
+Jens Georg <mail@jensge.org>
+Luis de Bethencourt <luis.debethencourt@collabora.com>
+
+Bugs fixed:
+- bgo#653411
+
+0.6.1
+=====
+
+A micro release to really bump the SONAME this time.
+
+All contributors to this release:
+
+Andreas Henriksson <andreas@fatal.se>
+Zeeshan Ali (Khattak) <zeeshanak@gnome.org>
+
+0.6.0
+=====
+
+- Add 'MPEG_TS_SD_EU_ISO' profile.
+- Relax some video restrictions for MPEG TS profile.
+- Fix profile parsing logic for images.
+- Drop fourcc format restrictions.
+- Only initialize thread system once.
+- Improve/fix external and internal documentation.
+- Get rid of nasty warnings when building docs.
+- Improved handling of GstCaps.
+- Remove redundant initializations.
+- Fix some leaks.
+- Hilight test failures by use of red color.
+- Mark constant return values as such.
+- Clear the (obsolete) ChangeLog file.
+- Test media moved to gitorious.
+- Many non-functional improvements.
+
+All contributors to this release:
+
+Parthasarathi Susarla <partha.susarla@collabora.co.uk>
+Zeeshan Ali (Khattak) <zeeshanak@gnome.org>
+Luis de Bethencourt <luis@debethencourt.com>
+
+0.5.1
+=====
+
+Changes since 0.5.0:
+
+- Use encoding-profile from gst-plugins-base.
+- Drop internalized copy of gst-convenience. Did you hear that Fedora peeps?
+- Explicitly link gupnp-dlna-info against gstreamer-pbutils.
+- GUPnPDLNAProfile exposes related GstEncodingProfile as a property.
+
+Dependency related changes:
+
+- Require gstreamer-pbutils >= 0.10.32.
+
+All contributors to this release:
+
+Arun Raghavan <arun.raghavan@collabora.co.uk>
+Parthasarathi Susarla <partha.susarla@collabora.co.uk>
+Luis de Bethencourt <luis@debethencourt.com>
+Zeeshan Ali (Khattak) <zeeshanak@gnome.org>
+
+0.5.0
+=====
+
+Changes since 0.4.2:
+
+- Use GstDiscoverer from gst-plugins-base and remove internal
+  copy of discoverer.
+- Minor bug fixes.
+
+Arun Raghavan <arun.raghavan@collabora.co.uk>
+Parthasarathi Susarla <partha.susarla@collabora.co.uk>
+Zeeshan Ali (Khattak) <zeeshanak@gnome.org>
+
+0.4.2
+=====
+
+Changes since 0.4.1:
+
+- Remove internal discoverer namespace changes (fixes API breakage)
+- Skip discoverer tests if media is missing
+
+Arun Raghavan <arun.raghavan@collabora.co.uk>
+Parthasarathi Susarla <partha.susarla@collabora.co.uk>
+Zeeshan Ali (Khattak) <zeeshanak@gnome.org>
+
+0.4.1
+=====
+
+Changes since 0.4.0:
+
+- Allow gupnp-dlna to coexist with soon-to-be-released gst-plugins-base
+  (0.10.31). Still can't link applications against both, though
+- Some build fixes
+
+Arun Raghavan <arun.raghavan@collabora.co.uk>
+Parthasarathi Susarla <partha.susarla@collabora.co.uk>
+Ryo ONODERA <ryo_on@yk.rim.or.jp>
+
+0.4.0
+=====
+
+Changes since 0.3.1:
+
+- Don't link against pbutils to avoid conflicts with internal gstdiscoverer
+- Add library versioning
+- Minor test harness change
+
+Arun Raghavan <arun.raghavan@collabora.co.uk>
+Parthasarathi Susarla <partha.susarla@collabora.co.uk>
+Zeeshan Ali (Khattak) <zeeshanak@gnome.org>
+
+0.3.1
+=====
+
+Changes since 0.3.0:
+
+- Update license from LGPL 2.0 to 2.1
+- Implement a "relaxed mode" so that we can match more media (while not being
+  strictly conformant to the DLNA spec.)
+- Modify several audio and video profiles to allow for relaxed matching
+- Implement support for "extended profiles" so that we can add custom profiles
+  for popular formats no supported but the DLNA spec.
+- Add extended and relaxed modes to gupnp-dlna-info and gupnp-dlna-ls-profiles
+- Minor fixes and profile updates
+
+Arun Raghavan <arun.raghavan@collabora.co.uk>
+Parthasarathi Susarla <partha.susarla@collabora.co.uk>
+Zeeshan Ali (Khattak) <zeeshanak@gnome.org>
+
+0.3.0
+=====
+
+Changes since 0.2.1:
+
+- New API and tool (gupnp-dlna-ls-profiles) to list all supported profiles
+- Move API to get a profile to the DLNADiscoverer namespace
+- Make GUPnPDLNAProfile opaque, add to API documentation
+- Add support for several AVC_MP4_MP profiles
+- Print stream topology instead of a simple list in gupnp-dlna-info
+- Add debug output controlled by an environment variable for eaesier
+  debugging
+- Beginnings of an automated testing infrastructure
+- Add relaxed/extended mode properties (more details in the next release)
+- Use 'bitrate' instead of 'maximum-bitrate' while matching streams
+- Various bug fixes
+
+All contributors to this release:
+
+Arun Raghavan <arun.raghavan@collabora.co.uk>
+Parthasarathi Susarla <partha.susarla@collabora.co.uk>
+Zeeshan Ali (Khattak) <zeeshanak@gnome.org>
+
+0.2.1
+=====
+
+Brown paper-bag release for bad gstreamer dependency.
+
+0.2
+===
+
+Changes since 0.1:
+
+- Add a program (gupnp-dlna-info) to print DLNA profile name and MIME type of a
+  given URI, as well as other metadata. [Parthasarathi Susarla]
+- Add support for a few more AVC profiles
+- Update in-tree copy of gst-convenience
+- Make MP4 matching stricter - only ISO-compliant files are matched
+- Couple of enhancements to simplify writing profile XML
+- Add an API for getting a encoding profile for a DLNA profile and an example
+  to use this with encodebin from gst-convenience. This is still
+  work-in-progress.
+- Some minor bug fixes
+
+All contributors to this release:
+
+Arun Raghavan <arun.raghavan@collabora.co.uk>
+Parthasarathi Susarla <partha.susarla@collabora.co.uk>
+Zeeshan Ali (Khattak) <zeeshanak@gnome.org>
+
+0.1
+===
+
+Initial release.

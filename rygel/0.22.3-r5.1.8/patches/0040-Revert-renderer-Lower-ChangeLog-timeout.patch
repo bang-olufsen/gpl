@@ -1,0 +1,45 @@
+From 97556471fb5c3b901c906b72d8ec95be5786fb67 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Thu, 5 Mar 2015 09:48:40 +0100
+Subject: [PATCH] Revert "renderer: Lower ChangeLog timeout"
+
+This reverts commit 9afc2f5630605298c762e90381663d2f7b37ac5a.
+
+In 7.3.93.2 DLNA test case it is required to use 200ms +/- 20ms
+for state change notifications.
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ src/librygel-renderer/rygel-changelog.c    | 2 +-
+ src/librygel-renderer/rygel-changelog.vala | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/librygel-renderer/rygel-changelog.c b/src/librygel-renderer/rygel-changelog.c
+index 43275db..ce63524 100644
+--- a/src/librygel-renderer/rygel-changelog.c
++++ b/src/librygel-renderer/rygel-changelog.c
+@@ -176,7 +176,7 @@ static void rygel_change_log_ensure_timeout (RygelChangeLog* self) {
+ 	if (_tmp0_) {
+ 		guint _tmp5_ = 0U;
+ 		g_debug ("rygel-changelog.vala:73: Setting up timeout for LastChange");
+-		_tmp5_ = g_timeout_add_full (G_PRIORITY_DEFAULT, (guint) 150, _rygel_change_log_timeout_gsource_func, g_object_ref (self), g_object_unref);
++		_tmp5_ = g_timeout_add_full (G_PRIORITY_DEFAULT, (guint) 200, _rygel_change_log_timeout_gsource_func, g_object_ref (self), g_object_unref);
+ 		self->priv->timeout_id = _tmp5_;
+ 	}
+ }
+diff --git a/src/librygel-renderer/rygel-changelog.vala b/src/librygel-renderer/rygel-changelog.vala
+index 4f3933d..93e7e91 100644
+--- a/src/librygel-renderer/rygel-changelog.vala
++++ b/src/librygel-renderer/rygel-changelog.vala
+@@ -71,7 +71,7 @@ internal class Rygel.ChangeLog : Object {
+         // Make sure we have a notification timeout
+         if (this.service.get() != null && this.timeout_id == 0) {
+             debug ("Setting up timeout for LastChange");
+-            this.timeout_id = Timeout.add (150, this.timeout);
++            this.timeout_id = Timeout.add (200, this.timeout);
+         }
+     }
+ 
+-- 
+1.9.1
+

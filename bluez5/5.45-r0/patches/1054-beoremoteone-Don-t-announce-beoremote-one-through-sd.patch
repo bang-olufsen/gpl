@@ -1,0 +1,49 @@
+From 448ce1ad7c483e70bfe65985f9dfa2b2615123c9 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Tue, 17 Sep 2019 10:21:03 +0200
+Subject: [PATCH] beoremoteone: Don't announce beoremote one through sdp
+
+It uses legacy API which is activated only for specific LE device names
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ src/attrib-server.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/src/attrib-server.c b/src/attrib-server.c
+index 4c302f0..8f4540d 100644
+--- a/src/attrib-server.c
++++ b/src/attrib-server.c
+@@ -1369,25 +1369,28 @@ static gboolean register_core_services(struct gatt_server *server)
+ 	put_le16(appearance, &atval[0]);
+ 	attrib_db_add_new(server, server->appearance_handle, &uuid, ATT_NONE,
+ 						ATT_NOT_PERMITTED, atval, 2);
++	/* Don't announce legacy API through SDP
+ 	server->gap_sdp_handle = attrib_create_sdp_new(server, 0x0001,
+ 						"Generic Access Profile");
+ 	if (server->gap_sdp_handle == 0) {
+ 		error("Failed to register GAP service record");
+ 		return FALSE;
+ 	}
++	*/
+ 
+ 	/* GATT service: primary service definition */
+ 	bt_uuid16_create(&uuid, GATT_PRIM_SVC_UUID);
+ 	put_le16(GENERIC_ATTRIB_PROFILE_ID, &atval[0]);
+ 	attrib_db_add_new(server, 0x0010, &uuid, ATT_NONE, ATT_NOT_PERMITTED,
+ 								atval, 2);
+-
++	/* Don't announce legacy API through SDP
+ 	server->gatt_sdp_handle = attrib_create_sdp_new(server, 0x0010,
+ 						"Generic Attribute Profile");
+ 	if (server->gatt_sdp_handle == 0) {
+ 		error("Failed to register GATT service record");
+ 		return FALSE;
+ 	}
++	*/
+ 
+ 	return TRUE;
+ }
+-- 
+2.7.4
+

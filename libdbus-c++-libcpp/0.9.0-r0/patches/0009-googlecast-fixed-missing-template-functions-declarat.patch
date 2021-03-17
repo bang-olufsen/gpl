@@ -1,0 +1,87 @@
+From 73544fc70ac5fc1c5640f2a65fc362ffd21147e4 Mon Sep 17 00:00:00 2001
+From: Stanislav Ruzani <stanislav.ruzani@streamunlimited.com>
+Date: Mon, 5 Jun 2017 07:04:13 +0200
+Subject: [PATCH 03/11] googlecast: fixed missing template functions
+ declarations in dbus-c++/types.h
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Signed-off-by: Stanislav Ružáni <stanislav.ruzani@streamunlimited.com>
+---
+ include/dbus-c++/types.h  | 29 ++++++++++++++++------
+ 1 file changed, 21 insertions(+), 8 deletions(-)
+
+diff --git a/include/dbus-c++/types.h b/include/dbus-c++/types.h
+index 559f703..abd0096 100755
+--- a/include/dbus-c++/types.h
++++ b/include/dbus-c++/types.h
+@@ -36,6 +36,14 @@
+ #include "error.h"
+ #include <dbus-c++/debug.h>
+ 
++namespace DBus {
++class	Path;
++class	DXXAPI Variant;
++struct	DXXAPI Invalid;
++struct	DXXAPI Signature;
++}
++
++inline DBus::MessageIter &operator >> (DBus::MessageIter &iter, DBus::Invalid &);
+ extern DBus::MessageIter &operator >> (DBus::MessageIter &iter, uint8_t &val);
+ extern DBus::MessageIter &operator >> (DBus::MessageIter &iter, bool &val);
+ extern DBus::MessageIter &operator >> (DBus::MessageIter &iter, int16_t &val);
+@@ -46,14 +54,18 @@ extern DBus::MessageIter &operator >> (DBus::MessageIter &iter, int64_t &val);
+ extern DBus::MessageIter &operator >> (DBus::MessageIter &iter, uint64_t &val);
+ extern DBus::MessageIter &operator >> (DBus::MessageIter &iter, double &val);
+ extern DBus::MessageIter &operator >> (DBus::MessageIter &iter, std::string &val);
+-//extern DBus::MessageIter &operator >> (DBus::MessageIter &iter, DBus::Path &val);
+-//extern DBus::MessageIter &operator >> (DBus::MessageIter &iter, DBus::Signature &val);
++extern DBus::MessageIter &operator >> (DBus::MessageIter &iter, DBus::Path &val);
++extern DXXAPI DBus::MessageIter &operator >> (DBus::MessageIter &iter, DBus::Variant &val);
++extern DBus::MessageIter &operator >> (DBus::MessageIter &iter, DBus::Signature &val);
+ 
+ template<typename E>
+ extern DBus::MessageIter &operator >> (DBus::MessageIter &iter, std::vector<E>& val);
+ 
++template<typename K, typename V>
++inline DBus::MessageIter &operator >> (DBus::MessageIter &iter, std::map<K, V>& val);
++
+ 
+-//extern DBus::MessageIter &operator << (DBus::MessageIter &iter, const DBus::Invalid &);
++extern DBus::MessageIter &operator << (DBus::MessageIter &iter, const DBus::Invalid &);
+ extern DBus::MessageIter &operator << (DBus::MessageIter &iter, const uint8_t &val);
+ extern DBus::MessageIter &operator << (DBus::MessageIter &iter, const bool &val);
+ extern DBus::MessageIter &operator << (DBus::MessageIter &iter, const int16_t &val);
+@@ -64,12 +76,16 @@ extern DBus::MessageIter &operator << (DBus::MessageIter &iter, const int64_t &v
+ extern DBus::MessageIter &operator << (DBus::MessageIter &iter, const uint64_t &val);
+ extern DBus::MessageIter &operator << (DBus::MessageIter &iter, const double &val);
+ extern DBus::MessageIter &operator << (DBus::MessageIter &iter, const std::string &val);
+-//extern DBus::MessageIter &operator << (DBus::MessageIter &iter, const DBus::Path &val);
+-//extern DBus::MessageIter &operator << (DBus::MessageIter &iter, const DBus::Signature &val);
++extern DBus::MessageIter &operator << (DBus::MessageIter &iter, const DBus::Path &val);
++extern DXXAPI DBus::MessageIter &operator << (DBus::MessageIter &iter, const DBus::Variant &val);
++extern DBus::MessageIter &operator << (DBus::MessageIter &iter, const DBus::Signature &val);
+ 
+ template<typename E>
+ extern DBus::MessageIter &operator << (DBus::MessageIter &iter, const std::vector<E>& val);
+ 
++template<typename K, typename V>
++extern DBus::MessageIter &operator << (DBus::MessageIter &iter, const std::map<K, V>& val);
++
+ namespace DBus
+ {
+ 
+@@ -353,9 +369,6 @@ struct type< Struct<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14,
+ 
+ } /* namespace DBus */
+ 
+-extern DXXAPI DBus::MessageIter &operator << (DBus::MessageIter &iter, const DBus::Variant &val);
+-extern DXXAPI DBus::MessageIter &operator >> (DBus::MessageIter &iter, DBus::Variant &val);
+-
+ inline DBus::MessageIter &operator << (DBus::MessageIter &iter, const DBus::Invalid &)
+ {
+   return iter;
+-- 
+2.7.4
+

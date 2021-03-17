@@ -1,0 +1,2 @@
+move_vapigen.patch -p1
+gupnp-dlna-get-the-proper-girdir-path-from-gobject-introspectio.patch -p1

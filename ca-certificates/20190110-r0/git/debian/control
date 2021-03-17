@@ -1,0 +1,39 @@
+Source: ca-certificates
+Section: misc
+Priority: optional
+Maintainer: Michael Shuler <michael@pbandjelly.org>
+Uploaders: Raphael Geissert <geissert@debian.org>,
+           Thijs Kinkhorst <thijs@debian.org>
+Build-Depends: debhelper-compat (= 12), po-debconf
+Build-Depends-Indep: python, openssl
+Standards-Version: 4.3.0.1
+Vcs-Git: https://salsa.debian.org/debian/ca-certificates.git
+Vcs-Browser: https://salsa.debian.org/debian/ca-certificates
+
+Package: ca-certificates
+Architecture: all
+Depends: openssl (>= 1.1.1), ${misc:Depends}
+Enhances: openssl
+Multi-Arch: foreign
+Breaks: ca-certificates-java (<<20121112+nmu1)
+Description: Common CA certificates
+ Contains the certificate authorities shipped with Mozilla's browser to allow
+ SSL-based applications to check for the authenticity of SSL connections.
+ .
+ Please note that Debian can neither confirm nor deny whether the
+ certificate authorities whose certificates are included in this package
+ have in any way been audited for trustworthiness or RFC 3647 compliance.
+ Full responsibility to assess them belongs to the local system
+ administrator.
+
+Package: ca-certificates-udeb
+Package-Type: udeb
+Section: debian-installer
+Architecture: all
+Depends: ${misc:Depends}
+Description: Common CA certificates - udeb
+ Contains the certificate authorities shipped with Mozilla's browser,
+ all enabled by default.
+ .
+ This package is for use in the installer environment only.
+ Do not install on a normal system.

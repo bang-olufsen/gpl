@@ -1,0 +1,397 @@
+From d38457e949945d548c3ad3a2a1efdd4010d053e5 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Fri, 6 Nov 2020 10:14:13 +0100
+Subject: [PATCH] plparse/totem-pl-parser-wm.c
+
+---
+ plparse/totem-pl-parser-wm.c | 367 ++++++++++++++++++++++++++-----------------
+ 1 file changed, 219 insertions(+), 148 deletions(-)
+
+diff --git a/plparse/totem-pl-parser-wm.c b/plparse/totem-pl-parser-wm.c
+index f201e78..7b8695c 100644
+--- a/plparse/totem-pl-parser-wm.c
++++ b/plparse/totem-pl-parser-wm.c
+@@ -79,40 +79,56 @@ totem_pl_parser_is_asf (const char *data, gsize len)
+ 
+ static TotemPlParserResult
+ totem_pl_parser_add_asf_reference_parser (TotemPlParser *parser,
+-					  GFile *file,
+-					  GFile *base_file,
+-					  TotemPlParseData *parse_data,
+-					  gpointer data)
++                                          GFile *file,
++                                          GFile *base_file,
++                                          TotemPlParseData *parse_data,
++                                          gpointer data)
+ {
+-	char *contents, **lines, *ref;
+-	gsize size;
+-
+-	if (g_file_load_contents (file, NULL, &contents, &size, NULL, NULL) == FALSE)
+-		return TOTEM_PL_PARSER_RESULT_ERROR;
+-
+-	lines = g_strsplit_set (contents, "\n\r", 0);
+-	g_free (contents);
+-
+-	/* Try to get Ref1 first */
+-	ref = totem_pl_parser_read_ini_line_string (lines, "Ref1");
+-	if (ref == NULL) {
+-		g_strfreev (lines);
+-		return totem_pl_parser_add_asx (parser, file, base_file, parse_data, data);
+-	}
+-
+-	/* change http to mmsh, thanks Microsoft */
+-	if (g_str_has_prefix (ref, "http") != FALSE)
+-		memcpy(ref, "mmsh", 4);
+-
+-	totem_pl_parser_add_one_uri (parser, ref, NULL);
+-	g_free (ref);
+-
+-	/* Don't try to get Ref2, as it's only ever
+-	 * supposed to be a fallback */
+-
+-	g_strfreev (lines);
+-
+-	return TOTEM_PL_PARSER_RESULT_SUCCESS;
++  char *contents, **lines, *ref, *ref2;
++  gsize size;
++
++  if (g_file_load_contents (file, NULL, &contents, &size, NULL, NULL) == FALSE)
++    return TOTEM_PL_PARSER_RESULT_ERROR;
++
++  lines = g_strsplit_set (contents, "\n\r", 0);
++  g_free (contents);
++
++  /* Try to get Ref1 first */
++  ref = totem_pl_parser_read_ini_line_string (lines, "Ref1");
++  if (ref == NULL) {
++    g_strfreev (lines);
++    return totem_pl_parser_add_asx (parser, file, base_file, parse_data, data);
++  }
++
++  /* change http to mmsh, thanks Microsoft */
++  if (g_str_has_prefix (ref, "http") != FALSE)
++    memcpy(ref, "mmsh", 4);
++
++  /* Try to get Ref2 */
++  ref2 = totem_pl_parser_read_ini_line_string (lines, "Ref2");
++
++  if (ref2 != NULL) {
++    /* change http to mmsh in Ref2 as well */
++    if (g_str_has_prefix (ref2, "http") != FALSE) {
++      memcpy(ref2, "mmsh", 4);
++    }
++    /* If we found the Ref2 add it */
++    totem_pl_parser_add_uri (parser,
++                             TOTEM_PL_PARSER_FIELD_URI, ref,
++                             TOTEM_PL_PARSER_FIELD_ALTERNATIVE_URI1, ref2,
++                             NULL);
++    g_free (ref2);
++  }
++  else {
++    /* Didn't find the Ref2, no worries, just add the Ref1 */
++    totem_pl_parser_add_one_uri (parser, ref, NULL);
++  }
++
++  /* We could do the same for Ref3 but that does not seem to be that common */
++  g_free (ref);
++  g_strfreev (lines);
++
++  return TOTEM_PL_PARSER_RESULT_SUCCESS;
+ }
+ 
+ static TotemPlParserResult
+@@ -158,123 +174,178 @@ totem_pl_parser_add_asf_parser (TotemPlParser *parser,
+ static gboolean
+ parse_asx_entry (TotemPlParser *parser, GFile *base_file, xml_node_t *parent, TotemPlParseData *parse_data)
+ {
+-	xml_node_t *node;
+-	TotemPlParserResult retval = TOTEM_PL_PARSER_RESULT_SUCCESS;
+-	GFile *resolved;
+-	char *resolved_uri;
+-	const char *uri;
+-	const char *title, *duration, *starttime, *author;
+-	const char *moreinfo, *abstract, *copyright;
+-
+-	title = NULL;
+-	uri = NULL;
+-	duration = NULL;
+-	starttime = NULL;
+-	moreinfo = NULL;
+-	abstract = NULL;
+-	copyright = NULL;
+-	author = NULL;
+-
+-	for (node = parent->child; node != NULL; node = node->next) {
+-		if (node->name == NULL)
+-			continue;
+-
+-		/* ENTRY can only have one title node but multiple REFs */
+-		if (g_ascii_strcasecmp (node->name, "ref") == 0) {
+-			const char *tmp;
+-
+-			tmp = xml_parser_get_property (node, "href");
+-			if (tmp == NULL)
+-				continue;
+-			/* FIXME, should we prefer mms streams, or non-mms?
+-			 * See bug #352559 */
+-			if (uri == NULL)
+-				uri = tmp;
+-
+-			continue;
+-		}
+-
+-		if (g_ascii_strcasecmp (node->name, "title") == 0)
+-			title = node->data;
+-
+-		if (g_ascii_strcasecmp (node->name, "author") == 0)
+-			author = node->data;
+-
+-		if (g_ascii_strcasecmp (node->name, "moreinfo") == 0) {
+-			const char *tmp;
+-
+-			tmp = xml_parser_get_property (node, "href");
+-			if (tmp == NULL)
+-				continue;
+-			moreinfo = tmp;
+-		}
+-
+-		if (g_ascii_strcasecmp (node->name, "copyright") == 0)
+-			copyright = node->data;
+-
+-		if (g_ascii_strcasecmp (node->name, "abstract") == 0)
+-			abstract = node->data;
+-
+-		if (g_ascii_strcasecmp (node->name, "duration") == 0) {
+-			const char *tmp;
+-
+-			tmp = xml_parser_get_property (node, "value");
+-			if (tmp == NULL)
+-				continue;
+-			duration = tmp;
+-		}
+-
+-		if (g_ascii_strcasecmp (node->name, "starttime") == 0) {
+-			const char *tmp;
+-
+-			tmp = xml_parser_get_property (node, "value");
+-			if (tmp == NULL)
+-				continue;
+-			starttime = tmp;
+-		}
+-
+-		if (g_ascii_strcasecmp (node->name, "param") == 0) {
+-			const char *name, *value;
+-
+-			name = xml_parser_get_property (node, "name");
+-			if (name == NULL || g_ascii_strcasecmp (name, "showwhilebuffering") != 0)
+-				continue;
+-			value = xml_parser_get_property (node, "value");
+-			if (value == NULL || g_ascii_strcasecmp (value, "true") != 0)
+-				continue;
+-
+-			/* We ignore items that are the buffering images */
+-			retval = TOTEM_PL_PARSER_RESULT_IGNORED;
+-			goto bail;
+-		}
+-	}
+-
+-	if (uri == NULL)
+-		return TOTEM_PL_PARSER_RESULT_ERROR;
+-
+-	resolved_uri = totem_pl_parser_resolve_uri (base_file, uri);
+-	resolved = g_file_new_for_uri (resolved_uri);
+-	g_free (resolved_uri);
+-
+-	/* .asx files can contain references to other .asx files */
+-	retval = totem_pl_parser_parse_internal (parser, resolved, NULL, parse_data);
+-	if (retval != TOTEM_PL_PARSER_RESULT_SUCCESS) {
+-		totem_pl_parser_add_uri (parser,
+-					 TOTEM_PL_PARSER_FIELD_FILE, resolved,
+-					 TOTEM_PL_PARSER_FIELD_TITLE, title,
+-					 TOTEM_PL_PARSER_FIELD_ABSTRACT, abstract,
+-					 TOTEM_PL_PARSER_FIELD_COPYRIGHT, copyright,
+-					 TOTEM_PL_PARSER_FIELD_AUTHOR, author,
+-					 TOTEM_PL_PARSER_FIELD_STARTTIME, starttime,
+-					 TOTEM_PL_PARSER_FIELD_DURATION, duration,
+-					 TOTEM_PL_PARSER_FIELD_MOREINFO, moreinfo,
+-					 NULL);
+-		retval = TOTEM_PL_PARSER_RESULT_SUCCESS;
+-	}
+-	g_object_unref (resolved);
++  xml_node_t *node;
++  TotemPlParserResult retval = TOTEM_PL_PARSER_RESULT_SUCCESS;
++  GFile *resolved;
++  char *resolved_uri, *resolved_uri2, *resolved_uri3, *resolved_uri4;
++  const char *uri, *alternativeURI1, *alternativeURI2, *alternativeURI3;
++  const char *title, *duration, *starttime, *author;
++  const char *moreinfo, *abstract, *copyright;
++
++  title = NULL;
++  uri = NULL;
++  alternativeURI1 = NULL;
++  alternativeURI2 = NULL;
++  alternativeURI3 = NULL;
++  duration = NULL;
++  starttime = NULL;
++  moreinfo = NULL;
++  abstract = NULL;
++  copyright = NULL;
++  author = NULL;
++
++  resolved_uri2 = NULL;
++  resolved_uri3 = NULL;
++  resolved_uri4 = NULL;
++
++  for (node = parent->child; node != NULL; node = node->next) {
++    if (node->name == NULL)
++      continue;
++
++    /* ENTRY can only have one title node but multiple REFs */
++    if (g_ascii_strcasecmp (node->name, "ref") == 0) {
++      const char *tmp;
++
++      tmp = xml_parser_get_property (node, "href");
++      if (tmp == NULL)
++        continue;
++
++      /* FIXME, should we prefer mms streams, or non-mms?
++       * See bug #352559 */
++      if (uri == NULL) {
++        uri = tmp;
++      }
++      /* Primary URI already found */
++      else {
++        /* If the 1st alternative not yet found, store it */
++        if (alternativeURI1 == NULL) {
++          alternativeURI1 = tmp;
++        }
++        /* 1st alternative URI also already found */
++        else {
++          /* If the 2nd alternative not yet found, store it */
++          if (alternativeURI2 == NULL) {
++            alternativeURI2 = tmp;
++          }
++          else {
++            /* If the 3rd alternative not yet found, store it */
++            if (alternativeURI3 == NULL) {
++              alternativeURI3 = tmp;
++            }
++          }
++          /* Could also parse more alternatives here... */
++          /* But haven't seen more that 3 alternatives yet */
++        }
++      }
++
++      continue;
++    }
++
++    if (g_ascii_strcasecmp (node->name, "title") == 0)
++      title = node->data;
++
++    if (g_ascii_strcasecmp (node->name, "author") == 0)
++      author = node->data;
++
++    if (g_ascii_strcasecmp (node->name, "moreinfo") == 0) {
++      const char *tmp;
++
++      tmp = xml_parser_get_property (node, "href");
++      if (tmp == NULL)
++        continue;
++      moreinfo = tmp;
++    }
++
++    if (g_ascii_strcasecmp (node->name, "copyright") == 0)
++      copyright = node->data;
++
++    if (g_ascii_strcasecmp (node->name, "abstract") == 0)
++      abstract = node->data;
++
++    if (g_ascii_strcasecmp (node->name, "duration") == 0) {
++      const char *tmp;
++
++      tmp = xml_parser_get_property (node, "value");
++      if (tmp == NULL)
++        continue;
++      duration = tmp;
++    }
++
++    if (g_ascii_strcasecmp (node->name, "starttime") == 0) {
++      const char *tmp;
++
++      tmp = xml_parser_get_property (node, "value");
++      if (tmp == NULL)
++        continue;
++      starttime = tmp;
++    }
++
++    if (g_ascii_strcasecmp (node->name, "param") == 0) {
++      const char *name, *value;
++
++      name = xml_parser_get_property (node, "name");
++      if (name == NULL || g_ascii_strcasecmp (name, "showwhilebuffering") != 0)
++        continue;
++      value = xml_parser_get_property (node, "value");
++      if (value == NULL || g_ascii_strcasecmp (value, "true") != 0)
++        continue;
++
++      /* We ignore items that are the buffering images */
++      retval = TOTEM_PL_PARSER_RESULT_IGNORED;
++      goto bail;
++    }
++  }
++
++  if (uri == NULL)
++    return TOTEM_PL_PARSER_RESULT_ERROR;
++
++  resolved_uri = totem_pl_parser_resolve_uri (base_file, uri);
++  resolved = g_file_new_for_uri (resolved_uri);
++  g_free (resolved_uri);
++
++  /* Resolve the 1st alternative URI */
++  if (alternativeURI1 != NULL)
++  {
++    resolved_uri2 = totem_pl_parser_resolve_uri (base_file, alternativeURI1);
++  }
++  /* Resolve the 2nd alternative URI */
++  if (alternativeURI2 != NULL)
++  {
++    resolved_uri3 = totem_pl_parser_resolve_uri (base_file, alternativeURI2);
++  }
++  /* Resolve the 3rd alternative URI */
++  if (alternativeURI3 != NULL)
++  {
++    resolved_uri4 = totem_pl_parser_resolve_uri (base_file, alternativeURI3);
++  }
++
++  /* .asx files can contain references to other .asx files */
++  retval = totem_pl_parser_parse_internal (parser, resolved, NULL, parse_data);
++  if (retval != TOTEM_PL_PARSER_RESULT_SUCCESS) {
++    totem_pl_parser_add_uri (parser,
++                             TOTEM_PL_PARSER_FIELD_FILE, resolved,
++                             TOTEM_PL_PARSER_FIELD_ALTERNATIVE_URI1, resolved_uri2,
++                             TOTEM_PL_PARSER_FIELD_ALTERNATIVE_URI2, resolved_uri3,
++                             TOTEM_PL_PARSER_FIELD_ALTERNATIVE_URI3, resolved_uri4,
++                             TOTEM_PL_PARSER_FIELD_TITLE, title,
++                             TOTEM_PL_PARSER_FIELD_ABSTRACT, abstract,
++                             TOTEM_PL_PARSER_FIELD_COPYRIGHT, copyright,
++                             TOTEM_PL_PARSER_FIELD_AUTHOR, author,
++                             TOTEM_PL_PARSER_FIELD_STARTTIME, starttime,
++                             TOTEM_PL_PARSER_FIELD_DURATION, duration,
++                             TOTEM_PL_PARSER_FIELD_MOREINFO, moreinfo,
++                             NULL);
++    retval = TOTEM_PL_PARSER_RESULT_SUCCESS;
++  }
++  g_object_unref (resolved);
++
++  /* if NULL g_free will just return */
++  g_free (resolved_uri2);
++  g_free (resolved_uri3);
++  g_free (resolved_uri4);
+ 
+ bail:
+-	return retval;
++  return retval;
+ }
+ 
+ static gboolean

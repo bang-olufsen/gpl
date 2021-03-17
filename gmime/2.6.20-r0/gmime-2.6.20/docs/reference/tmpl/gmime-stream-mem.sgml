@@ -1,0 +1,92 @@
+<!-- ##### SECTION Title ##### -->
+gmime-stream-mem
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GMimeStreamMem ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION g_mime_stream_mem_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_stream_mem_new_with_byte_array ##### -->
+<para>
+
+</para>
+
+@array: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_stream_mem_new_with_buffer ##### -->
+<para>
+
+</para>
+
+@buffer: 
+@len: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_stream_mem_get_byte_array ##### -->
+<para>
+
+</para>
+
+@mem: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_stream_mem_set_byte_array ##### -->
+<para>
+
+</para>
+
+@mem: 
+@array: 
+
+
+<!-- ##### FUNCTION g_mime_stream_mem_get_owner ##### -->
+<para>
+
+</para>
+
+@mem: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_stream_mem_set_owner ##### -->
+<para>
+
+</para>
+
+@mem: 
+@owner: 
+
+

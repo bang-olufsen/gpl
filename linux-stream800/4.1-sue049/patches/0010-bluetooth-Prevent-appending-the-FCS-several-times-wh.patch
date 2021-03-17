@@ -1,0 +1,36 @@
+From 78d7e93a66fae1bfda965c1d11ed64bad1288547 Mon Sep 17 00:00:00 2001
+From: Bernhard Miller <bernhard.miller@streamunlimited.com>
+Date: Wed, 16 Jul 2014 13:32:30 +0200
+Subject: [PATCH] bluetooth: Prevent appending the FCS several times when
+ retransmitting ERTM frames
+
+This patch prevents appending the frame checksum of ERTM frames when they were resent. Instead
+of appending two more bytes for the checksum, the already present checksum bytes are overwritten.
+This is necessary to pass several L2CAP ERTM test cases in the Bluetooth PTS, e.g. TC_ERM_BV_13_C.
+
+Signed-off-by: Bernhard Miller <bernhard.miller@streamunlimited.com>
+[adjusted from v3.9 to v3.18]
+Signed-off-by: Radek Dostal <radek.dostal@streamunlimited.com>
+---
+ net/bluetooth/l2cap_core.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
+index dad4197..06c3bf8 100644
+--- a/net/bluetooth/l2cap_core.c
++++ b/net/bluetooth/l2cap_core.c
+@@ -1855,8 +1855,9 @@ static void l2cap_streaming_send(struct l2cap_chan *chan,
+ 		__pack_control(chan, control, skb);
+ 
+ 		if (chan->fcs == L2CAP_FCS_CRC16) {
+-			u16 fcs = crc16(0, (u8 *) skb->data, skb->len);
+-			put_unaligned_le16(fcs, skb_put(skb, L2CAP_FCS_SIZE));
++			// overwrite the already appended FCS with the newly calculated one
++			u16 fcs = crc16(0, (u8 *) skb->data, skb->len - L2CAP_FCS_SIZE);
++			put_unaligned_le16(fcs, skb->data + skb->len - L2CAP_FCS_SIZE);
+ 		}
+ 
+ 		l2cap_do_send(chan, skb);
+-- 
+1.9.1
+

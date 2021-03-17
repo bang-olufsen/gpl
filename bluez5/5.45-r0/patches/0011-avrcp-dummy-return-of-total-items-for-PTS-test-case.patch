@@ -1,0 +1,90 @@
+From 873f631714118ef6200c63fb94cb4c377de7fd9a Mon Sep 17 00:00:00 2001
+From: Bernhard Miller <bernhard.miller@streamunlimited.com>
+Date: Tue, 14 Mar 2017 15:03:49 +0100
+Subject: [PATCH] avrcp: dummy return of total items for PTS test case
+
+Signed-off-by: Bernhard Miller <bernhard.miller@streamunlimited.com>
+---
+ profiles/audio/avrcp.c | 53 ++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 53 insertions(+)
+
+diff --git a/profiles/audio/avrcp.c b/profiles/audio/avrcp.c
+index 3c2cea8..da54556 100644
+--- a/profiles/audio/avrcp.c
++++ b/profiles/audio/avrcp.c
+@@ -185,6 +185,12 @@ struct avrcp_browsing_header {
+ } __attribute__ ((packed));
+ #define AVRCP_BROWSING_HEADER_LENGTH 3
+ 
++struct get_total_number_of_items_rsp {
++	uint8_t status;
++	uint16_t uid_counter;
++	uint32_t num_items;
++} __attribute__ ((packed));
++
+ struct get_folder_items_rsp {
+ 	uint8_t status;
+ 	uint16_t uid_counter;
+@@ -1985,12 +1991,59 @@ failed:
+ 	pdu->param_len = htons(1);
+ }
+ 
++static void avrcp_handle_get_total_number_of_items(struct avrcp *session,
++				struct avrcp_browsing_header *pdu,
++				uint8_t transaction)
++{
++	uint8_t scope;
++	uint8_t status = AVRCP_STATUS_SUCCESS;
++
++	struct avrcp_player *player = session->target->player;
++	struct get_total_number_of_items_rsp *rsp;
++
++	DBG("Enter len=%u scope=%u", ntohs(pdu->param_len), pdu->params[0]);
++
++	if (ntohs(pdu->param_len) < 1) {
++		status = AVRCP_STATUS_INVALID_PARAM;
++		goto failed;
++	}
++
++	scope = pdu->params[0];
++
++	switch (scope) {
++	case AVRCP_SCOPE_MEDIA_PLAYER_LIST:
++		rsp = (void *)pdu->params;
++		rsp->status = AVRCP_STATUS_SUCCESS;
++		rsp->uid_counter = htons(player_get_uid_counter(player));
++		rsp->num_items = 0; // TODO: get real number of items
++		pdu->param_len = sizeof(*rsp);
++
++		rsp->num_items = htons(rsp->num_items);
++		pdu->param_len = htons(pdu->param_len);
++
++		break;
++	case AVRCP_SCOPE_MEDIA_PLAYER_VFS:
++	case AVRCP_SCOPE_SEARCH:
++	case AVRCP_SCOPE_NOW_PLAYING:
++	default:
++		status = AVRCP_STATUS_INVALID_PARAM;
++		goto failed;
++	}
++
++	return;
++
++failed:
++	pdu->params[0] = status;
++	pdu->param_len = htons(1);
++}
++
+ static struct browsing_pdu_handler {
+ 	uint8_t pdu_id;
+ 	void (*func) (struct avrcp *session, struct avrcp_browsing_header *pdu,
+ 							uint8_t transaction);
+ } browsing_handlers[] = {
+ 		{ AVRCP_GET_FOLDER_ITEMS, avrcp_handle_get_folder_items },
++		{ AVRCP_GET_TOTAL_NUMBER_OF_ITEMS, avrcp_handle_get_total_number_of_items },
+ 		{ },
+ };
+ 
+-- 
+2.7.4
+

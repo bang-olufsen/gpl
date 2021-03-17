@@ -1,0 +1,71 @@
+From 88a9408df23bdc893c1e5d827fc3ac418588b8b8 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Wed, 26 Sep 2018 08:24:06 +0200
+Subject: [PATCH] audio/transport: Don't send suspend when transport owner
+ removed
+
+When suspend is sent to source some phones doesn't resume sink
+automatically (new Samsung phones/tablets).
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ profiles/audio/a2dp.c      |  2 +-
+ profiles/audio/transport.c | 19 +++++++------------
+ 2 files changed, 8 insertions(+), 13 deletions(-)
+
+diff --git a/profiles/audio/a2dp.c b/profiles/audio/a2dp.c
+index b5476b7..af190db 100644
+--- a/profiles/audio/a2dp.c
++++ b/profiles/audio/a2dp.c
+@@ -2258,7 +2258,7 @@ gboolean a2dp_sep_unlock(struct a2dp_sep *sep, struct avdtp *session)
+ 		/* Set timer here */
+ 		break;
+ 	case AVDTP_STATE_STREAMING:
+-		if (avdtp_suspend(session, sep->stream) == 0)
++		if (sep->type == AVDTP_SEP_TYPE_SOURCE && avdtp_suspend(session, sep->stream) == 0)
+ 			sep->suspending = TRUE;
+ 		break;
+ 	case AVDTP_STATE_IDLE:
+diff --git a/profiles/audio/transport.c b/profiles/audio/transport.c
+index 43847b6..cd29185 100644
+--- a/profiles/audio/transport.c
++++ b/profiles/audio/transport.c
+@@ -520,9 +520,9 @@ static DBusMessage *release(DBusConnection *conn, DBusMessage *msg,
+ {
+ 	struct media_transport *transport = data;
+ 	struct media_owner *owner = transport->owner;
++	struct a2dp_transport *a2dp = transport->data;
++	struct a2dp_sep *sep = media_endpoint_get_sep(transport->endpoint);
+ 	const char *sender;
+-	struct media_request *req;
+-	guint id;
+ 
+ 	sender = dbus_message_get_sender(msg);
+ 
+@@ -540,18 +540,13 @@ static DBusMessage *release(DBusConnection *conn, DBusMessage *msg,
+ 			return btd_error_in_progress(msg);
+ 	}
+ 
+-	transport_set_state(transport, TRANSPORT_STATE_SUSPENDING);
+-
+-	id = transport->suspend(transport, owner);
+-	if (id == 0) {
+-		media_transport_remove_owner(transport);
+-		return g_dbus_create_reply(msg, DBUS_TYPE_INVALID);
+-	}
++	if (state_in_use(transport->state))
++		transport_set_state(transport, TRANSPORT_STATE_PENDING);
+ 
+-	req = media_request_create(msg, id);
+-	media_owner_add(owner, req);
++	a2dp_sep_unlock(sep, a2dp->session);
+ 
+-	return NULL;
++	media_transport_remove_owner(transport);
++	return g_dbus_create_reply(msg, DBUS_TYPE_INVALID);
+ }
+ 
+ static DBusMessage *send_delay_report_pts(DBusConnection *conn, DBusMessage *msg,
+-- 
+2.7.4
+

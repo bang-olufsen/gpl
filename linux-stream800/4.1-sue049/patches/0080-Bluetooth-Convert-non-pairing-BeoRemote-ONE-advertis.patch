@@ -1,0 +1,60 @@
+From 8f5cd6ba59bb2dd158cbe1b31b4d0fa870e107dc Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Mon, 13 Nov 2017 16:29:44 +0100
+Subject: [PATCH] Bluetooth: Convert non pairing BeoRemote ONE advertisements
+ to directed
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ net/bluetooth/hci_event.c | 28 ++++++++++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
+
+diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+index 76fa937..43918b8 100644
+--- a/net/bluetooth/hci_event.c
++++ b/net/bluetooth/hci_event.c
+@@ -4710,6 +4710,17 @@ static struct hci_conn *check_pending_le_conn(struct hci_dev *hdev,
+ 	return NULL;
+ }
+ 
++#define BEOREMOTE_ONE_ADV_REPORT_MIN 28
++const char BEOREMOTE_ONE_ADV_REPORT_NAME[] = "BEORC";
++
++static bool beoremote_one_adv_report(u8 *data, u8 len) {
++	if (len >= BEOREMOTE_ONE_ADV_REPORT_MIN) {
++		return (memcmp(&data[15], BEOREMOTE_ONE_ADV_REPORT_NAME, strlen(BEOREMOTE_ONE_ADV_REPORT_NAME)) == 0);
++	}
++
++	return false;
++}
++
+ static void process_adv_report(struct hci_dev *hdev, u8 type, bdaddr_t *bdaddr,
+ 			       u8 bdaddr_type, bdaddr_t *direct_addr,
+ 			       u8 direct_addr_type, s8 rssi, u8 *data, u8 len)
+@@ -4746,6 +4757,23 @@ static void process_adv_report(struct hci_dev *hdev, u8 type, bdaddr_t *bdaddr,
+ 			return;
+ 	}
+ 
++	/* Check BeoRemote ONE advertisements if they are meant for our device
++	 * if yes change advertisements to directed connectable advertisements
++	 */
++	if (beoremote_one_adv_report(data, len)) {
++		bdaddr_t *addr = (bdaddr_t *) &data[22];
++		if (!bacmp(addr, &hdev->bdaddr)) {
++			/* Advertisement is meant for our device - transform to directed */
++			type = LE_ADV_DIRECT_IND;
++		} else {
++			if (bacmp(addr, BDADDR_NONE)) {
++				/* Advertisement is meant for other device - drop */
++				return;
++			}
++			/* BeoRemote emits pairing advertisements - do nothing */
++		}
++	}
++
+ 	/* Check if we need to convert to identity address */
+ 	irk = hci_get_irk(hdev, bdaddr, bdaddr_type);
+ 	if (irk) {
+-- 
+2.7.4
+

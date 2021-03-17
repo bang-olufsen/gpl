@@ -1,0 +1,40 @@
+From 11a5c206f7bfa2516b82c62d152995c757f57f09 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Fri, 11 Apr 2014 10:30:30 +0200
+Subject: [PATCH] sue:s800: Set correct ecc scheme (BCH8 - HW)
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ board/streamunlimited/stream800/board.c | 2 ++
+ include/configs/stream800.h             | 2 ++
+ 2 files changed, 4 insertions(+)
+
+diff --git a/board/streamunlimited/stream800/board.c b/board/streamunlimited/stream800/board.c
+index 4851b52..2b63ab5 100755
+--- a/board/streamunlimited/stream800/board.c
++++ b/board/streamunlimited/stream800/board.c
+@@ -478,6 +478,8 @@ int board_late_init(void)
+     // Start the watchdog
+     watchdog_start();
+ #endif
++	/* enable hardware ecc module */
++	omap_nand_switch_ecc(1, 8);
+ 
+ 	/* detect flash size and setup mtdparts variable */
+ 	detect_flash();
+diff --git a/include/configs/stream800.h b/include/configs/stream800.h
+index 65d7b96..afec816 100644
+--- a/include/configs/stream800.h
++++ b/include/configs/stream800.h
+@@ -1032,6 +1032,8 @@
+ #define	CONFIG_SYS_NAND_ECCTOTAL	(CONFIG_SYS_NAND_ECCBYTES * \
+ 						CONFIG_SYS_NAND_ECCSTEPS)
+ 
++#define CONFIG_NAND_OMAP_ECCSCHEME	OMAP_ECC_BCH8_CODE_HW
++#define CONFIG_NAND_OMAP_ELM
+ #define	CONFIG_SYS_NAND_U_BOOT_START	CONFIG_SYS_TEXT_BASE
+ 
+ #define CONFIG_SYS_NAND_U_BOOT_OFFS	0x80000
+-- 
+2.7.4
+

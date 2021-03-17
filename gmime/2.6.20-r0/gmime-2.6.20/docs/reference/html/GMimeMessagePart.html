@@ -1,0 +1,182 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GMimeMessagePart</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="GMime 2.6 Reference Manual">
+<link rel="up" href="MimeParts.html" title="MIME Messages and Parts">
+<link rel="prev" href="GMimeMultipartSigned.html" title="GMimeMultipartSigned">
+<link rel="next" href="GMimeMessagePartial.html" title="GMimeMessagePartial">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="GMimeMultipartSigned.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="MimeParts.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">GMime 2.6 Reference Manual</th>
+<td><a accesskey="n" href="GMimeMessagePartial.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#GMimeMessagePart.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#GMimeMessagePart.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#GMimeMessagePart.object-hierarchy" class="shortcut">Object Hierarchy</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="GMimeMessagePart"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="GMimeMessagePart.top_of_page"></a>GMimeMessagePart</span></h2>
+<p>GMimeMessagePart — Message parts</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="GMimeMessagePart.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">struct              <a class="link" href="GMimeMessagePart.html#GMimeMessagePart-struct" title="struct GMimeMessagePart">GMimeMessagePart</a>;
+<a class="link" href="GMimeMessagePart.html" title="GMimeMessagePart"><span class="returnvalue">GMimeMessagePart</span></a> *  <a class="link" href="GMimeMessagePart.html#g-mime-message-part-new" title="g_mime_message_part_new ()">g_mime_message_part_new</a>             (<em class="parameter"><code>const <span class="type">char</span> *subtype</code></em>);
+<a class="link" href="GMimeMessagePart.html" title="GMimeMessagePart"><span class="returnvalue">GMimeMessagePart</span></a> *  <a class="link" href="GMimeMessagePart.html#g-mime-message-part-new-with-message" title="g_mime_message_part_new_with_message ()">g_mime_message_part_new_with_message</a>
+                                                        (<em class="parameter"><code>const <span class="type">char</span> *subtype</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeMessage.html" title="GMimeMessage"><span class="type">GMimeMessage</span></a> *message</code></em>);
+<a class="link" href="GMimeMessage.html" title="GMimeMessage"><span class="returnvalue">GMimeMessage</span></a> *      <a class="link" href="GMimeMessagePart.html#g-mime-message-part-get-message" title="g_mime_message_part_get_message ()">g_mime_message_part_get_message</a>     (<em class="parameter"><code><a class="link" href="GMimeMessagePart.html" title="GMimeMessagePart"><span class="type">GMimeMessagePart</span></a> *part</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimeMessagePart.html#g-mime-message-part-set-message" title="g_mime_message_part_set_message ()">g_mime_message_part_set_message</a>     (<em class="parameter"><code><a class="link" href="GMimeMessagePart.html" title="GMimeMessagePart"><span class="type">GMimeMessagePart</span></a> *part</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeMessage.html" title="GMimeMessage"><span class="type">GMimeMessage</span></a> *message</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="GMimeMessagePart.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  GObject
+   +----<a class="link" href="GMimeObject.html" title="GMimeObject">GMimeObject</a>
+         +----GMimeMessagePart
+</pre>
+</div>
+<div class="refsect1">
+<a name="GMimeMessagePart.description"></a><h2>Description</h2>
+<p>
+A <a class="link" href="GMimeMessagePart.html" title="GMimeMessagePart"><span class="type">GMimeMessagePart</span></a> represents message/rfc822 and message/news MIME
+parts.
+</p>
+</div>
+<div class="refsect1">
+<a name="GMimeMessagePart.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="GMimeMessagePart-struct"></a><h3>struct GMimeMessagePart</h3>
+<pre class="programlisting">struct GMimeMessagePart;</pre>
+<p>
+A message/rfc822 or message/news MIME part.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-message-part-new"></a><h3>g_mime_message_part_new ()</h3>
+<pre class="programlisting"><a class="link" href="GMimeMessagePart.html" title="GMimeMessagePart"><span class="returnvalue">GMimeMessagePart</span></a> *  g_mime_message_part_new             (<em class="parameter"><code>const <span class="type">char</span> *subtype</code></em>);</pre>
+<p>
+Creates a new MIME message part object with a default content-type
+of message/<em class="parameter"><code>subtype</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>subtype</code></em> :</span></p></td>
+<td>message subtype or <code class="literal">NULL</code> for "rfc822"</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>an empty MIME message part object with a default
+content-type of message/<em class="parameter"><code>subtype</code></em>.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-message-part-new-with-message"></a><h3>g_mime_message_part_new_with_message ()</h3>
+<pre class="programlisting"><a class="link" href="GMimeMessagePart.html" title="GMimeMessagePart"><span class="returnvalue">GMimeMessagePart</span></a> *  g_mime_message_part_new_with_message
+                                                        (<em class="parameter"><code>const <span class="type">char</span> *subtype</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeMessage.html" title="GMimeMessage"><span class="type">GMimeMessage</span></a> *message</code></em>);</pre>
+<p>
+Creates a new MIME message part object with a default content-type
+of message/<em class="parameter"><code>subtype</code></em> containing <em class="parameter"><code>message</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>subtype</code></em> :</span></p></td>
+<td>message subtype or <code class="literal">NULL</code> for "rfc822"</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>message</code></em> :</span></p></td>
+<td>message</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a MIME message part object with a default content-type of
+message/<em class="parameter"><code>subtype</code></em> containing <em class="parameter"><code>message</code></em>.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-message-part-get-message"></a><h3>g_mime_message_part_get_message ()</h3>
+<pre class="programlisting"><a class="link" href="GMimeMessage.html" title="GMimeMessage"><span class="returnvalue">GMimeMessage</span></a> *      g_mime_message_part_get_message     (<em class="parameter"><code><a class="link" href="GMimeMessagePart.html" title="GMimeMessagePart"><span class="type">GMimeMessagePart</span></a> *part</code></em>);</pre>
+<p>
+Gets the message object on the message part object <em class="parameter"><code>part</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>part</code></em> :</span></p></td>
+<td>message part</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the message part contained within <em class="parameter"><code>part</code></em>. <span class="annotation">[<a href="http://foldoc.org/transfer%20none"><span class="acronym">transfer none</span></a>]</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-message-part-set-message"></a><h3>g_mime_message_part_set_message ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_message_part_set_message     (<em class="parameter"><code><a class="link" href="GMimeMessagePart.html" title="GMimeMessagePart"><span class="type">GMimeMessagePart</span></a> *part</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeMessage.html" title="GMimeMessage"><span class="type">GMimeMessage</span></a> *message</code></em>);</pre>
+<p>
+Sets the <em class="parameter"><code>message</code></em> object on the message part object <em class="parameter"><code>part</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>part</code></em> :</span></p></td>
+<td>message part</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>message</code></em> :</span></p></td>
+<td>message</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

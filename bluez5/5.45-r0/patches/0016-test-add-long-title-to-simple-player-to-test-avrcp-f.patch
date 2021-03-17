@@ -1,0 +1,53 @@
+From 836919ecd95029e90c8343916eb83c73e77347a8 Mon Sep 17 00:00:00 2001
+From: Bernhard Miller <bernhard.miller@streamunlimited.com>
+Date: Mon, 20 Mar 2017 09:32:43 +0100
+Subject: [PATCH] test: add long title to simple-player to test avrcp
+ fragmentation
+
+Signed-off-by: Bernhard Miller <bernhard.miller@streamunlimited.com>
+---
+ test/simple-player | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
+
+diff --git a/test/simple-player b/test/simple-player
+index 02754c2..394de78 100755
+--- a/test/simple-player
++++ b/test/simple-player
+@@ -32,8 +32,15 @@ class Player(dbus.service.Object):
+ 				dbus_interface = "org.freedesktop.DBus.Properties",
+ 				signal_name = "PropertiesChanged")
+ 		else:
++			longtitle = ""
++			for i in range(1, 700):
++				longtitle += "a"
+ 			track = dbus.Dictionary({
+-					"xesam:title" : "Title",
++					# uncomment to use long title for fragmentation pts test cases
++					# TG/RCR/BV-02-C
++					"xesam:title" : longtitle,
++					#"xesam:title" : "Title",
++					
+ 					"xesam:artist" : ["Artist"],
+ 					"xesam:album" : "Album",
+ 					"xesam:genre" : ["Genre"],
+@@ -90,7 +97,7 @@ class Player(dbus.service.Object):
+ 		self.PropertiesChanged(interface, properties, invalidated)
+ 
+ class InputHandler:
+-	commands = { 'PropertiesChanged': '(interface, properties)',
++	commands = { 'properties_changed': '(interface, properties)',
+ 			'help': '(cmd)' }
+ 	def __init__(self, player):
+ 		self.player = player
+@@ -99,7 +106,7 @@ class InputHandler:
+ 			print('\t', cmd, self.commands[cmd], sep='')
+ 
+ 		print("\nUse python syntax to pass arguments to available methods.\n" \
+-                "E.g.: PropertiesChanged({'Metadata' : {'Title': 'My title', \
++                "E.g.: properties_changed('org.bluez.MediaPlayer1', {'Metadata' : {'Title': 'My title', \
+ 		'Album': 'my album' }})")
+ 		self.prompt()
+ 
+-- 
+2.7.4
+

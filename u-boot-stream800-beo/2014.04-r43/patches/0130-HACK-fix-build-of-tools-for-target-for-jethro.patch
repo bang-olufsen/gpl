@@ -1,0 +1,31 @@
+From be4c497d2dd8447500a95d654b47fe3e60b9aaab Mon Sep 17 00:00:00 2001
+From: Radek Dostal <radek.dostal@streamunlimited.com>
+Date: Fri, 20 Nov 2015 21:52:40 +0100
+Subject: [PATCH] HACK: fix build of tools for target for jethro
+
+hack justification:
+1) we have broken master
+2) it was hacky before (calling cross compiler with $(HOSTCFLAGS) $(HOSTLDFLAGS))
+3) it is Friday almost 10pm
+
+Signed-off-by: Radek Dostal <radek.dostal@streamunlimited.com>
+---
+ tools/env/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tools/env/Makefile b/tools/env/Makefile
+index 19c25f4..21c2bf6 100644
+--- a/tools/env/Makefile
++++ b/tools/env/Makefile
+@@ -25,7 +25,7 @@ endif
+ always := fw_printenv_host fw_printenv
+ 
+ $(obj)/fw_printenv: FORCE
+-	$(CC) $(HOSTCFLAGS) $(HOSTLDFLAGS) -o $@ $(HOSTSRCS)
++	$(CC) $(HOSTCFLAGS) $(HOSTLDFLAGS) -march=armv7-a -mfloat-abi=hard -mfpu=neon -mtune=cortex-a8 -o $@ $(HOSTSRCS)
+ 
+ $(obj)/fw_printenv_host: FORCE
+ 	$(HOSTCC) $(HOSTCFLAGS) $(HOSTLDFLAGS) -o $@ $(HOSTSRCS)
+-- 
+2.7.4
+

@@ -1,0 +1,224 @@
+From 7592679bf2f63e9a77bbceb375a251044037434c Mon Sep 17 00:00:00 2001
+From: Bernhard Miller <bernhard.miller@streamunlimited.com>
+Date: Wed, 22 Feb 2017 10:31:28 +0100
+Subject: [PATCH] audio: add some volume up/down and mute commands for PTS test
+ cases
+
+Signed-off-by: Bernhard Miller <bernhard.miller@streamunlimited.com>
+---
+ profiles/audio/avrcp.c   | 23 +++++++++++++++++++
+ profiles/audio/player.c  | 55 ++++++++++++++++++++++++++++++++++++++++++++
+ profiles/audio/player.h  |  4 ++++
+ tools/bluetooth-player.c | 60 ++++++++++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 142 insertions(+)
+
+diff --git a/profiles/audio/avrcp.c b/profiles/audio/avrcp.c
+index da54556..abb9c86 100644
+--- a/profiles/audio/avrcp.c
++++ b/profiles/audio/avrcp.c
+@@ -3022,6 +3022,25 @@ static int ct_rewind(struct media_player *mp, void *user_data)
+ 	return ct_press(player, AVC_REWIND);
+ }
+ 
++static int ct_volume_up(struct media_player *mp, void *user_data)
++{
++	struct avrcp_player *player = user_data;
++	return ct_press(player, AVC_VOLUME_UP);
++}
++
++static int ct_volume_down(struct media_player *mp, void *user_data)
++{
++	struct avrcp_player *player = user_data;
++	return ct_press(player, AVC_VOLUME_DOWN);
++}
++
++static int ct_mute(struct media_player *mp, void *user_data)
++{
++	struct avrcp_player *player = user_data;
++	return ct_press(player, AVC_MUTE);
++}
++
++
+ static int ct_list_items(struct media_player *mp, const char *name,
+ 				uint32_t start, uint32_t end, void *user_data)
+ {
+@@ -3370,6 +3389,10 @@ static const struct media_player_callback ct_cbs = {
+ 	.play_item	= ct_play_item,
+ 	.add_to_nowplaying = ct_add_to_nowplaying,
+ 	.total_items = ct_get_total_numberofitems,
++	
++	.volume_up = ct_volume_up,
++	.volume_down = ct_volume_down,
++	.mute = ct_mute,
+ };
+ 
+ static struct avrcp_player *create_ct_player(struct avrcp *session,
+diff --git a/profiles/audio/player.c b/profiles/audio/player.c
+index e499e67..84e488a 100644
+--- a/profiles/audio/player.c
++++ b/profiles/audio/player.c
+@@ -569,6 +569,57 @@ static DBusMessage *media_player_rewind(DBusConnection *conn, DBusMessage *msg,
+ 	return g_dbus_create_reply(msg, DBUS_TYPE_INVALID);
+ }
+ 
++static DBusMessage *media_player_volume_down(DBusConnection *conn, DBusMessage *msg,
++								void *data)
++{
++	struct media_player *mp = data;
++	struct player_callback *cb = mp->cb;
++	int err;
++
++	if (cb->cbs->volume_down == NULL)
++		return btd_error_not_supported(msg);
++
++	err = cb->cbs->volume_down(mp, cb->user_data);
++	if (err < 0)
++		return btd_error_failed(msg, strerror(-err));
++
++	return g_dbus_create_reply(msg, DBUS_TYPE_INVALID);
++}
++
++static DBusMessage *media_player_volume_up(DBusConnection *conn, DBusMessage *msg,
++								void *data)
++{
++	struct media_player *mp = data;
++	struct player_callback *cb = mp->cb;
++	int err;
++
++	if (cb->cbs->volume_up == NULL)
++		return btd_error_not_supported(msg);
++
++	err = cb->cbs->volume_up(mp, cb->user_data);
++	if (err < 0)
++		return btd_error_failed(msg, strerror(-err));
++
++	return g_dbus_create_reply(msg, DBUS_TYPE_INVALID);
++}
++
++static DBusMessage *media_player_mute(DBusConnection *conn, DBusMessage *msg,
++								void *data)
++{
++	struct media_player *mp = data;
++	struct player_callback *cb = mp->cb;
++	int err;
++
++	if (cb->cbs->mute == NULL)
++		return btd_error_not_supported(msg);
++
++	err = cb->cbs->mute(mp, cb->user_data);
++	if (err < 0)
++		return btd_error_failed(msg, strerror(-err));
++
++	return g_dbus_create_reply(msg, DBUS_TYPE_INVALID);
++}
++
+ static void parse_folder_list(gpointer data, gpointer user_data)
+ {
+ 	struct media_item *item = data;
+@@ -727,6 +778,10 @@ static const GDBusMethodTable media_player_methods[] = {
+ 	{ GDBUS_METHOD("Previous", NULL, NULL, media_player_previous) },
+ 	{ GDBUS_METHOD("FastForward", NULL, NULL, media_player_fast_forward) },
+ 	{ GDBUS_METHOD("Rewind", NULL, NULL, media_player_rewind) },
++	
++	{ GDBUS_METHOD("VolumeUp", NULL, NULL, media_player_volume_up) },
++	{ GDBUS_METHOD("VolumeDown", NULL, NULL, media_player_volume_down) },
++	{ GDBUS_METHOD("Mute", NULL, NULL, media_player_mute) },
+ 	{ }
+ };
+ 
+diff --git a/profiles/audio/player.h b/profiles/audio/player.h
+index a7c7d2a..d177654 100644
+--- a/profiles/audio/player.h
++++ b/profiles/audio/player.h
+@@ -66,6 +66,10 @@ struct media_player_callback {
+ 					uint64_t uid, void *user_data);
+ 	int (*total_items) (struct media_player *mp, const char *name,
+ 						void *user_data);
++
++	int (*volume_up) (struct media_player *mp, void *user_data);
++	int (*volume_down) (struct media_player *mp, void *user_data);
++	int (*mute) (struct media_player *mp, void *user_data);
+ };
+ 
+ struct media_player *media_player_controller_create(const char *path,
+diff --git a/tools/bluetooth-player.c b/tools/bluetooth-player.c
+index 9e19997..ef37b84 100644
+--- a/tools/bluetooth-player.c
++++ b/tools/bluetooth-player.c
+@@ -707,6 +707,63 @@ static void cmd_select(int argc, char *argv[])
+ 	print_player(proxy, NULL);
+ }
+ 
++static void sue_vol_cmd_reply(DBusMessage *message, void *user_data)
++{
++	DBusError error;
++
++	dbus_error_init(&error);
++
++	if (dbus_set_error_from_message(&error, message) == TRUE) {
++		rl_printf("Command failed: %s\n", error.name);
++		dbus_error_free(&error);
++		return;
++	}
++
++	rl_printf("Command successful\n");
++}
++
++static void cmd_volume_up(int argc, char *argv[])
++{
++	if (!check_default_player())
++		return;
++
++	if (g_dbus_proxy_method_call(default_player, "VolumeUp", NULL, sue_vol_cmd_reply,
++							NULL, NULL) == FALSE) {
++		rl_printf("Failed to increase volume\n");
++		return;
++	}
++
++	rl_printf("Increasing volume\n");
++}
++
++static void cmd_volume_down(int argc, char *argv[])
++{
++	if (!check_default_player())
++		return;
++
++	if (g_dbus_proxy_method_call(default_player, "VolumeDown", NULL, sue_vol_cmd_reply,
++							NULL, NULL) == FALSE) {
++		rl_printf("Failed to decrease volume\n");
++		return;
++	}
++
++	rl_printf("Decreasing volume\n");
++}
++
++static void cmd_mute(int argc, char *argv[])
++{
++	if (!check_default_player())
++		return;
++
++	if (g_dbus_proxy_method_call(default_player, "Mute", NULL, sue_vol_cmd_reply,
++							NULL, NULL) == FALSE) {
++		rl_printf("Failed to mute\n");
++		return;
++	}
++
++	rl_printf("Toggle mute\n");
++}
++
+ static void change_folder_reply(DBusMessage *message, void *user_data)
+ {
+ 	DBusError error;
+@@ -1030,6 +1087,9 @@ static const struct {
+ 	{ "quit",         NULL,       cmd_quit, "Quit program" },
+ 	{ "exit",         NULL,       cmd_quit },
+ 	{ "help" },
++	{ "volume-up",    NULL,       cmd_volume_up },
++	{ "volume-down",  NULL,       cmd_volume_down },
++	{ "mute",         NULL,       cmd_mute },
+ 	{}
+ };
+ 
+-- 
+2.7.4
+

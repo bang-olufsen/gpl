@@ -1,0 +1,83 @@
+From ccb89bed2b4db348910d7e020453f659e785e41d Mon Sep 17 00:00:00 2001
+From: Bernhard Miller <bernhard.miller@streamunlimited.com>
+Date: Fri, 27 Jan 2017 11:03:19 +0100
+Subject: [PATCH] attrib: add function to send write request with offset for
+ PTS testing
+
+Signed-off-by: Bernhard Miller <bernhard.miller@streamunlimited.com>
+---
+ attrib/gatt.c | 41 +++++++++++++++++++++++++++++++++++++++++
+ attrib/gatt.h |  5 +++++
+ 2 files changed, 46 insertions(+)
+
+diff --git a/attrib/gatt.c b/attrib/gatt.c
+index 3dd7df3..36117b2 100644
+--- a/attrib/gatt.c
++++ b/attrib/gatt.c
+@@ -1042,6 +1042,47 @@ guint gatt_reliable_write_char(GAttrib *attrib, uint16_t handle,
+ 	return g_attrib_send(attrib, 0, buf, plen, func, user_data, NULL);
+ }
+ 
++guint gatt_write_char_with_offset(GAttrib *attrib, uint16_t handle, uint8_t *value,
++			size_t vlen, GAttribResultFunc func, gpointer user_data,
++			uint16_t offset)
++{
++	uint8_t *buf;
++	size_t buflen;
++	guint16 plen;
++	struct write_long_data *long_write;
++
++	buf = g_attrib_get_buffer(attrib, &buflen);
++
++	/* Only use Write Request/Command if payload fits on a single transfer,
++	 * including 3 bytes for the header. */
++	if (vlen <= buflen - 3) {
++		if (func)
++			plen = enc_write_req(handle, value, vlen, buf,
++								buflen);
++		else
++			plen = enc_write_cmd(handle, value, vlen, buf,
++								buflen);
++
++		return g_attrib_send(attrib, 0, buf, plen, func,
++							user_data, NULL);
++	}
++
++	/* Write Long Characteristic Values */
++	long_write = g_try_new0(struct write_long_data, 1);
++	if (long_write == NULL)
++		return 0;
++
++	long_write->attrib = attrib;
++	long_write->func = func;
++	long_write->user_data = user_data;
++	long_write->handle = handle;
++	long_write->value = g_memdup(value, vlen);
++	long_write->vlen = vlen;
++	long_write->offset = offset;
++
++	return prepare_write(long_write);
++}
++
+ guint gatt_exchange_mtu(GAttrib *attrib, uint16_t mtu, GAttribResultFunc func,
+ 							gpointer user_data)
+ {
+diff --git a/attrib/gatt.h b/attrib/gatt.h
+index 54cf9e8..aa52180 100644
+--- a/attrib/gatt.h
++++ b/attrib/gatt.h
+@@ -92,6 +92,11 @@ guint gatt_write_char(GAttrib *attrib, uint16_t handle, const uint8_t *value,
+ 					size_t vlen, GAttribResultFunc func,
+ 					gpointer user_data);
+ 
++// gatt_write_char_with_offset is only used for PTS testing
++guint gatt_write_char_with_offset(GAttrib *attrib, uint16_t handle, uint8_t *value,
++					size_t vlen, GAttribResultFunc func,
++					gpointer user_data, uint16_t offset);
++
+ guint gatt_discover_desc(GAttrib *attrib, uint16_t start, uint16_t end,
+ 						bt_uuid_t *uuid, gatt_cb_t func,
+ 						gpointer user_data);
+-- 
+2.7.4
+

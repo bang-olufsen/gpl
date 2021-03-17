@@ -1,0 +1,119 @@
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ */
+
+/dts-v1/;
+
+#include "am33xx-beo-ase-0.dtsi"
+
+/ {
+	model = "Bang&Olufsen ASE_CA6 (AM33xx)";
+};
+
+&fep {
+	leds {
+		compatible = "beo,beo-hh1-leds";
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		led0@0 {
+			label = "NetWhite";
+			reg = <0x00>;
+		};
+		led1@1 {
+			label = "NetOrange";
+			reg = <0x01>;
+		};
+		led2@2 {
+			label = "NetRed";
+			reg = <0x02>;
+		};
+		led3@3 {
+			label = "NetBlue";
+			reg = <0x03>;
+		};
+		led4@4 {
+			label = "ProdWhite";
+			reg = <0x04>;
+		};
+		led5@5 {
+			label = "ProdRed";
+			reg = <0x05>;
+		};
+		led6@6 {
+			label = "ProdOrange";
+			reg = <0x06>;
+		};
+	};
+
+	// buttons, line-in sense, touch wheel, IR, ..
+	input {
+		compatible = "beo,beo-hh1-input";
+
+		buttons {
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			onoff {
+				label = "On/Off";
+				reg = <0x0011>;
+				linux,code = <0x74>;		// KEY_POWER
+			};
+			bluetooth {
+				label = "Bluetooth";
+				reg = <0x0012>;
+				linux,code = <0xed>;		// KEY_BLUETOOTH
+			};
+			powersave {
+				label = "Power save";
+				reg = <0x0013>;
+				linux,code = <0x164>;		// KEY_POWER2
+			};
+			setup {
+				label = "Setup";
+				reg = <0x014>;
+				linux,code = <0x8d>;		// KEY_SETUP
+			};
+			reset {
+				label = "Reset";
+				reg = <0x015>;
+				linux,code = <0x163>;		// KEY_CLEAR
+			};
+			pause {
+				label = "Pause";
+				reg = <0x105>;
+				linux,code = <0x77>;		// KEY_PAUSE
+			};
+			unmute {
+				label = "Play";
+				reg = <0x104>;
+				linux,code = <0xA4>;		// KEY_PLAYPAUSE
+			};
+			prev {
+				label = "Prev";
+				reg = <0x106>;
+				linux,code = <0xa5>;		// KEY_PREVIOUSSONG
+			};
+			next {
+				label = "Next";
+				reg = <0x107>;
+				linux,code = <0xa3>;		// KEY_NEXTSONG
+			};
+			linein {
+				label = "Line-in sense";
+				reg = <0x100>;
+				type = "switch";
+				linux,code = <0x0d>;		// SW_LINEIN_INSERT
+			};
+			volume {
+				label = "Volume slider";
+				reg = <0x103>;
+				type = "relative";
+				linux,code = <0x06>;		// REL_HWHEEL
+			};
+		};
+	};
+};
+

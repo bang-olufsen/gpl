@@ -1,0 +1,183 @@
+language: C
+
+branches:
+  except:
+    - master
+
+notifications:
+  irc:
+    channels:
+      - "ircs://chat.freenode.net:6697/#libxcrypt"
+    skip_join: true
+
+sudo: true
+
+matrix:
+  fast_finish: true
+  include:
+    - compiler: gcc
+      os: linux
+      services: docker
+      env:
+        - CONF="--enable-obsolete-api --enable-hashes=all"
+        - FCVER="rawhide"
+        - CODECOV=1
+    - compiler: gcc
+      os: linux
+      services: docker
+      env:
+        - CONF="--enable-obsolete-api --enable-hashes=all"
+        - FCVER="rawhide"
+    - compiler: clang
+      os: linux
+      services: docker
+      env:
+        - CONF="--enable-obsolete-api --enable-hashes=all"
+        - FCVER="rawhide"
+    - compiler: gcc
+      os: linux
+      services: docker
+      env:
+        - CONF="--enable-obsolete-api --enable-hashes=all"
+        - FCVER="latest"
+    - compiler: clang
+      os: linux
+      services: docker
+      env:
+        - CONF="--enable-obsolete-api --enable-hashes=all"
+        - FCVER="latest"
+    - compiler: gcc
+      os: linux
+      services: docker
+      env:
+        - CONF="--disable-obsolete-api --enable-hashes=all"
+        - FCVER="rawhide"
+    - compiler: clang
+      os: linux
+      services: docker
+      env:
+        - CONF="--disable-obsolete-api --enable-hashes=all"
+        - FCVER="rawhide"
+    - compiler: gcc
+      os: linux
+      services: docker
+      env:
+        - CONF="--disable-obsolete-api --enable-hashes=all"
+        - FCVER="latest"
+    - compiler: clang
+      os: linux
+      services: docker
+      env:
+        - CONF="--disable-obsolete-api --enable-hashes=all"
+        - FCVER="latest"
+    - compiler: gcc
+      os: linux
+      services: docker
+      env:
+        - CONF="--disable-obsolete-api --enable-hashes=strong"
+        - FCVER="rawhide"
+    - compiler: clang
+      os: linux
+      services: docker
+      env:
+        - CONF="--disable-obsolete-api --enable-hashes=strong"
+        - FCVER="rawhide"
+    - compiler: gcc
+      os: linux
+      services: docker
+      env:
+        - CONF="--disable-obsolete-api --enable-hashes=strong"
+        - FCVER="latest"
+    - compiler: clang
+      os: linux
+      services: docker
+      env:
+        - CONF="--disable-obsolete-api --enable-hashes=strong"
+        - FCVER="latest"
+    - compiler: gcc
+      os: linux
+      services: docker
+      env:
+        - CONF="--enable-obsolete-api --enable-hashes=glibc"
+        - FCVER="rawhide"
+    - compiler: clang
+      os: linux
+      services: docker
+      env:
+        - CONF="--enable-obsolete-api --enable-hashes=glibc"
+        - FCVER="rawhide"
+    - compiler: gcc
+      os: linux
+      services: docker
+      env:
+        - CONF="--enable-obsolete-api --enable-hashes=glibc"
+        - FCVER="latest"
+    - compiler: clang
+      os: linux
+      services: docker
+      env:
+        - CONF="--enable-obsolete-api --enable-hashes=glibc"
+        - FCVER="latest"
+    - compiler: gcc
+      os: linux
+      services: docker
+      env:
+        - CONF="--enable-obsolete-api=glibc --enable-hashes=strong,glibc"
+        - FCVER="rawhide"
+    - compiler: clang
+      os: linux
+      services: docker
+      env:
+        - CONF="--enable-obsolete-api=glibc --enable-hashes=strong,glibc"
+        - FCVER="rawhide"
+    - compiler: gcc
+      os: linux
+      services: docker
+      env:
+        - CONF="--enable-obsolete-api=glibc --enable-hashes=strong,glibc"
+        - FCVER="latest"
+    - compiler: clang
+      os: linux
+      services: docker
+      env:
+        - CONF="--enable-obsolete-api=glibc --enable-hashes=strong,glibc"
+        - FCVER="latest"
+
+before_install:
+  - for i in `seq 0 99`; do docker pull fedora:$FCVER && i= && break || sleep 1; done; [ -z "$i" ]
+  - perl -pe 's/\$(\w+)/$ENV{$1}/g' .travis.env.in > travis.env
+  - docker run -t -d -P --env-file travis.env --name buildenv -v $HOME/.ccache:/root/.ccache -v $PWD:/opt/libxcrypt fedora:$FCVER /bin/sh -c "mkdir -p /opt/libxcrypt ; bash"
+  - docker exec -t buildenv /bin/sh -c "echo \"deltarpm=0\" >> /etc/dnf/dnf.conf"
+  - docker exec -t buildenv /bin/sh -c "echo \"install_weak_deps=0\" >> /etc/dnf/dnf.conf"
+  - docker exec -t buildenv /bin/sh -c "echo \"max_parallel_downloads=20\" >> /etc/dnf/dnf.conf"
+  - docker exec -t buildenv /bin/sh -c "echo \"\" >> /etc/dnf/dnf.conf"
+  - if [[ "$FCVER" == "rawhide" ]] ; then docker exec -t buildenv /bin/sh -c "cat /opt/libxcrypt/.travis.dnf.conf.rawhide_latest >> /etc/dnf/dnf.conf" ; fi
+  - docker exec -t buildenv /bin/sh -c 'for i in `seq 0 99`; do dnf makecache && i= && break || sleep 1; done; [ -z "$i" ]'
+  - docker exec -t buildenv /bin/sh -c 'for i in `seq 0 99`; do dnf -y upgrade && i= && break || sleep 1; done; [ -z "$i" ]'
+  - docker exec -t buildenv /bin/sh -c 'for i in `seq 0 99`; do dnf -y groups install buildsys-build && i= && break || sleep 1; done; [ -z "$i" ]'
+  - docker exec -t buildenv /bin/sh -c 'for i in `seq 0 99`; do dnf -y install libtool && i= && break || sleep 1; done; [ -z "$i" ]'
+  - if [[ "$CC" == "clang" ]]  ; then docker exec -t buildenv /bin/sh -c 'for i in `seq 0 99`; do dnf -y install clang && i= && break || sleep 1; done; [ -z "$i" ]' ; fi
+  - if [[ "$CODECOV" == "1" ]] ; then docker exec -t buildenv /bin/sh -c 'for i in `seq 0 99`; do dnf -y install '/usr/bin/git' '/usr/bin/lcov' '/usr/bin/pip3' && i= && break || sleep 1; done; [ -z "$i" ]' ; fi
+  - if [[ "$CODECOV" == "1" ]] ; then docker exec -t buildenv /bin/sh -c "pip3 install codecov" ; fi
+
+before_script:
+  - docker exec -t buildenv /bin/sh -c "rpm -E %optflags" > cflags.txt
+  - docker exec -t buildenv /bin/sh -c "rpm -E %__global_ldflags" > ldflags.txt
+  - cat cflags.txt  | tr -d '\012\015' > cflags.txt.new  && mv -f cflags.txt.new cflags.txt
+  - cat ldflags.txt | tr -d '\012\015' > ldflags.txt.new && mv -f ldflags.txt.new ldflags.txt
+  - if [[ "$CC" == "clang" ]]     ; then sed -i -e 's![ \t]*-fcf-protection[ \t]*! -Wno-unused-command-line-argument!g' cflags.txt ; fi
+  - if [[ "$FCVER" == "latest" ]] ; then sed -i -e 's![ \t]*-mcet[ \t]*! !g' cflags.txt ; fi
+
+script:
+  - export CFLAGS="`cat cflags.txt`" ; export CXXFLAGS="$CFLAGS" ; echo $CFLAGS
+  - export LDFLAGS="`cat ldflags.txt`" ; echo $LDFLAGS
+  - if [[ "$CODECOV" == "1" ]] ; then export CFLAGS="-O0 -g --coverage" ; export CXXFLAGS="$CFLAGS" ; export LDFLAGS="--coverage" ; fi
+  - docker exec -t buildenv /bin/sh -c "cat /etc/redhat-release"
+  - docker exec -t buildenv /bin/sh -c "cd /opt/libxcrypt && autoreconf -fiv"
+  - docker exec -t buildenv /bin/sh -c "cd /opt/libxcrypt && CFLAGS=\"$CFLAGS\" CXXFLAGS=\"$CXXFLAGS\" LDFLAGS=\"$LDFLAGS\" ./configure --prefix=/opt/libxcrypt --disable-silent-rules --enable-shared --enable-static $CONF"
+  - docker exec -t buildenv /bin/sh -c "make -C /opt/libxcrypt -j$((`nproc --all` * 2))"
+  - docker exec -t buildenv /bin/sh -c "make -C /opt/libxcrypt install"
+  - docker exec -t buildenv /bin/sh -c "(make -C /opt/libxcrypt -j$((`nproc --all` * 2)) check || (cat /opt/libxcrypt/test-suite.log && exit 1))"
+
+after_success:
+ - if [[ "$CODECOV" == "1" ]] ; then docker exec -t buildenv /bin/sh -c "make -C /opt/libxcrypt check && cd /opt/libxcrypt && lcov --directory . --capture --output-file all_coverage.info && lcov --remove all_coverage.info '/usr/*' '*test*' > coverage.info && rm all_coverage.info && codecov -X gcov" ; fi

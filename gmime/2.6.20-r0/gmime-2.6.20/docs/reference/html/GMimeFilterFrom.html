@@ -1,0 +1,149 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GMimeFilterFrom</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="GMime 2.6 Reference Manual">
+<link rel="up" href="Filters.html" title="Stream Filters">
+<link rel="prev" href="GMimeFilterEnriched.html" title="GMimeFilterEnriched">
+<link rel="next" href="GMimeFilterGZip.html" title="GMimeFilterGZip">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="GMimeFilterEnriched.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="Filters.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">GMime 2.6 Reference Manual</th>
+<td><a accesskey="n" href="GMimeFilterGZip.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#GMimeFilterFrom.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#GMimeFilterFrom.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#GMimeFilterFrom.object-hierarchy" class="shortcut">Object Hierarchy</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="GMimeFilterFrom"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="GMimeFilterFrom.top_of_page"></a>GMimeFilterFrom</span></h2>
+<p>GMimeFilterFrom — Escape MBox From_ lines</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="GMimeFilterFrom.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">struct              <a class="link" href="GMimeFilterFrom.html#GMimeFilterFrom-struct" title="struct GMimeFilterFrom">GMimeFilterFrom</a>;
+enum                <a class="link" href="GMimeFilterFrom.html#GMimeFilterFromMode" title="enum GMimeFilterFromMode">GMimeFilterFromMode</a>;
+<a class="link" href="GMimeFilter.html" title="GMimeFilter"><span class="returnvalue">GMimeFilter</span></a> *       <a class="link" href="GMimeFilterFrom.html#g-mime-filter-from-new" title="g_mime_filter_from_new ()">g_mime_filter_from_new</a>              (<em class="parameter"><code><a class="link" href="GMimeFilterFrom.html#GMimeFilterFromMode" title="enum GMimeFilterFromMode"><span class="type">GMimeFilterFromMode</span></a> mode</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="GMimeFilterFrom.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  GObject
+   +----<a class="link" href="GMimeFilter.html" title="GMimeFilter">GMimeFilter</a>
+         +----GMimeFilterFrom
+</pre>
+</div>
+<div class="refsect1">
+<a name="GMimeFilterFrom.description"></a><h2>Description</h2>
+<p>
+A <a class="link" href="GMimeFilter.html" title="GMimeFilter"><span class="type">GMimeFilter</span></a> used for escaping MBox From_ lines using either the
+traditional "&gt;From " or quoted-printable encoding.
+</p>
+</div>
+<div class="refsect1">
+<a name="GMimeFilterFrom.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="GMimeFilterFrom-struct"></a><h3>struct GMimeFilterFrom</h3>
+<pre class="programlisting">struct GMimeFilterFrom;</pre>
+<p>
+A filter for armoring or escaping lines beginning with "From ".
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GMimeFilterFromMode"></a><h3>enum GMimeFilterFromMode</h3>
+<pre class="programlisting">typedef enum {
+	GMIME_FILTER_FROM_MODE_DEFAULT  = 0,
+	GMIME_FILTER_FROM_MODE_ESCAPE   = 0,
+	GMIME_FILTER_FROM_MODE_ARMOR    = 1
+} GMimeFilterFromMode;
+</pre>
+<p>
+The mode for a <a class="link" href="GMimeFilterFrom.html" title="GMimeFilterFrom"><span class="type">GMimeFilterFrom</span></a> filter.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><a name="GMIME-FILTER-FROM-MODE-DEFAULT:CAPS"></a><span class="term"><code class="literal">GMIME_FILTER_FROM_MODE_DEFAULT</code></span></p></td>
+<td>Default mode.
+</td>
+</tr>
+<tr>
+<td><p><a name="GMIME-FILTER-FROM-MODE-ESCAPE:CAPS"></a><span class="term"><code class="literal">GMIME_FILTER_FROM_MODE_ESCAPE</code></span></p></td>
+<td>Escape 'From ' lines with a '&gt;'
+</td>
+</tr>
+<tr>
+<td><p><a name="GMIME-FILTER-FROM-MODE-ARMOR:CAPS"></a><span class="term"><code class="literal">GMIME_FILTER_FROM_MODE_ARMOR</code></span></p></td>
+<td>QP-Encode 'From ' lines
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-filter-from-new"></a><h3>g_mime_filter_from_new ()</h3>
+<pre class="programlisting"><a class="link" href="GMimeFilter.html" title="GMimeFilter"><span class="returnvalue">GMimeFilter</span></a> *       g_mime_filter_from_new              (<em class="parameter"><code><a class="link" href="GMimeFilterFrom.html#GMimeFilterFromMode" title="enum GMimeFilterFromMode"><span class="type">GMimeFilterFromMode</span></a> mode</code></em>);</pre>
+<p>
+Creates a new GMimeFilterFrom filter. If <em class="parameter"><code>mode</code></em> is
+<a class="link" href="GMimeFilterFrom.html#GMIME-FILTER-FROM-MODE-ARMOR:CAPS"><span class="type">GMIME_FILTER_FROM_MODE_ARMOR</span></a>, the from-filter will encode from
+lines using the quoted-printable encoding resulting in "=46rom ".
+Using the <a class="link" href="GMimeFilterFrom.html#GMIME-FILTER-FROM-MODE-DEFAULT:CAPS"><span class="type">GMIME_FILTER_FROM_MODE_DEFAULT</span></a> or
+<a class="link" href="GMimeFilterFrom.html#GMIME-FILTER-FROM-MODE-ESCAPE:CAPS"><span class="type">GMIME_FILTER_FROM_MODE_ESCAPE</span></a> mode (they are the same), from lines
+will be escaped to "&gt;From ".
+</p>
+<p>
+Note: If you plan on using a from-filter in mode ARMOR, you should
+remember to also use a <a class="link" href="GMimeFilterBasic.html" title="GMimeFilterBasic"><span class="type">GMimeFilterBasic</span></a> filter with an encoding of
+<a class="link" href="gmime-gmime-encodings.html#GMIME-CONTENT-ENCODING-QUOTEDPRINTABLE:CAPS"><span class="type">GMIME_CONTENT_ENCODING_QUOTEDPRINTABLE</span></a>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>mode</code></em> :</span></p></td>
+<td>filter mode</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new from filter with mode <em class="parameter"><code>mode</code></em>.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<div class="refsect1">
+<a name="GMimeFilterFrom.see-also"></a><h2>See Also</h2>
+<a class="link" href="GMimeFilter.html" title="GMimeFilter"><span class="type">GMimeFilter</span></a>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

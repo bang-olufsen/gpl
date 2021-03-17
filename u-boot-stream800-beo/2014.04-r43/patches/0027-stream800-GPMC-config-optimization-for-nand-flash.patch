@@ -1,0 +1,63 @@
+From 974889c8eeaf44d8ee1c25cd113d3171dd24159f Mon Sep 17 00:00:00 2001
+From: Martin Flaska <martin.flaska@streamunlimited.com>
+Date: Wed, 13 Feb 2013 10:56:14 +0100
+Subject: [PATCH] stream800: GPMC config optimization for nand flash
+
+Signed-off-by: Martin Flaska <martin.flaska@streamunlimited.com>
+---
+ arch/arm/cpu/armv7/omap3/sys_info.c     |  2 +-
+ board/streamunlimited/stream800/board.c | 11 +++++++++++
+ include/configs/stream800.h             |  2 +-
+ 3 files changed, 13 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm/cpu/armv7/omap3/sys_info.c b/arch/arm/cpu/armv7/omap3/sys_info.c
+index 258786b..3ca6d23 100644
+--- a/arch/arm/cpu/armv7/omap3/sys_info.c
++++ b/arch/arm/cpu/armv7/omap3/sys_info.c
+@@ -178,7 +178,7 @@ u32 get_gpmc0_base(void)
+  *******************************************************************/
+ u32 get_gpmc0_width(void)
+ {
+-	return WIDTH_16BIT;
++	return WIDTH_8BIT;
+ }
+ 
+ /*************************************************************************
+diff --git a/board/streamunlimited/stream800/board.c b/board/streamunlimited/stream800/board.c
+index 4a3d09f..d2caa7e 100644
+--- a/board/streamunlimited/stream800/board.c
++++ b/board/streamunlimited/stream800/board.c
+@@ -152,6 +152,17 @@ int board_init(void)
+ 
+ 	gpmc_init();
+ 
++	{
++		gpmc_cfg = (struct gpmc *)GPMC_BASE;
++		printf("CONFIG 1: 0x%X\n", readl(&gpmc_cfg->cs[0].config1));
++		printf("CONFIG 2: 0x%X\n", readl(&gpmc_cfg->cs[0].config2));
++		printf("CONFIG 3: 0x%X\n", readl(&gpmc_cfg->cs[0].config3));
++		printf("CONFIG 4: 0x%X\n", readl(&gpmc_cfg->cs[0].config4));
++		printf("CONFIG 5: 0x%X\n", readl(&gpmc_cfg->cs[0].config5));
++		printf("CONFIG 6: 0x%X\n", readl(&gpmc_cfg->cs[0].config6));
++		printf("CONFIG 7: 0x%X\n", readl(&gpmc_cfg->cs[0].config7));
++	}
++
+ 	return 0;
+ }
+ 
+diff --git a/include/configs/stream800.h b/include/configs/stream800.h
+index 5bd569d..13e561d 100644
+--- a/include/configs/stream800.h
++++ b/include/configs/stream800.h
+@@ -1082,7 +1082,7 @@
+ #ifdef CONFIG_NAND
+ #define CONFIG_CMD_NAND
+ #define CONFIG_NAND_OMAP_GPMC
+-#define GPMC_NAND_ECC_LP_x16_LAYOUT	1
++#define GPMC_NAND_ECC_LP_x8_LAYOUT	1
+ #define CONFIG_SYS_NAND_BASE		(0x08000000)	/* physical address */
+ 							/* to access nand at */
+ 							/* CS0 */
+-- 
+2.7.4
+

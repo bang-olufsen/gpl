@@ -1,0 +1,71 @@
+From c4d7ace1b2d67fb9bda7dc9bec009266f68cb3e7 Mon Sep 17 00:00:00 2001
+From: Martin Pietryka <martin.pietryka@streamunlimited.com>
+Date: Tue, 3 Feb 2015 16:03:28 +0100
+Subject: [PATCH] ASoC: McASP: Add option for keeping TX-LRCK running
+
+Some codecs (pcm3060) do not like big clock changes and the result is
+a cracking noise. A new dts-option "tx-lrclk-always" allows us to keep
+the TX-LRCLK running after playback has stopped.
+
+Signed-off-by: Martin Pietryka <martin.pietryka@streamunlimited.com>
+---
+ include/linux/platform_data/davinci_asp.h | 1 +
+ sound/soc/davinci/davinci-mcasp.c         | 9 +++++++++
+ 2 files changed, 10 insertions(+)
+
+diff --git a/include/linux/platform_data/davinci_asp.h b/include/linux/platform_data/davinci_asp.h
+index fad3c28..c3dbef7 100644
+--- a/include/linux/platform_data/davinci_asp.h
++++ b/include/linux/platform_data/davinci_asp.h
+@@ -87,6 +87,7 @@ struct davinci_mcasp_pdata {
+ 	int tx_dma_channel;
+ 	int rx_dma_channel;
+ 	u8 tx_rx_clk_separate;
++	u8 tx_lrclk_always;
+ };
+ /* TODO: Fix arch/arm/mach-davinci/ users and remove this define */
+ #define snd_platform_data davinci_mcasp_pdata
+diff --git a/sound/soc/davinci/davinci-mcasp.c b/sound/soc/davinci/davinci-mcasp.c
+index 6e6c794..58479c0 100644
+--- a/sound/soc/davinci/davinci-mcasp.c
++++ b/sound/soc/davinci/davinci-mcasp.c
+@@ -100,6 +100,8 @@ struct davinci_mcasp {
+ 	u8	rxnumevt;
+ 	u8	tx_rx_clk_separate;
+ 
++	u8	tx_lrclk_always;
++
+ 	bool	dat_port;
+ 
+ 	/* Used for comstraint setting on the second stream */
+@@ -288,6 +290,9 @@ static void mcasp_stop_tx(struct davinci_mcasp *mcasp)
+ 
+ 	val |= TXCLKRST;
+ 
++	if (mcasp->tx_lrclk_always)
++		val |= TXFSRST;
++
+ 	mcasp_set_reg(mcasp, DAVINCI_MCASP_GBLCTLX_REG, val);
+ 	mcasp_set_reg(mcasp, DAVINCI_MCASP_TXSTAT_REG, 0xFFFFFFFF);
+ 
+@@ -1650,6 +1655,9 @@ static struct davinci_mcasp_pdata *davinci_mcasp_set_pdata_from_of(
+ 	if (of_find_property(np, "tx-rx-clk-separate", NULL))
+ 		pdata->tx_rx_clk_separate = 1;
+ 
++	if (of_find_property(np, "tx-lrclk-always", NULL))
++		pdata->tx_lrclk_always = 1;
++
+ 	return  pdata;
+ 
+ nodata:
+@@ -1742,6 +1750,7 @@ static int davinci_mcasp_probe(struct platform_device *pdev)
+ 	mcasp->txnumevt = pdata->txnumevt;
+ 	mcasp->rxnumevt = pdata->rxnumevt;
+ 	mcasp->tx_rx_clk_separate = pdata->tx_rx_clk_separate;
++	mcasp->tx_lrclk_always = pdata->tx_lrclk_always;
+ 
+ 	mcasp->dev = &pdev->dev;
+ 
+-- 
+1.9.1
+

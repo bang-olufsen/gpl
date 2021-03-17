@@ -1,0 +1,67 @@
+From e9482c1baaf422cc6f7e94def7832fafb9fc79f8 Mon Sep 17 00:00:00 2001
+From: Bernhard Miller <bernhard.miller@streamunlimited.com>
+Date: Mon, 24 Feb 2014 14:57:57 +0100
+Subject: [PATCH] wifi: include apple vendor specific ies in wireless beacons
+ and probe responses
+
+Signed-off-by: Bernhard Miller <bernhard.miller@streamunlimited.com>
+---
+ drivers/net/wireless/mwifiex/ie.c | 13 +++++++++++++
+ include/linux/ieee80211.h         |  3 +++
+ 2 files changed, 16 insertions(+)
+
+diff --git a/drivers/net/wireless/mwifiex/ie.c b/drivers/net/wireless/mwifiex/ie.c
+index f3b6ed2..7371541 100644
+--- a/drivers/net/wireless/mwifiex/ie.c
++++ b/drivers/net/wireless/mwifiex/ie.c
+@@ -270,6 +270,9 @@ static int mwifiex_set_mgmt_beacon_data_ies(struct mwifiex_private *priv,
+ 		mwifiex_update_vs_ie(data->beacon_ies, data->beacon_ies_len,
+ 				     &beacon_ie, MGMT_MASK_BEACON,
+ 				     WLAN_OUI_WFA, WLAN_OUI_TYPE_WFA_P2P);
++		mwifiex_update_vs_ie(data->beacon_ies, data->beacon_ies_len,
++				     &beacon_ie, MGMT_MASK_BEACON,
++				     WLAN_OUI_APPLE, WLAN_OUI_TYPE_APPLE_WAC);
+ 	}
+ 
+ 	if (data->proberesp_ies && data->proberesp_ies_len) {
+@@ -281,6 +284,10 @@ static int mwifiex_set_mgmt_beacon_data_ies(struct mwifiex_private *priv,
+ 				     data->proberesp_ies_len, &pr_ie,
+ 				     MGMT_MASK_PROBE_RESP,
+ 				     WLAN_OUI_WFA, WLAN_OUI_TYPE_WFA_P2P);
++		mwifiex_update_vs_ie(data->proberesp_ies,
++				     data->proberesp_ies_len, &pr_ie,
++				     MGMT_MASK_PROBE_RESP, WLAN_OUI_APPLE,
++				     WLAN_OUI_TYPE_APPLE_WAC);
+ 	}
+ 
+ 	if (data->assocresp_ies && data->assocresp_ies_len) {
+@@ -295,6 +302,12 @@ static int mwifiex_set_mgmt_beacon_data_ies(struct mwifiex_private *priv,
+ 				     MGMT_MASK_ASSOC_RESP |
+ 				     MGMT_MASK_REASSOC_RESP, WLAN_OUI_WFA,
+ 				     WLAN_OUI_TYPE_WFA_P2P);
++		mwifiex_update_vs_ie(data->assocresp_ies,
++				     data->assocresp_ies_len, &ar_ie,
++				     MGMT_MASK_ASSOC_RESP |
++				     MGMT_MASK_REASSOC_RESP,
++				     WLAN_OUI_APPLE,
++				     WLAN_OUI_TYPE_APPLE_WAC);
+ 	}
+ 
+ 	if (beacon_ie || pr_ie || ar_ie) {
+diff --git a/include/linux/ieee80211.h b/include/linux/ieee80211.h
+index b9c7897..0c9f5cef 100644
+--- a/include/linux/ieee80211.h
++++ b/include/linux/ieee80211.h
+@@ -2280,6 +2280,9 @@ enum ieee80211_sa_query_action {
+ #define WLAN_OUI_TYPE_MICROSOFT_WMM	2
+ #define WLAN_OUI_TYPE_MICROSOFT_WPS	4
+ 
++#define WLAN_OUI_APPLE			0x00A040
++#define WLAN_OUI_TYPE_APPLE_WAC	0
++
+ /*
+  * WMM/802.11e Tspec Element
+  */
+-- 
+1.9.1
+

@@ -1,0 +1,43 @@
+From 891cfe779a375739f1ad6fd4e2670cca504d3026 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Mon, 3 Feb 2020 12:57:11 +0100
+Subject: [PATCH] OTP: Add OTPREAD and OTPWRITE ioctl symbols
+
+Signed-off-by: Martin Geier <martin.geier@streamunlimited.com>
+---
+ include/linux/mtd/rawnand.h | 2 ++
+ include/uapi/mtd/mtd-abi.h  | 5 +++++
+ 2 files changed, 7 insertions(+)
+
+diff --git a/include/linux/mtd/rawnand.h b/include/linux/mtd/rawnand.h
+index 3e8ec3b..89b65fd 100644
+--- a/include/linux/mtd/rawnand.h
++++ b/include/linux/mtd/rawnand.h
+@@ -94,6 +94,8 @@ void nand_wait_ready(struct mtd_info *mtd);
+ #define NAND_CMD_RNDOUTSTART	0xE0
+ #define NAND_CMD_CACHEDPROG	0x15
+ 
++#define NAND_CMD_OTP_ACCESS	0x29170419
++
+ #define NAND_CMD_NONE		-1
+ 
+ /* Status bits */
+diff --git a/include/uapi/mtd/mtd-abi.h b/include/uapi/mtd/mtd-abi.h
+index aff5b5e..b73cabe 100644
+--- a/include/uapi/mtd/mtd-abi.h
++++ b/include/uapi/mtd/mtd-abi.h
+@@ -205,6 +205,11 @@ struct otp_info {
+  */
+ #define MEMWRITE		_IOWR('M', 24, struct mtd_write_req)
+ 
++/* Read OTP (One-Time Programmable) 2048b page */
++#define OTPREAD			_IOR('M', 25, int)
++/* Write OTP (One-Time Programmable)  2048b page */
++#define OTPWRITE		_IOR('M', 26, int)
++
+ /*
+  * Obsolete legacy interface. Keep it in order not to break userspace
+  * interfaces
+-- 
+2.7.4
+

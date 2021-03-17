@@ -1,0 +1,830 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>librygel-server Reference Manual: RygelTrackableContainer</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="index.html" title="librygel-server Reference Manual">
+<link rel="up" href="api-main-list.html" title="librygel-server API Reference">
+<link rel="prev" href="RygelThumbnail.html" title="RygelThumbnail">
+<link rel="next" href="RygelTranscodeManager.html" title="RygelTranscodeManager">
+<meta name="generator" content="GTK-Doc V1.20.1 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#RygelTrackableContainer.description" class="shortcut">Description</a></span><span id="nav_hierarchy">  <span class="dim">|</span> 
+                  <a href="#RygelTrackableContainer.object-hierarchy" class="shortcut">Object Hierarchy</a></span><span id="nav_prerequisites">  <span class="dim">|</span> 
+                  <a href="#RygelTrackableContainer.prerequisites" class="shortcut">Prerequisites</a></span><span id="nav_signals">  <span class="dim">|</span> 
+                  <a href="#RygelTrackableContainer.signals" class="shortcut">Signals</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="api-main-list.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="RygelThumbnail.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="RygelTranscodeManager.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry">
+<a name="RygelTrackableContainer"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="RygelTrackableContainer.top_of_page"></a>RygelTrackableContainer</span></h2>
+<p>RygelTrackableContainer — The base class for containers that provide automatic change tracking.</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1">
+<a name="RygelTrackableContainer.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="functions_return">
+<col class="functions_name">
+</colgroup>
+<tbody>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="RygelTrackableContainer.html#rygel-trackable-container-clear" title="rygel_trackable_container_clear ()">rygel_trackable_container_clear</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="RygelTrackableContainer.html#rygel-trackable-container-clear-finish" title="rygel_trackable_container_clear_finish ()">rygel_trackable_container_clear_finish</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="RygelTrackableContainer.html#rygel-trackable-container-add-child" title="rygel_trackable_container_add_child ()">rygel_trackable_container_add_child</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="RygelTrackableContainer.html#rygel-trackable-container-add-child-finish" title="rygel_trackable_container_add_child_finish ()">rygel_trackable_container_add_child_finish</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="RygelTrackableContainer.html#rygel-trackable-container-add-child-tracked" title="rygel_trackable_container_add_child_tracked ()">rygel_trackable_container_add_child_tracked</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="RygelTrackableContainer.html#rygel-trackable-container-add-child-tracked-finish" title="rygel_trackable_container_add_child_tracked_finish ()">rygel_trackable_container_add_child_tracked_finish</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="RygelTrackableContainer.html#rygel-trackable-container-remove-child" title="rygel_trackable_container_remove_child ()">rygel_trackable_container_remove_child</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="RygelTrackableContainer.html#rygel-trackable-container-remove-child-finish" title="rygel_trackable_container_remove_child_finish ()">rygel_trackable_container_remove_child_finish</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="RygelTrackableContainer.html#rygel-trackable-container-remove-child-tracked" title="rygel_trackable_container_remove_child_tracked ()">rygel_trackable_container_remove_child_tracked</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="RygelTrackableContainer.html#rygel-trackable-container-remove-child-tracked-finish" title="rygel_trackable_container_remove_child_tracked_finish ()">rygel_trackable_container_remove_child_tracked_finish</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="RygelTrackableContainer.html#rygel-trackable-container-get-service-reset-token" title="rygel_trackable_container_get_service_reset_token ()">rygel_trackable_container_get_service_reset_token</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="RygelTrackableContainer.html#rygel-trackable-container-set-service-reset-token" title="rygel_trackable_container_set_service_reset_token ()">rygel_trackable_container_set_service_reset_token</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a href="../glib/glib-Basic-Types.html#guint32"><span class="returnvalue">guint32</span></a>
+</td>
+<td class="function_name">
+<a class="link" href="RygelTrackableContainer.html#rygel-trackable-container-get-system-update-id" title="rygel_trackable_container_get_system_update_id ()">rygel_trackable_container_get_system_update_id</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="RygelTrackableContainer.signals"></a><h2>Signals</h2>
+<div class="informaltable"><table border="0">
+<colgroup>
+<col width="150px" class="signals_return">
+<col width="300px" class="signals_name">
+<col width="200px" class="signals_flags">
+</colgroup>
+<tbody>
+<tr>
+<td class="signal_type"><span class="returnvalue">void</span></td>
+<td class="signal_name"><a class="link" href="RygelTrackableContainer.html#RygelTrackableContainer-child-added" title="The “child-added” signal">child-added</a></td>
+<td class="signal_flags">Run Last</td>
+</tr>
+<tr>
+<td class="signal_type"><span class="returnvalue">void</span></td>
+<td class="signal_name"><a class="link" href="RygelTrackableContainer.html#RygelTrackableContainer-child-removed" title="The “child-removed” signal">child-removed</a></td>
+<td class="signal_flags">Run Last</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="RygelTrackableContainer.other"></a><h2>Types and Values</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="name">
+<col class="description">
+</colgroup>
+<tbody>
+<tr>
+<td class="datatype_keyword"> </td>
+<td class="function_name"><a class="link" href="RygelTrackableContainer.html#RygelTrackableContainer-struct" title="RygelTrackableContainer">RygelTrackableContainer</a></td>
+</tr>
+<tr>
+<td class="datatype_keyword">struct</td>
+<td class="function_name"><a class="link" href="RygelTrackableContainer.html#RygelTrackableContainerIface" title="struct RygelTrackableContainerIface">RygelTrackableContainerIface</a></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="RygelTrackableContainer.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="screen">    <a href="/opt/rygel-stable/share/gtk-doc/html/gobject/GTypeModule.html">GInterface</a>
+    <span class="lineart">╰──</span> RygelTrackableContainer
+</pre>
+</div>
+<div class="refsect1">
+<a name="RygelTrackableContainer.prerequisites"></a><h2>Prerequisites</h2>
+<p>
+RygelTrackableContainer requires
+ <a class="link" href="RygelMediaContainer.html" title="RygelMediaContainer">RygelMediaContainer</a>.</p>
+</div>
+<div class="refsect1">
+<a name="RygelTrackableContainer.description"></a><h2>Description</h2>
+<p>Derived classes should implement the <code class="function">add_child()</code> and <code class="function">remove_child()</code> virtual functions to keep track of child items and child containers.</p>
+<p>Rygel server plugins (See <a class="link" href="RygelMediaServer.html" title="RygelMediaServer"><span class="type">RygelMediaServer</span></a>) may then call <a class="link" href="RygelTrackableContainer.html#rygel-trackable-container-add-child-tracked" title="rygel_trackable_container_add_child_tracked ()"><code class="function">rygel_trackable_container_add_child_tracked()</code></a> and <a class="link" href="RygelTrackableContainer.html#rygel-trackable-container-remove-child-tracked" title="rygel_trackable_container_remove_child_tracked ()"><code class="function">rygel_trackable_container_remove_child_tracked()</code></a> to add and remove items, which will then cause the <span class="type">“container_updated”</span> signal to be emitted.</p>
+</div>
+<div class="refsect1">
+<a name="RygelTrackableContainer.functions_details"></a><h2>Functions</h2>
+<div class="refsect2">
+<a name="rygel-trackable-container-clear"></a><h3>rygel_trackable_container_clear ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+rygel_trackable_container_clear (<em class="parameter"><code><a class="link" href="RygelTrackableContainer.html" title="RygelTrackableContainer"><span class="type">RygelTrackableContainer</span></a> *self</code></em>,
+                                 <em class="parameter"><code><a href="../gio/GAsyncResult.html#GAsyncReadyCallback"><span class="type">GAsyncReadyCallback</span></a> _callback_</code></em>,
+                                 <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a> _user_data_</code></em>);</pre>
+<p><span class="emphasis"><em>See also</em></span>: <a class="link" href="RygelTrackableContainer.html#rygel-trackable-container-clear-finish" title="rygel_trackable_container_clear_finish ()"><code class="function">rygel_trackable_container_clear_finish()</code></a></p>
+<div class="refsect3">
+<a name="id-1.6.23.9.2.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelTrackableContainer.html" title="RygelTrackableContainer"><span class="type">RygelTrackableContainer</span></a> instance</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>_callback_</p></td>
+<td class="parameter_description"><p> callback to call when the request is satisfied. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="The callback is valid until first called."><span class="acronym">scope async</span></acronym>]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>_user_data_</p></td>
+<td class="parameter_description"><p> the data to pass to <em class="parameter"><code>_callback_</code></em>
+function. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="This parameter is a 'user_data', for callbacks; many bindings can pass NULL here."><span class="acronym">closure</span></acronym>]</span></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-trackable-container-clear-finish"></a><h3>rygel_trackable_container_clear_finish ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+rygel_trackable_container_clear_finish
+                               (<em class="parameter"><code><a class="link" href="RygelTrackableContainer.html" title="RygelTrackableContainer"><span class="type">RygelTrackableContainer</span></a> *self</code></em>,
+                                <em class="parameter"><code><a href="../gio/GAsyncResult.html"><span class="type">GAsyncResult</span></a> *_res_</code></em>);</pre>
+<p><span class="emphasis"><em>See also</em></span>: <a class="link" href="RygelTrackableContainer.html#rygel-trackable-container-clear" title="rygel_trackable_container_clear ()"><code class="function">rygel_trackable_container_clear()</code></a></p>
+<div class="refsect3">
+<a name="id-1.6.23.9.3.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelTrackableContainer.html" title="RygelTrackableContainer"><span class="type">RygelTrackableContainer</span></a> instance</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>_res_</p></td>
+<td class="parameter_description"><p>a <a href="../gio/GAsyncResult.html"><span class="type">GAsyncResult</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-trackable-container-add-child"></a><h3>rygel_trackable_container_add_child ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+rygel_trackable_container_add_child (<em class="parameter"><code><a class="link" href="RygelTrackableContainer.html" title="RygelTrackableContainer"><span class="type">RygelTrackableContainer</span></a> *self</code></em>,
+                                     <em class="parameter"><code><a class="link" href="RygelMediaObject.html" title="RygelMediaObject"><span class="type">RygelMediaObject</span></a> *object</code></em>,
+                                     <em class="parameter"><code><a href="../gio/GAsyncResult.html#GAsyncReadyCallback"><span class="type">GAsyncReadyCallback</span></a> _callback_</code></em>,
+                                     <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a> _user_data_</code></em>);</pre>
+<p>Derived classes should implement this, keeping track of the child item or child container. See the <code class="function">remove_child()</code> virtual function.</p>
+<p><span class="emphasis"><em>See also</em></span>: <a class="link" href="RygelTrackableContainer.html#rygel-trackable-container-add-child-finish" title="rygel_trackable_container_add_child_finish ()"><code class="function">rygel_trackable_container_add_child_finish()</code></a></p>
+<div class="refsect3">
+<a name="id-1.6.23.9.4.6"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelTrackableContainer.html" title="RygelTrackableContainer"><span class="type">RygelTrackableContainer</span></a> instance</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>object</p></td>
+<td class="parameter_description"><p> </p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>_callback_</p></td>
+<td class="parameter_description"><p> callback to call when the request is satisfied. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="The callback is valid until first called."><span class="acronym">scope async</span></acronym>]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>_user_data_</p></td>
+<td class="parameter_description"><p> the data to pass to <em class="parameter"><code>_callback_</code></em>
+function. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="This parameter is a 'user_data', for callbacks; many bindings can pass NULL here."><span class="acronym">closure</span></acronym>]</span></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-trackable-container-add-child-finish"></a><h3>rygel_trackable_container_add_child_finish ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+rygel_trackable_container_add_child_finish
+                               (<em class="parameter"><code><a class="link" href="RygelTrackableContainer.html" title="RygelTrackableContainer"><span class="type">RygelTrackableContainer</span></a> *self</code></em>,
+                                <em class="parameter"><code><a href="../gio/GAsyncResult.html"><span class="type">GAsyncResult</span></a> *_res_</code></em>);</pre>
+<p>Derived classes should implement this, keeping track of the child item or child container. See the <code class="function">remove_child()</code> virtual function.</p>
+<p><span class="emphasis"><em>See also</em></span>: <a class="link" href="RygelTrackableContainer.html#rygel-trackable-container-add-child" title="rygel_trackable_container_add_child ()"><code class="function">rygel_trackable_container_add_child()</code></a></p>
+<div class="refsect3">
+<a name="id-1.6.23.9.5.6"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelTrackableContainer.html" title="RygelTrackableContainer"><span class="type">RygelTrackableContainer</span></a> instance</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>_res_</p></td>
+<td class="parameter_description"><p>a <a href="../gio/GAsyncResult.html"><span class="type">GAsyncResult</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-trackable-container-add-child-tracked"></a><h3>rygel_trackable_container_add_child_tracked ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+rygel_trackable_container_add_child_tracked
+                               (<em class="parameter"><code><a class="link" href="RygelTrackableContainer.html" title="RygelTrackableContainer"><span class="type">RygelTrackableContainer</span></a> *self</code></em>,
+                                <em class="parameter"><code><a class="link" href="RygelMediaObject.html" title="RygelMediaObject"><span class="type">RygelMediaObject</span></a> *object</code></em>,
+                                <em class="parameter"><code><a href="../gio/GAsyncResult.html#GAsyncReadyCallback"><span class="type">GAsyncReadyCallback</span></a> _callback_</code></em>,
+                                <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a> _user_data_</code></em>);</pre>
+<p>Add a child object, emitting the <span class="type">“container_updated”</span> signal with the object.</p>
+<p><span class="emphasis"><em>See also</em></span>: <code class="function">rygel_trackable_object_remove_child_tracked()</code>, <a class="link" href="RygelTrackableContainer.html#rygel-trackable-container-add-child-tracked-finish" title="rygel_trackable_container_add_child_tracked_finish ()"><code class="function">rygel_trackable_container_add_child_tracked_finish()</code></a></p>
+<div class="refsect3">
+<a name="id-1.6.23.9.6.6"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelTrackableContainer.html" title="RygelTrackableContainer"><span class="type">RygelTrackableContainer</span></a> instance</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>object</p></td>
+<td class="parameter_description"><p>  .  The child item or child container to be added. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Parameter for input. Default is transfer none."><span class="acronym">in</span></acronym>]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>_callback_</p></td>
+<td class="parameter_description"><p> callback to call when the request is satisfied. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="The callback is valid until first called."><span class="acronym">scope async</span></acronym>]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>_user_data_</p></td>
+<td class="parameter_description"><p> the data to pass to <em class="parameter"><code>_callback_</code></em>
+function. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="This parameter is a 'user_data', for callbacks; many bindings can pass NULL here."><span class="acronym">closure</span></acronym>]</span></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-trackable-container-add-child-tracked-finish"></a><h3>rygel_trackable_container_add_child_tracked_finish ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+rygel_trackable_container_add_child_tracked_finish
+                               (<em class="parameter"><code><a class="link" href="RygelTrackableContainer.html" title="RygelTrackableContainer"><span class="type">RygelTrackableContainer</span></a> *self</code></em>,
+                                <em class="parameter"><code><a href="../gio/GAsyncResult.html"><span class="type">GAsyncResult</span></a> *_res_</code></em>);</pre>
+<p>Add a child object, emitting the <span class="type">“container_updated”</span> signal with the object.</p>
+<p><span class="emphasis"><em>See also</em></span>: <code class="function">rygel_trackable_object_remove_child_tracked()</code>, <a class="link" href="RygelTrackableContainer.html#rygel-trackable-container-add-child-tracked" title="rygel_trackable_container_add_child_tracked ()"><code class="function">rygel_trackable_container_add_child_tracked()</code></a></p>
+<div class="refsect3">
+<a name="id-1.6.23.9.7.6"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelTrackableContainer.html" title="RygelTrackableContainer"><span class="type">RygelTrackableContainer</span></a> instance</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>_res_</p></td>
+<td class="parameter_description"><p>a <a href="../gio/GAsyncResult.html"><span class="type">GAsyncResult</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-trackable-container-remove-child"></a><h3>rygel_trackable_container_remove_child ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+rygel_trackable_container_remove_child
+                               (<em class="parameter"><code><a class="link" href="RygelTrackableContainer.html" title="RygelTrackableContainer"><span class="type">RygelTrackableContainer</span></a> *self</code></em>,
+                                <em class="parameter"><code><a class="link" href="RygelMediaObject.html" title="RygelMediaObject"><span class="type">RygelMediaObject</span></a> *object</code></em>,
+                                <em class="parameter"><code><a href="../gio/GAsyncResult.html#GAsyncReadyCallback"><span class="type">GAsyncReadyCallback</span></a> _callback_</code></em>,
+                                <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a> _user_data_</code></em>);</pre>
+<p>Derived classes should implement this, removing the child item or child container from its set of objects. See the <code class="function">add_child()</code> virtual function.</p>
+<p><span class="emphasis"><em>See also</em></span>: <a class="link" href="RygelTrackableContainer.html#rygel-trackable-container-remove-child-finish" title="rygel_trackable_container_remove_child_finish ()"><code class="function">rygel_trackable_container_remove_child_finish()</code></a></p>
+<div class="refsect3">
+<a name="id-1.6.23.9.8.6"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelTrackableContainer.html" title="RygelTrackableContainer"><span class="type">RygelTrackableContainer</span></a> instance</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>object</p></td>
+<td class="parameter_description"><p> </p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>_callback_</p></td>
+<td class="parameter_description"><p> callback to call when the request is satisfied. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="The callback is valid until first called."><span class="acronym">scope async</span></acronym>]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>_user_data_</p></td>
+<td class="parameter_description"><p> the data to pass to <em class="parameter"><code>_callback_</code></em>
+function. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="This parameter is a 'user_data', for callbacks; many bindings can pass NULL here."><span class="acronym">closure</span></acronym>]</span></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-trackable-container-remove-child-finish"></a><h3>rygel_trackable_container_remove_child_finish ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+rygel_trackable_container_remove_child_finish
+                               (<em class="parameter"><code><a class="link" href="RygelTrackableContainer.html" title="RygelTrackableContainer"><span class="type">RygelTrackableContainer</span></a> *self</code></em>,
+                                <em class="parameter"><code><a href="../gio/GAsyncResult.html"><span class="type">GAsyncResult</span></a> *_res_</code></em>);</pre>
+<p>Derived classes should implement this, removing the child item or child container from its set of objects. See the <code class="function">add_child()</code> virtual function.</p>
+<p><span class="emphasis"><em>See also</em></span>: <a class="link" href="RygelTrackableContainer.html#rygel-trackable-container-remove-child" title="rygel_trackable_container_remove_child ()"><code class="function">rygel_trackable_container_remove_child()</code></a></p>
+<div class="refsect3">
+<a name="id-1.6.23.9.9.6"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelTrackableContainer.html" title="RygelTrackableContainer"><span class="type">RygelTrackableContainer</span></a> instance</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>_res_</p></td>
+<td class="parameter_description"><p>a <a href="../gio/GAsyncResult.html"><span class="type">GAsyncResult</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-trackable-container-remove-child-tracked"></a><h3>rygel_trackable_container_remove_child_tracked ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+rygel_trackable_container_remove_child_tracked
+                               (<em class="parameter"><code><a class="link" href="RygelTrackableContainer.html" title="RygelTrackableContainer"><span class="type">RygelTrackableContainer</span></a> *self</code></em>,
+                                <em class="parameter"><code><a class="link" href="RygelMediaObject.html" title="RygelMediaObject"><span class="type">RygelMediaObject</span></a> *object</code></em>,
+                                <em class="parameter"><code><a href="../gio/GAsyncResult.html#GAsyncReadyCallback"><span class="type">GAsyncReadyCallback</span></a> _callback_</code></em>,
+                                <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a> _user_data_</code></em>);</pre>
+<p>Add a child object, emitting the <span class="type">“container_updated”</span> signal with the object.</p>
+<p><span class="emphasis"><em>See also</em></span>: <code class="function">rygel_trackable_object_add_child_tracked()</code>, <a class="link" href="RygelTrackableContainer.html#rygel-trackable-container-remove-child-tracked-finish" title="rygel_trackable_container_remove_child_tracked_finish ()"><code class="function">rygel_trackable_container_remove_child_tracked_finish()</code></a></p>
+<div class="refsect3">
+<a name="id-1.6.23.9.10.6"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelTrackableContainer.html" title="RygelTrackableContainer"><span class="type">RygelTrackableContainer</span></a> instance</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>object</p></td>
+<td class="parameter_description"><p>  .  The child item or child container to be added. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Parameter for input. Default is transfer none."><span class="acronym">in</span></acronym>]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>_callback_</p></td>
+<td class="parameter_description"><p> callback to call when the request is satisfied. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="The callback is valid until first called."><span class="acronym">scope async</span></acronym>]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>_user_data_</p></td>
+<td class="parameter_description"><p> the data to pass to <em class="parameter"><code>_callback_</code></em>
+function. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="This parameter is a 'user_data', for callbacks; many bindings can pass NULL here."><span class="acronym">closure</span></acronym>]</span></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-trackable-container-remove-child-tracked-finish"></a><h3>rygel_trackable_container_remove_child_tracked_finish ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+rygel_trackable_container_remove_child_tracked_finish
+                               (<em class="parameter"><code><a class="link" href="RygelTrackableContainer.html" title="RygelTrackableContainer"><span class="type">RygelTrackableContainer</span></a> *self</code></em>,
+                                <em class="parameter"><code><a href="../gio/GAsyncResult.html"><span class="type">GAsyncResult</span></a> *_res_</code></em>);</pre>
+<p>Add a child object, emitting the <span class="type">“container_updated”</span> signal with the object.</p>
+<p><span class="emphasis"><em>See also</em></span>: <code class="function">rygel_trackable_object_add_child_tracked()</code>, <a class="link" href="RygelTrackableContainer.html#rygel-trackable-container-remove-child-tracked" title="rygel_trackable_container_remove_child_tracked ()"><code class="function">rygel_trackable_container_remove_child_tracked()</code></a></p>
+<div class="refsect3">
+<a name="id-1.6.23.9.11.6"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelTrackableContainer.html" title="RygelTrackableContainer"><span class="type">RygelTrackableContainer</span></a> instance</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>_res_</p></td>
+<td class="parameter_description"><p>a <a href="../gio/GAsyncResult.html"><span class="type">GAsyncResult</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-trackable-container-get-service-reset-token"></a><h3>rygel_trackable_container_get_service_reset_token ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *
+rygel_trackable_container_get_service_reset_token
+                               (<em class="parameter"><code><a class="link" href="RygelTrackableContainer.html" title="RygelTrackableContainer"><span class="type">RygelTrackableContainer</span></a> *self</code></em>);</pre>
+<p>Used to query the (persisted) service reset token from the plug-in.</p>
+<p>If a plugin implements PLUGIN_CAPABILITIES_TRACK_CHANGES, it should persist the ServiceResetToken. To do this override this virtual function in the root container implementation and provide the persisted version.</p>
+<div class="refsect3">
+<a name="id-1.6.23.9.12.6"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelTrackableContainer.html" title="RygelTrackableContainer"><span class="type">RygelTrackableContainer</span></a> instance</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-trackable-container-set-service-reset-token"></a><h3>rygel_trackable_container_set_service_reset_token ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+rygel_trackable_container_set_service_reset_token
+                               (<em class="parameter"><code><a class="link" href="RygelTrackableContainer.html" title="RygelTrackableContainer"><span class="type">RygelTrackableContainer</span></a> *self</code></em>,
+                                <em class="parameter"><code>const <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *token</code></em>);</pre>
+<p>Set a new service reset token.</p>
+<p>If the service reset procedure has to be performed, the content directory service will set the new service reset token.</p>
+<div class="refsect3">
+<a name="id-1.6.23.9.13.6"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelTrackableContainer.html" title="RygelTrackableContainer"><span class="type">RygelTrackableContainer</span></a> instance</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>token</p></td>
+<td class="parameter_description"><p>  .  the new service reset token. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Parameter for input. Default is transfer none."><span class="acronym">in</span></acronym>]</span></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-trackable-container-get-system-update-id"></a><h3>rygel_trackable_container_get_system_update_id ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#guint32"><span class="returnvalue">guint32</span></a>
+rygel_trackable_container_get_system_update_id
+                               (<em class="parameter"><code><a class="link" href="RygelTrackableContainer.html" title="RygelTrackableContainer"><span class="type">RygelTrackableContainer</span></a> *self</code></em>);</pre>
+<p>Query the current system update ID, used for the UPnP GetSystemUpdateID implementation.</p>
+<p>This should be overriden by the root container of the back-end implementation. This will only be called once, at service startup, to discover the cached system Update ID, if any, that was known when the service last shut down.</p>
+<p>Derived classes may need to delay part of their initialization until this function has been called, doing that initialization in the function override. That can prevent other parts of their implementation from changing the cached System Update ID before it has been provided.</p>
+<div class="refsect3">
+<a name="id-1.6.23.9.14.7"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelTrackableContainer.html" title="RygelTrackableContainer"><span class="type">RygelTrackableContainer</span></a> instance</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.6.23.9.14.8"></a><h4>Returns</h4>
+<p> the current SystemUpdateID as persisted by the back-end. </p>
+<p></p>
+</div>
+</div>
+</div>
+<div class="refsect1">
+<a name="RygelTrackableContainer.other_details"></a><h2>Types and Values</h2>
+<div class="refsect2">
+<a name="RygelTrackableContainer-struct"></a><h3>RygelTrackableContainer</h3>
+<pre class="programlisting">typedef struct _RygelTrackableContainer RygelTrackableContainer;</pre>
+<p>The base class for containers that provide automatic change tracking.</p>
+<p>Derived classes should implement the <code class="function">add_child()</code> and <code class="function">remove_child()</code> virtual functions to keep track of child items and child containers.</p>
+<p>Rygel server plugins (See <a class="link" href="RygelMediaServer.html" title="RygelMediaServer"><span class="type">RygelMediaServer</span></a>) may then call <a class="link" href="RygelTrackableContainer.html#rygel-trackable-container-add-child-tracked" title="rygel_trackable_container_add_child_tracked ()"><code class="function">rygel_trackable_container_add_child_tracked()</code></a> and <a class="link" href="RygelTrackableContainer.html#rygel-trackable-container-remove-child-tracked" title="rygel_trackable_container_remove_child_tracked ()"><code class="function">rygel_trackable_container_remove_child_tracked()</code></a> to add and remove items, which will then cause the <span class="type">“container_updated”</span> signal to be emitted.</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelTrackableContainerIface"></a><h3>struct RygelTrackableContainerIface</h3>
+<pre class="programlisting">struct RygelTrackableContainerIface {
+	GTypeInterface parent_iface;
+	void (*add_child) (RygelTrackableContainer* self, RygelMediaObject* object, GAsyncReadyCallback _callback_, gpointer _user_data_);
+	void (*add_child_finish) (RygelTrackableContainer* self, GAsyncResult* _res_);
+	void (*remove_child) (RygelTrackableContainer* self, RygelMediaObject* object, GAsyncReadyCallback _callback_, gpointer _user_data_);
+	void (*remove_child_finish) (RygelTrackableContainer* self, GAsyncResult* _res_);
+	gchar* (*get_service_reset_token) (RygelTrackableContainer* self);
+	void (*set_service_reset_token) (RygelTrackableContainer* self, const gchar* token);
+	guint32 (*get_system_update_id) (RygelTrackableContainer* self);
+};
+</pre>
+<p>Interface for creating <a class="link" href="RygelTrackableContainer.html" title="RygelTrackableContainer"><span class="type">RygelTrackableContainer</span></a> implementations.</p>
+<div class="refsect3">
+<a name="id-1.6.23.10.3.5"></a><h4>Members</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="300px" class="struct_members_name">
+<col class="struct_members_description">
+<col width="200px" class="struct_members_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="struct_member_name"><p><a href="../gobject/gobject-Type-Information.html#GTypeInterface"><span class="type">GTypeInterface</span></a> <em class="structfield"><code><a name="RygelTrackableContainerIface.parent-iface"></a>parent_iface</code></em>;</p></td>
+<td class="struct_member_description"><p>the parent interface structure</p></td>
+<td class="struct_member_annotations"> </td>
+</tr>
+<tr>
+<td class="struct_member_name"><p><em class="structfield"><code><a name="RygelTrackableContainerIface.add-child"></a>add_child</code></em> ()</p></td>
+<td class="struct_member_description"><p>virtual method used internally</p></td>
+<td class="struct_member_annotations"> </td>
+</tr>
+<tr>
+<td class="struct_member_name"><p><em class="structfield"><code><a name="RygelTrackableContainerIface.add-child-finish"></a>add_child_finish</code></em> ()</p></td>
+<td class="struct_member_description"><p>asynchronous finish function used internally</p></td>
+<td class="struct_member_annotations"> </td>
+</tr>
+<tr>
+<td class="struct_member_name"><p><em class="structfield"><code><a name="RygelTrackableContainerIface.remove-child"></a>remove_child</code></em> ()</p></td>
+<td class="struct_member_description"><p>virtual method used internally</p></td>
+<td class="struct_member_annotations"> </td>
+</tr>
+<tr>
+<td class="struct_member_name"><p><em class="structfield"><code><a name="RygelTrackableContainerIface.remove-child-finish"></a>remove_child_finish</code></em> ()</p></td>
+<td class="struct_member_description"><p>asynchronous finish function used internally</p></td>
+<td class="struct_member_annotations"> </td>
+</tr>
+<tr>
+<td class="struct_member_name"><p><em class="structfield"><code><a name="RygelTrackableContainerIface.get-service-reset-token"></a>get_service_reset_token</code></em> ()</p></td>
+<td class="struct_member_description"><p>virtual method called by <a class="link" href="RygelTrackableContainer.html#rygel-trackable-container-get-service-reset-token" title="rygel_trackable_container_get_service_reset_token ()"><code class="function">rygel_trackable_container_get_service_reset_token()</code></a></p></td>
+<td class="struct_member_annotations"> </td>
+</tr>
+<tr>
+<td class="struct_member_name"><p><em class="structfield"><code><a name="RygelTrackableContainerIface.set-service-reset-token"></a>set_service_reset_token</code></em> ()</p></td>
+<td class="struct_member_description"><p>virtual method called by <a class="link" href="RygelTrackableContainer.html#rygel-trackable-container-set-service-reset-token" title="rygel_trackable_container_set_service_reset_token ()"><code class="function">rygel_trackable_container_set_service_reset_token()</code></a></p></td>
+<td class="struct_member_annotations"> </td>
+</tr>
+<tr>
+<td class="struct_member_name"><p><em class="structfield"><code><a name="RygelTrackableContainerIface.get-system-update-id"></a>get_system_update_id</code></em> ()</p></td>
+<td class="struct_member_description"><p>virtual method called by <a class="link" href="RygelTrackableContainer.html#rygel-trackable-container-get-system-update-id" title="rygel_trackable_container_get_system_update_id ()"><code class="function">rygel_trackable_container_get_system_update_id()</code></a></p></td>
+<td class="struct_member_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="refsect1">
+<a name="RygelTrackableContainer.signal-details"></a><h2>Signal Details</h2>
+<div class="refsect2">
+<a name="RygelTrackableContainer-child-added"></a><h3>The <code class="literal">“child-added”</code> signal</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+user_function (<a class="link" href="RygelTrackableContainer.html" title="RygelTrackableContainer"><span class="type">RygelTrackableContainer</span></a> *trackable_container,
+               <a class="link" href="RygelMediaObject.html" title="RygelMediaObject"><span class="type">RygelMediaObject</span></a>        *object,
+               <a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a>                 user_data)</pre>
+<div class="refsect3">
+<a name="id-1.6.23.11.2.4"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>trackable_container</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelTrackableContainer.html" title="RygelTrackableContainer"><span class="type">RygelTrackableContainer</span></a> instance that received the signal</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>object</p></td>
+<td class="parameter_description"><p> </p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>user_data</p></td>
+<td class="parameter_description"><p>user data set when the signal handler was connected.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p>Flags: Run Last</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelTrackableContainer-child-removed"></a><h3>The <code class="literal">“child-removed”</code> signal</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+user_function (<a class="link" href="RygelTrackableContainer.html" title="RygelTrackableContainer"><span class="type">RygelTrackableContainer</span></a> *trackable_container,
+               <a class="link" href="RygelMediaObject.html" title="RygelMediaObject"><span class="type">RygelMediaObject</span></a>        *object,
+               <a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a>                 user_data)</pre>
+<div class="refsect3">
+<a name="id-1.6.23.11.3.4"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>trackable_container</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelTrackableContainer.html" title="RygelTrackableContainer"><span class="type">RygelTrackableContainer</span></a> instance that received the signal</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>object</p></td>
+<td class="parameter_description"><p> </p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>user_data</p></td>
+<td class="parameter_description"><p>user data set when the signal handler was connected.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p>Flags: Run Last</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.20.1</div>
+</body>
+</html>

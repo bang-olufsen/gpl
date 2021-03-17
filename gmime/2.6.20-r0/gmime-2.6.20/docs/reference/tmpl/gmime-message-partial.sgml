@@ -1,0 +1,87 @@
+<!-- ##### SECTION Title ##### -->
+gmime-message-partial
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GMimeMessagePartial ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION g_mime_message_partial_new ##### -->
+<para>
+
+</para>
+
+@id: 
+@number: 
+@total: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_message_partial_get_id ##### -->
+<para>
+
+</para>
+
+@partial: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_message_partial_get_number ##### -->
+<para>
+
+</para>
+
+@partial: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_message_partial_get_total ##### -->
+<para>
+
+</para>
+
+@partial: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_message_partial_reconstruct_message ##### -->
+<para>
+
+</para>
+
+@partials: 
+@num: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_message_partial_split_message ##### -->
+<para>
+
+</para>
+
+@message: 
+@max_size: 
+@nparts: 
+@Returns: 
+
+

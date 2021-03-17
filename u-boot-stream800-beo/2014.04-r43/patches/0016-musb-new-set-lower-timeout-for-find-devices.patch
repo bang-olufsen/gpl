@@ -1,0 +1,26 @@
+From acb72f876ba8fce15f525d37c2181902038e85b3 Mon Sep 17 00:00:00 2001
+From: Matus Ujhelyi <matus.ujhelyi@streamunlimited.com>
+Date: Mon, 21 Jan 2013 08:12:36 +0100
+Subject: [PATCH] musb-new: set lower timeout for find devices
+
+Signed-off-by: Matus Ujhelyi <matus.ujhelyi@streamunlimited.com>
+---
+ drivers/usb/musb-new/musb_uboot.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/usb/musb-new/musb_uboot.c b/drivers/usb/musb-new/musb_uboot.c
+index 0512680..1b2c095 100644
+--- a/drivers/usb/musb-new/musb_uboot.c
++++ b/drivers/usb/musb-new/musb_uboot.c
+@@ -58,7 +58,7 @@ static struct urb *construct_urb(struct usb_device *dev, int endpoint_type,
+ 	return &urb;
+ }
+ 
+-#define MUSB_HOST_TIMEOUT	0x3ffffff
++#define MUSB_HOST_TIMEOUT	0x1ffffff
+ 
+ static int submit_urb(struct usb_hcd *hcd, struct urb *urb)
+ {
+-- 
+2.7.4
+

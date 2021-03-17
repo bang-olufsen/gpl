@@ -1,0 +1,281 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>librygel-server Reference Manual: RygelMediaArtStore</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="index.html" title="librygel-server Reference Manual">
+<link rel="up" href="api-main-list.html" title="librygel-server API Reference">
+<link rel="prev" href="RygelLogicalExpression.html" title="RygelLogicalExpression">
+<link rel="next" href="RygelMediaContainer.html" title="RygelMediaContainer">
+<meta name="generator" content="GTK-Doc V1.20.1 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#RygelMediaArtStore.description" class="shortcut">Description</a></span><span id="nav_hierarchy">  <span class="dim">|</span> 
+                  <a href="#RygelMediaArtStore.object-hierarchy" class="shortcut">Object Hierarchy</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="api-main-list.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="RygelLogicalExpression.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="RygelMediaContainer.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry">
+<a name="RygelMediaArtStore"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="RygelMediaArtStore.top_of_page"></a>RygelMediaArtStore</span></h2>
+<p>RygelMediaArtStore — This maps RygelMusicItem objects to their cached cover art, implementing the GNOME <a class="ulink" href="https://live.gnome.org/MediaArtStorageSpec" target="_top">MediaArt storage specification</a> and the simplified version that Banshee uses.</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1">
+<a name="RygelMediaArtStore.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="functions_return">
+<col class="functions_name">
+</colgroup>
+<tbody>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a class="link" href="RygelMediaArtStore.html#RYGEL-TYPE-MEDIA-ART-STORE:CAPS" title="RYGEL_TYPE_MEDIA_ART_STORE">RYGEL_TYPE_MEDIA_ART_STORE</a></td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="RygelThumbnail.html" title="RygelThumbnail"><span class="returnvalue">RygelThumbnail</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="RygelMediaArtStore.html#rygel-media-art-store-find-media-art" title="rygel_media_art_store_find_media_art ()">rygel_media_art_store_find_media_art</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="RygelThumbnail.html" title="RygelThumbnail"><span class="returnvalue">RygelThumbnail</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="RygelMediaArtStore.html#rygel-media-art-store-find-media-art-any" title="rygel_media_art_store_find_media_art_any ()">rygel_media_art_store_find_media_art_any</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a href="../gio/GFile.html"><span class="returnvalue">GFile</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="RygelMediaArtStore.html#rygel-media-art-store-get-media-art-file" title="rygel_media_art_store_get_media_art_file ()">rygel_media_art_store_get_media_art_file</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="RygelMediaArtStore.html" title="RygelMediaArtStore"><span class="returnvalue">RygelMediaArtStore</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="RygelMediaArtStore.html#rygel-media-art-store-get-default" title="rygel_media_art_store_get_default ()">rygel_media_art_store_get_default</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="RygelMediaArtStore.other"></a><h2>Types and Values</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="name">
+<col class="description">
+</colgroup>
+<tbody>
+<tr>
+<td class="datatype_keyword">struct</td>
+<td class="function_name"><a class="link" href="RygelMediaArtStore.html#RygelMediaArtStore-struct" title="struct RygelMediaArtStore">RygelMediaArtStore</a></td>
+</tr>
+<tr>
+<td class="datatype_keyword">struct</td>
+<td class="function_name"><a class="link" href="RygelMediaArtStore.html#RygelMediaArtStoreClass" title="struct RygelMediaArtStoreClass">RygelMediaArtStoreClass</a></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="RygelMediaArtStore.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="screen">    <a href="../gobject/gobject-The-Base-Object-Type.html#GObject">GObject</a>
+    <span class="lineart">╰──</span> RygelMediaArtStore
+</pre>
+</div>
+<div class="refsect1">
+<a name="RygelMediaArtStore.description"></a><h2>Description</h2>
+</div>
+<div class="refsect1">
+<a name="RygelMediaArtStore.functions_details"></a><h2>Functions</h2>
+<div class="refsect2">
+<a name="RYGEL-TYPE-MEDIA-ART-STORE:CAPS"></a><h3>RYGEL_TYPE_MEDIA_ART_STORE</h3>
+<pre class="programlisting">#define RYGEL_TYPE_MEDIA_ART_STORE (rygel_media_art_store_get_type ())
+</pre>
+<p>The type for <a class="link" href="RygelMediaArtStore.html" title="RygelMediaArtStore"><span class="type">RygelMediaArtStore</span></a>.</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-media-art-store-find-media-art"></a><h3>rygel_media_art_store_find_media_art ()</h3>
+<pre class="programlisting"><a class="link" href="RygelThumbnail.html" title="RygelThumbnail"><span class="returnvalue">RygelThumbnail</span></a> *
+rygel_media_art_store_find_media_art (<em class="parameter"><code><a class="link" href="RygelMediaArtStore.html" title="RygelMediaArtStore"><span class="type">RygelMediaArtStore</span></a> *self</code></em>,
+                                      <em class="parameter"><code><a class="link" href="RygelMusicItem.html" title="RygelMusicItem"><span class="type">RygelMusicItem</span></a> *item</code></em>,
+                                      <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> simple</code></em>,
+                                      <em class="parameter"><code><a href="../glib/glib-Error-Reporting.html#GError"><span class="type">GError</span></a> **error</code></em>);</pre>
+<div class="refsect3">
+<a name="id-1.6.7.7.3.4"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelMediaArtStore.html" title="RygelMediaArtStore"><span class="type">RygelMediaArtStore</span></a> instance</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>item</p></td>
+<td class="parameter_description"><p> </p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>simple</p></td>
+<td class="parameter_description"><p> </p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>error</p></td>
+<td class="parameter_description"><p>location to store the error occuring, or <a href="../glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a> to ignore</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-media-art-store-find-media-art-any"></a><h3>rygel_media_art_store_find_media_art_any ()</h3>
+<pre class="programlisting"><a class="link" href="RygelThumbnail.html" title="RygelThumbnail"><span class="returnvalue">RygelThumbnail</span></a> *
+rygel_media_art_store_find_media_art_any
+                               (<em class="parameter"><code><a class="link" href="RygelMediaArtStore.html" title="RygelMediaArtStore"><span class="type">RygelMediaArtStore</span></a> *self</code></em>,
+                                <em class="parameter"><code><a class="link" href="RygelMusicItem.html" title="RygelMusicItem"><span class="type">RygelMusicItem</span></a> *item</code></em>,
+                                <em class="parameter"><code><a href="../glib/glib-Error-Reporting.html#GError"><span class="type">GError</span></a> **error</code></em>);</pre>
+<div class="refsect3">
+<a name="id-1.6.7.7.4.4"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelMediaArtStore.html" title="RygelMediaArtStore"><span class="type">RygelMediaArtStore</span></a> instance</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>item</p></td>
+<td class="parameter_description"><p> </p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>error</p></td>
+<td class="parameter_description"><p>location to store the error occuring, or <a href="../glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a> to ignore</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-media-art-store-get-media-art-file"></a><h3>rygel_media_art_store_get_media_art_file ()</h3>
+<pre class="programlisting"><a href="../gio/GFile.html"><span class="returnvalue">GFile</span></a> *
+rygel_media_art_store_get_media_art_file
+                               (<em class="parameter"><code><a class="link" href="RygelMediaArtStore.html" title="RygelMediaArtStore"><span class="type">RygelMediaArtStore</span></a> *self</code></em>,
+                                <em class="parameter"><code>const <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *type</code></em>,
+                                <em class="parameter"><code><a class="link" href="RygelMusicItem.html" title="RygelMusicItem"><span class="type">RygelMusicItem</span></a> *item</code></em>,
+                                <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> simple</code></em>);</pre>
+<div class="refsect3">
+<a name="id-1.6.7.7.5.4"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelMediaArtStore.html" title="RygelMediaArtStore"><span class="type">RygelMediaArtStore</span></a> instance</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>type</p></td>
+<td class="parameter_description"><p> </p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>item</p></td>
+<td class="parameter_description"><p> </p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>simple</p></td>
+<td class="parameter_description"><p> </p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-media-art-store-get-default"></a><h3>rygel_media_art_store_get_default ()</h3>
+<pre class="programlisting"><a class="link" href="RygelMediaArtStore.html" title="RygelMediaArtStore"><span class="returnvalue">RygelMediaArtStore</span></a> *
+rygel_media_art_store_get_default (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+</div>
+</div>
+<div class="refsect1">
+<a name="RygelMediaArtStore.other_details"></a><h2>Types and Values</h2>
+<div class="refsect2">
+<a name="RygelMediaArtStore-struct"></a><h3>struct RygelMediaArtStore</h3>
+<pre class="programlisting">struct RygelMediaArtStore;</pre>
+<p>This maps RygelMusicItem objects to their cached cover art, implementing the GNOME <a class="ulink" href="https://live.gnome.org/MediaArtStorageSpec" target="_top">MediaArt storage specification</a> and the simplified version that Banshee uses.</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelMediaArtStoreClass"></a><h3>struct RygelMediaArtStoreClass</h3>
+<pre class="programlisting">struct RygelMediaArtStoreClass {
+	GObjectClass parent_class;
+};
+</pre>
+<p>The class structure for <a class="link" href="RygelMediaArtStore.html#RYGEL-TYPE-MEDIA-ART-STORE:CAPS" title="RYGEL_TYPE_MEDIA_ART_STORE"><code class="literal">RYGEL_TYPE_MEDIA_ART_STORE</code></a>. All the fields in this structure are private and should never be accessed directly.</p>
+<div class="refsect3">
+<a name="id-1.6.7.8.3.5"></a><h4>Members</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="300px" class="struct_members_name">
+<col class="struct_members_description">
+<col width="200px" class="struct_members_annotations">
+</colgroup>
+<tbody><tr>
+<td class="struct_member_name"><p><a href="../gobject/gobject-The-Base-Object-Type.html#GObjectClass"><span class="type">GObjectClass</span></a> <em class="structfield"><code><a name="RygelMediaArtStoreClass.parent-class"></a>parent_class</code></em>;</p></td>
+<td class="struct_member_description"><p>the parent class structure</p></td>
+<td class="struct_member_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.20.1</div>
+</body>
+</html>

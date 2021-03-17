@@ -1,0 +1,135 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Changes from 1.0 to 2.0</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="GMime 2.6 Reference Manual">
+<link rel="up" href="gmime.html" title="Part I. GMime Overview">
+<link rel="prev" href="gmime-compiling.html" title="Compiling GMime Applications">
+<link rel="next" href="gmime-changes-2-2.html" title="Changes from 2.0 to 2.2">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2"><tr valign="middle">
+<td><a accesskey="p" href="gmime-compiling.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="gmime.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">GMime 2.6 Reference Manual</th>
+<td><a accesskey="n" href="gmime-changes-2-2.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry">
+<a name="gmime-changes-2-0"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle">Changes from 1.0 to 2.0</span></h2>
+<p>Changes from 1.0 to 2.0 — 
+Incompatible changes made between version 1.0 and version 2.0
+</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1">
+<a name="idp5349024"></a><h2>Incompatible changes from 1.0 to 2.0</h2>
+<p>
+See also the PORTING document in the toplevel GMime source directory.
+</p>
+<p>
+The major change here is that I've dropped my own base object class
+and have replaced it with GObject from glib-2.0. This should be a
+pleasant change since you (the developer) will now be able to do many
+more things such as setting arbitrary data on all GMime objects. For
+additional information about GObject, please see the GObject Reference
+Manual at http://developer.gnome.org/doc/API/2.0/gobject/
+</p>
+<div class="itemizedlist"><ul class="itemizedlist" type="disc">
+<li class="listitem"><p>
+The first thing you need to know is that any function returning a
+non-const pointer to any object /must/ be unref'd when you are done
+with it. Since all objects in GMime now subclass GObject, you may
+safely use <code class="function">g_object_unref()</code>
+(<span class="structname">GMimeStream</span>'s may also be unref'd using
+<code class="function">g_mime_stream_unref()</code>, but either way is fine).
+
+Don't forget that
+<code class="function">g_mime_part_get_content_object()</code> returns a
+ref-counted <span class="structname">GMimeDataWrapper</span> object now, and
+so you /must/ unref it when you have finished using it. You must also
+remember to unref any GMimeDataWrapper object that you /set/ on a
+GMimePart using <code class="function">g_mime_part_set_content_object()</code>
+as the GMimePart will now ref the content object that you set on it.
+</p></li>
+<li class="listitem"><p><span class="structname">GMimeMultipart</span> is a new class which is to be
+used for all multipart MIME parts rather than GMimePart (as in
+1.0). There are also some subclasses of GMimeMultipart for other
+things.
+</p></li>
+<li class="listitem"><p><code class="function">g_mime_part_[g,s]et_boundary()</code> have been removed
+(see above). You must now create a GMimeMultipart object and use
+<code class="function">g_mime_multipart_[g,s]et_boundary()</code>.
+</p></li>
+<li class="listitem"><p><code class="function">g_mime_part_add_subpart()</code> has been replaced with
+<code class="function">g_mime_multipart_add_part()</code>.
+</p></li>
+<li class="listitem"><p><code class="function">g_mime_part_foreach()</code> has been replaced with
+<code class="function">g_mime_multipart_foreach()</code> and/or
+<code class="function">g_mime_message_foreach_part()</code>.
+</p></li>
+<li class="listitem"><p><code class="function">g_mime_part_get_subpart_from_content_id()</code> has
+been replaced with
+<code class="function">g_mime_multipart_get_subpart_from_content_id()</code>.
+</p></li>
+<li class="listitem"><p>
+Another new class is <span class="structname">GMimeMessagePart</span> which
+is to be used for all MIME parts containing an rfc822 message. All 1.0
+GMimePart's representing message/rfc822 parts (as well as message/news
+parts?)  need to be migrated over to be GMimeMessagePart objects.
+</p></li>
+<li class="listitem"><p><span class="structname">GMimeMessagePartial</span> is another class meant
+for handling the message/partial MIME type. All 1.0 GMimePart's
+holding data of this type should be replaced with GMimeMessagePartial
+objects.
+</p></li>
+<li class="listitem"><p><code class="function">g_mime_message_write_to_stream()</code> and
+<code class="function">g_mime_part_write_to_stream()</code> functions have been
+consolidated into a virtual method. Replace calls to these functions
+with <code class="function">g_mime_object_write_to_stream()</code>. Note: while
+<code class="function">g_mime_part_write_to_stream()</code> and
+<code class="function">g_mime_message_write_to_stream()</code> still exist, it
+is suggested you migrate to
+<code class="function">g_mime_object_write_to_stream()</code>. Same goes for
+<code class="function">g_mime_part_to_string()</code> and
+<code class="function">g_mime_message_to_string()</code>.
+</p></li>
+<li class="listitem"><p><span class="structname">GMimeMessage</span>'s structure has changed a
+bit. You will not be able to do <code class="literal">message-&gt;header</code>,
+instead you want to do <code class="literal">((GMimeObject *)
+message)-&gt;header</code>.
+</p></li>
+<li class="listitem"><p><code class="function">g_mime_message_set_message_id()</code> now takes a
+message_id argument without the encapsulating &lt; and &gt;'s (it now
+just takes the addr-spec portion of the msg-id).
+</p></li>
+<li class="listitem"><p><span class="structname">GMimeFilterFrom</span> has changed slightly, you
+will want to replace all calls to
+<code class="function">g_mime_filter_from_new()</code> with
+<code class="function">g_mime_filter_from_new
+(GMIME_FILTER_FROM_MODE_DEFAULT)</code>
+(<code class="literal">GMIME_FILTER_FROM_MODE_DEFAULT</code> is equivalent to (<span class="type">int</span>) 0).
+</p></li>
+<li class="listitem"><p><span class="structname">GMimeParser</span> is a brand new class and
+<code class="filename">gmime-parser.h</code> has had a number of API additions.
+<code class="function">g_mime_parser_construct_part()</code> and
+<code class="function">g_mime_parser_construct_message()</code> still exist,
+however they no longer take a GMimeStream argument. Instead, they take
+a GMimeParser object.
+</p></li>
+</ul></div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

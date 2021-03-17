@@ -1,0 +1,1137 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>librygel-server Reference Manual: RygelMediaContainer</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="index.html" title="librygel-server Reference Manual">
+<link rel="up" href="api-main-list.html" title="librygel-server API Reference">
+<link rel="prev" href="RygelMediaArtStore.html" title="RygelMediaArtStore">
+<link rel="next" href="RygelMediaEngine.html" title="RygelMediaEngine">
+<meta name="generator" content="GTK-Doc V1.20.1 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#RygelMediaContainer.description" class="shortcut">Description</a></span><span id="nav_hierarchy">  <span class="dim">|</span> 
+                  <a href="#RygelMediaContainer.object-hierarchy" class="shortcut">Object Hierarchy</a></span><span id="nav_derived_interfaces">  <span class="dim">|</span> 
+                  <a href="#RygelMediaContainer.derived-interfaces" class="shortcut">Known Derived Interfaces</a></span><span id="nav_properties">  <span class="dim">|</span> 
+                  <a href="#RygelMediaContainer.properties" class="shortcut">Properties</a></span><span id="nav_signals">  <span class="dim">|</span> 
+                  <a href="#RygelMediaContainer.signals" class="shortcut">Signals</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="api-main-list.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="RygelMediaArtStore.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="RygelMediaEngine.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry">
+<a name="RygelMediaContainer"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="RygelMediaContainer.top_of_page"></a>RygelMediaContainer</span></h2>
+<p>RygelMediaContainer — This is a container (folder) for media items and child containers.</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1">
+<a name="RygelMediaContainer.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="functions_return">
+<col class="functions_name">
+</colgroup>
+<tbody>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a class="link" href="RygelMediaContainer.html#RYGEL-TYPE-MEDIA-CONTAINER:CAPS" title="RYGEL_TYPE_MEDIA_CONTAINER">RYGEL_TYPE_MEDIA_CONTAINER</a></td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="RygelMediaContainer.html#rygel-media-container-get-children" title="rygel_media_container_get_children ()">rygel_media_container_get_children</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="RygelMediaObjects.html" title="RygelMediaObjects"><span class="returnvalue">RygelMediaObjects</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="RygelMediaContainer.html#rygel-media-container-get-children-finish" title="rygel_media_container_get_children_finish ()">rygel_media_container_get_children_finish</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="RygelMediaContainer.html#rygel-media-container-find-object" title="rygel_media_container_find_object ()">rygel_media_container_find_object</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="RygelMediaObject.html" title="RygelMediaObject"><span class="returnvalue">RygelMediaObject</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="RygelMediaContainer.html#rygel-media-container-find-object-finish" title="rygel_media_container_find_object_finish ()">rygel_media_container_find_object_finish</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="RygelMediaContainer.html#rygel-media-container-updated" title="rygel_media_container_updated ()">rygel_media_container_updated</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a href="../glib/glib-Basic-Types.html#gint"><span class="returnvalue">gint</span></a>
+</td>
+<td class="function_name">
+<a class="link" href="RygelMediaContainer.html#rygel-media-container-get-child-count" title="rygel_media_container_get_child_count ()">rygel_media_container_get_child_count</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="RygelMediaContainer.html#rygel-media-container-set-child-count" title="rygel_media_container_set_child_count ()">rygel_media_container_set_child_count</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a href="../glib/glib-Basic-Types.html#gint"><span class="returnvalue">gint</span></a>
+</td>
+<td class="function_name">
+<a class="link" href="RygelMediaContainer.html#rygel-media-container-get-empty-child-count" title="rygel_media_container_get_empty_child_count ()">rygel_media_container_get_empty_child_count</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="RygelMediaContainer.html#rygel-media-container-set-empty-child-count" title="rygel_media_container_set_empty_child_count ()">rygel_media_container_set_empty_child_count</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a href="../glib/glib-Basic-Types.html#gint"><span class="returnvalue">gint</span></a>
+</td>
+<td class="function_name">
+<a class="link" href="RygelMediaContainer.html#rygel-media-container-get-all-child-count" title="rygel_media_container_get_all_child_count ()">rygel_media_container_get_all_child_count</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>
+</td>
+<td class="function_name">
+<a class="link" href="RygelMediaContainer.html#rygel-media-container-get-create-mode-enabled" title="rygel_media_container_get_create_mode_enabled ()">rygel_media_container_get_create_mode_enabled</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="RygelMediaContainer.html#rygel-media-container-set-create-mode-enabled" title="rygel_media_container_set_create_mode_enabled ()">rygel_media_container_set_create_mode_enabled</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">const <a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="RygelMediaContainer.html#rygel-media-container-get-sort-criteria" title="rygel_media_container_get_sort_criteria ()">rygel_media_container_get_sort_criteria</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="RygelMediaContainer.html#rygel-media-container-set-sort-criteria" title="rygel_media_container_set_sort_criteria ()">rygel_media_container_set_sort_criteria</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="RygelMediaContainer.properties"></a><h2>Properties</h2>
+<div class="informaltable"><table border="0">
+<colgroup>
+<col width="150px" class="properties_type">
+<col width="300px" class="properties_name">
+<col width="200px" class="properties_flags">
+</colgroup>
+<tbody>
+<tr>
+<td class="property_type"><a href="../glib/glib-Basic-Types.html#gint"><span class="type">gint</span></a></td>
+<td class="property_name"><a class="link" href="RygelMediaContainer.html#RygelMediaContainer--all-child-count" title="The “all-child-count” property">all-child-count</a></td>
+<td class="property_flags">Read</td>
+</tr>
+<tr>
+<td class="property_type"><a href="../glib/glib-Basic-Types.html#gint"><span class="type">gint</span></a></td>
+<td class="property_name"><a class="link" href="RygelMediaContainer.html#RygelMediaContainer--child-count" title="The “child-count” property">child-count</a></td>
+<td class="property_flags">Read / Write / Construct</td>
+</tr>
+<tr>
+<td class="property_type"><a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a></td>
+<td class="property_name"><a class="link" href="RygelMediaContainer.html#RygelMediaContainer--create-mode-enabled" title="The “create-mode-enabled” property">create-mode-enabled</a></td>
+<td class="property_flags">Read / Write</td>
+</tr>
+<tr>
+<td class="property_type"><a href="../glib/glib-Basic-Types.html#gint"><span class="type">gint</span></a></td>
+<td class="property_name"><a class="link" href="RygelMediaContainer.html#RygelMediaContainer--empty-child-count" title="The “empty-child-count” property">empty-child-count</a></td>
+<td class="property_flags">Read / Write</td>
+</tr>
+<tr>
+<td class="property_type"><a href="../gupnp-av/GUPnPDIDLLiteObject.html#GUPnPOCMFlags"><span class="type">GUPnPOCMFlags</span></a></td>
+<td class="property_name"><a class="link" href="RygelMediaContainer.html#RygelMediaContainer--ocm-flags" title="The “ocm-flags” property">ocm-flags</a></td>
+<td class="property_flags">Read</td>
+</tr>
+<tr>
+<td class="property_type">
+<a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *</td>
+<td class="property_name"><a class="link" href="RygelMediaContainer.html#RygelMediaContainer--sort-criteria" title="The “sort-criteria” property">sort-criteria</a></td>
+<td class="property_flags">Read / Write</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="RygelMediaContainer.signals"></a><h2>Signals</h2>
+<div class="informaltable"><table border="0">
+<colgroup>
+<col width="150px" class="signals_return">
+<col width="300px" class="signals_name">
+<col width="200px" class="signals_flags">
+</colgroup>
+<tbody>
+<tr>
+<td class="signal_type"><span class="returnvalue">void</span></td>
+<td class="signal_name"><a class="link" href="RygelMediaContainer.html#RygelMediaContainer-container-updated" title="The “container-updated” signal">container-updated</a></td>
+<td class="signal_flags">Run Last</td>
+</tr>
+<tr>
+<td class="signal_type"><span class="returnvalue">void</span></td>
+<td class="signal_name"><a class="link" href="RygelMediaContainer.html#RygelMediaContainer-sub-tree-updates-finished" title="The “sub-tree-updates-finished” signal">sub-tree-updates-finished</a></td>
+<td class="signal_flags">Run Last</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="RygelMediaContainer.other"></a><h2>Types and Values</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="name">
+<col class="description">
+</colgroup>
+<tbody>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a class="link" href="RygelMediaContainer.html#RYGEL-MEDIA-CONTAINER-ANY:CAPS" title="RYGEL_MEDIA_CONTAINER_ANY">RYGEL_MEDIA_CONTAINER_ANY</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a class="link" href="RygelMediaContainer.html#RYGEL-MEDIA-CONTAINER-UPNP-CLASS:CAPS" title="RYGEL_MEDIA_CONTAINER_UPNP_CLASS">RYGEL_MEDIA_CONTAINER_UPNP_CLASS</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a class="link" href="RygelMediaContainer.html#RYGEL-MEDIA-CONTAINER-STORAGE-FOLDER:CAPS" title="RYGEL_MEDIA_CONTAINER_STORAGE_FOLDER">RYGEL_MEDIA_CONTAINER_STORAGE_FOLDER</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a class="link" href="RygelMediaContainer.html#RYGEL-MEDIA-CONTAINER-MUSIC-ALBUM:CAPS" title="RYGEL_MEDIA_CONTAINER_MUSIC_ALBUM">RYGEL_MEDIA_CONTAINER_MUSIC_ALBUM</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a class="link" href="RygelMediaContainer.html#RYGEL-MEDIA-CONTAINER-MUSIC-ARTIST:CAPS" title="RYGEL_MEDIA_CONTAINER_MUSIC_ARTIST">RYGEL_MEDIA_CONTAINER_MUSIC_ARTIST</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a class="link" href="RygelMediaContainer.html#RYGEL-MEDIA-CONTAINER-MUSIC-GENRE:CAPS" title="RYGEL_MEDIA_CONTAINER_MUSIC_GENRE">RYGEL_MEDIA_CONTAINER_MUSIC_GENRE</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a class="link" href="RygelMediaContainer.html#RYGEL-MEDIA-CONTAINER-PLAYLIST:CAPS" title="RYGEL_MEDIA_CONTAINER_PLAYLIST">RYGEL_MEDIA_CONTAINER_PLAYLIST</a></td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a class="link" href="RygelMediaContainer.html#RYGEL-MEDIA-CONTAINER-ALBUM-SORT-CRITERIA:CAPS" title="RYGEL_MEDIA_CONTAINER_ALBUM_SORT_CRITERIA">RYGEL_MEDIA_CONTAINER_ALBUM_SORT_CRITERIA</a></td>
+</tr>
+<tr>
+<td class="datatype_keyword">struct</td>
+<td class="function_name"><a class="link" href="RygelMediaContainer.html#RygelMediaContainer-struct" title="struct RygelMediaContainer">RygelMediaContainer</a></td>
+</tr>
+<tr>
+<td class="datatype_keyword">struct</td>
+<td class="function_name"><a class="link" href="RygelMediaContainer.html#RygelMediaContainerClass" title="struct RygelMediaContainerClass">RygelMediaContainerClass</a></td>
+</tr>
+<tr>
+<td class="datatype_keyword">enum</td>
+<td class="function_name"><a class="link" href="RygelMediaContainer.html#RygelObjectEventType" title="enum RygelObjectEventType">RygelObjectEventType</a></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="RygelMediaContainer.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="screen">    <a href="/opt/rygel-stable/share/gtk-doc/html/gobject/gobject-Enumeration-and-Flag-Types.html">GEnum</a>
+    <span class="lineart">╰──</span> RygelObjectEventType
+    <a href="../gobject/gobject-The-Base-Object-Type.html#GObject">GObject</a>
+    <span class="lineart">╰──</span> <a class="link" href="RygelMediaObject.html" title="RygelMediaObject">RygelMediaObject</a>
+        <span class="lineart">╰──</span> RygelMediaContainer
+            <span class="lineart">╰──</span> <a class="link" href="RygelSimpleContainer.html" title="RygelSimpleContainer">RygelSimpleContainer</a>
+</pre>
+</div>
+<div class="refsect1">
+<a name="RygelMediaContainer.derived-interfaces"></a><h2>Known Derived Interfaces</h2>
+<p>
+RygelMediaContainer is required by
+ <a class="link" href="RygelSearchableContainer.html" title="RygelSearchableContainer">RygelSearchableContainer</a>,  <a class="link" href="RygelTrackableContainer.html" title="RygelTrackableContainer">RygelTrackableContainer</a> and  <a class="link" href="RygelWritableContainer.html" title="RygelWritableContainer">RygelWritableContainer</a>.</p>
+</div>
+<div class="refsect1">
+<a name="RygelMediaContainer.description"></a><h2>Description</h2>
+<p>It provides a basic serialization implementation (to DIDLLiteWriter).</p>
+<p>A derived class should provide a working implementation of get_children and should emit the container_updated signal.</p>
+<p>When used as a root container, you may wish to use the variables, such as REALNAME, in in the title. See the title property of the <a class="link" href="RygelMediaObject.html" title="RygelMediaObject"><span class="type">RygelMediaObject</span></a>.</p>
+<p>If the container should support UPnP search operations then you also implement the <a class="link" href="RygelSearchableContainer.html" title="RygelSearchableContainer"><span class="type">RygelSearchableContainer</span></a> interface.</p>
+<p>If the container should be writable, meaning that it allows adding (via upload), removal and editing of items then you should also implement the <a class="link" href="RygelWritableContainer.html" title="RygelWritableContainer"><span class="type">RygelWritableContainer</span></a> interface.</p>
+<p>If the container should support the change tracking profile of the UPnP ContentDirectory:3 specification then you should also implement the <a class="link" href="RygelTrackableContainer.html" title="RygelTrackableContainer"><span class="type">RygelTrackableContainer</span></a> interface.</p>
+<p>The <a class="link" href="RygelSimpleContainer.html" title="RygelSimpleContainer"><span class="type">RygelSimpleContainer</span></a> class contains a simple memory-based container implementation, but most real-world uses will require custom container implementations.</p>
+</div>
+<div class="refsect1">
+<a name="RygelMediaContainer.functions_details"></a><h2>Functions</h2>
+<div class="refsect2">
+<a name="RYGEL-TYPE-MEDIA-CONTAINER:CAPS"></a><h3>RYGEL_TYPE_MEDIA_CONTAINER</h3>
+<pre class="programlisting">#define RYGEL_TYPE_MEDIA_CONTAINER (rygel_media_container_get_type ())
+</pre>
+<p>The type for <a class="link" href="RygelMediaContainer.html" title="RygelMediaContainer"><span class="type">RygelMediaContainer</span></a>.</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-media-container-get-children"></a><h3>rygel_media_container_get_children ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+rygel_media_container_get_children (<em class="parameter"><code><a class="link" href="RygelMediaContainer.html" title="RygelMediaContainer"><span class="type">RygelMediaContainer</span></a> *self</code></em>,
+                                    <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> offset</code></em>,
+                                    <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#guint"><span class="type">guint</span></a> max_count</code></em>,
+                                    <em class="parameter"><code>const <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *sort_criteria</code></em>,
+                                    <em class="parameter"><code><a href="../gio/GCancellable.html"><span class="type">GCancellable</span></a> *cancellable</code></em>,
+                                    <em class="parameter"><code><a href="../gio/GAsyncResult.html#GAsyncReadyCallback"><span class="type">GAsyncReadyCallback</span></a> _callback_</code></em>,
+                                    <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a> _user_data_</code></em>);</pre>
+<p>Fetches the list of media objects directly under this container.</p>
+<p><span class="emphasis"><em>See also</em></span>: <a class="link" href="RygelMediaContainer.html#rygel-media-container-get-children-finish" title="rygel_media_container_get_children_finish ()"><code class="function">rygel_media_container_get_children_finish()</code></a></p>
+<div class="refsect3">
+<a name="id-1.6.8.10.3.6"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelMediaContainer.html" title="RygelMediaContainer"><span class="type">RygelMediaContainer</span></a> instance</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>offset</p></td>
+<td class="parameter_description"><p>  .  zero-based index of the first item to return. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Parameter for input. Default is transfer none."><span class="acronym">in</span></acronym>]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>max_count</p></td>
+<td class="parameter_description"><p>  .  maximum number of objects to return. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Parameter for input. Default is transfer none."><span class="acronym">in</span></acronym>]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>sort_criteria</p></td>
+<td class="parameter_description"><p>  .  sorting order of objects to return. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Parameter for input. Default is transfer none."><span class="acronym">in</span></acronym>]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>cancellable</p></td>
+<td class="parameter_description"><p>  .  optional cancellable for this operation. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Parameter for input. Default is transfer none."><span class="acronym">in</span></acronym>][<acronym title="NULL is ok, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>_callback_</p></td>
+<td class="parameter_description"><p> callback to call when the request is satisfied. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="The callback is valid until first called."><span class="acronym">scope async</span></acronym>]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>_user_data_</p></td>
+<td class="parameter_description"><p> the data to pass to <em class="parameter"><code>_callback_</code></em>
+function. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="This parameter is a 'user_data', for callbacks; many bindings can pass NULL here."><span class="acronym">closure</span></acronym>]</span></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-media-container-get-children-finish"></a><h3>rygel_media_container_get_children_finish ()</h3>
+<pre class="programlisting"><a class="link" href="RygelMediaObjects.html" title="RygelMediaObjects"><span class="returnvalue">RygelMediaObjects</span></a> *
+rygel_media_container_get_children_finish
+                               (<em class="parameter"><code><a class="link" href="RygelMediaContainer.html" title="RygelMediaContainer"><span class="type">RygelMediaContainer</span></a> *self</code></em>,
+                                <em class="parameter"><code><a href="../gio/GAsyncResult.html"><span class="type">GAsyncResult</span></a> *_res_</code></em>,
+                                <em class="parameter"><code><a href="../glib/glib-Error-Reporting.html#GError"><span class="type">GError</span></a> **error</code></em>);</pre>
+<p>Fetches the list of media objects directly under this container.</p>
+<p><span class="emphasis"><em>See also</em></span>: <a class="link" href="RygelMediaContainer.html#rygel-media-container-get-children" title="rygel_media_container_get_children ()"><code class="function">rygel_media_container_get_children()</code></a></p>
+<div class="refsect3">
+<a name="id-1.6.8.10.4.6"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelMediaContainer.html" title="RygelMediaContainer"><span class="type">RygelMediaContainer</span></a> instance</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>_res_</p></td>
+<td class="parameter_description"><p>a <a href="../gio/GAsyncResult.html"><span class="type">GAsyncResult</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>error</p></td>
+<td class="parameter_description"><p>location to store the error occuring, or <a href="../glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a> to ignore</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.6.8.10.4.7"></a><h4>Returns</h4>
+<p> A list of media objects. </p>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-media-container-find-object"></a><h3>rygel_media_container_find_object ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+rygel_media_container_find_object (<em class="parameter"><code><a class="link" href="RygelMediaContainer.html" title="RygelMediaContainer"><span class="type">RygelMediaContainer</span></a> *self</code></em>,
+                                   <em class="parameter"><code>const <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *id</code></em>,
+                                   <em class="parameter"><code><a href="../gio/GCancellable.html"><span class="type">GCancellable</span></a> *cancellable</code></em>,
+                                   <em class="parameter"><code><a href="../gio/GAsyncResult.html#GAsyncReadyCallback"><span class="type">GAsyncReadyCallback</span></a> _callback_</code></em>,
+                                   <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a> _user_data_</code></em>);</pre>
+<p>Recursively searches this container for a media object with the given ID.</p>
+<p><span class="emphasis"><em>See also</em></span>: <a class="link" href="RygelMediaContainer.html#rygel-media-container-find-object-finish" title="rygel_media_container_find_object_finish ()"><code class="function">rygel_media_container_find_object_finish()</code></a></p>
+<div class="refsect3">
+<a name="id-1.6.8.10.5.6"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelMediaContainer.html" title="RygelMediaContainer"><span class="type">RygelMediaContainer</span></a> instance</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>id</p></td>
+<td class="parameter_description"><p>  .  ID of the media object to search for. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Parameter for input. Default is transfer none."><span class="acronym">in</span></acronym>]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>cancellable</p></td>
+<td class="parameter_description"><p>  .  optional cancellable for this operation. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Parameter for input. Default is transfer none."><span class="acronym">in</span></acronym>][<acronym title="NULL is ok, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>_callback_</p></td>
+<td class="parameter_description"><p> callback to call when the request is satisfied. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="The callback is valid until first called."><span class="acronym">scope async</span></acronym>]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>_user_data_</p></td>
+<td class="parameter_description"><p> the data to pass to <em class="parameter"><code>_callback_</code></em>
+function. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="This parameter is a 'user_data', for callbacks; many bindings can pass NULL here."><span class="acronym">closure</span></acronym>]</span></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-media-container-find-object-finish"></a><h3>rygel_media_container_find_object_finish ()</h3>
+<pre class="programlisting"><a class="link" href="RygelMediaObject.html" title="RygelMediaObject"><span class="returnvalue">RygelMediaObject</span></a> *
+rygel_media_container_find_object_finish
+                               (<em class="parameter"><code><a class="link" href="RygelMediaContainer.html" title="RygelMediaContainer"><span class="type">RygelMediaContainer</span></a> *self</code></em>,
+                                <em class="parameter"><code><a href="../gio/GAsyncResult.html"><span class="type">GAsyncResult</span></a> *_res_</code></em>,
+                                <em class="parameter"><code><a href="../glib/glib-Error-Reporting.html#GError"><span class="type">GError</span></a> **error</code></em>);</pre>
+<p>Recursively searches this container for a media object with the given ID.</p>
+<p><span class="emphasis"><em>See also</em></span>: <a class="link" href="RygelMediaContainer.html#rygel-media-container-find-object" title="rygel_media_container_find_object ()"><code class="function">rygel_media_container_find_object()</code></a></p>
+<div class="refsect3">
+<a name="id-1.6.8.10.6.6"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelMediaContainer.html" title="RygelMediaContainer"><span class="type">RygelMediaContainer</span></a> instance</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>_res_</p></td>
+<td class="parameter_description"><p>a <a href="../gio/GAsyncResult.html"><span class="type">GAsyncResult</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>error</p></td>
+<td class="parameter_description"><p>location to store the error occuring, or <a href="../glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a> to ignore</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.6.8.10.6.7"></a><h4>Returns</h4>
+<p> the found media object. </p>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-media-container-updated"></a><h3>rygel_media_container_updated ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+rygel_media_container_updated (<em class="parameter"><code><a class="link" href="RygelMediaContainer.html" title="RygelMediaContainer"><span class="type">RygelMediaContainer</span></a> *self</code></em>,
+                               <em class="parameter"><code><a class="link" href="RygelMediaObject.html" title="RygelMediaObject"><span class="type">RygelMediaObject</span></a> *object</code></em>,
+                               <em class="parameter"><code><a class="link" href="RygelMediaContainer.html#RygelObjectEventType" title="enum RygelObjectEventType"><span class="type">RygelObjectEventType</span></a> event_type</code></em>,
+                               <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> sub_tree_update</code></em>);</pre>
+<p>This method should be called each time this container is updated.</p>
+<p>For instance, this should be called if there are metadata changes for this container, if items under it are removed or added, if there are metadata changes to items under it, etc.</p>
+<p>If sub_tree_update is true then the caller should later emit the sub_tree_updates_finished signal on the root container of the sub-tree that was updated.</p>
+<p>It will eventually result in the server emitting a UPnP LastChange event, though that may be for a batch of these calls.</p>
+<p>See the <a class="link" href="RygelMediaContainer.html#RygelMediaContainer-container-updated" title="The “container-updated” signal"><span class="type">“container_updated”</span></a> signal.</p>
+<div class="refsect3">
+<a name="id-1.6.8.10.7.9"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelMediaContainer.html" title="RygelMediaContainer"><span class="type">RygelMediaContainer</span></a> instance</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>object</p></td>
+<td class="parameter_description"><p>  .  The object that has changed, or null to mean the container itself. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Parameter for input. Default is transfer none."><span class="acronym">in</span></acronym>][<acronym title="NULL is ok, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>event_type</p></td>
+<td class="parameter_description"><p>  .  This describes what actually happened to the object. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Parameter for input. Default is transfer none."><span class="acronym">in</span></acronym>]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>sub_tree_update</p></td>
+<td class="parameter_description"><p>  .  Whether the modification is part of a sub-tree update. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Parameter for input. Default is transfer none."><span class="acronym">in</span></acronym>]</span></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-media-container-get-child-count"></a><h3>rygel_media_container_get_child_count ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gint"><span class="returnvalue">gint</span></a>
+rygel_media_container_get_child_count (<em class="parameter"><code><a class="link" href="RygelMediaContainer.html" title="RygelMediaContainer"><span class="type">RygelMediaContainer</span></a> *self</code></em>);</pre>
+<p>Get and return the current value of the <a class="link" href="RygelMediaContainer.html#RygelMediaContainer--child-count" title="The “child-count” property"><span class="type">"child-count"</span></a> property.</p>
+<div class="refsect3">
+<a name="id-1.6.8.10.8.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelMediaContainer.html" title="RygelMediaContainer"><span class="type">RygelMediaContainer</span></a> instance to query</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.6.8.10.8.6"></a><h4>Returns</h4>
+<p> the value of the <a class="link" href="RygelMediaContainer.html#RygelMediaContainer--child-count" title="The “child-count” property"><span class="type">"child-count"</span></a> property</p>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-media-container-set-child-count"></a><h3>rygel_media_container_set_child_count ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+rygel_media_container_set_child_count (<em class="parameter"><code><a class="link" href="RygelMediaContainer.html" title="RygelMediaContainer"><span class="type">RygelMediaContainer</span></a> *self</code></em>,
+                                       <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gint"><span class="type">gint</span></a> value</code></em>);</pre>
+<p>Set the value of the <a class="link" href="RygelMediaContainer.html#RygelMediaContainer--child-count" title="The “child-count” property"><span class="type">"child-count"</span></a> property to <em class="parameter"><code>value</code></em>
+.</p>
+<div class="refsect3">
+<a name="id-1.6.8.10.9.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelMediaContainer.html" title="RygelMediaContainer"><span class="type">RygelMediaContainer</span></a> instance to modify</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>value</p></td>
+<td class="parameter_description"><p>the new value of the <a class="link" href="RygelMediaContainer.html#RygelMediaContainer--child-count" title="The “child-count” property"><span class="type">"child-count"</span></a> property</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-media-container-get-empty-child-count"></a><h3>rygel_media_container_get_empty_child_count ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gint"><span class="returnvalue">gint</span></a>
+rygel_media_container_get_empty_child_count
+                               (<em class="parameter"><code><a class="link" href="RygelMediaContainer.html" title="RygelMediaContainer"><span class="type">RygelMediaContainer</span></a> *self</code></em>);</pre>
+<p>Get and return the current value of the <a class="link" href="RygelMediaContainer.html#RygelMediaContainer--empty-child-count" title="The “empty-child-count” property"><span class="type">"empty-child-count"</span></a> property.</p>
+<div class="refsect3">
+<a name="id-1.6.8.10.10.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelMediaContainer.html" title="RygelMediaContainer"><span class="type">RygelMediaContainer</span></a> instance to query</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.6.8.10.10.6"></a><h4>Returns</h4>
+<p> the value of the <a class="link" href="RygelMediaContainer.html#RygelMediaContainer--empty-child-count" title="The “empty-child-count” property"><span class="type">"empty-child-count"</span></a> property</p>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-media-container-set-empty-child-count"></a><h3>rygel_media_container_set_empty_child_count ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+rygel_media_container_set_empty_child_count
+                               (<em class="parameter"><code><a class="link" href="RygelMediaContainer.html" title="RygelMediaContainer"><span class="type">RygelMediaContainer</span></a> *self</code></em>,
+                                <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gint"><span class="type">gint</span></a> value</code></em>);</pre>
+<p>Set the value of the <a class="link" href="RygelMediaContainer.html#RygelMediaContainer--empty-child-count" title="The “empty-child-count” property"><span class="type">"empty-child-count"</span></a> property to <em class="parameter"><code>value</code></em>
+.</p>
+<div class="refsect3">
+<a name="id-1.6.8.10.11.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelMediaContainer.html" title="RygelMediaContainer"><span class="type">RygelMediaContainer</span></a> instance to modify</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>value</p></td>
+<td class="parameter_description"><p>the new value of the <a class="link" href="RygelMediaContainer.html#RygelMediaContainer--empty-child-count" title="The “empty-child-count” property"><span class="type">"empty-child-count"</span></a> property</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-media-container-get-all-child-count"></a><h3>rygel_media_container_get_all_child_count ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gint"><span class="returnvalue">gint</span></a>
+rygel_media_container_get_all_child_count
+                               (<em class="parameter"><code><a class="link" href="RygelMediaContainer.html" title="RygelMediaContainer"><span class="type">RygelMediaContainer</span></a> *self</code></em>);</pre>
+<p>Get and return the current value of the <a class="link" href="RygelMediaContainer.html#RygelMediaContainer--all-child-count" title="The “all-child-count” property"><span class="type">"all-child-count"</span></a> property.</p>
+<div class="refsect3">
+<a name="id-1.6.8.10.12.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelMediaContainer.html" title="RygelMediaContainer"><span class="type">RygelMediaContainer</span></a> instance to query</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.6.8.10.12.6"></a><h4>Returns</h4>
+<p> the value of the <a class="link" href="RygelMediaContainer.html#RygelMediaContainer--all-child-count" title="The “all-child-count” property"><span class="type">"all-child-count"</span></a> property</p>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-media-container-get-create-mode-enabled"></a><h3>rygel_media_container_get_create_mode_enabled ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>
+rygel_media_container_get_create_mode_enabled
+                               (<em class="parameter"><code><a class="link" href="RygelMediaContainer.html" title="RygelMediaContainer"><span class="type">RygelMediaContainer</span></a> *self</code></em>);</pre>
+<p>Get and return the current value of the <a class="link" href="RygelMediaContainer.html#RygelMediaContainer--create-mode-enabled" title="The “create-mode-enabled” property"><span class="type">"create-mode-enabled"</span></a> property.</p>
+<div class="refsect3">
+<a name="id-1.6.8.10.13.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelMediaContainer.html" title="RygelMediaContainer"><span class="type">RygelMediaContainer</span></a> instance to query</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.6.8.10.13.6"></a><h4>Returns</h4>
+<p> the value of the <a class="link" href="RygelMediaContainer.html#RygelMediaContainer--create-mode-enabled" title="The “create-mode-enabled” property"><span class="type">"create-mode-enabled"</span></a> property</p>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-media-container-set-create-mode-enabled"></a><h3>rygel_media_container_set_create_mode_enabled ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+rygel_media_container_set_create_mode_enabled
+                               (<em class="parameter"><code><a class="link" href="RygelMediaContainer.html" title="RygelMediaContainer"><span class="type">RygelMediaContainer</span></a> *self</code></em>,
+                                <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> value</code></em>);</pre>
+<p>Set the value of the <a class="link" href="RygelMediaContainer.html#RygelMediaContainer--create-mode-enabled" title="The “create-mode-enabled” property"><span class="type">"create-mode-enabled"</span></a> property to <em class="parameter"><code>value</code></em>
+.</p>
+<div class="refsect3">
+<a name="id-1.6.8.10.14.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelMediaContainer.html" title="RygelMediaContainer"><span class="type">RygelMediaContainer</span></a> instance to modify</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>value</p></td>
+<td class="parameter_description"><p>the new value of the <a class="link" href="RygelMediaContainer.html#RygelMediaContainer--create-mode-enabled" title="The “create-mode-enabled” property"><span class="type">"create-mode-enabled"</span></a> property</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-media-container-get-sort-criteria"></a><h3>rygel_media_container_get_sort_criteria ()</h3>
+<pre class="programlisting">const <a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *
+rygel_media_container_get_sort_criteria
+                               (<em class="parameter"><code><a class="link" href="RygelMediaContainer.html" title="RygelMediaContainer"><span class="type">RygelMediaContainer</span></a> *self</code></em>);</pre>
+<p>Get and return the current value of the <a class="link" href="RygelMediaContainer.html#RygelMediaContainer--sort-criteria" title="The “sort-criteria” property"><span class="type">"sort-criteria"</span></a> property.</p>
+<div class="refsect3">
+<a name="id-1.6.8.10.15.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelMediaContainer.html" title="RygelMediaContainer"><span class="type">RygelMediaContainer</span></a> instance to query</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.6.8.10.15.6"></a><h4>Returns</h4>
+<p> the value of the <a class="link" href="RygelMediaContainer.html#RygelMediaContainer--sort-criteria" title="The “sort-criteria” property"><span class="type">"sort-criteria"</span></a> property</p>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-media-container-set-sort-criteria"></a><h3>rygel_media_container_set_sort_criteria ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+rygel_media_container_set_sort_criteria
+                               (<em class="parameter"><code><a class="link" href="RygelMediaContainer.html" title="RygelMediaContainer"><span class="type">RygelMediaContainer</span></a> *self</code></em>,
+                                <em class="parameter"><code>const <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *value</code></em>);</pre>
+<p>Set the value of the <a class="link" href="RygelMediaContainer.html#RygelMediaContainer--sort-criteria" title="The “sort-criteria” property"><span class="type">"sort-criteria"</span></a> property to <em class="parameter"><code>value</code></em>
+.</p>
+<div class="refsect3">
+<a name="id-1.6.8.10.16.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelMediaContainer.html" title="RygelMediaContainer"><span class="type">RygelMediaContainer</span></a> instance to modify</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>value</p></td>
+<td class="parameter_description"><p>the new value of the <a class="link" href="RygelMediaContainer.html#RygelMediaContainer--sort-criteria" title="The “sort-criteria” property"><span class="type">"sort-criteria"</span></a> property</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="refsect1">
+<a name="RygelMediaContainer.other_details"></a><h2>Types and Values</h2>
+<div class="refsect2">
+<a name="RYGEL-MEDIA-CONTAINER-ANY:CAPS"></a><h3>RYGEL_MEDIA_CONTAINER_ANY</h3>
+<pre class="programlisting">#define RYGEL_MEDIA_CONTAINER_ANY "DLNA.ORG_AnyContainer"
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RYGEL-MEDIA-CONTAINER-UPNP-CLASS:CAPS"></a><h3>RYGEL_MEDIA_CONTAINER_UPNP_CLASS</h3>
+<pre class="programlisting">#define RYGEL_MEDIA_CONTAINER_UPNP_CLASS "object.container"
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RYGEL-MEDIA-CONTAINER-STORAGE-FOLDER:CAPS"></a><h3>RYGEL_MEDIA_CONTAINER_STORAGE_FOLDER</h3>
+<pre class="programlisting">#define RYGEL_MEDIA_CONTAINER_STORAGE_FOLDER RYGEL_MEDIA_CONTAINER_UPNP_CLASS ".storageFolder"
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RYGEL-MEDIA-CONTAINER-MUSIC-ALBUM:CAPS"></a><h3>RYGEL_MEDIA_CONTAINER_MUSIC_ALBUM</h3>
+<pre class="programlisting">#define RYGEL_MEDIA_CONTAINER_MUSIC_ALBUM RYGEL_MEDIA_CONTAINER_UPNP_CLASS ".album.musicAlbum"
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RYGEL-MEDIA-CONTAINER-MUSIC-ARTIST:CAPS"></a><h3>RYGEL_MEDIA_CONTAINER_MUSIC_ARTIST</h3>
+<pre class="programlisting">#define RYGEL_MEDIA_CONTAINER_MUSIC_ARTIST RYGEL_MEDIA_CONTAINER_UPNP_CLASS ".person.musicArtist"
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RYGEL-MEDIA-CONTAINER-MUSIC-GENRE:CAPS"></a><h3>RYGEL_MEDIA_CONTAINER_MUSIC_GENRE</h3>
+<pre class="programlisting">#define RYGEL_MEDIA_CONTAINER_MUSIC_GENRE RYGEL_MEDIA_CONTAINER_UPNP_CLASS ".genre.musicGenre"
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RYGEL-MEDIA-CONTAINER-PLAYLIST:CAPS"></a><h3>RYGEL_MEDIA_CONTAINER_PLAYLIST</h3>
+<pre class="programlisting">#define RYGEL_MEDIA_CONTAINER_PLAYLIST RYGEL_MEDIA_CONTAINER_UPNP_CLASS ".playlistContainer"
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RYGEL-MEDIA-CONTAINER-ALBUM-SORT-CRITERIA:CAPS"></a><h3>RYGEL_MEDIA_CONTAINER_ALBUM_SORT_CRITERIA</h3>
+<pre class="programlisting">#define RYGEL_MEDIA_CONTAINER_ALBUM_SORT_CRITERIA "+upnp:class," "+rygel:originalVolumeNumber," "+upnp:originalTrackNumber," "+dc:title"
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelMediaContainer-struct"></a><h3>struct RygelMediaContainer</h3>
+<pre class="programlisting">struct RygelMediaContainer;</pre>
+<p>This is a container (folder) for media items and child containers.</p>
+<p>It provides a basic serialization implementation (to DIDLLiteWriter).</p>
+<p>A derived class should provide a working implementation of get_children and should emit the container_updated signal.</p>
+<p>When used as a root container, you may wish to use the variables, such as REALNAME, in in the title. See the title property of the <a class="link" href="RygelMediaObject.html" title="RygelMediaObject"><span class="type">RygelMediaObject</span></a>.</p>
+<p>If the container should support UPnP search operations then you also implement the <a class="link" href="RygelSearchableContainer.html" title="RygelSearchableContainer"><span class="type">RygelSearchableContainer</span></a> interface.</p>
+<p>If the container should be writable, meaning that it allows adding (via upload), removal and editing of items then you should also implement the <a class="link" href="RygelWritableContainer.html" title="RygelWritableContainer"><span class="type">RygelWritableContainer</span></a> interface.</p>
+<p>If the container should support the change tracking profile of the UPnP ContentDirectory:3 specification then you should also implement the <a class="link" href="RygelTrackableContainer.html" title="RygelTrackableContainer"><span class="type">RygelTrackableContainer</span></a> interface.</p>
+<p>The <a class="link" href="RygelSimpleContainer.html" title="RygelSimpleContainer"><span class="type">RygelSimpleContainer</span></a> class contains a simple memory-based container implementation, but most real-world uses will require custom container implementations.</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelMediaContainerClass"></a><h3>struct RygelMediaContainerClass</h3>
+<pre class="programlisting">struct RygelMediaContainerClass {
+	RygelMediaObjectClass parent_class;
+	void (*get_children) (RygelMediaContainer* self, guint offset, guint max_count, const gchar* sort_criteria, GCancellable* cancellable, GAsyncReadyCallback _callback_, gpointer _user_data_);
+	RygelMediaObjects* (*get_children_finish) (RygelMediaContainer* self, GAsyncResult* _res_, GError** error);
+	void (*find_object) (RygelMediaContainer* self, const gchar* id, GCancellable* cancellable, GAsyncReadyCallback _callback_, gpointer _user_data_);
+	RygelMediaObject* (*find_object_finish) (RygelMediaContainer* self, GAsyncResult* _res_, GError** error);
+};
+</pre>
+<p>The class structure for <a class="link" href="RygelMediaContainer.html#RYGEL-TYPE-MEDIA-CONTAINER:CAPS" title="RYGEL_TYPE_MEDIA_CONTAINER"><code class="literal">RYGEL_TYPE_MEDIA_CONTAINER</code></a>. All the fields in this structure are private and should never be accessed directly.</p>
+<div class="refsect3">
+<a name="id-1.6.8.11.11.5"></a><h4>Members</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="300px" class="struct_members_name">
+<col class="struct_members_description">
+<col width="200px" class="struct_members_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="struct_member_name"><p><a class="link" href="RygelMediaObject.html#RygelMediaObjectClass" title="struct RygelMediaObjectClass"><span class="type">RygelMediaObjectClass</span></a> <em class="structfield"><code><a name="RygelMediaContainerClass.parent-class"></a>parent_class</code></em>;</p></td>
+<td class="struct_member_description"><p>the parent class structure</p></td>
+<td class="struct_member_annotations"> </td>
+</tr>
+<tr>
+<td class="struct_member_name"><p><em class="structfield"><code><a name="RygelMediaContainerClass.get-children"></a>get_children</code></em> ()</p></td>
+<td class="struct_member_description"><p>virtual method called by <a class="link" href="RygelMediaContainer.html#rygel-media-container-get-children" title="rygel_media_container_get_children ()"><code class="function">rygel_media_container_get_children()</code></a></p></td>
+<td class="struct_member_annotations"> </td>
+</tr>
+<tr>
+<td class="struct_member_name"><p><em class="structfield"><code><a name="RygelMediaContainerClass.get-children-finish"></a>get_children_finish</code></em> ()</p></td>
+<td class="struct_member_description"><p>asynchronous finish function for <em class="structfield"><code>get_children</code></em>, called by <a class="link" href="RygelMediaContainer.html#rygel-media-container-get-children" title="rygel_media_container_get_children ()"><code class="function">rygel_media_container_get_children()</code></a></p></td>
+<td class="struct_member_annotations"> </td>
+</tr>
+<tr>
+<td class="struct_member_name"><p><em class="structfield"><code><a name="RygelMediaContainerClass.find-object"></a>find_object</code></em> ()</p></td>
+<td class="struct_member_description"><p>virtual method called by <a class="link" href="RygelMediaContainer.html#rygel-media-container-find-object" title="rygel_media_container_find_object ()"><code class="function">rygel_media_container_find_object()</code></a></p></td>
+<td class="struct_member_annotations"> </td>
+</tr>
+<tr>
+<td class="struct_member_name"><p><em class="structfield"><code><a name="RygelMediaContainerClass.find-object-finish"></a>find_object_finish</code></em> ()</p></td>
+<td class="struct_member_description"><p>asynchronous finish function for <em class="structfield"><code>find_object</code></em>, called by <a class="link" href="RygelMediaContainer.html#rygel-media-container-find-object" title="rygel_media_container_find_object ()"><code class="function">rygel_media_container_find_object()</code></a></p></td>
+<td class="struct_member_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelObjectEventType"></a><h3>enum RygelObjectEventType</h3>
+<div class="refsect3">
+<a name="id-1.6.8.11.12.3"></a><h4>Members</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="300px" class="enum_members_name">
+<col class="enum_members_description">
+<col width="200px" class="enum_members_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="enum_member_name"><p><a name="RYGEL-OBJECT-EVENT-TYPE-ADDED:CAPS"></a>RYGEL_OBJECT_EVENT_TYPE_ADDED</p></td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="RYGEL-OBJECT-EVENT-TYPE-MODIFIED:CAPS"></a>RYGEL_OBJECT_EVENT_TYPE_MODIFIED</p></td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="RYGEL-OBJECT-EVENT-TYPE-DELETED:CAPS"></a>RYGEL_OBJECT_EVENT_TYPE_DELETED</p></td>
+<td> </td>
+<td> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="refsect1">
+<a name="RygelMediaContainer.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="RygelMediaContainer--all-child-count"></a><h3>The <code class="literal">“all-child-count”</code> property</h3>
+<pre class="programlisting">  “all-child-count”          <a href="../glib/glib-Basic-Types.html#gint"><span class="type">gint</span></a></pre>
+<p>all-child-count.</p>
+<p>Flags: Read</p>
+<p>Default value: 0</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelMediaContainer--child-count"></a><h3>The <code class="literal">“child-count”</code> property</h3>
+<pre class="programlisting">  “child-count”              <a href="../glib/glib-Basic-Types.html#gint"><span class="type">gint</span></a></pre>
+<p>child-count.</p>
+<p>Flags: Read / Write / Construct</p>
+<p>Default value: 0</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelMediaContainer--create-mode-enabled"></a><h3>The <code class="literal">“create-mode-enabled”</code> property</h3>
+<pre class="programlisting">  “create-mode-enabled”      <a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a></pre>
+<p>create-mode-enabled.</p>
+<p>Flags: Read / Write</p>
+<p>Default value: FALSE</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelMediaContainer--empty-child-count"></a><h3>The <code class="literal">“empty-child-count”</code> property</h3>
+<pre class="programlisting">  “empty-child-count”        <a href="../glib/glib-Basic-Types.html#gint"><span class="type">gint</span></a></pre>
+<p>empty-child-count.</p>
+<p>Flags: Read / Write</p>
+<p>Default value: 0</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelMediaContainer--ocm-flags"></a><h3>The <code class="literal">“ocm-flags”</code> property</h3>
+<pre class="programlisting">  “ocm-flags”                <a href="../gupnp-av/GUPnPDIDLLiteObject.html#GUPnPOCMFlags"><span class="type">GUPnPOCMFlags</span></a></pre>
+<p>ocm-flags.</p>
+<p>Flags: Read</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelMediaContainer--sort-criteria"></a><h3>The <code class="literal">“sort-criteria”</code> property</h3>
+<pre class="programlisting">  “sort-criteria”            <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *</pre>
+<p>sort-criteria.</p>
+<p>Flags: Read / Write</p>
+<p>Default value: NULL</p>
+</div>
+</div>
+<div class="refsect1">
+<a name="RygelMediaContainer.signal-details"></a><h2>Signal Details</h2>
+<div class="refsect2">
+<a name="RygelMediaContainer-container-updated"></a><h3>The <code class="literal">“container-updated”</code> signal</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+user_function (<a class="link" href="RygelMediaContainer.html" title="RygelMediaContainer"><span class="type">RygelMediaContainer</span></a> *media_container,
+               <a class="link" href="RygelMediaContainer.html" title="RygelMediaContainer"><span class="type">RygelMediaContainer</span></a> *container,
+               <a class="link" href="RygelMediaObject.html" title="RygelMediaObject"><span class="type">RygelMediaObject</span></a>    *object,
+               <a class="link" href="RygelMediaContainer.html#RygelObjectEventType" title="enum RygelObjectEventType"><span class="type">RygelObjectEventType</span></a> event_type,
+               <a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a>             sub_tree_update,
+               <a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a>             user_data)</pre>
+<p>The container_updated signal is emitted if a child container under the tree of this container has been updated. The object parameter is set to the MediaObject that is the source of the container update. Note that it may even be set to the container itself.</p>
+<p><span class="emphasis"><em>See also</em></span>: <a class="link" href="RygelMediaContainer.html#rygel-media-container-updated" title="rygel_media_container_updated ()"><code class="function">rygel_media_container_updated()</code></a>.</p>
+<div class="refsect3">
+<a name="id-1.6.8.13.2.6"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>media_container</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelMediaContainer.html" title="RygelMediaContainer"><span class="type">RygelMediaContainer</span></a> instance that received the signal</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>container</p></td>
+<td class="parameter_description">
+<p> .  The child container that has been updated. </p>
+<p></p>
+</td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>object</p></td>
+<td class="parameter_description">
+<p> .  The object that has changed. This may be the container itself, or a child item. </p>
+<p></p>
+</td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>event_type</p></td>
+<td class="parameter_description">
+<p> .  This describes what actually happened to the object. </p>
+<p></p>
+</td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>sub_tree_update</p></td>
+<td class="parameter_description">
+<p> .  Whether the modification is part of a sub-tree update. See the <a class="link" href="RygelMediaContainer.html#RygelMediaContainer-sub-tree-updates-finished" title="The “sub-tree-updates-finished” signal"><span class="type">“sub_tree_updates_finished”</span></a> signal. </p>
+<p></p>
+</td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>user_data</p></td>
+<td class="parameter_description"><p>user data set when the signal handler was connected.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p>Flags: Run Last</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelMediaContainer-sub-tree-updates-finished"></a><h3>The <code class="literal">“sub-tree-updates-finished”</code> signal</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+user_function (<a class="link" href="RygelMediaContainer.html" title="RygelMediaContainer"><span class="type">RygelMediaContainer</span></a> *media_container,
+               <a class="link" href="RygelMediaObject.html" title="RygelMediaObject"><span class="type">RygelMediaObject</span></a>    *sub_tree_root,
+               <a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a>             user_data)</pre>
+<p>The sub_tree_updates_finished signal is emitted when all of the sub-tree operations are finished. See the <a class="link" href="RygelMediaContainer.html#RygelMediaContainer-container-updated" title="The “container-updated” signal"><span class="type">“container_updated”</span></a> signal.</p>
+<div class="refsect3">
+<a name="id-1.6.8.13.3.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>media_container</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelMediaContainer.html" title="RygelMediaContainer"><span class="type">RygelMediaContainer</span></a> instance that received the signal</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>sub_tree_root</p></td>
+<td class="parameter_description">
+<p> .  - root of a sub-tree where all operations were performed. </p>
+<p></p>
+</td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>user_data</p></td>
+<td class="parameter_description"><p>user data set when the signal handler was connected.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p>Flags: Run Last</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.20.1</div>
+</body>
+</html>

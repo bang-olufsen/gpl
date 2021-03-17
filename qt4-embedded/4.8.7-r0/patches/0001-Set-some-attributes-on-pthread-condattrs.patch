@@ -1,0 +1,106 @@
+From 15d7044c82e5f222b6533f3c3876b540dfac2ae0 Mon Sep 17 00:00:00 2001
+From: Thiago Macieira <thiago.macieira@intel.com>
+Date: Sat, 11 Aug 2012 17:13:59 +0200
+Subject: Set some attributes on pthread condattrs
+
+Make them use the monotonic clock if that's available. On Mac, the
+monotonic clock is not available -- Qt fakes monotonic support by using
+the Mach timebase -- so we need to use gettimeofday.
+
+Change-Id: Iaea0b0c0de1b4802780e2476dc3643b703db392c
+Reviewed-by: Olivier Goffart <ogoffart@woboq.com>
+---
+ src/corelib/thread/qwaitcondition_unix.cpp | 48 +++++++++++++++++++++++++-----
+ 1 file changed, 40 insertions(+), 8 deletions(-)
+
+(limited to 'src/corelib/thread/qwaitcondition_unix.cpp')
+
+diff --git a/src/corelib/thread/qwaitcondition_unix.cpp b/src/corelib/thread/qwaitcondition_unix.cpp
+index ab4e7872fb..9b5c8d000d 100644
+--- a/src/corelib/thread/qwaitcondition_unix.cpp
++++ b/src/corelib/thread/qwaitcondition_unix.cpp
+@@ -45,11 +45,15 @@
+ #include "qreadwritelock.h"
+ #include "qatomic.h"
+ #include "qstring.h"
++#include "qelapsedtimer.h"
++#include "private/qcore_unix_p.h"
+ 
+ #include "qmutex_p.h"
+ #include "qreadwritelock_p.h"
+ 
+ #include <errno.h>
++#include <sys/time.h>
++#include <time.h>
+ 
+ #ifndef QT_NO_THREAD
+ 
+@@ -61,6 +65,40 @@ static void report_error(int code, const char *where, const char *what)
+         qWarning("%s: %s failure: %s", where, what, qPrintable(qt_error_string(code)));
+ }
+ 
++void qt_initialize_pthread_cond(pthread_cond_t *cond, const char *where)
++{
++    pthread_condattr_t condattr;
++
++    pthread_condattr_init(&condattr);
++#if !defined(Q_OS_MAC) && (_POSIX_MONOTONIC_CLOCK-0 >= 0)
++    if (QElapsedTimer::clockType() == QElapsedTimer::MonotonicClock)
++        pthread_condattr_setclock(&condattr, CLOCK_MONOTONIC);
++#endif
++    report_error(pthread_cond_init(cond, &condattr), where, "cv init");
++    pthread_condattr_destroy(&condattr);
++}
++
++void qt_abstime_for_timeout(timespec *ts, int timeout)
++{
++    struct timeval tv;
++#ifdef Q_OS_MAC
++    // on Mac, qt_gettime() (on qelapsedtimer_mac.cpp) returns ticks related to the Mach absolute time
++    // that doesn't work with pthread
++    // Mac also doesn't have clock_gettime
++    gettimeofday(&tv, 0);
++#else
++    tv = qt_gettime();
++#endif
++
++    tv.tv_sec += timeout / 1000;
++    tv.tv_usec += timeout % 1000 * Q_UINT64_C(1000);
++
++    normalizedTimeval(tv);
++
++    ts->tv_sec = tv.tv_sec;
++    ts->tv_nsec = tv.tv_usec * 1000;
++}
++
+ class QWaitConditionPrivate {
+ public:
+     pthread_mutex_t mutex;
+@@ -73,14 +111,8 @@ public:
+         int code;
+         forever {
+             if (time != ULONG_MAX) {
+-                struct timeval tv;
+-                gettimeofday(&tv, 0);
+-
+                 timespec ti;
+-                ti.tv_nsec = (tv.tv_usec + (time % 1000) * 1000) * 1000;
+-                ti.tv_sec = tv.tv_sec + (time / 1000) + (ti.tv_nsec / 1000000000);
+-                ti.tv_nsec %= 1000000000;
+-
++                qt_abstime_for_timeout(&ti, time);
+                 code = pthread_cond_timedwait(&cond, &mutex, &ti);
+             } else {
+                 code = pthread_cond_wait(&cond, &mutex);
+@@ -114,7 +146,7 @@ QWaitCondition::QWaitCondition()
+ {
+     d = new QWaitConditionPrivate;
+     report_error(pthread_mutex_init(&d->mutex, NULL), "QWaitCondition", "mutex init");
+-    report_error(pthread_cond_init(&d->cond, NULL), "QWaitCondition", "cv init");
++    qt_initialize_pthread_cond(&d->cond, "QWaitCondition");
+     d->waiters = d->wakeups = 0;
+ }
+ 
+-- 
+cgit v1.1-6-g87c4
+

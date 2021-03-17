@@ -1,0 +1,44 @@
+From a1cb6da49468d1feb9292ccf74147d050ef65f61 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Wed, 26 Aug 2015 10:44:22 +0200
+Subject: [PATCH] ASoC: davinci: Add clock separation for CBS_CFM format
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ sound/soc/davinci/davinci-mcasp.c | 18 ++++++++++++------
+ 1 file changed, 12 insertions(+), 6 deletions(-)
+
+diff --git a/sound/soc/davinci/davinci-mcasp.c b/sound/soc/davinci/davinci-mcasp.c
+index 8c2af6a..945513c 100644
+--- a/sound/soc/davinci/davinci-mcasp.c
++++ b/sound/soc/davinci/davinci-mcasp.c
+@@ -498,14 +498,20 @@ static int davinci_set_dai_fmt(struct snd_soc_dai *cpu_dai,
+ 		break;
+ 	case SND_SOC_DAIFMT_CBS_CFM:
+ 		/* codec is clock slave and frame master */
+-		mcasp_set_bits(mcasp, DAVINCI_MCASP_ACLKXCTL_REG, ACLKXE);
+-		mcasp_clr_bits(mcasp, DAVINCI_MCASP_TXFMCTL_REG, AFSXE);
++		if (stream == SNDRV_PCM_STREAM_PLAYBACK) {
++			mcasp_set_bits(mcasp, DAVINCI_MCASP_ACLKXCTL_REG, ACLKXE);
++			mcasp_clr_bits(mcasp, DAVINCI_MCASP_TXFMCTL_REG, AFSXE);
++
++			mcasp_set_bits(mcasp, DAVINCI_MCASP_PDIR_REG, ACLKX);
++			mcasp_clr_bits(mcasp, DAVINCI_MCASP_PDIR_REG, AFSX);
++		} else {
++			mcasp_set_bits(mcasp, DAVINCI_MCASP_ACLKRCTL_REG, ACLKRE);
++			mcasp_clr_bits(mcasp, DAVINCI_MCASP_RXFMCTL_REG, AFSRE);
+ 
+-		mcasp_set_bits(mcasp, DAVINCI_MCASP_ACLKRCTL_REG, ACLKRE);
+-		mcasp_clr_bits(mcasp, DAVINCI_MCASP_RXFMCTL_REG, AFSRE);
++			mcasp_set_bits(mcasp, DAVINCI_MCASP_PDIR_REG, ACLKR);
++			mcasp_clr_bits(mcasp, DAVINCI_MCASP_PDIR_REG, AFSR);
++		}
+ 
+-		mcasp_set_bits(mcasp, DAVINCI_MCASP_PDIR_REG, ACLKX | ACLKR);
+-		mcasp_clr_bits(mcasp, DAVINCI_MCASP_PDIR_REG, AFSX | AFSR);
+ 		mcasp->bclk_master = 1;
+ 		break;
+ 	case SND_SOC_DAIFMT_CBM_CFS:
+-- 
+1.9.1
+

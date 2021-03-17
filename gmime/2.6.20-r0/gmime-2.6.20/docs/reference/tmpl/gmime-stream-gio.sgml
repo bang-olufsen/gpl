@@ -1,0 +1,72 @@
+<!-- ##### SECTION Title ##### -->
+gmime-stream-gio
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GMimeStreamGIO ##### -->
+<para>
+
+</para>
+
+@parent_object: 
+@ostream: 
+@istream: 
+@file: 
+@owner: 
+@eos: 
+
+<!-- ##### FUNCTION g_mime_stream_gio_new ##### -->
+<para>
+
+</para>
+
+@file: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_stream_gio_new_with_bounds ##### -->
+<para>
+
+</para>
+
+@file: 
+@start: 
+@end: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_stream_gio_get_owner ##### -->
+<para>
+
+</para>
+
+@stream: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_stream_gio_set_owner ##### -->
+<para>
+
+</para>
+
+@stream: 
+@owner: 
+
+

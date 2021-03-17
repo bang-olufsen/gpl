@@ -1,0 +1,26 @@
+From c9a5b4867529daff2a857f1d130bb2b9ded4c32c Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Fri, 11 Apr 2014 13:56:16 +0200
+Subject: [PATCH] env_default: Fix wrong altbootcmd handling
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ include/env_default.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/env_default.h b/include/env_default.h
+index 8c677c2..4ff69a3 100644
+--- a/include/env_default.h
++++ b/include/env_default.h
+@@ -34,7 +34,7 @@ const uchar default_environment[] = {
+ #ifdef	CONFIG_BOOTCOMMAND
+ 	"bootcmd="	CONFIG_BOOTCOMMAND		"\0"
+ #endif
+-#ifdef	CONFIG_BOOTCOMMAND
++#ifdef	CONFIG_ALTBOOTCOMMAND
+ 	"altbootcmd="	CONFIG_ALTBOOTCOMMAND		"\0"
+ #endif
+ #ifdef	CONFIG_RAMBOOTCOMMAND
+-- 
+2.7.4
+

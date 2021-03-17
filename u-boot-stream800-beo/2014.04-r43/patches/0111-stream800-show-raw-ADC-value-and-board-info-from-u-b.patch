@@ -1,0 +1,114 @@
+From e583ccaa4d942f3b07ca5a0a14b5858f47e294c1 Mon Sep 17 00:00:00 2001
+From: Radek Dostal <radek.dostal@streamunlimited.com>
+Date: Thu, 13 Nov 2014 14:09:44 +0100
+Subject: [PATCH] stream800: show raw ADC value and board info from u-boot and
+ MLO
+
+requires move of board_printf_info to board_defines to be available in MLO
+stream800ModuleVersionStrings need to be included in MLO too
+
+based on Fionn's work, which was originally part of
+Fix wrong samples received on read
+
+Signed-off-by: Radek Dostal <radek.dostal@streamunlimited.com>
+---
+ board/streamunlimited/stream800/board-spl.c     |  1 +
+ board/streamunlimited/stream800/board.c         |  9 +--------
+ board/streamunlimited/stream800/board_defines.c | 12 ++++++++++--
+ board/streamunlimited/stream800/board_defines.h |  2 ++
+ 4 files changed, 14 insertions(+), 10 deletions(-)
+
+diff --git a/board/streamunlimited/stream800/board-spl.c b/board/streamunlimited/stream800/board-spl.c
+index d495513..bad9fa8 100644
+--- a/board/streamunlimited/stream800/board-spl.c
++++ b/board/streamunlimited/stream800/board-spl.c
+@@ -204,6 +204,7 @@ void sdram_init(void)
+ 	struct Stream800Board board;
+ 	init_adc();
+ 	board_detect(&board);
++	board_printf_info(&board);
+ 
+ 	switch (board.moduleVersion) {
+ 	case MV_L0_DDR3:
+diff --git a/board/streamunlimited/stream800/board.c b/board/streamunlimited/stream800/board.c
+index 905d404..c548655 100755
+--- a/board/streamunlimited/stream800/board.c
++++ b/board/streamunlimited/stream800/board.c
+@@ -102,13 +102,6 @@ Stream800CarrierBoardType get_carrier_board_type(void)
+ 	return board.carrierBoardType;
+ }
+ 
+-static void board_printf_info(void)
+-{
+-	printf("Detected module: '%s', carrier board: '%s'\n",
+-		   stream800ModuleVersionStrings[board.moduleVersion],
+-		   stream800CarrierBoardTypeStrings[board.carrierBoardType]);
+-}
+-
+ static void boost_cpu_speed(void)
+ {
+ 	/* Get the frequency */
+@@ -155,7 +148,7 @@ int board_init(void)
+ {
+ 	init_adc();
+ 	board_detect(&board);
+-	board_printf_info();
++	board_printf_info(&board);
+ 
+ 	switch (get_carrier_board_type()) {
+ 		case CBT_SueDemoClientBoard:
+diff --git a/board/streamunlimited/stream800/board_defines.c b/board/streamunlimited/stream800/board_defines.c
+index 66afbc1..6b8d3a5 100644
+--- a/board/streamunlimited/stream800/board_defines.c
++++ b/board/streamunlimited/stream800/board_defines.c
+@@ -1,7 +1,6 @@
+ #include "board_defines.h"
+ #include "adc.h"
+ 
+-#ifndef CONFIG_SPL_BUILD
+ const char *stream800ModuleVersionStrings[] = {
+ 	[MV_unknown]	= "unknown",
+ 	[MV_L0]		= "stream800 rev.L0",
+@@ -24,7 +23,6 @@ const char *boardStateStrings[] = {
+ 	[BS_HardFailure]	= "hard failure/cannot boot",
+ 	[BS_BootingKernel]	= "booting kernel",
+ };
+-#endif
+ 
+ static struct SupportedModules {
+ 	Stream800ModuleVersion moduleVersion;
+@@ -83,6 +81,9 @@ void board_detect(struct Stream800Board *board)
+ 		unsigned CBT_LSB = read_adc_channel(2);	// Carrier Board Type (LSB)
+ 		int i;
+ 
++		printf("MV_MSB: 0x%03X, MV_LSB: 0x%03X, CBT_MSB: 0x%03X, CBT_LSB: 0x%03X\n",
++			MV_MSB, MV_LSB, CBT_MSB, CBT_LSB);
++
+ 		// Detecting module version
+ 		for (i = 0; i < sizeof(supportedModules) / sizeof(supportedModules[0]); i++) {
+ 			if ((MV_MSB >= supportedModules[i].msb_min) && (MV_MSB <= supportedModules[i].msb_max)
+@@ -136,3 +137,10 @@ void board_detect(struct Stream800Board *board)
+ 		}
+ 	}
+ }
++
++void board_printf_info(const struct Stream800Board *board)
++{
++	printf("Detected module: '%s', carrier board: '%s'\n",
++	       stream800ModuleVersionStrings[board->moduleVersion],
++	       stream800CarrierBoardTypeStrings[board->carrierBoardType]);
++}
+diff --git a/board/streamunlimited/stream800/board_defines.h b/board/streamunlimited/stream800/board_defines.h
+index 3d720c2..24165cc 100644
+--- a/board/streamunlimited/stream800/board_defines.h
++++ b/board/streamunlimited/stream800/board_defines.h
+@@ -48,4 +48,6 @@ Stream800CarrierBoardType get_carrier_board_type(void);
+ 
+ void board_detect(struct Stream800Board*);
+ 
++void board_printf_info(const struct Stream800Board *);
++
+ #endif /* _BOARD_DEFINES_H_ */
+-- 
+2.7.4
+

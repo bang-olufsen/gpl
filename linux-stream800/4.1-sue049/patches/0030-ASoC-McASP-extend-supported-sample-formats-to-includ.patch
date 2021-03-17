@@ -1,0 +1,28 @@
+From 4d3266f14719649f53009c62c4cfc307748f63bd Mon Sep 17 00:00:00 2001
+From: Lee Page <lee.page@streamunlimited.com>
+Date: Fri, 13 Mar 2015 12:43:26 +0100
+Subject: [PATCH] ASoC: McASP: extend supported sample formats to include DSD
+
+Signed-off-by: Miroslav Rudisin <miero@seznam.cz>
+Signed-off-by: Lee Page <lee.page@streamunlimited.com>
+---
+ sound/soc/davinci/davinci-mcasp.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/sound/soc/davinci/davinci-mcasp.c b/sound/soc/davinci/davinci-mcasp.c
+index bb37884..0c813d5 100644
+--- a/sound/soc/davinci/davinci-mcasp.c
++++ b/sound/soc/davinci/davinci-mcasp.c
+@@ -1464,7 +1464,8 @@ static int davinci_mcasp_resume(struct snd_soc_dai *dai)
+ 				SNDRV_PCM_FMTBIT_S24_3LE | \
+ 				SNDRV_PCM_FMTBIT_U24_3LE | \
+ 				SNDRV_PCM_FMTBIT_S32_LE | \
+-				SNDRV_PCM_FMTBIT_U32_LE)
++				SNDRV_PCM_FMTBIT_U32_LE | \
++				SNDRV_PCM_FMTBIT_DSD_U8)
+ 
+ static struct snd_soc_dai_driver davinci_mcasp_dai[] = {
+ 	{
+-- 
+1.9.1
+

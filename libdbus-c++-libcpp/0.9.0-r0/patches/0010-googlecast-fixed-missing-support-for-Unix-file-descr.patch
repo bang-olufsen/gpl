@@ -1,0 +1,115 @@
+From 6faba12f58ff799bfa839f07c12fd6bd02e259c9 Mon Sep 17 00:00:00 2001
+From: Stanislav Ruzani <stanislav.ruzani@streamunlimited.com>
+Date: Wed, 7 Jun 2017 12:05:57 +0200
+Subject: [PATCH 05/11] googlecast: fixed missing support for Unix file
+ descriptors in dbus-c++
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Signed-off-by: Stanislav Ružáni <stanislav.ruzani@streamunlimited.com>
+---
+ include/dbus-c++/types.h  | 38 +++++++++++++++++++++-
+ 1 file changed, 37 insertions(+), 1 deletion(-)
+
+diff --git a/include/dbus-c++/types.h b/include/dbus-c++/types.h
+index abd0096..6324b9e 100755
+--- a/include/dbus-c++/types.h
++++ b/include/dbus-c++/types.h
+@@ -41,6 +41,7 @@ class	Path;
+ class	DXXAPI Variant;
+ struct	DXXAPI Invalid;
+ struct	DXXAPI Signature;
++struct  DXXAPI UnixFD;
+ }
+ 
+ inline DBus::MessageIter &operator >> (DBus::MessageIter &iter, DBus::Invalid &);
+@@ -57,6 +58,7 @@ extern DBus::MessageIter &operator >> (DBus::MessageIter &iter, std::string &val
+ extern DBus::MessageIter &operator >> (DBus::MessageIter &iter, DBus::Path &val);
+ extern DXXAPI DBus::MessageIter &operator >> (DBus::MessageIter &iter, DBus::Variant &val);
+ extern DBus::MessageIter &operator >> (DBus::MessageIter &iter, DBus::Signature &val);
++extern DBus::MessageIter &operator >> (DBus::MessageIter &iter, DBus::UnixFD &val);
+ 
+ template<typename E>
+ extern DBus::MessageIter &operator >> (DBus::MessageIter &iter, std::vector<E>& val);
+@@ -79,6 +81,7 @@ extern DBus::MessageIter &operator << (DBus::MessageIter &iter, const std::strin
+ extern DBus::MessageIter &operator << (DBus::MessageIter &iter, const DBus::Path &val);
+ extern DXXAPI DBus::MessageIter &operator << (DBus::MessageIter &iter, const DBus::Variant &val);
+ extern DBus::MessageIter &operator << (DBus::MessageIter &iter, const DBus::Signature &val);
++extern DBus::MessageIter &operator << (DBus::MessageIter &iter, const DBus::UnixFD &val);
+ 
+ template<typename E>
+ extern DBus::MessageIter &operator << (DBus::MessageIter &iter, const std::vector<E>& val);
+@@ -113,6 +116,21 @@ struct DXXAPI Signature : public std::string
+   }
+ };
+ 
++struct DXXAPI UnixFD
++{
++  public:
++  uint32_t _val;
++  
++  UnixFD() {}
++  UnixFD(const uint32_t &v) : _val(v) {}
++  UnixFD &operator = (uint32_t &v)
++  {
++    _val = (v);
++	return *this;
++  }
++  
++};
++
+ struct DXXAPI Invalid {};
+ 
+ class DXXAPI Variant
+@@ -298,6 +316,13 @@ template <> struct type<Signature>
+     return "g";
+   }
+ };
++template <> struct type<UnixFD>
++{
++  static std::string sig()
++  {
++    return "h";
++  }
++};
+ template <> struct type<Invalid>
+ {
+   static std::string sig()
+@@ -305,7 +330,6 @@ template <> struct type<Invalid>
+     return "";
+   }
+ };
+-
+ template <typename E>
+ struct type< std::vector<E> >
+ {
+@@ -446,6 +470,12 @@ inline DBus::MessageIter &operator << (DBus::MessageIter &iter, const DBus::Sign
+   return iter;
+ }
+ 
++inline DBus::MessageIter &operator << (DBus::MessageIter &iter, const DBus::UnixFD &val)
++{
++  iter.append_uint32(val._val);
++  return iter;
++}
++
+ template<typename E>
+ inline DBus::MessageIter &operator << (DBus::MessageIter &iter, const std::vector<E>& val)
+ {
+@@ -601,6 +631,12 @@ inline DBus::MessageIter &operator >> (DBus::MessageIter &iter, DBus::Signature
+   return ++iter;
+ }
+ 
++inline DBus::MessageIter &operator >> (DBus::MessageIter &iter, DBus::UnixFD &val)
++{
++  val = iter.get_uint32();
++  return ++iter;
++}
++
+ template<typename E>
+ inline DBus::MessageIter &operator >> (DBus::MessageIter &iter, std::vector<E>& val)
+ {
+-- 
+2.7.4
+

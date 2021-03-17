@@ -1,0 +1,38 @@
+<!-- ##### SECTION Title ##### -->
+gmime-filter-crlf
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GMimeFilterCRLF ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION g_mime_filter_crlf_new ##### -->
+<para>
+
+</para>
+
+@encode: 
+@dots: 
+@Returns: 
+
+

@@ -1,0 +1,41 @@
+From 1e98d869cba8a12126bd68b29fcda7b6457a8463 Mon Sep 17 00:00:00 2001
+From: Stanislav Ruzani <stanislav.ruzani@streamunlimited.com>
+Date: Mon, 5 Jun 2017 06:15:55 +0200
+Subject: [PATCH 02/11] googlecast: added logging of deserialized key in
+ DBus::MessageIter &operator >> (DBus::MessageIter &iter, std::map<K, V>&
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Signed-off-by: Stanislav Ružáni <stanislav.ruzani@streamunlimited.com>
+---
+ include/dbus-c++/types.h | 3 +++
+ 1 file changed, 3 insertions(+)
+ mode change 100644 => 100755 include/dbus-c++/types.h
+
+diff --git a/include/dbus-c++/types.h b/include/dbus-c++/types.h
+old mode 100644
+new mode 100755
+index f03e0c1..559f703
+--- a/include/dbus-c++/types.h
++++ b/include/dbus-c++/types.h
+@@ -34,6 +34,7 @@
+ #include "util.h"
+ #include "message.h"
+ #include "error.h"
++#include <dbus-c++/debug.h>
+ 
+ extern DBus::MessageIter &operator >> (DBus::MessageIter &iter, uint8_t &val);
+ extern DBus::MessageIter &operator >> (DBus::MessageIter &iter, bool &val);
+@@ -642,6 +643,8 @@ inline DBus::MessageIter &operator >> (DBus::MessageIter &iter, std::map<K, V>&
+ 
+     eit >> key >> value;
+ 
++	DBus::debug_log("parsing: %s", key.c_str());
++
+     val[key] = value;
+ 
+     ++mit;
+-- 
+2.7.4
+

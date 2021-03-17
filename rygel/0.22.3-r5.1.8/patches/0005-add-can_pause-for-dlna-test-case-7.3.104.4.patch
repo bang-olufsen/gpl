@@ -1,0 +1,300 @@
+From 4be54447d2d714edf83db15ffc9027d40349e474 Mon Sep 17 00:00:00 2001
+From: Xia Zhou <xia.zhou@streamunlimited.com>
+Date: Wed, 13 Aug 2014 13:38:01 +0200
+Subject: [PATCH] add can_pause for dlna test case 7.3.104.4
+
+Conflicts:
+	src/librygel-renderer/rygel-av-transport.vala
+
+Signed-off-by: Xia Zhou <xia.zhou@streamunlimited.com>
+
+implement can_pause in players
+
+Conflicts:
+	src/librygel-renderer-gst/rygel-playbin-player.vala
+	src/plugins/mpris/rygel-mpris-player.vala
+
+Signed-off-by: Xia Zhou <xia.zhou@streamunlimited.com>
+---
+ .../rygel-playbin-player.vala                      |  6 +++
+ src/librygel-renderer/rygel-av-transport.c         | 48 ++++++++++++++--------
+ src/librygel-renderer/rygel-av-transport.vala      |  2 +-
+ src/librygel-renderer/rygel-media-player.c         |  9 ++++
+ src/librygel-renderer/rygel-media-player.vala      |  3 ++
+ .../rygel-media-renderer-plugin.c                  |  1 +
+ src/librygel-renderer/rygel-media-renderer.c       |  1 +
+ src/librygel-renderer/rygel-player-controller.c    |  1 +
+ src/librygel-renderer/rygel-renderer.h             |  2 +
+ src/librygel-renderer/rygel-rendering-control.c    |  1 +
+ .../rygel-sink-connection-manager.c                |  1 +
+ src/plugins/mpris/rygel-mpris-player.vala          |  6 +++
+ 12 files changed, 63 insertions(+), 18 deletions(-)
+
+diff --git a/src/librygel-renderer-gst/rygel-playbin-player.vala b/src/librygel-renderer-gst/rygel-playbin-player.vala
+index f1408bf..f27615a 100644
+--- a/src/librygel-renderer-gst/rygel-playbin-player.vala
++++ b/src/librygel-renderer-gst/rygel-playbin-player.vala
+@@ -243,6 +243,12 @@ public class Rygel.Playbin.Player : GLib.Object, Rygel.MediaPlayer {
+         }
+     }
+ 
++    public bool can_pause {
++        get {
++            return true;
++        }
++    }
++
+     public bool can_seek_bytes {
+         get {
+             return this.transfer_mode != TRANSFER_MODE_INTERACTIVE &&
+diff --git a/src/librygel-renderer/rygel-av-transport.c b/src/librygel-renderer/rygel-av-transport.c
+index 28d849c..a5e4d34 100644
+--- a/src/librygel-renderer/rygel-av-transport.c
++++ b/src/librygel-renderer/rygel-av-transport.c
+@@ -130,6 +130,7 @@ struct _RygelMediaPlayerIface {
+ 	gchar* (*get_mime_type) (RygelMediaPlayer* self);
+ 	void (*set_mime_type) (RygelMediaPlayer* self, const gchar* value);
+ 	gboolean (*get_can_seek) (RygelMediaPlayer* self);
++	gboolean (*get_can_pause) (RygelMediaPlayer* self);
+ 	gboolean (*get_can_seek_bytes) (RygelMediaPlayer* self);
+ 	gchar* (*get_content_features) (RygelMediaPlayer* self);
+ 	void (*set_content_features) (RygelMediaPlayer* self, const gchar* value);
+@@ -353,6 +354,7 @@ gint64 rygel_media_player_get_byte_position (RygelMediaPlayer* self);
+ void rygel_player_controller_interface_set_playback_state (RygelPlayerControllerInterface* self, const gchar* value);
+ gchar** rygel_media_player_get_allowed_playback_speeds (RygelMediaPlayer* self, int* result_length1);
+ void rygel_media_player_set_playback_speed (RygelMediaPlayer* self, const gchar* value);
++gboolean rygel_media_player_get_can_pause (RygelMediaPlayer* self);
+ gint64 rygel_time_utils_time_from_string (const gchar* str);
+ gboolean rygel_media_player_get_can_seek (RygelMediaPlayer* self);
+ gboolean rygel_media_player_seek (RygelMediaPlayer* self, gint64 time);
+@@ -1542,11 +1544,12 @@ static void rygel_av_transport_play_cb (RygelAVTransport* self, GUPnPService* se
+ static void rygel_av_transport_pause_cb (RygelAVTransport* self, GUPnPService* service, GUPnPServiceAction* action) {
+ 	GUPnPServiceAction* _tmp0_ = NULL;
+ 	gboolean _tmp1_ = FALSE;
+-	RygelPlayerControllerInterface* _tmp2_ = NULL;
+-	const gchar* _tmp3_ = NULL;
++	gboolean _tmp2_ = FALSE;
++	RygelPlayerControllerInterface* _tmp3_ = NULL;
+ 	const gchar* _tmp4_ = NULL;
+-	RygelPlayerControllerInterface* _tmp7_ = NULL;
+-	GUPnPServiceAction* _tmp8_ = NULL;
++	const gchar* _tmp5_ = NULL;
++	RygelPlayerControllerInterface* _tmp11_ = NULL;
++	GUPnPServiceAction* _tmp12_ = NULL;
+ 	g_return_if_fail (self != NULL);
+ 	g_return_if_fail (service != NULL);
+ 	g_return_if_fail (action != NULL);
+@@ -1555,21 +1558,32 @@ static void rygel_av_transport_pause_cb (RygelAVTransport* self, GUPnPService* s
+ 	if (!_tmp1_) {
+ 		return;
+ 	}
+-	_tmp2_ = self->priv->controller;
+-	_tmp3_ = rygel_player_controller_interface_get_playback_state (_tmp2_);
+-	_tmp4_ = _tmp3_;
+-	if (g_strcmp0 (_tmp4_, "PLAYING") != 0) {
+-		GUPnPServiceAction* _tmp5_ = NULL;
+-		const gchar* _tmp6_ = NULL;
+-		_tmp5_ = action;
+-		_tmp6_ = _ ("Transition not available");
+-		gupnp_service_action_return_error (_tmp5_, (guint) 701, _tmp6_);
++	_tmp3_ = self->priv->controller;
++	_tmp4_ = rygel_player_controller_interface_get_playback_state (_tmp3_);
++	_tmp5_ = _tmp4_;
++	if (g_strcmp0 (_tmp5_, "PLAYING") != 0) {
++		_tmp2_ = TRUE;
++	} else {
++		RygelMediaPlayer* _tmp6_ = NULL;
++		gboolean _tmp7_ = FALSE;
++		gboolean _tmp8_ = FALSE;
++		_tmp6_ = self->priv->player;
++		_tmp7_ = rygel_media_player_get_can_pause (_tmp6_);
++		_tmp8_ = _tmp7_;
++		_tmp2_ = !_tmp8_;
++	}
++	if (_tmp2_) {
++		GUPnPServiceAction* _tmp9_ = NULL;
++		const gchar* _tmp10_ = NULL;
++		_tmp9_ = action;
++		_tmp10_ = _ ("Transition not available");
++		gupnp_service_action_return_error (_tmp9_, (guint) 701, _tmp10_);
+ 		return;
+ 	}
+-	_tmp7_ = self->priv->controller;
+-	rygel_player_controller_interface_set_playback_state (_tmp7_, "PAUSED_PLAYBACK");
+-	_tmp8_ = action;
+-	gupnp_service_action_return (_tmp8_);
++	_tmp11_ = self->priv->controller;
++	rygel_player_controller_interface_set_playback_state (_tmp11_, "PAUSED_PLAYBACK");
++	_tmp12_ = action;
++	gupnp_service_action_return (_tmp12_);
+ }
+ 
+ 
+diff --git a/src/librygel-renderer/rygel-av-transport.vala b/src/librygel-renderer/rygel-av-transport.vala
+index 3fe9994..3a96277 100644
+--- a/src/librygel-renderer/rygel-av-transport.vala
++++ b/src/librygel-renderer/rygel-av-transport.vala
+@@ -488,7 +488,7 @@ internal class Rygel.AVTransport : Service {
+             return;
+         }
+ 
+-        if (this.controller.playback_state != "PLAYING") {
++        if (this.controller.playback_state != "PLAYING" || !this.player.can_pause) {
+             action.return_error (701, _("Transition not available"));
+ 
+             return;
+diff --git a/src/librygel-renderer/rygel-media-player.c b/src/librygel-renderer/rygel-media-player.c
+index 09258c9..8bd3aa0 100644
+--- a/src/librygel-renderer/rygel-media-player.c
++++ b/src/librygel-renderer/rygel-media-player.c
+@@ -72,6 +72,7 @@ struct _RygelMediaPlayerIface {
+ 	gchar* (*get_mime_type) (RygelMediaPlayer* self);
+ 	void (*set_mime_type) (RygelMediaPlayer* self, const gchar* value);
+ 	gboolean (*get_can_seek) (RygelMediaPlayer* self);
++	gboolean (*get_can_pause) (RygelMediaPlayer* self);
+ 	gboolean (*get_can_seek_bytes) (RygelMediaPlayer* self);
+ 	gchar* (*get_content_features) (RygelMediaPlayer* self);
+ 	void (*set_content_features) (RygelMediaPlayer* self, const gchar* value);
+@@ -109,6 +110,7 @@ void rygel_media_player_set_metadata (RygelMediaPlayer* self, const gchar* value
+ gchar* rygel_media_player_get_mime_type (RygelMediaPlayer* self);
+ void rygel_media_player_set_mime_type (RygelMediaPlayer* self, const gchar* value);
+ gboolean rygel_media_player_get_can_seek (RygelMediaPlayer* self);
++gboolean rygel_media_player_get_can_pause (RygelMediaPlayer* self);
+ gboolean rygel_media_player_get_can_seek_bytes (RygelMediaPlayer* self);
+ gchar* rygel_media_player_get_content_features (RygelMediaPlayer* self);
+ void rygel_media_player_set_content_features (RygelMediaPlayer* self, const gchar* value);
+@@ -345,6 +347,12 @@ gboolean rygel_media_player_get_can_seek (RygelMediaPlayer* self) {
+ }
+ 
+ 
++gboolean rygel_media_player_get_can_pause (RygelMediaPlayer* self) {
++	g_return_val_if_fail (self != NULL, FALSE);
++	return RYGEL_MEDIA_PLAYER_GET_INTERFACE (self)->get_can_pause (self);
++}
++
++
+ gboolean rygel_media_player_get_can_seek_bytes (RygelMediaPlayer* self) {
+ 	g_return_val_if_fail (self != NULL, FALSE);
+ 	return RYGEL_MEDIA_PLAYER_GET_INTERFACE (self)->get_can_seek_bytes (self);
+@@ -625,6 +633,7 @@ static void rygel_media_player_base_init (RygelMediaPlayerIface * iface) {
+ 		g_object_interface_install_property (iface, g_param_spec_string ("metadata", "metadata", "metadata", NULL, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE));
+ 		g_object_interface_install_property (iface, g_param_spec_string ("mime-type", "mime-type", "mime-type", NULL, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE));
+ 		g_object_interface_install_property (iface, g_param_spec_boolean ("can-seek", "can-seek", "can-seek", FALSE, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE));
++		g_object_interface_install_property (iface, g_param_spec_boolean ("can-pause", "can-pause", "can-pause", FALSE, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE));
+ 		g_object_interface_install_property (iface, g_param_spec_boolean ("can-seek-bytes", "can-seek-bytes", "can-seek-bytes", FALSE, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE));
+ 		/**
+ 		     * The contents of the contentFeatures.dlna.org HTTP header,
+diff --git a/src/librygel-renderer/rygel-media-player.vala b/src/librygel-renderer/rygel-media-player.vala
+index da9adb4..9815688 100644
+--- a/src/librygel-renderer/rygel-media-player.vala
++++ b/src/librygel-renderer/rygel-media-player.vala
+@@ -69,6 +69,9 @@ public interface Rygel.MediaPlayer : GLib.Object {
+     /// The current media supports time-based seeking
+     public abstract bool can_seek { get; }
+ 
++    /// The current media supports pause
++    public abstract bool can_pause { get; }
++
+     /// The current media supports byte-based seeking
+     public abstract bool can_seek_bytes { get; }
+ 
+diff --git a/src/librygel-renderer/rygel-media-renderer-plugin.c b/src/librygel-renderer/rygel-media-renderer-plugin.c
+index 557060a..9b102db 100644
+--- a/src/librygel-renderer/rygel-media-renderer-plugin.c
++++ b/src/librygel-renderer/rygel-media-renderer-plugin.c
+@@ -130,6 +130,7 @@ struct _RygelMediaPlayerIface {
+ 	gchar* (*get_mime_type) (RygelMediaPlayer* self);
+ 	void (*set_mime_type) (RygelMediaPlayer* self, const gchar* value);
+ 	gboolean (*get_can_seek) (RygelMediaPlayer* self);
++	gboolean (*get_can_pause) (RygelMediaPlayer* self);
+ 	gboolean (*get_can_seek_bytes) (RygelMediaPlayer* self);
+ 	gchar* (*get_content_features) (RygelMediaPlayer* self);
+ 	void (*set_content_features) (RygelMediaPlayer* self, const gchar* value);
+diff --git a/src/librygel-renderer/rygel-media-renderer.c b/src/librygel-renderer/rygel-media-renderer.c
+index e588e01..cf69a09 100644
+--- a/src/librygel-renderer/rygel-media-renderer.c
++++ b/src/librygel-renderer/rygel-media-renderer.c
+@@ -104,6 +104,7 @@ struct _RygelMediaPlayerIface {
+ 	gchar* (*get_mime_type) (RygelMediaPlayer* self);
+ 	void (*set_mime_type) (RygelMediaPlayer* self, const gchar* value);
+ 	gboolean (*get_can_seek) (RygelMediaPlayer* self);
++	gboolean (*get_can_pause) (RygelMediaPlayer* self);
+ 	gboolean (*get_can_seek_bytes) (RygelMediaPlayer* self);
+ 	gchar* (*get_content_features) (RygelMediaPlayer* self);
+ 	void (*set_content_features) (RygelMediaPlayer* self, const gchar* value);
+diff --git a/src/librygel-renderer/rygel-player-controller.c b/src/librygel-renderer/rygel-player-controller.c
+index 0406ecb..41a16ea 100644
+--- a/src/librygel-renderer/rygel-player-controller.c
++++ b/src/librygel-renderer/rygel-player-controller.c
+@@ -123,6 +123,7 @@ struct _RygelMediaPlayerIface {
+ 	gchar* (*get_mime_type) (RygelMediaPlayer* self);
+ 	void (*set_mime_type) (RygelMediaPlayer* self, const gchar* value);
+ 	gboolean (*get_can_seek) (RygelMediaPlayer* self);
++	gboolean (*get_can_pause) (RygelMediaPlayer* self);
+ 	gboolean (*get_can_seek_bytes) (RygelMediaPlayer* self);
+ 	gchar* (*get_content_features) (RygelMediaPlayer* self);
+ 	void (*set_content_features) (RygelMediaPlayer* self, const gchar* value);
+diff --git a/src/librygel-renderer/rygel-renderer.h b/src/librygel-renderer/rygel-renderer.h
+index 4096a31..82d0b5b 100644
+--- a/src/librygel-renderer/rygel-renderer.h
++++ b/src/librygel-renderer/rygel-renderer.h
+@@ -87,6 +87,7 @@ struct _RygelMediaPlayerIface {
+ 	gchar* (*get_mime_type) (RygelMediaPlayer* self);
+ 	void (*set_mime_type) (RygelMediaPlayer* self, const gchar* value);
+ 	gboolean (*get_can_seek) (RygelMediaPlayer* self);
++	gboolean (*get_can_pause) (RygelMediaPlayer* self);
+ 	gboolean (*get_can_seek_bytes) (RygelMediaPlayer* self);
+ 	gchar* (*get_content_features) (RygelMediaPlayer* self);
+ 	void (*set_content_features) (RygelMediaPlayer* self, const gchar* value);
+@@ -182,6 +183,7 @@ void rygel_media_player_set_metadata (RygelMediaPlayer* self, const gchar* value
+ gchar* rygel_media_player_get_mime_type (RygelMediaPlayer* self);
+ void rygel_media_player_set_mime_type (RygelMediaPlayer* self, const gchar* value);
+ gboolean rygel_media_player_get_can_seek (RygelMediaPlayer* self);
++gboolean rygel_media_player_get_can_pause (RygelMediaPlayer* self);
+ gboolean rygel_media_player_get_can_seek_bytes (RygelMediaPlayer* self);
+ gchar* rygel_media_player_get_content_features (RygelMediaPlayer* self);
+ void rygel_media_player_set_content_features (RygelMediaPlayer* self, const gchar* value);
+diff --git a/src/librygel-renderer/rygel-rendering-control.c b/src/librygel-renderer/rygel-rendering-control.c
+index 286c8f9..9b620c1 100644
+--- a/src/librygel-renderer/rygel-rendering-control.c
++++ b/src/librygel-renderer/rygel-rendering-control.c
+@@ -107,6 +107,7 @@ struct _RygelMediaPlayerIface {
+ 	gchar* (*get_mime_type) (RygelMediaPlayer* self);
+ 	void (*set_mime_type) (RygelMediaPlayer* self, const gchar* value);
+ 	gboolean (*get_can_seek) (RygelMediaPlayer* self);
++	gboolean (*get_can_pause) (RygelMediaPlayer* self);
+ 	gboolean (*get_can_seek_bytes) (RygelMediaPlayer* self);
+ 	gchar* (*get_content_features) (RygelMediaPlayer* self);
+ 	void (*set_content_features) (RygelMediaPlayer* self, const gchar* value);
+diff --git a/src/librygel-renderer/rygel-sink-connection-manager.c b/src/librygel-renderer/rygel-sink-connection-manager.c
+index 681930e..8fe6d14 100644
+--- a/src/librygel-renderer/rygel-sink-connection-manager.c
++++ b/src/librygel-renderer/rygel-sink-connection-manager.c
+@@ -96,6 +96,7 @@ struct _RygelMediaPlayerIface {
+ 	gchar* (*get_mime_type) (RygelMediaPlayer* self);
+ 	void (*set_mime_type) (RygelMediaPlayer* self, const gchar* value);
+ 	gboolean (*get_can_seek) (RygelMediaPlayer* self);
++	gboolean (*get_can_pause) (RygelMediaPlayer* self);
+ 	gboolean (*get_can_seek_bytes) (RygelMediaPlayer* self);
+ 	gchar* (*get_content_features) (RygelMediaPlayer* self);
+ 	void (*set_content_features) (RygelMediaPlayer* self, const gchar* value);
+diff --git a/src/plugins/mpris/rygel-mpris-player.vala b/src/plugins/mpris/rygel-mpris-player.vala
+index 93a602d..72c25f0 100644
+--- a/src/plugins/mpris/rygel-mpris-player.vala
++++ b/src/plugins/mpris/rygel-mpris-player.vala
+@@ -130,6 +130,12 @@ public class Rygel.MPRIS.Player : GLib.Object, Rygel.MediaPlayer {
+         }
+     }
+ 
++    public bool can_pause {
++        get {
++            return true;
++        }
++    }
++
+     public bool can_seek_bytes {
+         get {
+             return false;
+-- 
+1.9.1
+

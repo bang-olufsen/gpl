@@ -1,0 +1,29 @@
+From b29b58a796181b4f642224caa9f1f93ed8658871 Mon Sep 17 00:00:00 2001
+From: Matus Ujhelyi <matus.ujhelyi@streamunlimited.com>
+Date: Thu, 21 Mar 2013 09:43:30 +0100
+Subject: [PATCH] stream800: add cramfs commands
+
+Signed-off-by: Matus Ujhelyi <matus.ujhelyi@streamunlimited.com>
+---
+ include/configs/stream800.h | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/include/configs/stream800.h b/include/configs/stream800.h
+index 13e561d..fe1976d 100644
+--- a/include/configs/stream800.h
++++ b/include/configs/stream800.h
+@@ -1084,6 +1084,11 @@
+ #define CONFIG_NAND_OMAP_GPMC
+ #define GPMC_NAND_ECC_LP_x8_LAYOUT	1
+ #define CONFIG_SYS_NAND_BASE		(0x08000000)	/* physical address */
++
++#define CONFIG_CMD_CRAMFS
++#define CONFIG_CRAMFS_CMDLINE
++#define CONFIG_CMD_FLASH
++
+ 							/* to access nand at */
+ 							/* CS0 */
+ #define CONFIG_SYS_MAX_NAND_DEVICE	1		/* Max number of NAND
+-- 
+2.7.4
+

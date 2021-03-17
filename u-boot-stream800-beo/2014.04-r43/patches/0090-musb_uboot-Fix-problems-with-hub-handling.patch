@@ -1,0 +1,33 @@
+From 6222637fb2a7e3f5051e2c4e3404f57010adc849 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Mon, 14 Apr 2014 15:36:41 +0200
+Subject: [PATCH] musb_uboot: Fix problems with hub handling
+
+ASE have connected smsc usb hub on bus 1. Without this fix we get crash
+when issuing usb start. In this case dev->devnum was > CONFIG_USB_MAX_CONTROLLER_COUNT
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ drivers/usb/musb-new/musb_uboot.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/usb/musb-new/musb_uboot.c b/drivers/usb/musb-new/musb_uboot.c
+index 68876c9..bf0c84c 100644
+--- a/drivers/usb/musb-new/musb_uboot.c
++++ b/drivers/usb/musb-new/musb_uboot.c
+@@ -94,7 +94,11 @@ static struct hcd *get_hcd(struct usb_device *dev)
+ 	 */
+ 	if (dev->devnum > 0) {
+ 		if (hcd_activated > 1) {
+-			ret = &hcd_active[dev->devnum - 1];
++			if (dev->devnum > CONFIG_USB_MAX_CONTROLLER_COUNT) {
++				ret = &hcd_active[CONFIG_USB_MAX_CONTROLLER_COUNT - 1];
++			} else {
++				ret = &hcd_active[dev->devnum - 1];
++			}
+ 		} else {
+ 			int i;
+ 			for (i = 0; i < CONFIG_USB_MAX_CONTROLLER_COUNT; i++) {
+-- 
+2.7.4
+

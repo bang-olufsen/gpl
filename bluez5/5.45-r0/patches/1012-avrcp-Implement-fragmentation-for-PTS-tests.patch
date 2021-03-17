@@ -1,0 +1,177 @@
+From b98d5f0f85ef4421f9be00edc8dc217d267115d1 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Sat, 27 May 2017 11:01:09 +0200
+Subject: [PATCH] avrcp: Implement fragmentation for PTS tests
+
+This was needed for test cases:
+AVRCP/CT/RCR/BV-01-C
+AVRCP/CT/RCR/BV-03-C
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ profiles/audio/avrcp.c | 99 +++++++++++++++++++++++++++++++++++++++-----------
+ 1 file changed, 78 insertions(+), 21 deletions(-)
+
+diff --git a/profiles/audio/avrcp.c b/profiles/audio/avrcp.c
+index 400f55a..9619682 100644
+--- a/profiles/audio/avrcp.c
++++ b/profiles/audio/avrcp.c
+@@ -66,6 +66,8 @@
+ #include "player.h"
+ #include "transport.h"
+ 
++#define MAX_CONTINUING_REQUEST_SIZE 5000
++
+ /* Company IDs for vendor dependent commands */
+ #define IEEEID_BTSIG		0x001958
+ 
+@@ -255,6 +257,9 @@ struct avrcp_player {
+ 	struct avrcp_player_cb *cb;
+ 	void *user_data;
+ 	GDestroyNotify destroy;
++
++	uint8_t *continuing_req;
++	uint16_t continuing_req_size;
+ };
+ 
+ struct avrcp_data {
+@@ -2373,29 +2378,29 @@ static void avrcp_parse_attribute_list(struct avrcp_player *player,
+ 	}
+ }
+ 
+-static void send_abort_continuing_req(uint8_t pdu_id, struct avrcp *session)
++static void send_continuing_req(uint8_t pdu_id, struct avrcp *session, uint8_t type, avctp_rsp_cb func)
+ {
+ 	uint8_t buf[AVRCP_HEADER_LENGTH + 1];
+ 
+-	struct avrcp_header *abortReq = (void *) buf;
++	struct avrcp_header *req = (void *) buf;
+ 	uint8_t length;
+ 
+ 	memset(buf, 0, sizeof(buf));
+ 
+-	set_company_id(abortReq->company_id, IEEEID_BTSIG);
+-	abortReq->pdu_id = AVRCP_ABORT_CONTINUING;
+-	abortReq->packet_type = AVRCP_PACKET_TYPE_SINGLE;
++	set_company_id(req->company_id, IEEEID_BTSIG);
++	req->pdu_id = type;
++	req->packet_type = AVRCP_PACKET_TYPE_SINGLE;
+ 
+ 	// params are:
+-	// 1 byte pdu id to abort
+-	abortReq->params_len = htons(1);
+-	abortReq->params[0] = pdu_id;
++	// 1 byte pdu id
++	req->params_len = htons(1);
++	req->params[0] = pdu_id;
+ 
+-	length = AVRCP_HEADER_LENGTH + ntohs(abortReq->params_len);
++	length = AVRCP_HEADER_LENGTH + ntohs(req->params_len);
+ 
+ 	avctp_send_vendordep_req(session->conn, AVC_CTYPE_CONTROL,
+ 					AVC_SUBUNIT_PANEL, buf, length,
+-					NULL, session);
++					func, session);
+ }
+ 
+ static gboolean avrcp_get_element_attributes_rsp(struct avctp *conn,
+@@ -2409,26 +2414,77 @@ static gboolean avrcp_get_element_attributes_rsp(struct avctp *conn,
+ 	struct avrcp_player *player = session->controller->player;
+ 	struct avrcp_header *pdu = (void *) operands;
+ 	uint8_t count;
++	uint16_t params_len;
+ 
+ 	if (code == AVC_CTYPE_REJECTED)
+ 		return FALSE;
+ 
+-	count = pdu->params[0];
+-
+-	if (ntohs(pdu->params_len) - 1 < count * 8) {
+-		error("Invalid parameters");
++	if ((pdu->packet_type == AVRCP_PACKET_TYPE_CONTINUING || pdu->packet_type == AVRCP_PACKET_TYPE_END) && !player->continuing_req) {
++		error("No continuing request started");
+ 		return FALSE;
+ 	}
+ 
+-	if (pdu->packet_type == AVRCP_PACKET_TYPE_START) {
+-		// no support for fragmentation
+-		DBG("fragmented packet detected, aborting");
+-		send_abort_continuing_req(pdu->pdu_id, session);
+-	}
++	params_len = ntohs(pdu->params_len);
+ 
+-	avrcp_parse_attribute_list(player, &pdu->params[1], count);
++	switch (pdu->packet_type) {
++	case AVRCP_PACKET_TYPE_SINGLE:
++		count = pdu->params[0];
+ 
+-	avrcp_get_play_status(session);
++		if (params_len - 1 < count * 8) {
++			error("Invalid parameters");
++			return FALSE;
++		}
++
++		avrcp_parse_attribute_list(player, &pdu->params[1], count);
++
++		avrcp_get_play_status(session);
++		break;
++
++	case AVRCP_PACKET_TYPE_START:
++		DBG("Start continuing request (size=%zu)", operand_count);
++		g_free(player->continuing_req);
++		player->continuing_req = malloc(operand_count);
++		player->continuing_req_size = operand_count;
++		memcpy(player->continuing_req, operands, operand_count);
++		send_continuing_req(pdu->pdu_id, session, AVRCP_REQUEST_CONTINUING, avrcp_get_element_attributes_rsp);
++		break;
++
++	case AVRCP_PACKET_TYPE_CONTINUING:
++		if (player->continuing_req_size + params_len > MAX_CONTINUING_REQUEST_SIZE) {
++			error("Continuing request too long (size=%d) - abort", player->continuing_req_size);
++			g_free(player->continuing_req);
++			player->continuing_req = NULL;
++			player->continuing_req_size = 0;
++			send_continuing_req(pdu->pdu_id, session, AVRCP_ABORT_CONTINUING, NULL);
++		} else {
++			DBG("Request continuing request (size=%d)", player->continuing_req_size);
++			player->continuing_req = realloc(player->continuing_req, player->continuing_req_size + params_len);
++			memcpy(player->continuing_req + player->continuing_req_size, pdu->params, params_len);
++			player->continuing_req_size += params_len;
++			send_continuing_req(pdu->pdu_id, session, AVRCP_REQUEST_CONTINUING, avrcp_get_element_attributes_rsp);
++		}
++		break;
++
++	case AVRCP_PACKET_TYPE_END:
++		if (player->continuing_req_size + params_len > MAX_CONTINUING_REQUEST_SIZE) {
++			error("Continuing request too long (size=%d)", player->continuing_req_size);
++		} else {
++			player->continuing_req = realloc(player->continuing_req, player->continuing_req_size + params_len);
++			memcpy(player->continuing_req + player->continuing_req_size, pdu->params, params_len);
++			player->continuing_req_size += params_len;
++
++			DBG("Continuing request ended (size=%d)", player->continuing_req_size);
++			((struct avrcp_header *) player->continuing_req)->packet_type = AVRCP_PACKET_TYPE_SINGLE;
++			avrcp_get_element_attributes_rsp(conn, code, subunit, transaction, player->continuing_req, player->continuing_req_size, user_data);
++		}
++		g_free(player->continuing_req);
++		player->continuing_req = NULL;
++		player->continuing_req_size = 0;
++		break;
++
++	default:
++		error("Invalid avrcp packet type %d", pdu->packet_type);
++	}
+ 
+ 	return FALSE;
+ }
+@@ -3569,6 +3625,7 @@ static void player_destroy(gpointer data)
+ 	g_free(player->path);
+ 	g_free(player->change_path);
+ 	g_free(player->features);
++	g_free(player->continuing_req);
+ 	g_free(player);
+ }
+ 
+-- 
+2.7.4
+

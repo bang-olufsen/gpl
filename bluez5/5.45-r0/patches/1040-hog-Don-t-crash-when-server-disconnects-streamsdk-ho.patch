@@ -1,0 +1,27 @@
+From a3946cc845dee1164c74d36e61196deaabb37af2 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Mon, 5 Feb 2018 16:19:32 +0100
+Subject: [PATCH] hog: Don't crash when server disconnects streamsdk hog socket
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ profiles/input/hog-lib.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/profiles/input/hog-lib.c b/profiles/input/hog-lib.c
+index 2dfb30e..6538ab2 100644
+--- a/profiles/input/hog-lib.c
++++ b/profiles/input/hog-lib.c
+@@ -161,6 +161,9 @@ static gboolean connect_streamsdk_socket(struct bt_hog *hog)
+ 		return FALSE;
+ 	}
+ 
++	// Filter out SIGPIPE signal to prevent crash when server closes socket
++	signal(SIGPIPE, SIG_IGN);
++
+ 	struct sockaddr_un addr;
+ 	memset(&addr, 0, sizeof(addr));
+ 	addr.sun_family = AF_UNIX;
+-- 
+2.7.4
+

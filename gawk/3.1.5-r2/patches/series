@@ -1,0 +1,2 @@
+gawk-3.1.5_fix_for_automake-1.12.patch -p1
+0001-gawk-fix-non-glibc-gcc-4-compilation.patch -p1

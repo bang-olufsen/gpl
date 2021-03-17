@@ -1,0 +1,36 @@
+From 38e5b2e567b9c9b9a6a37b056e062fab3b491663 Mon Sep 17 00:00:00 2001
+From: Bernhard Miller <bernhard.miller@streamunlimited.com>
+Date: Mon, 17 Nov 2014 16:09:20 +0100
+Subject: [PATCH] usb: select 2nd configuration for Apple iDevices
+
+Signed-off-by: Bernhard Miller <bernhard.miller@streamunlimited.com>
+---
+ drivers/usb/core/generic.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/drivers/usb/core/generic.c b/drivers/usb/core/generic.c
+index 358ca8d..2e1a926 100644
+--- a/drivers/usb/core/generic.c
++++ b/drivers/usb/core/generic.c
+@@ -105,6 +105,18 @@ int usb_choose_configuration(struct usb_device *udev)
+ 			continue;
+ 		}
+ 
++		if (udev->descriptor.idVendor == 0x5ac &&
++				(udev->descriptor.idProduct & 0xFF00) == 0x1200 &&
++				num_configs >= 2) {
++			// docked apple iDevice, select second config
++			if (i == 1) {
++				best = c;
++				break;
++			} else {
++				continue;
++			}
++		}
++
+ 		/* When the first config's first interface is one of Microsoft's
+ 		 * pet nonstandard Ethernet-over-USB protocols, ignore it unless
+ 		 * this kernel has enabled the necessary host side driver.
+-- 
+1.9.1
+

@@ -1,0 +1,300 @@
+From 3734862559d81b99d2a25c815505682993db1832 Mon Sep 17 00:00:00 2001
+From: Simon Glass <sjg@chromium.org>
+Date: Wed, 16 Apr 2014 08:41:40 -0600
+Subject: [PATCH] mkimage: Automatically make space in FDT when full
+
+When adding hashes or signatures, the target FDT may be full. Detect this
+and automatically try again after making 1KB of space.
+
+Signed-off-by: Simon Glass <sjg@chromium.org>
+---
+ tools/fit_image.c  | 165 ++++++++++++++++++++++++++++++++++++-----------------
+ tools/image-host.c |  26 ++++++---
+ 2 files changed, 129 insertions(+), 62 deletions(-)
+
+diff --git a/tools/fit_image.c b/tools/fit_image.c
+index b56a340..217c9be 100644
+--- a/tools/fit_image.c
++++ b/tools/fit_image.c
+@@ -36,10 +36,23 @@ static int fit_check_image_types (uint8_t type)
+ 		return EXIT_FAILURE;
+ }
+ 
+-int mmap_fdt(struct image_tool_params *params, const char *fname, void **blobp,
+-		struct stat *sbuf)
++/**
++ * Map an FDT into memory, optionally increasing its size
++ *
++ * @params:	Image parameters
++ * @fname:	Filename containing FDT
++ * @size_inc:	Amount to increase size by (0 = leave it alone)
++ * @delete_on_error:	true to delete the file if we get an error
++ * @blobp:	Returns pointer to FDT blob
++ * @sbuf:	File status information is stored here
++ * @return 0 if OK, -1 on error.
++ */
++static int mmap_fdt(struct image_tool_params *params, const char *fname,
++		    size_t size_inc, bool delete_on_error, void **blobp,
++		    struct stat *sbuf)
+ {
+ 	void *ptr;
++	int ret;
+ 	int fd;
+ 
+ 	/* Load FIT blob into memory (we need to write hashes/signatures) */
+@@ -48,34 +61,103 @@ int mmap_fdt(struct image_tool_params *params, const char *fname, void **blobp,
+ 	if (fd < 0) {
+ 		fprintf(stderr, "%s: Can't open %s: %s\n",
+ 			params->cmdname, fname, strerror(errno));
+-		unlink(fname);
+-		return -1;
++		goto err;
+ 	}
+ 
+ 	if (fstat(fd, sbuf) < 0) {
+ 		fprintf(stderr, "%s: Can't stat %s: %s\n",
+ 			params->cmdname, fname, strerror(errno));
+-		unlink(fname);
+-		return -1;
++		goto err;
++	}
++
++	if (size_inc) {
++		sbuf->st_size += size_inc;
++		if (ftruncate(fd, sbuf->st_size)) {
++			fprintf(stderr, "%s: Can't expand %s: %s\n",
++				params->cmdname, fname, strerror(errno));
++		goto err;
++		}
+ 	}
+ 
+ 	ptr = mmap(0, sbuf->st_size, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0);
+ 	if (ptr == MAP_FAILED) {
+ 		fprintf(stderr, "%s: Can't read %s: %s\n",
+ 			params->cmdname, fname, strerror(errno));
+-		unlink(fname);
+-		return -1;
++		goto err;
+ 	}
+ 
+ 	/* check if ptr has a valid blob */
+ 	if (fdt_check_header(ptr)) {
+ 		fprintf(stderr, "%s: Invalid FIT blob\n", params->cmdname);
+-		unlink(fname);
+-		return -1;
++		goto err;
++	}
++
++	/* expand if needed */
++	if (size_inc) {
++		ret = fdt_open_into(ptr, ptr, sbuf->st_size);
++		if (ret) {
++			fprintf(stderr, "%s: Cannot expand FDT: %s\n",
++				params->cmdname, fdt_strerror(ret));
++			goto err;
++		}
+ 	}
+ 
+ 	*blobp = ptr;
+ 	return fd;
++
++err:
++	close(fd);
++	if (delete_on_error)
++		unlink(fname);
++	return -1;
++}
++
++static int fit_add_file_data(struct image_tool_params *params, size_t size_inc,
++			     const char *tmpfile)
++{
++	int tfd, destfd = 0;
++	void *dest_blob = NULL;
++	off_t destfd_size = 0;
++	struct stat sbuf;
++	void *ptr;
++	int ret = 0;
++
++	tfd = mmap_fdt(params, tmpfile, size_inc, true, &ptr, &sbuf);
++	if (tfd < 0)
++		return -EIO;
++
++	if (params->keydest) {
++		struct stat dest_sbuf;
++
++		destfd = mmap_fdt(params, params->keydest, size_inc, false,
++				  &dest_blob, &dest_sbuf);
++		if (destfd < 0) {
++			ret = -EIO;
++			goto err_keydest;
++		}
++		destfd_size = dest_sbuf.st_size;
++	}
++
++	/* for first image creation, add a timestamp at offset 0 i.e., root  */
++	if (params->datafile)
++		ret = fit_set_timestamp(ptr, 0, sbuf.st_mtime);
++
++	if (!ret) {
++		ret = fit_add_verification_data(params->keydir, dest_blob, ptr,
++						params->comment,
++						params->require_keys);
++	}
++
++	if (dest_blob) {
++		munmap(dest_blob, destfd_size);
++		close(destfd);
++	}
++
++err_keydest:
++	munmap(ptr, sbuf.st_size);
++	close(tfd);
++
++	return ret;
+ }
+ 
+ /**
+@@ -94,11 +176,8 @@ static int fit_handle_file(struct image_tool_params *params)
+ {
+ 	char tmpfile[MKIMAGE_MAX_TMPFILE_LEN];
+ 	char cmd[MKIMAGE_MAX_DTC_CMDLINE_LEN];
+-	int tfd, destfd = 0;
+-	void *dest_blob = NULL;
+-	struct stat sbuf;
+-	void *ptr;
+-	off_t destfd_size = 0;
++	size_t size_inc;
++	int ret;
+ 
+ 	/* Flattened Image Tree (FIT) format  handling */
+ 	debug ("FIT format handling\n");
+@@ -129,39 +208,26 @@ static int fit_handle_file(struct image_tool_params *params)
+ 		goto err_system;
+ 	}
+ 
+-	if (params->keydest) {
+-		destfd = mmap_fdt(params, params->keydest, &dest_blob, &sbuf);
+-		if (destfd < 0)
+-			goto err_keydest;
+-		destfd_size = sbuf.st_size;
++	/*
++	 * Set hashes for images in the blob. Unfortunately we may need more
++	 * space in either FDT, so keep trying until we succeed.
++	 *
++	 * Note: this is pretty inefficient for signing, since we must
++	 * calculate the signature every time. It would be better to calculate
++	 * all the data and then store it in a separate step. However, this
++	 * would be considerably more complex to implement. Generally a few
++	 * steps of this loop is enough to sign with several keys.
++	 */
++	for (size_inc = 0; size_inc < 64 * 1024; size_inc += 1024) {
++		ret = fit_add_file_data(params, size_inc, tmpfile);
++		if (!ret || ret != -ENOSPC)
++			break;
+ 	}
+ 
+-	tfd = mmap_fdt(params, tmpfile, &ptr, &sbuf);
+-	if (tfd < 0)
+-		goto err_mmap;
+-
+-	/* set hashes for images in the blob */
+-	if (fit_add_verification_data(params->keydir,
+-				      dest_blob, ptr, params->comment,
+-				      params->require_keys)) {
++	if (ret) {
+ 		fprintf(stderr, "%s Can't add hashes to FIT blob\n",
+ 			params->cmdname);
+-		goto err_add_hashes;
+-	}
+-
+-	/* for first image creation, add a timestamp at offset 0 i.e., root  */
+-	if (params->datafile && fit_set_timestamp(ptr, 0, sbuf.st_mtime)) {
+-		fprintf (stderr, "%s: Can't add image timestamp\n",
+-				params->cmdname);
+-		goto err_add_timestamp;
+-	}
+-	debug ("Added timestamp successfully\n");
+-
+-	munmap ((void *)ptr, sbuf.st_size);
+-	close (tfd);
+-	if (dest_blob) {
+-		munmap(dest_blob, destfd_size);
+-		close(destfd);
++		goto err_system;
+ 	}
+ 
+ 	if (rename (tmpfile, params->imagefile) == -1) {
+@@ -170,17 +236,10 @@ static int fit_handle_file(struct image_tool_params *params)
+ 				strerror (errno));
+ 		unlink (tmpfile);
+ 		unlink (params->imagefile);
+-		return (EXIT_FAILURE);
++		return EXIT_FAILURE;
+ 	}
+-	return (EXIT_SUCCESS);
++	return EXIT_SUCCESS;
+ 
+-err_add_timestamp:
+-err_add_hashes:
+-	munmap(ptr, sbuf.st_size);
+-err_mmap:
+-	if (dest_blob)
+-		munmap(dest_blob, destfd_size);
+-err_keydest:
+ err_system:
+ 	unlink(tmpfile);
+ 	return -1;
+diff --git a/tools/image-host.c b/tools/image-host.c
+index 0d5c88c..cb36477 100644
+--- a/tools/image-host.c
++++ b/tools/image-host.c
+@@ -224,7 +224,9 @@ static int fit_image_process_sig(const char *keydir, void *keydest,
+ 	ret = fit_image_write_sig(fit, noffset, value, value_len, comment,
+ 			NULL, 0);
+ 	if (ret) {
+-		printf("Can't write signature for '%s' signature node in '%s' image node: %s\n",
++		if (ret == -FDT_ERR_NOSPACE)
++			return -ENOSPC;
++		printf("Can't write signature for '%s' signature node in '%s' conf node: %s\n",
+ 		       node_name, image_name, fdt_strerror(ret));
+ 		return -1;
+ 	}
+@@ -589,10 +591,13 @@ static int fit_config_process_sig(const char *keydir, void *keydest,
+ 		return -1;
+ 	}
+ 
+-	if (fit_image_write_sig(fit, noffset, value, value_len, comment,
+-				region_prop, region_proplen)) {
+-		printf("Can't write signature for '%s' signature node in '%s' conf node\n",
+-		       node_name, conf_name);
++	ret = fit_image_write_sig(fit, noffset, value, value_len, comment,
++				region_prop, region_proplen);
++	if (ret) {
++		if (ret == -FDT_ERR_NOSPACE)
++			return -ENOSPC;
++		printf("Can't write signature for '%s' signature node in '%s' conf node: %s\n",
++		       node_name, conf_name, fdt_strerror(ret));
+ 		return -1;
+ 	}
+ 	free(value);
+@@ -602,10 +607,13 @@ static int fit_config_process_sig(const char *keydir, void *keydest,
+ 	info.keyname = fdt_getprop(fit, noffset, "key-name-hint", NULL);
+ 
+ 	/* Write the public key into the supplied FDT file */
+-	if (keydest && info.algo->add_verify_data(&info, keydest)) {
+-		printf("Failed to add verification data for '%s' signature node in '%s' image node\n",
+-		       node_name, conf_name);
+-		return -1;
++	if (keydest) {
++		ret = info.algo->add_verify_data(&info, keydest);
++		if (ret) {
++			printf("Failed to add verification data for '%s' signature node in '%s' image node\n",
++			       node_name, conf_name);
++			return ret == FDT_ERR_NOSPACE ? -ENOSPC : -EIO;
++		}
+ 	}
+ 
+ 	return 0;
+-- 
+2.7.4
+

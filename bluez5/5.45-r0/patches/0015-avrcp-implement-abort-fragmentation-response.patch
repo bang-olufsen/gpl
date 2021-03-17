@@ -1,0 +1,62 @@
+From f9c9123825d0bb67363fbc96669786b999d372c6 Mon Sep 17 00:00:00 2001
+From: Bernhard Miller <bernhard.miller@streamunlimited.com>
+Date: Mon, 20 Mar 2017 09:31:01 +0100
+Subject: [PATCH] avrcp: implement abort fragmentation response
+
+Signed-off-by: Bernhard Miller <bernhard.miller@streamunlimited.com>
+---
+ profiles/audio/avrcp.c | 31 +++++++++++++++++++++++++++++++
+ 1 file changed, 31 insertions(+)
+
+diff --git a/profiles/audio/avrcp.c b/profiles/audio/avrcp.c
+index 760e56b..c402621 100644
+--- a/profiles/audio/avrcp.c
++++ b/profiles/audio/avrcp.c
+@@ -2352,6 +2352,31 @@ static void avrcp_parse_attribute_list(struct avrcp_player *player,
+ 	}
+ }
+ 
++static void send_abort_continuing_req(uint8_t pdu_id, struct avrcp *session)
++{
++	uint8_t buf[AVRCP_HEADER_LENGTH + 1];
++
++	struct avrcp_header *abortReq = (void *) buf;
++	uint8_t length;
++
++	memset(buf, 0, sizeof(buf));
++
++	set_company_id(abortReq->company_id, IEEEID_BTSIG);
++	abortReq->pdu_id = AVRCP_ABORT_CONTINUING;
++	abortReq->packet_type = AVRCP_PACKET_TYPE_SINGLE;
++
++	// params are:
++	// 1 byte pdu id to abort
++	abortReq->params_len = htons(1);
++	abortReq->params[0] = pdu_id;
++
++	length = AVRCP_HEADER_LENGTH + ntohs(abortReq->params_len);
++
++	avctp_send_vendordep_req(session->conn, AVC_CTYPE_CONTROL,
++					AVC_SUBUNIT_PANEL, buf, length,
++					NULL, session);
++}
++
+ static gboolean avrcp_get_element_attributes_rsp(struct avctp *conn,
+ 						uint8_t code, uint8_t subunit,
+ 						uint8_t transaction,
+@@ -2374,6 +2399,12 @@ static gboolean avrcp_get_element_attributes_rsp(struct avctp *conn,
+ 		return FALSE;
+ 	}
+ 
++	if (pdu->packet_type == AVRCP_PACKET_TYPE_START) {
++		// no support for fragmentation
++		DBG("fragmented packet detected, aborting");
++		send_abort_continuing_req(pdu->pdu_id, session);
++	}
++
+ 	avrcp_parse_attribute_list(player, &pdu->params[1], count);
+ 
+ 	avrcp_get_play_status(session);
+-- 
+2.7.4
+

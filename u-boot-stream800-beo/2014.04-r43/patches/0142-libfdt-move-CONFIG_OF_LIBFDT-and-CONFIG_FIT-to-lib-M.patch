@@ -1,0 +1,42 @@
+From 2146d17d4b5cc0c7f543848de80c29bf5a8f3e38 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Fri, 7 Feb 2020 13:06:57 +0100
+Subject: [PATCH] libfdt: move CONFIG_OF_LIBFDT and CONFIG_FIT to lib/Makefile
+
+This is upstream commit 61eb5d72abd3d156baf9de2133226dc5d8da3150
+
+Signed-off-by: Masahiro Yamada <yamada.m@jp.panasonic.com>
+---
+ lib/Makefile        | 2 ++
+ lib/libfdt/Makefile | 5 +----
+ 2 files changed, 3 insertions(+), 4 deletions(-)
+
+diff --git a/lib/Makefile b/lib/Makefile
+index 8bd1558..8f9387c 100644
+--- a/lib/Makefile
++++ b/lib/Makefile
+@@ -12,6 +12,8 @@ obj-$(CONFIG_LZMA) += lzma/
+ obj-$(CONFIG_LZO) += lzo/
+ obj-$(CONFIG_ZLIB) += zlib/
+ obj-$(CONFIG_TIZEN) += tizen/
++obj-$(CONFIG_OF_LIBFDT) += libfdt/
++obj-$(CONFIG_FIT) += libfdt/
+ 
+ obj-$(CONFIG_AES) += aes.o
+ obj-$(CONFIG_BZIP2) += bzlib.o
+diff --git a/lib/libfdt/Makefile b/lib/libfdt/Makefile
+index a02c9b0..caf3231 100644
+--- a/lib/libfdt/Makefile
++++ b/lib/libfdt/Makefile
+@@ -5,7 +5,4 @@
+ # SPDX-License-Identifier:	GPL-2.0+
+ #
+ 
+-COBJS-libfdt += fdt.o fdt_ro.o fdt_rw.o fdt_strerror.o fdt_sw.o fdt_wip.o fdt_empty_tree.o
+-
+-obj-$(CONFIG_OF_LIBFDT) += $(COBJS-libfdt)
+-obj-$(CONFIG_FIT) += $(COBJS-libfdt)
++obj-y += fdt.o fdt_ro.o fdt_rw.o fdt_strerror.o fdt_sw.o fdt_wip.o fdt_empty_tree.o
+-- 
+2.7.4
+

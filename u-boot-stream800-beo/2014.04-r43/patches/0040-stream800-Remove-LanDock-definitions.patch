@@ -1,0 +1,423 @@
+From 58a1b0c4ad2f8da28515d977a80a32fe8149c4e2 Mon Sep 17 00:00:00 2001
+From: Vladimir Koutny <vladimir.koutny@streamunlimited.com>
+Date: Wed, 29 May 2013 17:43:32 +0200
+Subject: [PATCH] stream800: Remove LanDock definitions
+
+Signed-off-by: Vladimir Koutny <vladimir.koutny@streamunlimited.com>
+---
+ board/streamunlimited/stream800/Makefile           |   2 +-
+ .../stream800/board-lan_dock_board.c               | 249 ---------------------
+ .../stream800/board-lan_dock_board.h               |  43 ----
+ board/streamunlimited/stream800/board.c            |  14 +-
+ board/streamunlimited/stream800/board.h            |   2 -
+ board/streamunlimited/stream800/fwupdate.c         |   2 -
+ 6 files changed, 2 insertions(+), 310 deletions(-)
+ delete mode 100644 board/streamunlimited/stream800/board-lan_dock_board.c
+ delete mode 100644 board/streamunlimited/stream800/board-lan_dock_board.h
+
+diff --git a/board/streamunlimited/stream800/Makefile b/board/streamunlimited/stream800/Makefile
+index 97d5fac..b73e3d1 100644
+--- a/board/streamunlimited/stream800/Makefile
++++ b/board/streamunlimited/stream800/Makefile
+@@ -21,7 +21,7 @@ LIB	= $(obj)lib$(BOARD).o
+ ifdef CONFIG_SPL_BUILD
+ COBJS	:= board-spl.o mux.o
+ else
+-COBJS	:= board.o mux.o adc.o board-sue_demo_client_board.o board-lan_dock_board.o board-sue_first_carrier_board.o board-sue_factory_test_board.o fwupdate.o sfu_parser.o omap_wdt.o
++COBJS	:= board.o mux.o adc.o board-sue_demo_client_board.o board-sue_first_carrier_board.o board-sue_factory_test_board.o fwupdate.o sfu_parser.o omap_wdt.o
+ endif
+ 
+ SRCS	:= $(SOBJS:.o=.S) $(COBJS:.o=.c)
+diff --git a/board/streamunlimited/stream800/board-lan_dock_board.c b/board/streamunlimited/stream800/board-lan_dock_board.c
+deleted file mode 100644
+index 09642dd..0000000
+--- a/board/streamunlimited/stream800/board-lan_dock_board.c
++++ /dev/null
+@@ -1,249 +0,0 @@
+-/*
+- * board-lan_dock_board.c
+- *
+- * Copyright (C) 2012, StreamUnlimited Engineering GmbH, http://www.streamunlimited.com/
+- *
+- * This program is free software; you can redistribute it and/or
+- * modify it under the terms of the GNU General Public License as
+- * published by the Free Software Foundation; either version 2 of
+- * the License, or (at your option) any later version.
+- *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR /PURPOSE.  See the
+- * GNU General Public License for more details.
+- */
+-
+-#include "board-lan_dock_board.h"
+-
+-/*
+- * "Dictations LAN dock" - board specific initialization
+- */
+-
+-#include <common.h>
+-#include <asm/io.h>
+-#include <asm/arch/clock.h>
+-#include <asm/arch/hardware.h>
+-#include <phy.h>
+-#include <asm/arch-am33xx/phy.h>
+-#include <asm/arch-am33xx/cpu.h>
+-#include <asm-generic/gpio.h>
+-#include <asm/arch/mux.h>
+-
+-#include "fwupdate.h"
+-
+-static struct ctrl_dev *cdev = (struct ctrl_dev *)CTRL_DEVICE_BASE;
+-
+-/* LED 1 : LAN status (active in low) */
+-#define LED1_R_GPIO	2
+-#define LED1_R_ON	gpio_set_value(LED1_R_GPIO, 0)
+-#define LED1_R_OFF	gpio_set_value(LED1_R_GPIO, 1)
+-
+-#define LED1_G_GPIO	(32 + 8)
+-#define LED1_G_ON	gpio_set_value(LED1_G_GPIO, 0)
+-#define LED1_G_OFF	gpio_set_value(LED1_G_GPIO, 1)
+-
+-/* LED 1 : Device & Recorder status (active in low) */
+-#define LED2_R_GPIO	3
+-#define LED2_R_ON	gpio_set_value(LED2_R_GPIO, 0)
+-#define LED2_R_OFF	gpio_set_value(LED2_R_GPIO, 1)
+-
+-#define LED2_G_GPIO	4
+-#define LED2_G_ON	gpio_set_value(LED2_G_GPIO, 0)
+-#define LED2_G_OFF	gpio_set_value(LED2_G_GPIO, 1)
+-
+-/* GPIO1_9 - reset button status - check sfupdate file on USB if pressed during the boot-up */
+-#define RESET_BUTTON_STATUS_GPIO	(32 + 9)
+-
+-static struct module_pin_mux leds_pin_mux[] = {
+-		{OFFSET(spi0_sclk), (MODE(7))},	/* LED1 R (D12) gpio0_2, conflict: uart2_pin_mux, spi0_pin_mux */
+-		{OFFSET(spi0_d0), (MODE(7))},	/* LED2 R (D13) gpio0_3, conflict: uart2_pin_mux, spi0_pin_mux */
+-		{OFFSET(spi0_d1), (MODE(7))},	/* LED2 G (D13) gpio0_4  conflict: i2c1_pin_mux, spi0_pin_mux */
+-		{OFFSET(uart0_ctsn), (MODE(7))},/* LED1 G (D12) gpio1_8 */
+-		{-1},
+-	};
+-
+-static struct module_pin_mux button_pin_mux[] = {
+-		{OFFSET(uart0_rtsn), (MODE(7) | PULLUP_EN | RXACTIVE)},	/* Reset button status gpio1_9, conflict: uart0_pin_mux rts */
+-		{-1},
+-	};
+-
+-// "Dictations LAN dock" board initialization
+-void lan_dock__init(const struct Stream800Board *board)
+-{
+-	if (!board || board->carrierBoardType != CBT_LanDockBoard)
+-		BUG();
+-
+-	/* initialize GPIO for LEDs 1, 2
+-	 * LED2 (D13): red: GPIO_0_3, green: GPIO_0_4
+-	 * LED1 (D12): red: GPIO_0_2, green: GPIO_1_8
+-	 *
+-	 * Note: active in low
+-	 */
+-
+-	/* Additional board pin mux
+-	 * Must be set after SI5351 initialization due conflict with i2c1_pin_mux.
+-	 */
+-	configure_module_pin_mux(leds_pin_mux);
+-
+-	configure_module_pin_mux(button_pin_mux);
+-
+-	if (gpio_request(LED1_R_GPIO, "D1 R"))
+-		printf("error: cannot request GPIO %d\n", LED1_R_GPIO);
+-	gpio_direction_output(LED1_R_GPIO, 1);
+-
+-	if (gpio_request(LED1_G_GPIO, "D1 G"))
+-		printf("error: cannot request GPIO %d\n", LED1_G_GPIO);
+-	gpio_direction_output(LED1_G_GPIO, 1);
+-
+-	if (gpio_request(LED2_R_GPIO, "D2 R"))
+-		printf("error: cannot request GPIO %d\n", LED2_R_GPIO);
+-	gpio_direction_output(LED2_R_GPIO, 1);
+-
+-	if (gpio_request(LED2_G_GPIO, "D1 G"))
+-		printf("error: cannot request GPIO %d\n", LED2_G_GPIO);
+-	gpio_direction_output(LED2_G_GPIO, 1);
+-
+-	if (gpio_request(RESET_BUTTON_STATUS_GPIO, "Reset status"))
+-		printf("error: cannot request GPIO %d\n", RESET_BUTTON_STATUS_GPIO);
+-	gpio_direction_input(RESET_BUTTON_STATUS_GPIO);
+-
+-	/* Clear all update flags when the device is restarted by the reset button */
+-	if (readl(PRM_RSTST) & PRM_RSTST_EXTERNAL_WARM_RST) {
+-		puts("External reset detected, clearing all FW update flags and boot counter ...\n");
+-		fwupdate_setBootCount(0);
+-		fwupdate_setUpdateFlag(0);
+-		fwupdate_setFailFlag(0);
+-
+-		/* Clear external warm reset flag.
+-		 * (after reset during FW update we sometime detect unwanted external warm reset)
+-		 */
+-		writel(PRM_RSTST_EXTERNAL_WARM_RST, PRM_RSTST);
+-	}
+-
+-	lan_dock__pin_mux_post_init();
+-}
+-
+-void lan_dock__late_init(const struct Stream800Board *board)
+-{
+-	if (!board || board->carrierBoardType != CBT_LanDockBoard)
+-		BUG();
+-
+-	printf("Reset button status: %d\n", lan_dock__get_reset_button_status());
+-}
+-
+-#ifdef CONFIG_DRIVER_TI_CPSW
+-static struct cpsw_slave_data cpsw_slaves[] = {
+-	// TODO: check this configuration for the Dictations LAN dock board
+-	{
+-		.slave_reg_ofs	= 0x208,
+-		.sliver_reg_ofs	= 0xd80,	// CPSW_SL1
+-		.phy_id			= 4,
+-		.phy_if			= PHY_INTERFACE_MODE_RMII
+-	}
+-};
+-
+-void lan_dock__cpsw_eth_init(const struct Stream800Board *board, struct cpsw_platform_data *cpsw_data)
+-{
+-	if (!board || board->carrierBoardType != CBT_LanDockBoard)
+-		BUG();
+-
+-	cpsw_data->slaves = 1;
+-	cpsw_data->slave_data = cpsw_slaves;
+-
+-	// Advisory 1.0.10
+-	// "The AM335x device does not support internal delay mode, so RGMII1_IDMODE and RGMII2_IDMODE must be set to 1b."
+-	writel(RMII1_MODE_ENABLE | MII1_CLK_FROM_CHIP_PIN | RGMII1_NO_INTERNAL_DELAY
+-		| MII2_MODE_NOT_USED , &cdev->miisel);
+-}
+-#endif /* CONFIG_DRIVER_TI_CPSW */
+-
+-void lan_dock__pin_mux_post_init(void)
+-{
+-	static struct module_pin_mux leds_pin_mux[] = {
+-		{OFFSET(spi0_sclk), (MODE(7))},	/* LED1 R (D12) gpio0_2, conflict: uart2_pin_mux, spi0_pin_mux */
+-		{OFFSET(spi0_d0), (MODE(7))},	/* LED2 R (D13) gpio0_3, conflict: uart2_pin_mux, spi0_pin_mux */
+-		{OFFSET(spi0_d1), (MODE(7))},	/* LED2 G (D13) gpio0_4  conflict: i2c1_pin_mux, spi0_pin_mux */
+-		{OFFSET(uart0_ctsn), (MODE(7))},/* LED1 G (D12) gpio1_8 */
+-		{-1},
+-	};
+-	configure_module_pin_mux(leds_pin_mux);
+-}
+-
+-void lan_dock__on_board_state_changed(const struct Stream800Board *board, BoardState state)
+-{
+-	printf("Board state changed to '%s'\n", boardStateStrings[state]);
+-
+-	switch (state) {
+-	case BS_Normal:
+-		LED1_R_ON;
+-		LED1_G_ON;
+-		LED2_R_OFF;
+-		LED2_G_OFF;
+-		break;
+-
+-	case BS_DontUnplug:
+-		LED1_R_ON;
+-		LED1_G_ON;
+-		LED2_R_ON;
+-		LED2_G_ON;
+-		break;
+-
+-	case BS_HardFailure:
+-		LED1_R_ON;
+-		LED1_G_OFF;
+-		LED2_R_ON;
+-		LED2_G_OFF;
+-		break;
+-
+-	case BS_BootingKernel:
+-		LED1_R_ON;
+-		LED1_G_ON;
+-		LED2_R_OFF;
+-		LED2_G_OFF;
+-		break;
+-
+-	case BS_Off:
+-		LED1_R_OFF;
+-		LED1_G_OFF;
+-		LED2_R_OFF;
+-		LED2_G_OFF;
+-		break;
+-
+-	default:
+-		printf("state leds: unknown state %d\n", state);
+-		LED1_R_OFF;
+-		LED1_G_OFF;
+-		LED2_R_OFF;
+-		LED2_G_OFF;
+-		break;
+-	}
+-}
+-
+-int lan_dock__get_reset_button_status(void)
+-{
+-	return (gpio_get_value(RESET_BUTTON_STATUS_GPIO) == 0) ? 1 : 0;
+-}
+-
+-int lan_dock__do_usb_update(void)
+-{
+-
+-	/* Reset button is also used for requesting FW update from USB during boot-up
+-	 * 1: reset button held - dow FW update, 0: reset button is not active
+-	 */
+-	return (lan_dock__get_reset_button_status()) ? 1 : 0;
+-}
+-
+-static struct StreamBoardInterface lan_dock_board_interface = {
+-	.init = lan_dock__init,
+-	.late_init = lan_dock__late_init,
+-	.cpsw_eth_init = lan_dock__cpsw_eth_init,
+-	.on_board_state_changed = lan_dock__on_board_state_changed,
+-	.do_usb_update = lan_dock__do_usb_update,
+-
+-	.has_rmii1 = 1,
+-};
+-
+-void lan_dock__set_board_interface(void) {
+-	set_board_interface(&lan_dock_board_interface);
+-}
+diff --git a/board/streamunlimited/stream800/board-lan_dock_board.h b/board/streamunlimited/stream800/board-lan_dock_board.h
+deleted file mode 100644
+index 21d4cba..0000000
+--- a/board/streamunlimited/stream800/board-lan_dock_board.h
++++ /dev/null
+@@ -1,43 +0,0 @@
+-/*
+- * board-lan_dock_board.h
+- *
+- * Copyright (C) 2012, StreamUnlimited Engineering GmbH, http://www.streamunlimited.com/
+- *
+- * This program is free software; you can redistribute it and/or
+- * modify it under the terms of the GNU General Public License as
+- * published by the Free Software Foundation; either version 2 of
+- * the License, or (at your option) any later version.
+- *
+- * This program is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR /PURPOSE.  See the
+- * GNU General Public License for more details.
+- */
+-
+-#ifndef __BOARD_LAN_DOCK_BOARD_H
+-#define __BOARD_LAN_DOCK_BOARD_H
+-
+-#include <common.h>
+-#include "board.h"
+-#include <cpsw.h>
+-
+-void lan_dock__set_board_interface(void);
+-
+-// "Dictations LAN dock" board initialization
+-void lan_dock__init(const struct Stream800Board *board);
+-
+-/* "Dictations LAN dock" board late initialization */
+-void lan_dock__late_init(const struct Stream800Board *board);
+-
+-#ifdef CONFIG_DRIVER_TI_CPSW
+-void lan_dock__cpsw_eth_init(const struct Stream800Board *board, struct cpsw_platform_data *cpsw_data);
+-#endif
+-
+-void lan_dock__on_board_state_changed(const struct Stream800Board *board, BoardState state);
+-
+-/* Button is used also for requesting FW update from USB during boot-up
+- * returns: 1: reset button held, 0: reset button not active
+- */
+-int lan_dock__get_reset_button_status(void);
+-
+-#endif	// __BOARD_LAN_DOCK_BOARD_H
+diff --git a/board/streamunlimited/stream800/board.c b/board/streamunlimited/stream800/board.c
+index 25dc394..e2d4b36 100644
+--- a/board/streamunlimited/stream800/board.c
++++ b/board/streamunlimited/stream800/board.c
+@@ -37,7 +37,6 @@
+ #include <nand.h>
+ #include "board.h"
+ #include "mux.h"
+-#include "board-lan_dock_board.h"
+ #include "board-sue_demo_client_board.h"
+ #include "board-sue_first_carrier_board.h"
+ #include "board-sue_factory_test_board.h"
+@@ -137,9 +136,6 @@ int board_init(void)
+ 		case CBT_SueFactoryTestBoard:
+ 			factory_test__set_board_interface();
+ 			break;
+-		case CBT_LanDockBoard:
+-			lan_dock__set_board_interface();
+-			break;
+ 
+ 		// CUSTOMIZE: Add your board __set_board_interface() call here
+ 
+@@ -206,7 +202,6 @@ static struct SupportedCarrierBoards {
+ } supportedCarrierBoards[] = {
+ 	{CBT_SueDemoClientBoard,	0xF76,	0xFFF,	0x000,	0x088},
+ 	{CBT_SueFactoryTestBoard,	0x000,	0x088,	0x000,	0x088},
+-	{CBT_LanDockBoard,			0x7FF,	0x910,	0x7FF,	0x910},
+ 	// CUSTOMIZE: add your board here
+ };
+ 
+@@ -284,11 +279,7 @@ static void board_detect(struct Stream800Board *board)
+ 		// Try to check if we run some of obsolete revision of stream800 module
+ 		// L1 has not correctly implemented board detection support in HW, values used for detection are only experimental
+ 		if (board->moduleVersion == MV_unknown || board->carrierBoardType == CBT_unknown) {
+-			if (MV_MSB >= 0xCD0 && MV_MSB <= 0xE80 && MV_LSB >= 0xB00 && MV_LSB <= 0xBD0
+-				&& CBT_MSB >= 0x078 && CBT_MSB <= 0x0B8 && CBT_LSB >= 0x050 && CBT_LSB <= 0x080) {
+-				board->moduleVersion = MV_L1;
+-				board->carrierBoardType = CBT_LanDockBoard;
+-			} else if (MV_MSB >= 0xDA0 && MV_MSB <= 0xF00 && MV_LSB >= 0xBA0 && MV_LSB <= 0xD00
++			if (MV_MSB >= 0xDA0 && MV_MSB <= 0xF00 && MV_LSB >= 0xBA0 && MV_LSB <= 0xD00
+ 				&& CBT_MSB >= 0xCA0 && CBT_MSB <= 0xE00 && CBT_LSB >= 0xCA0 && CBT_LSB <= 0xE00) {
+ 				board->moduleVersion = MV_L1;
+ 				board->carrierBoardType = CBT_SueDemoClientBoard;
+@@ -377,9 +368,6 @@ int board_late_init(void)
+ 		case CBT_SueFactoryTestBoard:
+ 			setenv("cramfsdir", "sue_factory_test_board");
+ 			break;
+-		case CBT_LanDockBoard:
+-			setenv("cramfsdir", "lan_dock_board");
+-			break;
+ 
+ 		// CUSTOMIZE: Add your board here
+ 
+diff --git a/board/streamunlimited/stream800/board.h b/board/streamunlimited/stream800/board.h
+index a6aab9d..be49ad8 100644
+--- a/board/streamunlimited/stream800/board.h
++++ b/board/streamunlimited/stream800/board.h
+@@ -47,7 +47,6 @@ typedef enum {
+ 	CBT_SueFactoryTestBoard,		///< SUE factory test board
+ 	CBT_SueFirstCarrierBoard,		///< SUE Carrier Board
+ 	CBT_SueDemoClientBoard,			///< SUE demo client
+-	CBT_LanDockBoard				///< Dictations LAN dock
+ 	// CUSTOMIZE: Add entry for you board here
+ } Stream800CarrierBoardType;
+ 
+@@ -56,7 +55,6 @@ static const char *stream800CarrierBoardTypeStrings[] = {
+ 	[CBT_SueFactoryTestBoard]	= "SUE factory test board",
+ 	[CBT_SueFirstCarrierBoard]	= "SUE first carrier board",
+ 	[CBT_SueDemoClientBoard]	= "SUE demo client board",
+-	[CBT_LanDockBoard]			= "Dictations LAN dock board"
+ 	// CUSTOMIZE: Add name for you board here
+ };
+ 
+diff --git a/board/streamunlimited/stream800/fwupdate.c b/board/streamunlimited/stream800/fwupdate.c
+index 63a6d7a..38701b1 100644
+--- a/board/streamunlimited/stream800/fwupdate.c
++++ b/board/streamunlimited/stream800/fwupdate.c
+@@ -23,8 +23,6 @@
+ #include "fwupdate.h"
+ #include "board.h"
+ 
+-#include "board-lan_dock_board.h"
+-
+ #include <common.h>
+ #include <hush.h>
+ #include <asm/arch/cpu.h>
+-- 
+2.7.4
+

@@ -1,0 +1,274 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>gmime</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="GMime 2.6 Reference Manual">
+<link rel="up" href="core.html" title="Part III. GMime Core Reference">
+<link rel="prev" href="core.html" title="Part III. GMime Core Reference">
+<link rel="next" href="gmime-gmime-charset.html" title="gmime-charset">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="core.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="core.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">GMime 2.6 Reference Manual</th>
+<td><a accesskey="n" href="gmime-gmime-charset.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#gmime-gmime.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#gmime-gmime.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="gmime-gmime"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="gmime-gmime.top_of_page"></a>gmime</span></h2>
+<p>gmime — Initialization, shutdown and version-check routines</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="gmime-gmime.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">#define             <a class="link" href="gmime-gmime.html#GMIME-MAJOR-VERSION:CAPS" title="GMIME_MAJOR_VERSION">GMIME_MAJOR_VERSION</a>
+#define             <a class="link" href="gmime-gmime.html#GMIME-MICRO-VERSION:CAPS" title="GMIME_MICRO_VERSION">GMIME_MICRO_VERSION</a>
+#define             <a class="link" href="gmime-gmime.html#GMIME-MINOR-VERSION:CAPS" title="GMIME_MINOR_VERSION">GMIME_MINOR_VERSION</a>
+#define             <a class="link" href="gmime-gmime.html#GMIME-BINARY-AGE:CAPS" title="GMIME_BINARY_AGE">GMIME_BINARY_AGE</a>
+#define             <a class="link" href="gmime-gmime.html#GMIME-INTERFACE-AGE:CAPS" title="GMIME_INTERFACE_AGE">GMIME_INTERFACE_AGE</a>
+#define             <a class="link" href="gmime-gmime.html#GMIME-CHECK-VERSION:CAPS" title="GMIME_CHECK_VERSION()">GMIME_CHECK_VERSION</a>                 (major,
+                                                         minor,
+                                                         micro)
+#define             <a class="link" href="gmime-gmime.html#GMIME-ENABLE-RFC2047-WORKAROUNDS:CAPS" title="GMIME_ENABLE_RFC2047_WORKAROUNDS">GMIME_ENABLE_RFC2047_WORKAROUNDS</a>
+#define             <a class="link" href="gmime-gmime.html#GMIME-ENABLE-USE-ONLY-USER-CHARSETS:CAPS" title="GMIME_ENABLE_USE_ONLY_USER_CHARSETS">GMIME_ENABLE_USE_ONLY_USER_CHARSETS</a>
+<span class="returnvalue">void</span>                <a class="link" href="gmime-gmime.html#g-mime-init" title="g_mime_init ()">g_mime_init</a>                         (<em class="parameter"><code><span class="type">guint32</span> flags</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="gmime-gmime.html#g-mime-shutdown" title="g_mime_shutdown ()">g_mime_shutdown</a>                     (<em class="parameter"><code><span class="type">void</span></code></em>);
+extern const guint  <a class="link" href="gmime-gmime.html#gmime-major-version" title="gmime_major_version">gmime_major_version</a>;
+extern const guint  <a class="link" href="gmime-gmime.html#gmime-minor-version" title="gmime_minor_version">gmime_minor_version</a>;
+extern const guint  <a class="link" href="gmime-gmime.html#gmime-micro-version" title="gmime_micro_version">gmime_micro_version</a>;
+extern const guint  <a class="link" href="gmime-gmime.html#gmime-binary-age" title="gmime_binary_age">gmime_binary_age</a>;
+extern const guint  <a class="link" href="gmime-gmime.html#gmime-interface-age" title="gmime_interface_age">gmime_interface_age</a>;
+<span class="returnvalue">gboolean</span>            <a class="link" href="gmime-gmime.html#g-mime-check-version" title="g_mime_check_version ()">g_mime_check_version</a>                (<em class="parameter"><code><span class="type">guint</span> major</code></em>,
+                                                         <em class="parameter"><code><span class="type">guint</span> minor</code></em>,
+                                                         <em class="parameter"><code><span class="type">guint</span> micro</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="gmime-gmime.description"></a><h2>Description</h2>
+<p>
+Initialization, shutdown, and version-check functions.
+</p>
+</div>
+<div class="refsect1">
+<a name="gmime-gmime.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="GMIME-MAJOR-VERSION:CAPS"></a><h3>GMIME_MAJOR_VERSION</h3>
+<pre class="programlisting">#define GMIME_MAJOR_VERSION (2)
+</pre>
+<p>
+GMime's major version.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GMIME-MICRO-VERSION:CAPS"></a><h3>GMIME_MICRO_VERSION</h3>
+<pre class="programlisting">#define GMIME_MICRO_VERSION (20)
+</pre>
+<p>
+GMime's micro version.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GMIME-MINOR-VERSION:CAPS"></a><h3>GMIME_MINOR_VERSION</h3>
+<pre class="programlisting">#define GMIME_MINOR_VERSION (6)
+</pre>
+<p>
+GMime's minor version.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GMIME-BINARY-AGE:CAPS"></a><h3>GMIME_BINARY_AGE</h3>
+<pre class="programlisting">#define GMIME_BINARY_AGE    (620)
+</pre>
+<p>
+GMime's binary age.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GMIME-INTERFACE-AGE:CAPS"></a><h3>GMIME_INTERFACE_AGE</h3>
+<pre class="programlisting">#define GMIME_INTERFACE_AGE (0)
+</pre>
+<p>
+GMime's interface age.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GMIME-CHECK-VERSION:CAPS"></a><h3>GMIME_CHECK_VERSION()</h3>
+<pre class="programlisting">#define             GMIME_CHECK_VERSION(major,minor,micro)</pre>
+<p>
+Check whether a GMime version equal to or greater than
+<em class="parameter"><code>major</code></em>.<em class="parameter"><code>minor</code></em>.<em class="parameter"><code>micro</code></em> is present.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>major</code></em> :</span></p></td>
+<td>Minimum major version</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>minor</code></em> :</span></p></td>
+<td>Minimum minor version</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>micro</code></em> :</span></p></td>
+<td>Minimum micro version</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GMIME-ENABLE-RFC2047-WORKAROUNDS:CAPS"></a><h3>GMIME_ENABLE_RFC2047_WORKAROUNDS</h3>
+<pre class="programlisting">#define GMIME_ENABLE_RFC2047_WORKAROUNDS     (1 &lt;&lt; 0)
+</pre>
+<p>
+Initialization flag to enable workarounds for badly formed rfc2047
+encoded-words.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GMIME-ENABLE-USE-ONLY-USER-CHARSETS:CAPS"></a><h3>GMIME_ENABLE_USE_ONLY_USER_CHARSETS</h3>
+<pre class="programlisting">#define GMIME_ENABLE_USE_ONLY_USER_CHARSETS  (1 &lt;&lt; 1)
+</pre>
+<p>
+Initialization flag that hints to the rfc2047 encoder to use only
+the configured user-charsets (set via <a class="link" href="gmime-gmime-charset.html#g-mime-set-user-charsets" title="g_mime_set_user_charsets ()"><code class="function">g_mime_set_user_charsets()</code></a>)
+instead of trying to first use iso-8859-1.
+</p>
+<p class="since">Since 2.6.16</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-init"></a><h3>g_mime_init ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_init                         (<em class="parameter"><code><span class="type">guint32</span> flags</code></em>);</pre>
+<p>
+Initializes GMime.
+</p>
+<p>
+Note: Calls <a class="link" href="gmime-gmime-charset.html#g-mime-charset-map-init" title="g_mime_charset_map_init ()"><code class="function">g_mime_charset_map_init()</code></a> and <a class="link" href="gmime-gmime-iconv.html#g-mime-iconv-init" title="g_mime_iconv_init ()"><code class="function">g_mime_iconv_init()</code></a> as
+well.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><em class="parameter"><code>flags</code></em> :</span></p></td>
+<td>initialization flags</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-shutdown"></a><h3>g_mime_shutdown ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_shutdown                     (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>
+Frees internally allocated tables created in <a class="link" href="gmime-gmime.html#g-mime-init" title="g_mime_init ()"><code class="function">g_mime_init()</code></a>. Also
+calls <a class="link" href="gmime-gmime-charset.html#g-mime-charset-map-shutdown" title="g_mime_charset_map_shutdown ()"><code class="function">g_mime_charset_map_shutdown()</code></a> and <a class="link" href="gmime-gmime-iconv.html#g-mime-iconv-shutdown" title="g_mime_iconv_shutdown ()"><code class="function">g_mime_iconv_shutdown()</code></a>.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="gmime-major-version"></a><h3>gmime_major_version</h3>
+<pre class="programlisting">extern const guint gmime_major_version;
+</pre>
+<p>
+GMime's major version.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="gmime-minor-version"></a><h3>gmime_minor_version</h3>
+<pre class="programlisting">extern const guint gmime_minor_version;
+</pre>
+<p>
+GMime's minor version.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="gmime-micro-version"></a><h3>gmime_micro_version</h3>
+<pre class="programlisting">extern const guint gmime_micro_version;
+</pre>
+<p>
+GMime's micro version.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="gmime-binary-age"></a><h3>gmime_binary_age</h3>
+<pre class="programlisting">extern const guint gmime_binary_age;
+</pre>
+<p>
+GMime's binary age.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="gmime-interface-age"></a><h3>gmime_interface_age</h3>
+<pre class="programlisting">extern const guint gmime_interface_age;
+</pre>
+<p>
+GMime's interface age.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-check-version"></a><h3>g_mime_check_version ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>            g_mime_check_version                (<em class="parameter"><code><span class="type">guint</span> major</code></em>,
+                                                         <em class="parameter"><code><span class="type">guint</span> minor</code></em>,
+                                                         <em class="parameter"><code><span class="type">guint</span> micro</code></em>);</pre>
+<p>
+Checks that the GMime library version meets the requirements of the
+required version.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>major</code></em> :</span></p></td>
+<td>Minimum major version</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>minor</code></em> :</span></p></td>
+<td>Minimum minor version</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>micro</code></em> :</span></p></td>
+<td>Minimum micro version</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>
+<code class="literal">TRUE</code> if the requirement is met or <code class="literal">FALSE</code> otherwise.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

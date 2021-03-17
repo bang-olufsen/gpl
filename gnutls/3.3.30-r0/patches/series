@@ -1,0 +1,2 @@
+configure.ac-fix-sed-command.patch -p1
+use-pkg-config-to-locate-zlib.patch -p1

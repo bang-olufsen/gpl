@@ -1,0 +1,27 @@
+From 4ca1a1744bdc59b2e41c5d50e076707b4cba1ade Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Tue, 7 Jan 2014 10:27:35 +0100
+Subject: [PATCH] uboot: Fix check for not set bootfile from dhcp request when
+ making tftp update.
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ include/configs/stream800.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/configs/stream800.h b/include/configs/stream800.h
+index 893ba50..690c704 100644
+--- a/include/configs/stream800.h
++++ b/include/configs/stream800.h
+@@ -782,7 +782,7 @@
+ 			"stftpup use_static_data; " \
+ 		    "fi; " \
+ 			\
+-		    "if test -z \\\\'${bootfile}\\\\' || test \\\\'${bootfile}\\\\' -eq \"uImage\"; then " \
++		    "if test -z \\\\'${bootfile}\\\\' || test ${bootfile} = uImage; then " \
+ 			"setenv bootfile sfupdate; " \
+ 		    "fi; " \
+ 			\
+-- 
+2.7.4
+

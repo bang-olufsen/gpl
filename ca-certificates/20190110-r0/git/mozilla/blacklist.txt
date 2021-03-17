@@ -1,0 +1,13 @@
+# One blacklist entry per line, corresponding to the label in certdata.txt.
+
+# Blacklist explicitly distrusted certificates to explicitly ignore them and prevent build errors
+"Distrust: O=Egypt Trust, OU=VeriSign Trust Network (cert 1/3)"
+"Distrust: O=Egypt Trust, OU=VeriSign Trust Network (cert 2/3)"
+"Distrust: O=Egypt Trust, OU=VeriSign Trust Network (cert 3/3)"
+"Explicitly Distrust DigiNotar Root CA"
+"Explicitly Distrusted DigiNotar PKIoverheid G2"
+"MITM subCA 1 issued by Trustwave"
+"MITM subCA 2 issued by Trustwave"
+"TURKTRUST Mis-issued Intermediate CA 1"
+"TURKTRUST Mis-issued Intermediate CA 2"
+

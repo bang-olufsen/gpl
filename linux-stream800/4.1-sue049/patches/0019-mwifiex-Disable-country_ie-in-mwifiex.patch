@@ -1,0 +1,26 @@
+From 921e513fbff8125bac1aaa62557611be4919e569 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Fri, 3 Jun 2016 11:29:25 +0200
+Subject: [PATCH] mwifiex: Disable country_ie in mwifiex
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ drivers/net/wireless/mwifiex/cfg80211.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/net/wireless/mwifiex/cfg80211.c b/drivers/net/wireless/mwifiex/cfg80211.c
+index bf9020f..24fd7d8 100644
+--- a/drivers/net/wireless/mwifiex/cfg80211.c
++++ b/drivers/net/wireless/mwifiex/cfg80211.c
+@@ -3530,6 +3530,8 @@ int mwifiex_register_cfg80211(struct mwifiex_adapter *adapter)
+ 		wiphy->flags |= WIPHY_FLAG_SUPPORTS_TDLS |
+ 				WIPHY_FLAG_TDLS_EXTERNAL_SETUP;
+ 
++	wiphy->regulatory_flags |= REGULATORY_COUNTRY_IE_IGNORE;
++
+ #ifdef CONFIG_PM
+ 	wiphy->wowlan = &mwifiex_wowlan_support;
+ #endif
+-- 
+1.9.1
+

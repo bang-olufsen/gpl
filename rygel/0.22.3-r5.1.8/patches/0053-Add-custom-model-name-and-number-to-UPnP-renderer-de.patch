@@ -1,0 +1,641 @@
+From 222943623450f30fde8a51d1ce3566bb8d7b3b86 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Mon, 3 Aug 2015 16:09:49 +0200
+Subject: [PATCH] Add custom model name and number to UPnP renderer description
+ XML.
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ src/librygel-core/rygel-core.h                   |  6 ++
+ src/librygel-core/rygel-media-device.c           | 72 +++++++++++++++++-
+ src/librygel-core/rygel-media-device.vala        |  2 +
+ src/librygel-core/rygel-plugin.c                 | 68 +++++++++++++++++
+ src/librygel-core/rygel-plugin.vala              |  2 +
+ src/librygel-core/rygel-root-device-factory.c    | 96 +++++++++++++++++-------
+ src/librygel-core/rygel-root-device-factory.vala |  6 ++
+ src/librygel-renderer/rygel-media-renderer.c     | 46 +++++++++---
+ src/librygel-renderer/rygel-media-renderer.vala  |  6 ++
+ src/librygel-renderer/rygel-renderer.h           |  4 +-
+ 10 files changed, 263 insertions(+), 45 deletions(-)
+
+diff --git a/src/librygel-core/rygel-core.h b/src/librygel-core/rygel-core.h
+index bd349ef..0fa3919 100644
+--- a/src/librygel-core/rygel-core.h
++++ b/src/librygel-core/rygel-core.h
+@@ -669,6 +669,10 @@ const gchar* rygel_plugin_get_description (RygelPlugin* self);
+ const gchar* rygel_plugin_get_desc_path (RygelPlugin* self);
+ gboolean rygel_plugin_get_active (RygelPlugin* self);
+ void rygel_plugin_set_active (RygelPlugin* self, gboolean value);
++const gchar* rygel_plugin_get_model_name (RygelPlugin* self);
++void rygel_plugin_set_model_name (RygelPlugin* self, const gchar* value);
++const gchar* rygel_plugin_get_model_number (RygelPlugin* self);
++void rygel_plugin_set_model_number (RygelPlugin* self, const gchar* value);
+ GeeArrayList* rygel_plugin_get_resource_infos (RygelPlugin* self);
+ GeeArrayList* rygel_plugin_get_icon_infos (RygelPlugin* self);
+ GeeArrayList* rygel_plugin_get_default_icons (RygelPlugin* self);
+@@ -682,6 +686,8 @@ RygelMediaDevice* rygel_media_device_construct (GType object_type);
+ RygelPlugin* rygel_media_device_get_plugin (RygelMediaDevice* self);
+ void rygel_media_device_set_plugin (RygelMediaDevice* self, RygelPlugin* value);
+ const gchar* rygel_media_device_get_title (RygelMediaDevice* self);
++const gchar* rygel_media_device_get_model_name (RygelMediaDevice* self);
++const gchar* rygel_media_device_get_model_number (RygelMediaDevice* self);
+ RygelPluginCapabilities rygel_media_device_get_capabilities (RygelMediaDevice* self);
+ GQuark rygel_configuration_error_quark (void);
+ GType rygel_configuration_entry_get_type (void) G_GNUC_CONST;
+diff --git a/src/librygel-core/rygel-media-device.c b/src/librygel-core/rygel-media-device.c
+index f235041..9b491d2 100644
+--- a/src/librygel-core/rygel-media-device.c
++++ b/src/librygel-core/rygel-media-device.c
+@@ -154,6 +154,8 @@ struct _RygelMediaDevicePrivate {
+ 	GUPnPContextManager* manager;
+ 	RygelPlugin* _plugin;
+ 	gchar* _title;
++	gchar* _model_name;
++	gchar* _model_number;
+ 	RygelPluginCapabilities _capabilities;
+ };
+ 
+@@ -212,6 +214,8 @@ enum  {
+ 	RYGEL_MEDIA_DEVICE_DUMMY_PROPERTY,
+ 	RYGEL_MEDIA_DEVICE_PLUGIN,
+ 	RYGEL_MEDIA_DEVICE_TITLE,
++	RYGEL_MEDIA_DEVICE_MODEL_NAME,
++	RYGEL_MEDIA_DEVICE_MODEL_NUMBER,
+ 	RYGEL_MEDIA_DEVICE_CAPABILITIES
+ };
+ static void rygel_media_device_real_constructed (GObject* base);
+@@ -233,6 +237,10 @@ RygelMediaDevice* rygel_media_device_construct (GType object_type);
+ void rygel_media_device_set_plugin (RygelMediaDevice* self, RygelPlugin* value);
+ const gchar* rygel_media_device_get_title (RygelMediaDevice* self);
+ static void rygel_media_device_set_title (RygelMediaDevice* self, const gchar* value);
++const gchar* rygel_media_device_get_model_name (RygelMediaDevice* self);
++static void rygel_media_device_set_model_name (RygelMediaDevice* self, const gchar* value);
++const gchar* rygel_media_device_get_model_number (RygelMediaDevice* self);
++static void rygel_media_device_set_model_number (RygelMediaDevice* self, const gchar* value);
+ RygelPluginCapabilities rygel_media_device_get_capabilities (RygelMediaDevice* self);
+ static void rygel_media_device_set_capabilities (RygelMediaDevice* self, RygelPluginCapabilities value);
+ static void rygel_media_device_finalize (GObject* obj);
+@@ -515,7 +523,7 @@ static void rygel_media_device_real_constructed (GObject* base) {
+ 		GError* _error_ = NULL;
+ 		_error_ = _inner_error_;
+ 		_inner_error_ = NULL;
+-		g_debug ("rygel-media-device.vala:65: No listening port specified, using random " \
++		g_debug ("rygel-media-device.vala:67: No listening port specified, using random " \
+ "TCP port");
+ 		_g_error_free0 (_error_);
+ 	}
+@@ -785,7 +793,7 @@ static void rygel_media_device_on_context_available (RygelMediaDevice* self, GUP
+ 			_inner_error_ = NULL;
+ 			_tmp13_ = _error_;
+ 			_tmp14_ = _tmp13_->message;
+-			g_warning ("rygel-media-device.vala:138: Failed to create device context: %s", _tmp14_);
++			g_warning ("rygel-media-device.vala:140: Failed to create device context: %s", _tmp14_);
+ 			_g_error_free0 (_error_);
+ 		}
+ 		__finally44:
+@@ -907,6 +915,50 @@ static void rygel_media_device_set_title (RygelMediaDevice* self, const gchar* v
+ }
+ 
+ 
++const gchar* rygel_media_device_get_model_name (RygelMediaDevice* self) {
++	const gchar* result;
++	const gchar* _tmp0_ = NULL;
++	g_return_val_if_fail (self != NULL, NULL);
++	_tmp0_ = self->priv->_model_name;
++	result = _tmp0_;
++	return result;
++}
++
++
++static void rygel_media_device_set_model_name (RygelMediaDevice* self, const gchar* value) {
++	const gchar* _tmp0_ = NULL;
++	gchar* _tmp1_ = NULL;
++	g_return_if_fail (self != NULL);
++	_tmp0_ = value;
++	_tmp1_ = g_strdup (_tmp0_);
++	_g_free0 (self->priv->_model_name);
++	self->priv->_model_name = _tmp1_;
++	g_object_notify ((GObject *) self, "model-name");
++}
++
++
++const gchar* rygel_media_device_get_model_number (RygelMediaDevice* self) {
++	const gchar* result;
++	const gchar* _tmp0_ = NULL;
++	g_return_val_if_fail (self != NULL, NULL);
++	_tmp0_ = self->priv->_model_number;
++	result = _tmp0_;
++	return result;
++}
++
++
++static void rygel_media_device_set_model_number (RygelMediaDevice* self, const gchar* value) {
++	const gchar* _tmp0_ = NULL;
++	gchar* _tmp1_ = NULL;
++	g_return_if_fail (self != NULL);
++	_tmp0_ = value;
++	_tmp1_ = g_strdup (_tmp0_);
++	_g_free0 (self->priv->_model_number);
++	self->priv->_model_number = _tmp1_;
++	g_object_notify ((GObject *) self, "model-number");
++}
++
++
+ RygelPluginCapabilities rygel_media_device_get_capabilities (RygelMediaDevice* self) {
+ 	RygelPluginCapabilities result;
+ 	RygelPluginCapabilities _tmp0_ = 0;
+@@ -935,6 +987,8 @@ static void rygel_media_device_class_init (RygelMediaDeviceClass * klass) {
+ 	G_OBJECT_CLASS (klass)->finalize = rygel_media_device_finalize;
+ 	g_object_class_install_property (G_OBJECT_CLASS (klass), RYGEL_MEDIA_DEVICE_PLUGIN, g_param_spec_object ("plugin", "plugin", "plugin", RYGEL_TYPE_PLUGIN, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE | G_PARAM_CONSTRUCT));
+ 	g_object_class_install_property (G_OBJECT_CLASS (klass), RYGEL_MEDIA_DEVICE_TITLE, g_param_spec_string ("title", "title", "title", NULL, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE | G_PARAM_CONSTRUCT_ONLY));
++	g_object_class_install_property (G_OBJECT_CLASS (klass), RYGEL_MEDIA_DEVICE_MODEL_NAME, g_param_spec_string ("model-name", "model-name", "model-name", NULL, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE | G_PARAM_CONSTRUCT_ONLY));
++	g_object_class_install_property (G_OBJECT_CLASS (klass), RYGEL_MEDIA_DEVICE_MODEL_NUMBER, g_param_spec_string ("model-number", "model-number", "model-number", NULL, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE | G_PARAM_CONSTRUCT_ONLY));
+ 	g_object_class_install_property (G_OBJECT_CLASS (klass), RYGEL_MEDIA_DEVICE_CAPABILITIES, g_param_spec_flags ("capabilities", "capabilities", "capabilities", RYGEL_TYPE_PLUGIN_CAPABILITIES, RYGEL_PLUGIN_CAPABILITIES_NONE, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE | G_PARAM_CONSTRUCT_ONLY));
+ }
+ 
+@@ -954,6 +1008,8 @@ static void rygel_media_device_finalize (GObject* obj) {
+ 	_g_object_unref0 (self->priv->manager);
+ 	_g_object_unref0 (self->priv->_plugin);
+ 	_g_free0 (self->priv->_title);
++	_g_free0 (self->priv->_model_name);
++	_g_free0 (self->priv->_model_number);
+ 	G_OBJECT_CLASS (rygel_media_device_parent_class)->finalize (obj);
+ }
+ 
+@@ -987,6 +1043,12 @@ static void _vala_rygel_media_device_get_property (GObject * object, guint prope
+ 		case RYGEL_MEDIA_DEVICE_TITLE:
+ 		g_value_set_string (value, rygel_media_device_get_title (self));
+ 		break;
++		case RYGEL_MEDIA_DEVICE_MODEL_NAME:
++		g_value_set_string (value, rygel_media_device_get_model_name (self));
++		break;
++		case RYGEL_MEDIA_DEVICE_MODEL_NUMBER:
++		g_value_set_string (value, rygel_media_device_get_model_number (self));
++		break;
+ 		case RYGEL_MEDIA_DEVICE_CAPABILITIES:
+ 		g_value_set_flags (value, rygel_media_device_get_capabilities (self));
+ 		break;
+@@ -1007,6 +1069,12 @@ static void _vala_rygel_media_device_set_property (GObject * object, guint prope
+ 		case RYGEL_MEDIA_DEVICE_TITLE:
+ 		rygel_media_device_set_title (self, g_value_get_string (value));
+ 		break;
++		case RYGEL_MEDIA_DEVICE_MODEL_NAME:
++		rygel_media_device_set_model_name (self, g_value_get_string (value));
++		break;
++		case RYGEL_MEDIA_DEVICE_MODEL_NUMBER:
++		rygel_media_device_set_model_number (self, g_value_get_string (value));
++		break;
+ 		case RYGEL_MEDIA_DEVICE_CAPABILITIES:
+ 		rygel_media_device_set_capabilities (self, g_value_get_flags (value));
+ 		break;
+diff --git a/src/librygel-core/rygel-media-device.vala b/src/librygel-core/rygel-media-device.vala
+index f4bece1..722b716 100644
+--- a/src/librygel-core/rygel-media-device.vala
++++ b/src/librygel-core/rygel-media-device.vala
+@@ -49,6 +49,8 @@ public abstract class Rygel.MediaDevice : Object {
+ 
+     public Rygel.Plugin plugin { construct set; protected get; }
+     public string title { construct; protected get; }
++    public string model_name { construct; protected get; }
++    public string model_number { construct; protected get; }
+     public PluginCapabilities capabilities {
+         construct;
+         protected get;
+diff --git a/src/librygel-core/rygel-plugin.c b/src/librygel-core/rygel-plugin.c
+index cbd6a35..23933a7 100644
+--- a/src/librygel-core/rygel-plugin.c
++++ b/src/librygel-core/rygel-plugin.c
+@@ -139,6 +139,8 @@ struct _RygelPluginPrivate {
+ 	gchar* _description;
+ 	gchar* _desc_path;
+ 	gboolean _active;
++	gchar* _model_name;
++	gchar* _model_number;
+ 	GeeArrayList* _resource_infos;
+ 	GeeArrayList* _icon_infos;
+ 	GeeArrayList* _default_icons;
+@@ -231,6 +233,8 @@ enum  {
+ 	RYGEL_PLUGIN_DESCRIPTION,
+ 	RYGEL_PLUGIN_DESC_PATH,
+ 	RYGEL_PLUGIN_ACTIVE,
++	RYGEL_PLUGIN_MODEL_NAME,
++	RYGEL_PLUGIN_MODEL_NUMBER,
+ 	RYGEL_PLUGIN_RESOURCE_INFOS,
+ 	RYGEL_PLUGIN_ICON_INFOS,
+ 	RYGEL_PLUGIN_DEFAULT_ICONS
+@@ -289,6 +293,10 @@ static void rygel_plugin_set_description (RygelPlugin* self, const gchar* value)
+ const gchar* rygel_plugin_get_desc_path (RygelPlugin* self);
+ static void rygel_plugin_set_desc_path (RygelPlugin* self, const gchar* value);
+ gboolean rygel_plugin_get_active (RygelPlugin* self);
++const gchar* rygel_plugin_get_model_name (RygelPlugin* self);
++void rygel_plugin_set_model_name (RygelPlugin* self, const gchar* value);
++const gchar* rygel_plugin_get_model_number (RygelPlugin* self);
++void rygel_plugin_set_model_number (RygelPlugin* self, const gchar* value);
+ static void rygel_plugin_finalize (GObject* obj);
+ static void _vala_rygel_plugin_get_property (GObject * object, guint property_id, GValue * value, GParamSpec * pspec);
+ static void _vala_rygel_plugin_set_property (GObject * object, guint property_id, const GValue * value, GParamSpec * pspec);
+@@ -628,6 +636,50 @@ void rygel_plugin_set_active (RygelPlugin* self, gboolean value) {
+ }
+ 
+ 
++const gchar* rygel_plugin_get_model_name (RygelPlugin* self) {
++	const gchar* result;
++	const gchar* _tmp0_ = NULL;
++	g_return_val_if_fail (self != NULL, NULL);
++	_tmp0_ = self->priv->_model_name;
++	result = _tmp0_;
++	return result;
++}
++
++
++void rygel_plugin_set_model_name (RygelPlugin* self, const gchar* value) {
++	const gchar* _tmp0_ = NULL;
++	gchar* _tmp1_ = NULL;
++	g_return_if_fail (self != NULL);
++	_tmp0_ = value;
++	_tmp1_ = g_strdup (_tmp0_);
++	_g_free0 (self->priv->_model_name);
++	self->priv->_model_name = _tmp1_;
++	g_object_notify ((GObject *) self, "model-name");
++}
++
++
++const gchar* rygel_plugin_get_model_number (RygelPlugin* self) {
++	const gchar* result;
++	const gchar* _tmp0_ = NULL;
++	g_return_val_if_fail (self != NULL, NULL);
++	_tmp0_ = self->priv->_model_number;
++	result = _tmp0_;
++	return result;
++}
++
++
++void rygel_plugin_set_model_number (RygelPlugin* self, const gchar* value) {
++	const gchar* _tmp0_ = NULL;
++	gchar* _tmp1_ = NULL;
++	g_return_if_fail (self != NULL);
++	_tmp0_ = value;
++	_tmp1_ = g_strdup (_tmp0_);
++	_g_free0 (self->priv->_model_number);
++	self->priv->_model_number = _tmp1_;
++	g_object_notify ((GObject *) self, "model-number");
++}
++
++
+ GeeArrayList* rygel_plugin_get_resource_infos (RygelPlugin* self) {
+ 	GeeArrayList* result;
+ 	GeeArrayList* _tmp0_ = NULL;
+@@ -713,6 +765,8 @@ static void rygel_plugin_class_init (RygelPluginClass * klass) {
+ 	g_object_class_install_property (G_OBJECT_CLASS (klass), RYGEL_PLUGIN_DESCRIPTION, g_param_spec_string ("description", "description", "description", NULL, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE | G_PARAM_CONSTRUCT_ONLY));
+ 	g_object_class_install_property (G_OBJECT_CLASS (klass), RYGEL_PLUGIN_DESC_PATH, g_param_spec_string ("desc-path", "desc-path", "desc-path", NULL, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE | G_PARAM_CONSTRUCT_ONLY));
+ 	g_object_class_install_property (G_OBJECT_CLASS (klass), RYGEL_PLUGIN_ACTIVE, g_param_spec_boolean ("active", "active", "active", FALSE, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE));
++	g_object_class_install_property (G_OBJECT_CLASS (klass), RYGEL_PLUGIN_MODEL_NAME, g_param_spec_string ("model-name", "model-name", "model-name", NULL, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE));
++	g_object_class_install_property (G_OBJECT_CLASS (klass), RYGEL_PLUGIN_MODEL_NUMBER, g_param_spec_string ("model-number", "model-number", "model-number", NULL, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE));
+ 	g_object_class_install_property (G_OBJECT_CLASS (klass), RYGEL_PLUGIN_RESOURCE_INFOS, g_param_spec_object ("resource-infos", "resource-infos", "resource-infos", GEE_TYPE_ARRAY_LIST, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE));
+ 	g_object_class_install_property (G_OBJECT_CLASS (klass), RYGEL_PLUGIN_ICON_INFOS, g_param_spec_object ("icon-infos", "icon-infos", "icon-infos", GEE_TYPE_ARRAY_LIST, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE));
+ 	g_object_class_install_property (G_OBJECT_CLASS (klass), RYGEL_PLUGIN_DEFAULT_ICONS, g_param_spec_object ("default-icons", "default-icons", "default-icons", GEE_TYPE_ARRAY_LIST, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE));
+@@ -731,6 +785,8 @@ static void rygel_plugin_finalize (GObject* obj) {
+ 	_g_free0 (self->priv->_title);
+ 	_g_free0 (self->priv->_description);
+ 	_g_free0 (self->priv->_desc_path);
++	_g_free0 (self->priv->_model_name);
++	_g_free0 (self->priv->_model_number);
+ 	_g_object_unref0 (self->priv->_resource_infos);
+ 	_g_object_unref0 (self->priv->_icon_infos);
+ 	_g_object_unref0 (self->priv->_default_icons);
+@@ -785,6 +841,12 @@ static void _vala_rygel_plugin_get_property (GObject * object, guint property_id
+ 		case RYGEL_PLUGIN_ACTIVE:
+ 		g_value_set_boolean (value, rygel_plugin_get_active (self));
+ 		break;
++		case RYGEL_PLUGIN_MODEL_NAME:
++		g_value_set_string (value, rygel_plugin_get_model_name (self));
++		break;
++		case RYGEL_PLUGIN_MODEL_NUMBER:
++		g_value_set_string (value, rygel_plugin_get_model_number (self));
++		break;
+ 		case RYGEL_PLUGIN_RESOURCE_INFOS:
+ 		g_value_set_object (value, rygel_plugin_get_resource_infos (self));
+ 		break;
+@@ -823,6 +885,12 @@ static void _vala_rygel_plugin_set_property (GObject * object, guint property_id
+ 		case RYGEL_PLUGIN_ACTIVE:
+ 		rygel_plugin_set_active (self, g_value_get_boolean (value));
+ 		break;
++		case RYGEL_PLUGIN_MODEL_NAME:
++		rygel_plugin_set_model_name (self, g_value_get_string (value));
++		break;
++		case RYGEL_PLUGIN_MODEL_NUMBER:
++		rygel_plugin_set_model_number (self, g_value_get_string (value));
++		break;
+ 		case RYGEL_PLUGIN_RESOURCE_INFOS:
+ 		rygel_plugin_set_resource_infos (self, g_value_get_object (value));
+ 		break;
+diff --git a/src/librygel-core/rygel-plugin.vala b/src/librygel-core/rygel-plugin.vala
+index ddaa842..750b207 100644
+--- a/src/librygel-core/rygel-plugin.vala
++++ b/src/librygel-core/rygel-plugin.vala
+@@ -107,6 +107,8 @@ public class Rygel.Plugin : GUPnP.ResourceFactory {
+     public string desc_path { get; construct; }
+ 
+     public bool active { get; set; }
++    public string model_name { get; set; }
++    public string model_number { get; set; }
+ 
+     public ArrayList<ResourceInfo> resource_infos { get; private set; }
+     public ArrayList<IconInfo> icon_infos { get; private set; }
+diff --git a/src/librygel-core/rygel-root-device-factory.c b/src/librygel-core/rygel-root-device-factory.c
+index d1fa9f6..1e0f655 100644
+--- a/src/librygel-core/rygel-root-device-factory.c
++++ b/src/librygel-core/rygel-root-device-factory.c
+@@ -262,6 +262,10 @@ void rygel_description_file_set_dlna_caps (RygelDescriptionFile* self, RygelPlug
+ RygelPluginCapabilities rygel_plugin_get_capabilities (RygelPlugin* self);
+ const gchar* rygel_plugin_get_description (RygelPlugin* self);
+ void rygel_description_file_set_model_description (RygelDescriptionFile* self, const gchar* model_description);
++const gchar* rygel_plugin_get_model_name (RygelPlugin* self);
++void rygel_description_file_set_model_name (RygelDescriptionFile* self, const gchar* model_name);
++const gchar* rygel_plugin_get_model_number (RygelPlugin* self);
++void rygel_description_file_set_model_number (RygelDescriptionFile* self, const gchar* model_number);
+ static gchar* rygel_root_device_factory_get_udn_from_file (RygelRootDeviceFactory* self, const gchar* path, GError** error);
+ void rygel_description_file_set_udn (RygelDescriptionFile* self, const gchar* udn);
+ void rygel_description_file_save (RygelDescriptionFile* self, const gchar* path, GError** error);
+@@ -898,8 +902,14 @@ static GUPnPXMLDoc* rygel_root_device_factory_create_desc (RygelRootDeviceFactor
+ 	RygelPlugin* _tmp16_ = NULL;
+ 	const gchar* _tmp17_ = NULL;
+ 	const gchar* _tmp18_ = NULL;
+-	RygelDescriptionFile* _tmp32_ = NULL;
+-	const gchar* _tmp33_ = NULL;
++	RygelPlugin* _tmp23_ = NULL;
++	const gchar* _tmp24_ = NULL;
++	const gchar* _tmp25_ = NULL;
++	RygelPlugin* _tmp30_ = NULL;
++	const gchar* _tmp31_ = NULL;
++	const gchar* _tmp32_ = NULL;
++	RygelDescriptionFile* _tmp46_ = NULL;
++	const gchar* _tmp47_ = NULL;
+ 	GError * _inner_error_ = NULL;
+ 	g_return_val_if_fail (self != NULL, NULL);
+ 	g_return_val_if_fail (plugin != NULL, NULL);
+@@ -946,40 +956,68 @@ static GUPnPXMLDoc* rygel_root_device_factory_create_desc (RygelRootDeviceFactor
+ 		_tmp22_ = _tmp21_;
+ 		rygel_description_file_set_model_description (_tmp19_, _tmp22_);
+ 	}
+-	{
+-		gchar* _tmp23_ = NULL;
+-		const gchar* _tmp24_ = NULL;
+-		gchar* _tmp25_ = NULL;
++	_tmp23_ = plugin;
++	_tmp24_ = rygel_plugin_get_model_name (_tmp23_);
++	_tmp25_ = _tmp24_;
++	if (_tmp25_ != NULL) {
+ 		RygelDescriptionFile* _tmp26_ = NULL;
+-		_tmp24_ = desc_path;
+-		_tmp25_ = rygel_root_device_factory_get_udn_from_file (self, _tmp24_, &_inner_error_);
+-		_tmp23_ = _tmp25_;
++		RygelPlugin* _tmp27_ = NULL;
++		const gchar* _tmp28_ = NULL;
++		const gchar* _tmp29_ = NULL;
++		_tmp26_ = file;
++		_tmp27_ = plugin;
++		_tmp28_ = rygel_plugin_get_model_name (_tmp27_);
++		_tmp29_ = _tmp28_;
++		rygel_description_file_set_model_name (_tmp26_, _tmp29_);
++	}
++	_tmp30_ = plugin;
++	_tmp31_ = rygel_plugin_get_model_number (_tmp30_);
++	_tmp32_ = _tmp31_;
++	if (_tmp32_ != NULL) {
++		RygelDescriptionFile* _tmp33_ = NULL;
++		RygelPlugin* _tmp34_ = NULL;
++		const gchar* _tmp35_ = NULL;
++		const gchar* _tmp36_ = NULL;
++		_tmp33_ = file;
++		_tmp34_ = plugin;
++		_tmp35_ = rygel_plugin_get_model_number (_tmp34_);
++		_tmp36_ = _tmp35_;
++		rygel_description_file_set_model_number (_tmp33_, _tmp36_);
++	}
++	{
++		gchar* _tmp37_ = NULL;
++		const gchar* _tmp38_ = NULL;
++		gchar* _tmp39_ = NULL;
++		RygelDescriptionFile* _tmp40_ = NULL;
++		_tmp38_ = desc_path;
++		_tmp39_ = rygel_root_device_factory_get_udn_from_file (self, _tmp38_, &_inner_error_);
++		_tmp37_ = _tmp39_;
+ 		if (_inner_error_ != NULL) {
+ 			goto __catch8_g_error;
+ 		}
+-		_tmp26_ = file;
+-		rygel_description_file_set_udn (_tmp26_, _tmp23_);
+-		_g_free0 (_tmp23_);
++		_tmp40_ = file;
++		rygel_description_file_set_udn (_tmp40_, _tmp37_);
++		_g_free0 (_tmp37_);
+ 	}
+ 	goto __finally8;
+ 	__catch8_g_error:
+ 	{
+ 		GError* _error_ = NULL;
+-		RygelDescriptionFile* _tmp27_ = NULL;
+-		gchar* _tmp28_ = NULL;
+-		gchar* _tmp29_ = NULL;
+-		gchar* _tmp30_ = NULL;
+-		gchar* _tmp31_ = NULL;
++		RygelDescriptionFile* _tmp41_ = NULL;
++		gchar* _tmp42_ = NULL;
++		gchar* _tmp43_ = NULL;
++		gchar* _tmp44_ = NULL;
++		gchar* _tmp45_ = NULL;
+ 		_error_ = _inner_error_;
+ 		_inner_error_ = NULL;
+-		_tmp27_ = file;
+-		_tmp28_ = uuid_get ();
+-		_tmp29_ = _tmp28_;
+-		_tmp30_ = g_strconcat ("uuid:", _tmp29_, NULL);
+-		_tmp31_ = _tmp30_;
+-		rygel_description_file_set_udn (_tmp27_, _tmp31_);
+-		_g_free0 (_tmp31_);
+-		_g_free0 (_tmp29_);
++		_tmp41_ = file;
++		_tmp42_ = uuid_get ();
++		_tmp43_ = _tmp42_;
++		_tmp44_ = g_strconcat ("uuid:", _tmp43_, NULL);
++		_tmp45_ = _tmp44_;
++		rygel_description_file_set_udn (_tmp41_, _tmp45_);
++		_g_free0 (_tmp45_);
++		_g_free0 (_tmp43_);
+ 		_g_error_free0 (_error_);
+ 	}
+ 	__finally8:
+@@ -989,9 +1027,9 @@ static GUPnPXMLDoc* rygel_root_device_factory_create_desc (RygelRootDeviceFactor
+ 		_g_object_unref0 (doc);
+ 		return NULL;
+ 	}
+-	_tmp32_ = file;
+-	_tmp33_ = desc_path;
+-	rygel_description_file_save (_tmp32_, _tmp33_, &_inner_error_);
++	_tmp46_ = file;
++	_tmp47_ = desc_path;
++	rygel_description_file_save (_tmp46_, _tmp47_, &_inner_error_);
+ 	if (_inner_error_ != NULL) {
+ 		g_propagate_error (error, _inner_error_);
+ 		_g_object_unref0 (file);
+@@ -1446,7 +1484,7 @@ static void rygel_root_device_factory_add_icons_to_desc (RygelRootDeviceFactory*
+ 		_tmp9_ = plugin;
+ 		_tmp10_ = rygel_plugin_get_name (_tmp9_);
+ 		_tmp11_ = _tmp10_;
+-		g_debug ("rygel-root-device-factory.vala:194: No icon provided by plugin '%s'. U" \
++		g_debug ("rygel-root-device-factory.vala:200: No icon provided by plugin '%s'. U" \
+ "sing Rygel logo.", _tmp11_);
+ 		_tmp12_ = plugin;
+ 		_tmp13_ = rygel_plugin_get_default_icons (_tmp12_);
+diff --git a/src/librygel-core/rygel-root-device-factory.vala b/src/librygel-core/rygel-root-device-factory.vala
+index ce3f54f..305a3c6 100644
+--- a/src/librygel-core/rygel-root-device-factory.vala
++++ b/src/librygel-core/rygel-root-device-factory.vala
+@@ -136,6 +136,12 @@ public class Rygel.RootDeviceFactory : Object,
+         if (plugin.description != null) {
+             file.set_model_description (plugin.description);
+         }
++        if (plugin.model_name != null) {
++            file.set_model_name (plugin.model_name);
++        }
++        if (plugin.model_number != null) {
++            file.set_model_number (plugin.model_number);
++        }
+ 
+         /* Try to get UDN from generated file in desc_path else create new */
+         try {
+diff --git a/src/librygel-renderer/rygel-media-renderer.c b/src/librygel-renderer/rygel-media-renderer.c
+index 7d89dff..3cab942 100644
+--- a/src/librygel-renderer/rygel-media-renderer.c
++++ b/src/librygel-renderer/rygel-media-renderer.c
+@@ -239,8 +239,8 @@ enum  {
+ 	RYGEL_MEDIA_RENDERER_PLAYER,
+ 	RYGEL_MEDIA_RENDERER_CONTROLLER
+ };
+-RygelMediaRenderer* rygel_media_renderer_new (const gchar* title, RygelMediaPlayer* player, RygelPluginCapabilities capabilities, RygelPlayerControllerInterface* controller);
+-RygelMediaRenderer* rygel_media_renderer_construct (GType object_type, const gchar* title, RygelMediaPlayer* player, RygelPluginCapabilities capabilities, RygelPlayerControllerInterface* controller);
++RygelMediaRenderer* rygel_media_renderer_new (const gchar* title, const gchar* model_name, const gchar* model_number, RygelMediaPlayer* player, RygelPluginCapabilities capabilities, RygelPlayerControllerInterface* controller);
++RygelMediaRenderer* rygel_media_renderer_construct (GType object_type, const gchar* title, const gchar* model_name, const gchar* model_number, RygelMediaPlayer* player, RygelPluginCapabilities capabilities, RygelPlayerControllerInterface* controller);
+ static void rygel_media_renderer_real_constructed (GObject* base);
+ static RygelMediaPlayer* rygel_media_renderer_get_player (RygelMediaRenderer* self);
+ static RygelPlayerControllerInterface* rygel_media_renderer_get_controller (RygelMediaRenderer* self);
+@@ -328,25 +328,29 @@ GType plugin_get_type (void) {
+ /**
+      * Create a RygelMediaRenderer to render content via a RygelMediaPlayer.
+      */
+-RygelMediaRenderer* rygel_media_renderer_construct (GType object_type, const gchar* title, RygelMediaPlayer* player, RygelPluginCapabilities capabilities, RygelPlayerControllerInterface* controller) {
++RygelMediaRenderer* rygel_media_renderer_construct (GType object_type, const gchar* title, const gchar* model_name, const gchar* model_number, RygelMediaPlayer* player, RygelPluginCapabilities capabilities, RygelPlayerControllerInterface* controller) {
+ 	RygelMediaRenderer * self = NULL;
+ 	const gchar* _tmp0_ = NULL;
+-	RygelMediaPlayer* _tmp1_ = NULL;
+-	RygelPluginCapabilities _tmp2_ = 0;
+-	RygelPlayerControllerInterface* _tmp3_ = NULL;
++	const gchar* _tmp1_ = NULL;
++	const gchar* _tmp2_ = NULL;
++	RygelMediaPlayer* _tmp3_ = NULL;
++	RygelPluginCapabilities _tmp4_ = 0;
++	RygelPlayerControllerInterface* _tmp5_ = NULL;
+ 	g_return_val_if_fail (title != NULL, NULL);
+ 	g_return_val_if_fail (player != NULL, NULL);
+ 	_tmp0_ = title;
+-	_tmp1_ = player;
+-	_tmp2_ = capabilities;
+-	_tmp3_ = controller;
+-	self = (RygelMediaRenderer*) g_object_new (object_type, "title", _tmp0_, "player", _tmp1_, "capabilities", _tmp2_, "controller", _tmp3_, NULL);
++	_tmp1_ = model_name;
++	_tmp2_ = model_number;
++	_tmp3_ = player;
++	_tmp4_ = capabilities;
++	_tmp5_ = controller;
++	self = (RygelMediaRenderer*) g_object_new (object_type, "title", _tmp0_, "model-name", _tmp1_, "model-number", _tmp2_, "player", _tmp3_, "capabilities", _tmp4_, "controller", _tmp5_, NULL);
+ 	return self;
+ }
+ 
+ 
+-RygelMediaRenderer* rygel_media_renderer_new (const gchar* title, RygelMediaPlayer* player, RygelPluginCapabilities capabilities, RygelPlayerControllerInterface* controller) {
+-	return rygel_media_renderer_construct (RYGEL_TYPE_MEDIA_RENDERER, title, player, capabilities, controller);
++RygelMediaRenderer* rygel_media_renderer_new (const gchar* title, const gchar* model_name, const gchar* model_number, RygelMediaPlayer* player, RygelPluginCapabilities capabilities, RygelPlayerControllerInterface* controller) {
++	return rygel_media_renderer_construct (RYGEL_TYPE_MEDIA_RENDERER, title, model_name, model_number, player, capabilities, controller);
+ }
+ 
+ 
+@@ -358,6 +362,14 @@ static void rygel_media_renderer_real_constructed (GObject* base) {
+ 	RygelPlugin* _tmp9_ = NULL;
+ 	const gchar* _tmp10_ = NULL;
+ 	const gchar* _tmp11_ = NULL;
++	RygelPlugin* _tmp12_ = NULL;
++	RygelPlugin* _tmp13_ = NULL;
++	const gchar* _tmp14_ = NULL;
++	const gchar* _tmp15_ = NULL;
++	RygelPlugin* _tmp16_ = NULL;
++	RygelPlugin* _tmp17_ = NULL;
++	const gchar* _tmp18_ = NULL;
++	const gchar* _tmp19_ = NULL;
+ 	self = (RygelMediaRenderer*) base;
+ 	G_OBJECT_CLASS (rygel_media_renderer_parent_class)->constructed ((GObject*) G_TYPE_CHECK_INSTANCE_CAST (self, RYGEL_TYPE_MEDIA_DEVICE, RygelMediaDevice));
+ 	_tmp0_ = rygel_media_device_get_plugin ((RygelMediaDevice*) self);
+@@ -383,6 +395,16 @@ static void rygel_media_renderer_real_constructed (GObject* base) {
+ 	_tmp10_ = rygel_media_device_get_title ((RygelMediaDevice*) self);
+ 	_tmp11_ = _tmp10_;
+ 	rygel_plugin_set_title (_tmp9_, _tmp11_);
++	_tmp12_ = rygel_media_device_get_plugin ((RygelMediaDevice*) self);
++	_tmp13_ = _tmp12_;
++	_tmp14_ = rygel_media_device_get_model_name ((RygelMediaDevice*) self);
++	_tmp15_ = _tmp14_;
++	rygel_plugin_set_model_name (_tmp13_, _tmp15_);
++	_tmp16_ = rygel_media_device_get_plugin ((RygelMediaDevice*) self);
++	_tmp17_ = _tmp16_;
++	_tmp18_ = rygel_media_device_get_model_number ((RygelMediaDevice*) self);
++	_tmp19_ = _tmp18_;
++	rygel_plugin_set_model_number (_tmp17_, _tmp19_);
+ }
+ 
+ 
+diff --git a/src/librygel-renderer/rygel-media-renderer.vala b/src/librygel-renderer/rygel-media-renderer.vala
+index f0a0000..a258350 100644
+--- a/src/librygel-renderer/rygel-media-renderer.vala
++++ b/src/librygel-renderer/rygel-media-renderer.vala
+@@ -51,11 +51,15 @@ public class Rygel.MediaRenderer : MediaDevice {
+      * Create a RygelMediaRenderer to render content via a RygelMediaPlayer.
+      */
+     public MediaRenderer (string title,
++                          string? model_name,
++                          string? model_number,
+                           MediaPlayer player,
+                           PluginCapabilities capabilities =
+                                         PluginCapabilities.NONE,
+                           PlayerControllerInterface? controller = null) {
+         Object (title: title,
++                model_name: model_name,
++                model_number: model_number,
+                 player: player,
+                 capabilities: capabilities,
+                 controller: controller);
+@@ -68,6 +72,8 @@ public class Rygel.MediaRenderer : MediaDevice {
+             this.plugin = new global::Plugin (this.player, this.capabilities, this.controller);
+         }
+         this.plugin.title = this.title;
++        this.plugin.model_name = this.model_name;
++        this.plugin.model_number = this.model_number;
+     }
+     public unowned PlayerControllerInterface controller { construct; private get; }
+ }
+diff --git a/src/librygel-renderer/rygel-renderer.h b/src/librygel-renderer/rygel-renderer.h
+index 3ea70c0..ea7c57f 100644
+--- a/src/librygel-renderer/rygel-renderer.h
++++ b/src/librygel-renderer/rygel-renderer.h
+@@ -294,8 +294,8 @@ void rygel_player_controller_interface_set_play_mode (RygelPlayerControllerInter
+ gint64 rygel_player_controller_interface_get_media_duration (RygelPlayerControllerInterface* self);
+ gchar* rygel_player_controller_interface_get_media_duration_as_str (RygelPlayerControllerInterface* self);
+ GType rygel_media_renderer_get_type (void) G_GNUC_CONST;
+-RygelMediaRenderer* rygel_media_renderer_new (const gchar* title, RygelMediaPlayer* player, RygelPluginCapabilities capabilities, RygelPlayerControllerInterface* controller);
+-RygelMediaRenderer* rygel_media_renderer_construct (GType object_type, const gchar* title, RygelMediaPlayer* player, RygelPluginCapabilities capabilities, RygelPlayerControllerInterface* controller);
++RygelMediaRenderer* rygel_media_renderer_new (const gchar* title, const gchar* model_name, const gchar* model_number, RygelMediaPlayer* player, RygelPluginCapabilities capabilities, RygelPlayerControllerInterface* controller);
++RygelMediaRenderer* rygel_media_renderer_construct (GType object_type, const gchar* title, const gchar* model_name, const gchar* model_number, RygelMediaPlayer* player, RygelPluginCapabilities capabilities, RygelPlayerControllerInterface* controller);
+ 
+ 
+ G_END_DECLS
+-- 
+1.9.1
+

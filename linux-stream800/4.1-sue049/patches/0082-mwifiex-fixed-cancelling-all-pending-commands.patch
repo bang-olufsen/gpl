@@ -1,0 +1,78 @@
+From 4978c7af3adf17d948dae21e5503185f93a9c73e Mon Sep 17 00:00:00 2001
+From: Maros Medvec <maros.medvec@streamunlimited.com>
+Date: Thu, 24 Aug 2017 18:22:02 +0200
+Subject: [PATCH] mwifiex: fixed cancelling all pending commands
+
+Signed-off-by: Maros Medvec <maros.medvec@streamunlimited.com>
+---
+ drivers/net/wireless/mwifiex/cmdevt.c      | 17 +++++++++++++++++
+ drivers/net/wireless/mwifiex/main.h        |  1 +
+ drivers/net/wireless/mwifiex/sta_cmdresp.c | 12 +-----------
+ 3 files changed, 19 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/net/wireless/mwifiex/cmdevt.c b/drivers/net/wireless/mwifiex/cmdevt.c
+index 58e6efd..df09053 100644
+--- a/drivers/net/wireless/mwifiex/cmdevt.c
++++ b/drivers/net/wireless/mwifiex/cmdevt.c
+@@ -955,6 +955,23 @@ mwifiex_cmd_timeout_func(unsigned long function_context)
+ 		adapter->if_ops.card_reset(adapter);
+ }
+ 
++void
++mwifiex_cancel_pending_scan_cmd(struct mwifiex_adapter *adapter)
++{
++	struct cmd_ctrl_node *cmd_node = NULL, *tmp_node;
++	unsigned long flags;
++
++	/* Cancel all pending scan command */
++	spin_lock_irqsave(&adapter->scan_pending_q_lock, flags);
++	list_for_each_entry_safe(cmd_node, tmp_node,
++				 &adapter->scan_pending_q, list) {
++		list_del(&cmd_node->list);
++		cmd_node->wait_q_enabled = false;
++		mwifiex_insert_cmd_to_free_q(adapter, cmd_node);
++	}
++	spin_unlock_irqrestore(&adapter->scan_pending_q_lock, flags);
++}
++
+ /*
+  * This function cancels all the pending commands.
+  *
+diff --git a/drivers/net/wireless/mwifiex/main.h b/drivers/net/wireless/mwifiex/main.h
+index d0d9c04..c6e777d 100644
+--- a/drivers/net/wireless/mwifiex/main.h
++++ b/drivers/net/wireless/mwifiex/main.h
+@@ -959,6 +959,7 @@ int mwifiex_alloc_cmd_buffer(struct mwifiex_adapter *adapter);
+ int mwifiex_free_cmd_buffer(struct mwifiex_adapter *adapter);
+ void mwifiex_cancel_all_pending_cmd(struct mwifiex_adapter *adapter);
+ void mwifiex_cancel_pending_ioctl(struct mwifiex_adapter *adapter);
++void mwifiex_cancel_pending_scan_cmd(struct mwifiex_adapter *adapter);
+ 
+ void mwifiex_insert_cmd_to_free_q(struct mwifiex_adapter *adapter,
+ 				  struct cmd_ctrl_node *cmd_node);
+diff --git a/drivers/net/wireless/mwifiex/sta_cmdresp.c b/drivers/net/wireless/mwifiex/sta_cmdresp.c
+index 88dc6b6..83180c2 100644
+--- a/drivers/net/wireless/mwifiex/sta_cmdresp.c
++++ b/drivers/net/wireless/mwifiex/sta_cmdresp.c
+@@ -70,17 +70,7 @@ mwifiex_process_cmdresp_error(struct mwifiex_private *priv,
+ 		break;
+ 	case HostCmd_CMD_802_11_SCAN:
+ 	case HostCmd_CMD_802_11_SCAN_EXT:
+-		/* Cancel all pending scan command */
+-		spin_lock_irqsave(&adapter->scan_pending_q_lock, flags);
+-		list_for_each_entry_safe(cmd_node, tmp_node,
+-					 &adapter->scan_pending_q, list) {
+-			list_del(&cmd_node->list);
+-			spin_unlock_irqrestore(&adapter->scan_pending_q_lock,
+-					       flags);
+-			mwifiex_insert_cmd_to_free_q(adapter, cmd_node);
+-			spin_lock_irqsave(&adapter->scan_pending_q_lock, flags);
+-		}
+-		spin_unlock_irqrestore(&adapter->scan_pending_q_lock, flags);
++		mwifiex_cancel_pending_scan_cmd(adapter);
+ 
+ 		spin_lock_irqsave(&adapter->mwifiex_cmd_lock, flags);
+ 		adapter->scan_processing = false;
+-- 
+2.7.4
+

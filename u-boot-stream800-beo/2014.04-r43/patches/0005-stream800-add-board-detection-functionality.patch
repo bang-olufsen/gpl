@@ -1,0 +1,1228 @@
+From 9a98b0f64a8894d67d454d0d1583462f87596892 Mon Sep 17 00:00:00 2001
+From: Radek Dostal <radek.dostal@streamunlimited.com>
+Date: Wed, 13 Mar 2013 11:31:18 +0100
+Subject: [PATCH] stream800: add board detection functionality
+
+Supported modules:
+	stream800 L2 (L1, L0: missing HW support for detection)
+
+Boards:
+	- Stream800 Demo Client
+	- LAN Dock
+
+Signed-off-by: Martin Flaska <martin.flaska@streamunlimited.com>
+Signed-off-by: Radek Dostal <radek.dostal@streamunlimited.com>
+---
+ board/streamunlimited/stream800/Makefile           |   5 +-
+ board/streamunlimited/stream800/adc.c              |   8 +-
+ .../stream800/board-lan_dock_board.c               |  65 ++++
+ .../stream800/board-lan_dock_board.h               |  31 ++
+ board/streamunlimited/stream800/board-spl.c        | 182 ++++++++++
+ .../stream800/board-sue_demo_client_board.c        |  64 ++++
+ .../stream800/board-sue_demo_client_board.h        |  31 ++
+ .../stream800/board-sue_first_carrier_board.c      |  71 ++++
+ .../stream800/board-sue_first_carrier_board.h      |  31 ++
+ board/streamunlimited/stream800/board.c            | 365 +++++++++------------
+ board/streamunlimited/stream800/board.h            |  40 ++-
+ board/streamunlimited/stream800/mux.c              |  28 +-
+ board/streamunlimited/stream800/mux.h              |  35 ++
+ 13 files changed, 732 insertions(+), 224 deletions(-)
+ create mode 100644 board/streamunlimited/stream800/board-lan_dock_board.c
+ create mode 100644 board/streamunlimited/stream800/board-lan_dock_board.h
+ create mode 100644 board/streamunlimited/stream800/board-spl.c
+ create mode 100644 board/streamunlimited/stream800/board-sue_demo_client_board.c
+ create mode 100644 board/streamunlimited/stream800/board-sue_demo_client_board.h
+ create mode 100644 board/streamunlimited/stream800/board-sue_first_carrier_board.c
+ create mode 100644 board/streamunlimited/stream800/board-sue_first_carrier_board.h
+ create mode 100644 board/streamunlimited/stream800/mux.h
+
+diff --git a/board/streamunlimited/stream800/Makefile b/board/streamunlimited/stream800/Makefile
+index d41e556..ecda854 100644
+--- a/board/streamunlimited/stream800/Makefile
++++ b/board/streamunlimited/stream800/Makefile
+@@ -19,10 +19,11 @@ include $(TOPDIR)/config.mk
+ LIB	= $(obj)lib$(BOARD).o
+ 
+ ifdef CONFIG_SPL_BUILD
+-COBJS	:= mux.o
++COBJS	:= board-spl.o mux.o
++else
++COBJS	:= board.o mux.o adc.o board-sue_demo_client_board.o board-lan_dock_board.o board-sue_first_carrier_board.o
+ endif
+ 
+-COBJS	+= board.o adc.o
+ SRCS	:= $(SOBJS:.o=.S) $(COBJS:.o=.c)
+ OBJS	:= $(addprefix $(obj),$(COBJS))
+ SOBJS	:= $(addprefix $(obj),$(SOBJS))
+diff --git a/board/streamunlimited/stream800/adc.c b/board/streamunlimited/stream800/adc.c
+index c35db30..39cfac3 100644
+--- a/board/streamunlimited/stream800/adc.c
++++ b/board/streamunlimited/stream800/adc.c
+@@ -27,6 +27,7 @@
+ 
+ #define TSC_ADC_SS_REG_BASE		0x44E0D000
+ 
++// TSC_ADC_SS Registers
+ #define REG_REVISION			(0x00)
+ #define REG_SYSCONFIG			(0x10)
+ #define REG_IRQSTATUS_RAW		(0x24)
+@@ -77,7 +78,8 @@
+ #define REG_DMAREQ(X)			(0xec	+ ((X) * 0xc))
+ #define REG_FIFODATA(X)			(0x100	+ ((X) * 0x100))
+ 
+-#define CM_PER_ADC_TSC_CLKCTRL		(CM_WKUP + 0xBC) /* ADC_TSC */
++// For accessing CM_WKUP_ADC_TSC_CLKCTRL Register - this register manages the ADC clocks.
++static const struct cm_wkuppll *cmwkup = (struct cm_wkuppll *)CM_WKUP;
+ 
+ static unsigned long int adc_readl(unsigned long reg)
+ {
+@@ -92,8 +94,8 @@ static void adc_writel(unsigned long val, unsigned long reg)
+ int init_adc(void)
+ {
+ 	/* enable hardware module */
+-	writel(PRCM_MOD_EN, CM_PER_ADC_TSC_CLKCTRL);
+-	while (readl(CM_PER_ADC_TSC_CLKCTRL) != PRCM_MOD_EN);
++	writel(PRCM_MOD_EN, &cmwkup->wkup_adc_tsc_ctrl);
++	while (readl(&cmwkup->wkup_adc_tsc_ctrl) != PRCM_MOD_EN);
+ 
+ 	printf("%s(): HW revision 0x%08x\n", __func__, adc_readl(REG_REVISION));
+ 
+diff --git a/board/streamunlimited/stream800/board-lan_dock_board.c b/board/streamunlimited/stream800/board-lan_dock_board.c
+new file mode 100644
+index 0000000..2867e88
+--- /dev/null
++++ b/board/streamunlimited/stream800/board-lan_dock_board.c
+@@ -0,0 +1,65 @@
++/*
++ * board-lan_dock_board.c
++ *
++ * Copyright (C) 2012, StreamUnlimited Engineering GmbH, http://www.streamunlimited.com/
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation; either version 2 of
++ * the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR /PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++#include "board-lan_dock_board.h"
++
++/*
++ * "Dictations LAN dock" - board specific initialization
++ */
++
++#include <common.h>
++#include <asm/io.h>
++#include <asm/arch/clock.h>
++#include <asm/arch/hardware.h>
++#include <phy.h>
++#include <asm/arch-am33xx/phy.h>
++
++static struct ctrl_dev *cdev = (struct ctrl_dev *)CTRL_DEVICE_BASE;
++
++// "Dictations LAN dock" board initialization
++void lan_dock__init(const struct Stream800Board *board)
++{
++	if (!board || board->carrierBoardType != CBT_LanDockBoard)
++		BUG();
++
++	printf("TODO: 'Dictations LAN dock' board initialization.\n");
++}
++
++#ifdef CONFIG_DRIVER_TI_CPSW
++static struct cpsw_slave_data cpsw_slaves[] = {
++	// TODO: check this configuration for the Dictations LAN dock board
++	{
++		.slave_reg_ofs	= 0x208,
++		.sliver_reg_ofs	= 0xd80,	// CPSW_SL1
++		.phy_id			= 4,
++		.phy_if			= PHY_INTERFACE_MODE_RMII
++	}
++};
++
++void lan_dock__cpsw_eth_init(const struct Stream800Board *board, struct cpsw_platform_data *cpsw_data)
++{
++	if (!board || board->carrierBoardType != CBT_LanDockBoard)
++		BUG();
++
++	cpsw_data->slaves = 1;
++	cpsw_data->slave_data = cpsw_slaves;
++
++	// Advisory 1.0.10
++	// "The AM335x device does not support internal delay mode, so RGMII1_IDMODE and RGMII2_IDMODE must be set to 1b."
++	writel(RMII1_MODE_ENABLE | MII1_CLK_FROM_CHIP_PIN | RGMII1_NO_INTERNAL_DELAY
++		| MII2_MODE_NOT_USED , &cdev->miisel);
++}
++#endif /* CONFIG_DRIVER_TI_CPSW */
+diff --git a/board/streamunlimited/stream800/board-lan_dock_board.h b/board/streamunlimited/stream800/board-lan_dock_board.h
+new file mode 100644
+index 0000000..42b90ab
+--- /dev/null
++++ b/board/streamunlimited/stream800/board-lan_dock_board.h
+@@ -0,0 +1,31 @@
++/*
++ * board-lan_dock_board.h
++ *
++ * Copyright (C) 2012, StreamUnlimited Engineering GmbH, http://www.streamunlimited.com/
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation; either version 2 of
++ * the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR /PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++#ifndef __BOARD_LAN_DOCK_BOARD_H
++#define __BOARD_LAN_DOCK_BOARD_H
++
++#include <common.h>
++#include "board.h"
++#include <cpsw.h>
++
++// "Dictations LAN dock" board initialization
++void lan_dock__init(const struct Stream800Board *board);
++
++#ifdef CONFIG_DRIVER_TI_CPSW
++void lan_dock__cpsw_eth_init(const struct Stream800Board *board, struct cpsw_platform_data *cpsw_data);
++#endif
++
++#endif	// __BOARD_LAN_DOCK_BOARD_H
+diff --git a/board/streamunlimited/stream800/board-spl.c b/board/streamunlimited/stream800/board-spl.c
+new file mode 100644
+index 0000000..7e4e61b
+--- /dev/null
++++ b/board/streamunlimited/stream800/board-spl.c
+@@ -0,0 +1,182 @@
++/*
++ * board-spl.c
++ *
++ * Board functions for TI AM335X based boards
++ *
++ * Copyright (C) 2011, Texas Instruments, Incorporated - http://www.ti.com/
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation; either version 2 of
++ * the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR /PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++#include <common.h>
++#include <errno.h>
++#include <spl.h>
++#include <asm/arch/cpu.h>
++#include <asm/arch/hardware.h>
++#include <asm/arch/omap.h>
++#include <asm/arch/ddr_defs.h>
++#include <asm/arch/clock.h>
++#include <asm/arch/gpio.h>
++#include <asm/arch/mmc_host_def.h>
++#include <asm/arch/sys_proto.h>
++#include <asm/io.h>
++#include <asm/emif.h>
++#include <asm/gpio.h>
++#include <i2c.h>
++#include "spl.h"
++#include "mux.h"
++
++#ifndef CONFIG_SPL_BUILD
++#error This file should be built only for SPL
++#endif
++
++DECLARE_GLOBAL_DATA_PTR;
++
++static struct wd_timer *wdtimer = (struct wd_timer *)WDT_BASE;
++static struct uart_sys *uart_base = (struct uart_sys *)DEFAULT_UART_BASE;
++
++
++#define UART_RESET		(0x1 << 1)
++#define UART_CLK_RUNNING_MASK	0x1
++#define UART_SMART_IDLE_EN	(0x1 << 0x3)
++
++static void rtc32k_enable(void)
++{
++	struct rtc_regs *rtc = (struct rtc_regs *)AM335X_RTC_BASE;
++
++	/*
++	 * Unlock the RTC's registers.  For more details please see the
++	 * RTC_SS section of the TRM.  In order to unlock we need to
++	 * write these specific values (keys) in this order.
++	 */
++	writel(0x83e70b13, &rtc->kick0r);
++	writel(0x95a4f1e0, &rtc->kick1r);
++
++	/* Enable the RTC 32K OSC by setting bits 3 and 6. */
++	writel((1 << 3) | (1 << 6), &rtc->osc);
++}
++
++static const struct ddr_data ddr2_data = {
++	.datardsratio0 = ((MT47H128M16RT25E_RD_DQS<<30) |
++			  (MT47H128M16RT25E_RD_DQS<<20) |
++			  (MT47H128M16RT25E_RD_DQS<<10) |
++			  (MT47H128M16RT25E_RD_DQS<<0)),
++	.datawdsratio0 = ((MT47H128M16RT25E_WR_DQS<<30) |
++			  (MT47H128M16RT25E_WR_DQS<<20) |
++			  (MT47H128M16RT25E_WR_DQS<<10) |
++			  (MT47H128M16RT25E_WR_DQS<<0)),
++	.datawiratio0 = ((MT47H128M16RT25E_PHY_WRLVL<<30) |
++			 (MT47H128M16RT25E_PHY_WRLVL<<20) |
++			 (MT47H128M16RT25E_PHY_WRLVL<<10) |
++			 (MT47H128M16RT25E_PHY_WRLVL<<0)),
++	.datagiratio0 = ((MT47H128M16RT25E_PHY_GATELVL<<30) |
++			 (MT47H128M16RT25E_PHY_GATELVL<<20) |
++			 (MT47H128M16RT25E_PHY_GATELVL<<10) |
++			 (MT47H128M16RT25E_PHY_GATELVL<<0)),
++	.datafwsratio0 = ((MT47H128M16RT25E_PHY_FIFO_WE<<30) |
++			  (MT47H128M16RT25E_PHY_FIFO_WE<<20) |
++			  (MT47H128M16RT25E_PHY_FIFO_WE<<10) |
++			  (MT47H128M16RT25E_PHY_FIFO_WE<<0)),
++	.datawrsratio0 = ((MT47H128M16RT25E_PHY_WR_DATA<<30) |
++			  (MT47H128M16RT25E_PHY_WR_DATA<<20) |
++			  (MT47H128M16RT25E_PHY_WR_DATA<<10) |
++			  (MT47H128M16RT25E_PHY_WR_DATA<<0)),
++	.datauserank0delay = MT47H128M16RT25E_PHY_RANK0_DELAY,
++	.datadldiff0 = PHY_DLL_LOCK_DIFF,
++};
++
++static const struct cmd_control ddr2_cmd_ctrl_data = {
++	.cmd0csratio = MT47H128M16RT25E_RATIO,
++	.cmd0dldiff = MT47H128M16RT25E_DLL_LOCK_DIFF,
++	.cmd0iclkout = MT47H128M16RT25E_INVERT_CLKOUT,
++
++	.cmd1csratio = MT47H128M16RT25E_RATIO,
++	.cmd1dldiff = MT47H128M16RT25E_DLL_LOCK_DIFF,
++	.cmd1iclkout = MT47H128M16RT25E_INVERT_CLKOUT,
++
++	.cmd2csratio = MT47H128M16RT25E_RATIO,
++	.cmd2dldiff = MT47H128M16RT25E_DLL_LOCK_DIFF,
++	.cmd2iclkout = MT47H128M16RT25E_INVERT_CLKOUT,
++};
++
++static const struct emif_regs ddr2_emif_reg_data = {
++	.sdram_config = MT47H128M16RT25E_EMIF_SDCFG,
++	.ref_ctrl = MT47H128M16RT25E_EMIF_SDREF,
++	.sdram_tim1 = MT47H128M16RT25E_EMIF_TIM1,
++	.sdram_tim2 = MT47H128M16RT25E_EMIF_TIM2,
++	.sdram_tim3 = MT47H128M16RT25E_EMIF_TIM3,
++	.emif_ddr_phy_ctlr_1 = MT47H128M16RT25E_EMIF_READ_LATENCY,
++};
++
++/*
++ * early system init of muxing and clocks.
++ */
++void s_init(void)
++{
++	/* WDT1 is already running when the bootloader gets control
++	 * Disable it to avoid "random" resets
++	 */
++	writel(0xAAAA, &wdtimer->wdtwspr);
++	while (readl(&wdtimer->wdtwwps) != 0x0)
++		;
++	writel(0x5555, &wdtimer->wdtwspr);
++	while (readl(&wdtimer->wdtwwps) != 0x0)
++		;
++
++	/* Setup the PLLs and the clocks for the peripherals */
++	pll_init();
++
++	/* Enable RTC32K clock */
++	rtc32k_enable();
++
++	/* UART softreset */
++	u32 regVal;
++
++#ifdef CONFIG_SERIAL1
++	enable_uart0_pin_mux();
++#endif /* CONFIG_SERIAL1 */
++#ifdef CONFIG_SERIAL2
++	enable_uart1_pin_mux();
++#endif /* CONFIG_SERIAL2 */
++#ifdef CONFIG_SERIAL3
++	enable_uart2_pin_mux();
++#endif /* CONFIG_SERIAL3 */
++#ifdef CONFIG_SERIAL4
++	enable_uart3_pin_mux();
++#endif /* CONFIG_SERIAL4 */
++#ifdef CONFIG_SERIAL5
++	enable_uart4_pin_mux();
++#endif /* CONFIG_SERIAL5 */
++#ifdef CONFIG_SERIAL6
++	enable_uart5_pin_mux();
++#endif /* CONFIG_SERIAL6 */
++
++	regVal = readl(&uart_base->uartsyscfg);
++	regVal |= UART_RESET;
++	writel(regVal, &uart_base->uartsyscfg);
++	while ((readl(&uart_base->uartsyssts) &
++		UART_CLK_RUNNING_MASK) != UART_CLK_RUNNING_MASK)
++		;
++
++	/* Disable smart idle */
++	regVal = readl(&uart_base->uartsyscfg);
++	regVal |= UART_SMART_IDLE_EN;
++	writel(regVal, &uart_base->uartsyscfg);
++
++	gd = &gdata;
++
++	preloader_console_init();
++
++	config_ddr(266, MT47H128M16RT25E_IOCTRL_VALUE, &ddr2_data,
++			   &ddr2_cmd_ctrl_data, &ddr2_emif_reg_data);
++
++	gpmc_init();
++}
+diff --git a/board/streamunlimited/stream800/board-sue_demo_client_board.c b/board/streamunlimited/stream800/board-sue_demo_client_board.c
+new file mode 100644
+index 0000000..e4588f4
+--- /dev/null
++++ b/board/streamunlimited/stream800/board-sue_demo_client_board.c
+@@ -0,0 +1,64 @@
++/*
++ * board-sue_demo_client_board.c
++ *
++ * Copyright (C) 2012, StreamUnlimited Engineering GmbH, http://www.streamunlimited.com/
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation; either version 2 of
++ * the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR /PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++#include "board-sue_demo_client_board.h"
++
++/*
++ * "SUE demo client" - board specific initialization
++ */
++
++#include <common.h>
++#include <asm/io.h>
++#include <asm/arch/clock.h>
++#include <asm/arch/hardware.h>
++#include <phy.h>
++#include <asm/arch-am33xx/phy.h>
++
++static struct ctrl_dev *cdev = (struct ctrl_dev *)CTRL_DEVICE_BASE;
++
++// "SUE demo client" board initialization
++void demo_client__init(const struct Stream800Board *board)
++{
++	if (!board || board->carrierBoardType != CBT_SueDemoClientBoard)
++		BUG();
++
++	printf("TODO: 'SUE demo client' board initialization.\n");
++}
++
++#ifdef CONFIG_DRIVER_TI_CPSW
++static struct cpsw_slave_data cpsw_slaves[] = {
++	{
++		.slave_reg_ofs	= 0x208,
++		.sliver_reg_ofs	= 0xd80,	// CPSW_SL1
++		.phy_id			= 4,
++		.phy_if			= PHY_INTERFACE_MODE_RMII
++	},
++};
++
++void demo_client__cpsw_eth_init(const struct Stream800Board *board, struct cpsw_platform_data *cpsw_data)
++{
++	if (!board || board->carrierBoardType != CBT_SueDemoClientBoard)
++		BUG();
++
++	cpsw_data->slaves = 1;
++	cpsw_data->slave_data = cpsw_slaves;
++
++	// Advisory 1.0.10
++	// "The AM335x device does not support internal delay mode, so RGMII1_IDMODE and RGMII2_IDMODE must be set to 1b."
++	writel(RMII1_MODE_ENABLE | MII1_CLK_FROM_CHIP_PIN | RGMII1_NO_INTERNAL_DELAY
++		| MII2_MODE_NOT_USED , &cdev->miisel);
++}
++#endif /* CONFIG_DRIVER_TI_CPSW */
+diff --git a/board/streamunlimited/stream800/board-sue_demo_client_board.h b/board/streamunlimited/stream800/board-sue_demo_client_board.h
+new file mode 100644
+index 0000000..afe5f1b
+--- /dev/null
++++ b/board/streamunlimited/stream800/board-sue_demo_client_board.h
+@@ -0,0 +1,31 @@
++/*
++ * board-sue_demo_client_board.h
++ *
++ * Copyright (C) 2012, StreamUnlimited Engineering GmbH, http://www.streamunlimited.com/
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation; either version 2 of
++ * the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR /PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++#ifndef __BOARD_SUE_DEMO_CLIENT_BOARD_H
++#define __BOARD_SUE_DEMO_CLIENT_BOARD_H
++
++#include <common.h>
++#include "board.h"
++#include <cpsw.h>
++
++// "SUE demo client" board initialization
++void demo_client__init(const struct Stream800Board *board);
++
++#ifdef CONFIG_DRIVER_TI_CPSW
++void demo_client__cpsw_eth_init(const struct Stream800Board *board, struct cpsw_platform_data *cpsw_data);
++#endif
++
++#endif	// __BOARD_SUE_DEMO_CLIENT_BOARD_H
+diff --git a/board/streamunlimited/stream800/board-sue_first_carrier_board.c b/board/streamunlimited/stream800/board-sue_first_carrier_board.c
+new file mode 100644
+index 0000000..945cc59
+--- /dev/null
++++ b/board/streamunlimited/stream800/board-sue_first_carrier_board.c
+@@ -0,0 +1,71 @@
++/*
++ * board-sue_first_carrier_board.c
++ *
++ * Copyright (C) 2012, StreamUnlimited Engineering GmbH, http://www.streamunlimited.com/
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation; either version 2 of
++ * the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR /PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++#include "board-sue_first_carrier_board.h"
++
++/*
++ * "SUE Carrier Board" - board specific initialization
++ */
++
++#include <common.h>
++#include <asm/io.h>
++#include <asm/arch/clock.h>
++#include <asm/arch/hardware.h>
++#include <phy.h>
++#include <asm/arch-am33xx/phy.h>
++
++static struct ctrl_dev *cdev = (struct ctrl_dev *)CTRL_DEVICE_BASE;
++
++// "SUE Carrier Board" board initialization
++void first_carrier__init(const struct Stream800Board *board)
++{
++	if (!board || board->carrierBoardType != CBT_SueFirstCarrierBoard)
++		BUG();
++
++	printf("TODO: 'SUE First Carrier Board' initialization.\n");
++}
++
++#ifdef CONFIG_DRIVER_TI_CPSW
++static struct cpsw_slave_data cpsw_slaves[] = {
++	// TODO: check this configuration for the SUE Carrier Board board
++	{
++		.slave_reg_ofs	= 0x208,
++		.sliver_reg_ofs	= 0xd80,	// CPSW_SL1
++		.phy_id			= 4,
++		.phy_if			= PHY_INTERFACE_MODE_RMII
++	},
++	{
++		.slave_reg_ofs	= 0x308,
++		.sliver_reg_ofs	= 0xdc0,	// CPSW_SL2
++		.phy_id			= 0,
++		.phy_if			= PHY_INTERFACE_MODE_RGMII
++	}
++};
++
++void first_carrier__cpsw_eth_init(const struct Stream800Board *board, struct cpsw_platform_data *cpsw_data)
++{
++	if (!board || board->carrierBoardType != CBT_SueFirstCarrierBoard)
++		BUG();
++
++	cpsw_data->slaves = 2;
++	cpsw_data->slave_data = cpsw_slaves;
++
++	// Advisory 1.0.10
++	// "The AM335x device does not support internal delay mode, so RGMII1_IDMODE and RGMII2_IDMODE must be set to 1b."
++	writel(RMII1_MODE_ENABLE | MII1_CLK_FROM_CHIP_PIN | RGMII1_NO_INTERNAL_DELAY
++		| RGMII2_MODE_ENABLE | RGMII2_NO_INTERNAL_DELAY , &cdev->miisel);
++}
++#endif /* CONFIG_DRIVER_TI_CPSW */
+diff --git a/board/streamunlimited/stream800/board-sue_first_carrier_board.h b/board/streamunlimited/stream800/board-sue_first_carrier_board.h
+new file mode 100644
+index 0000000..4698f80
+--- /dev/null
++++ b/board/streamunlimited/stream800/board-sue_first_carrier_board.h
+@@ -0,0 +1,31 @@
++/*
++ * board-sue_first_carrier_board.h
++ *
++ * Copyright (C) 2012, StreamUnlimited Engineering GmbH, http://www.streamunlimited.com/
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation; either version 2 of
++ * the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR /PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++#ifndef __BOARD_SUE_FIRST_CARRIER_BOARD_H
++#define __BOARD_SUE_FIRST_CARRIER_BOARD_H
++
++#include <common.h>
++#include "board.h"
++#include <cpsw.h>
++
++// "SUE Carrier Board" board initialization
++void first_carrier__init(const struct Stream800Board *board);
++
++#ifdef CONFIG_DRIVER_TI_CPSW
++void first_carrier__cpsw_eth_init(const struct Stream800Board *board, struct cpsw_platform_data *cpsw_data);
++#endif
++
++#endif	// __BOARD_SUE_FIRST_CARRIER_BOARD_H
+diff --git a/board/streamunlimited/stream800/board.c b/board/streamunlimited/stream800/board.c
+index 5b22e12..5ca5d8b 100644
+--- a/board/streamunlimited/stream800/board.c
++++ b/board/streamunlimited/stream800/board.c
+@@ -34,222 +34,186 @@
+ #include <miiphy.h>
+ #include <cpsw.h>
+ #include "board.h"
++#include "mux.h"
++#include "board-lan_dock_board.h"
++#include "board-sue_demo_client_board.h"
++#include "board-sue_first_carrier_board.h"
++#include "adc.h"
+ 
+-DECLARE_GLOBAL_DATA_PTR;
+-
+-static struct wd_timer *wdtimer = (struct wd_timer *)WDT_BASE;
+ #ifdef CONFIG_SPL_BUILD
+-static struct uart_sys *uart_base = (struct uart_sys *)DEFAULT_UART_BASE;
++#error This file should not be built for SPL
+ #endif
+ 
+-/* MII mode defines
+- * See ONTROL_MODULE Registers: gmii_sel Register (offset = 650h)
+- */
+-// gmii1_sel (bites 0-1)
+-#define MII1_MODE_ENABLE		0x0
+-#define RMII1_MODE_ENABLE		0x1
+-#define RGMII1_MODE_ENABLE		0x2
+-#define MII1_MODE_NOT_USED		0x3
+-// gmii2_sel (bites 2-3)
+-#define MII2_MODE_ENABLE		0x0
+-#define RMII2_MODE_ENABLE		0x4
+-#define RGMII2_MODE_ENABLE		0x8
+-#define MII2_MODE_NOT_USED		0xC
+-// rgmii1_idmode (bite 4)
+-#define RGMII1_NO_INTERNAL_DELAY 0x10
+-// rgmii2_idmode (bite 5)
+-#define RGMII2_NO_INTERNAL_DELAY 0x20
+-// rmii1_io_clk_en (bite 6)
+-#define MII1_CLK_FROM_CHIP_PIN	0x40
+-#define MII1_CLK_FROM_PLL		0x0
+-// rmii1_io_clk_en (bite 7)
+-#define MII2_CLK_FROM_CHIP_PIN	0x80
+-#define MII2_CLK_FROM_PLL		0x0
+-
+-
+-
+-
+-/* GPIO that controls power to DDR on EVM-SK */
+-#define GPIO_DDR_VTT_EN		7
++DECLARE_GLOBAL_DATA_PTR;
++
++static struct wd_timer *wdtimer = (struct wd_timer *)WDT_BASE;
+ 
+ static struct ctrl_dev *cdev = (struct ctrl_dev *)CTRL_DEVICE_BASE;
+ 
+-static struct Stream800Board __attribute__((section (".data"))) board;
++static struct Stream800Board __attribute__((section (".data"))) board = {moduleVersion : MV_unknown, carrierBoardType : CBT_unknown};
+ 
+-/* UART Defines */
+-#ifdef CONFIG_SPL_BUILD
+-#define UART_RESET		(0x1 << 1)
+-#define UART_CLK_RUNNING_MASK	0x1
+-#define UART_SMART_IDLE_EN	(0x1 << 0x3)
+ 
+-static void rtc32k_enable(void)
++Stream800ModuleVersion get_module_version(void)
+ {
+-	struct rtc_regs *rtc = (struct rtc_regs *)AM335X_RTC_BASE;
+-
+-	/*
+-	 * Unlock the RTC's registers.  For more details please see the
+-	 * RTC_SS section of the TRM.  In order to unlock we need to
+-	 * write these specific values (keys) in this order.
+-	 */
+-	writel(0x83e70b13, &rtc->kick0r);
+-	writel(0x95a4f1e0, &rtc->kick1r);
+-
+-	/* Enable the RTC 32K OSC by setting bits 3 and 6. */
+-	writel((1 << 3) | (1 << 6), &rtc->osc);
++	return board.moduleVersion;
+ }
+ 
+-static const struct ddr_data ddr2_data = {
+-	.datardsratio0 = ((MT47H128M16RT25E_RD_DQS<<30) |
+-			  (MT47H128M16RT25E_RD_DQS<<20) |
+-			  (MT47H128M16RT25E_RD_DQS<<10) |
+-			  (MT47H128M16RT25E_RD_DQS<<0)),
+-	.datawdsratio0 = ((MT47H128M16RT25E_WR_DQS<<30) |
+-			  (MT47H128M16RT25E_WR_DQS<<20) |
+-			  (MT47H128M16RT25E_WR_DQS<<10) |
+-			  (MT47H128M16RT25E_WR_DQS<<0)),
+-	.datawiratio0 = ((MT47H128M16RT25E_PHY_WRLVL<<30) |
+-			 (MT47H128M16RT25E_PHY_WRLVL<<20) |
+-			 (MT47H128M16RT25E_PHY_WRLVL<<10) |
+-			 (MT47H128M16RT25E_PHY_WRLVL<<0)),
+-	.datagiratio0 = ((MT47H128M16RT25E_PHY_GATELVL<<30) |
+-			 (MT47H128M16RT25E_PHY_GATELVL<<20) |
+-			 (MT47H128M16RT25E_PHY_GATELVL<<10) |
+-			 (MT47H128M16RT25E_PHY_GATELVL<<0)),
+-	.datafwsratio0 = ((MT47H128M16RT25E_PHY_FIFO_WE<<30) |
+-			  (MT47H128M16RT25E_PHY_FIFO_WE<<20) |
+-			  (MT47H128M16RT25E_PHY_FIFO_WE<<10) |
+-			  (MT47H128M16RT25E_PHY_FIFO_WE<<0)),
+-	.datawrsratio0 = ((MT47H128M16RT25E_PHY_WR_DATA<<30) |
+-			  (MT47H128M16RT25E_PHY_WR_DATA<<20) |
+-			  (MT47H128M16RT25E_PHY_WR_DATA<<10) |
+-			  (MT47H128M16RT25E_PHY_WR_DATA<<0)),
+-	.datauserank0delay = MT47H128M16RT25E_PHY_RANK0_DELAY,
+-	.datadldiff0 = PHY_DLL_LOCK_DIFF,
+-};
+-
+-static const struct cmd_control ddr2_cmd_ctrl_data = {
+-	.cmd0csratio = MT47H128M16RT25E_RATIO,
+-	.cmd0dldiff = MT47H128M16RT25E_DLL_LOCK_DIFF,
+-	.cmd0iclkout = MT47H128M16RT25E_INVERT_CLKOUT,
+-
+-	.cmd1csratio = MT47H128M16RT25E_RATIO,
+-	.cmd1dldiff = MT47H128M16RT25E_DLL_LOCK_DIFF,
+-	.cmd1iclkout = MT47H128M16RT25E_INVERT_CLKOUT,
+-
+-	.cmd2csratio = MT47H128M16RT25E_RATIO,
+-	.cmd2dldiff = MT47H128M16RT25E_DLL_LOCK_DIFF,
+-	.cmd2iclkout = MT47H128M16RT25E_INVERT_CLKOUT,
+-};
++Stream800CarrierBoardType get_carrier_board_type(void)
++{
++	return board.carrierBoardType;
++}
+ 
+-static const struct emif_regs ddr2_emif_reg_data = {
+-	.sdram_config = MT47H128M16RT25E_EMIF_SDCFG,
+-	.ref_ctrl = MT47H128M16RT25E_EMIF_SDREF,
+-	.sdram_tim1 = MT47H128M16RT25E_EMIF_TIM1,
+-	.sdram_tim2 = MT47H128M16RT25E_EMIF_TIM2,
+-	.sdram_tim3 = MT47H128M16RT25E_EMIF_TIM3,
+-	.emif_ddr_phy_ctlr_1 = MT47H128M16RT25E_EMIF_READ_LATENCY,
+-};
+-#endif
++static void board_printf_info()
++{
++	printf("Detected module: '%s', carrier board: '%s'\n",
++		   stream800ModuleVersionStrings[board.moduleVersion],
++		   stream800CarrierBoardTypeStrings[board.carrierBoardType]);
++}
+ 
+-/*
+- * early system init of muxing and clocks.
++/* workaround: this is called from 'arch/arm/cpu/armv7/lowlevel_init.S'
++ * even if is CONFIG_SKIP_LOWLEVEL_INIT not defined (see 'include/configs/stream800.h')
++ * So can be empty (all low level init is done by the SPL).
+  */
+ void s_init(void)
+ {
+-	/* WDT1 is already running when the bootloader gets control
+-	 * Disable it to avoid "random" resets
+-	 */
+-	writel(0xAAAA, &wdtimer->wdtwspr);
+-	while (readl(&wdtimer->wdtwwps) != 0x0)
+-		;
+-	writel(0x5555, &wdtimer->wdtwspr);
+-	while (readl(&wdtimer->wdtwwps) != 0x0)
+-		;
+-
+-#ifdef CONFIG_SPL_BUILD
+-	/* Setup the PLLs and the clocks for the peripherals */
+-	pll_init();
+-
+-	/* Enable RTC32K clock */
+-	rtc32k_enable();
+-
+-	/* UART softreset */
+-	u32 regVal;
+-
+-#ifdef CONFIG_SERIAL1
+-	enable_uart0_pin_mux();
+-#endif /* CONFIG_SERIAL1 */
+-#ifdef CONFIG_SERIAL2
+-	enable_uart1_pin_mux();
+-#endif /* CONFIG_SERIAL2 */
+-#ifdef CONFIG_SERIAL3
+-	enable_uart2_pin_mux();
+-#endif /* CONFIG_SERIAL3 */
+-#ifdef CONFIG_SERIAL4
+-	enable_uart3_pin_mux();
+-#endif /* CONFIG_SERIAL4 */
+-#ifdef CONFIG_SERIAL5
+-	enable_uart4_pin_mux();
+-#endif /* CONFIG_SERIAL5 */
+-#ifdef CONFIG_SERIAL6
+-	enable_uart5_pin_mux();
+-#endif /* CONFIG_SERIAL6 */
+-
+-	regVal = readl(&uart_base->uartsyscfg);
+-	regVal |= UART_RESET;
+-	writel(regVal, &uart_base->uartsyscfg);
+-	while ((readl(&uart_base->uartsyssts) &
+-		UART_CLK_RUNNING_MASK) != UART_CLK_RUNNING_MASK)
+-		;
+-
+-	/* Disable smart idle */
+-	regVal = readl(&uart_base->uartsyscfg);
+-	regVal |= UART_SMART_IDLE_EN;
+-	writel(regVal, &uart_base->uartsyscfg);
+-
+-	gd = &gdata;
+-
+-	preloader_console_init();
+-
+-	/* Initalize the board header */
+-	// TODO: implement board detection
+-	board.moduleVersion = MV_L2;
+-	board.carrierBoardType = CBT_LanDock;
+-
+-	enable_board_pin_mux(&board);
+-
+-	config_ddr(266, MT47H128M16RT25E_IOCTRL_VALUE, &ddr2_data,
+-			   &ddr2_cmd_ctrl_data, &ddr2_emif_reg_data);
+-#endif
+ }
+ 
++static void board_detect(struct Stream800Board *board);
++
+ /*
+  * Basic board specific setup.  Pinmux has been handled already.
+  */
+ int board_init(void)
+ {
+ 	//i2c_init(CONFIG_SYS_I2C_SPEED, CONFIG_SYS_I2C_SLAVE);
+-
+-	// TODO: implement board detection
+-	board.moduleVersion = MV_L2;
+-	board.carrierBoardType = CBT_LanDock;
++	init_adc();
++	board_detect(&board);
++	board_printf_info();
++	enable_board_pin_mux(&board);
+ 
+ 	gd->bd->bi_boot_params = PHYS_DRAM_1 + 0x100;
++	gd->bd->bi_arch_number = MACH_TYPE_TIAM335EVM;
+ 
+ 	gpmc_init();
+ 
+ 	return 0;
+ }
+ 
++static struct SupportedModules {
++	Stream800ModuleVersion moduleVersion;
++	unsigned msb_min;	// Ain0
++	unsigned msb_max;
++	unsigned lsb_min;	// Ain6
++	unsigned lsb_max;
++} supportedModules[] = {
++	{MV_L2,		0xCCC,	0xD54,	0x4CC,	0x555}
++	// TODO: add another stream800 module revisions here
++};
++
++static struct SupportedCarrierBoards {
++	Stream800CarrierBoardType boardType;
++	unsigned msb_min;	// Ain3
++	unsigned msb_max;
++	unsigned lsb_min;	// Ain2
++	unsigned lsb_max;
++} supportedCarrierBoards[] = {
++	{CBT_SueDemoClientBoard,	0xF76,	0xFFF,	0x000,	0x088}
++	,{CBT_LanDockBoard,			0x7FF,	0x910,	0x7FF,	0x910}
++	// TODO: add another boards here
++};
++
++static void board_detect(struct Stream800Board *board)
++{
++	if (!board) {
++		BUG();
++		return;
++	}
++
++	board->moduleVersion = MV_unknown;
++	board->carrierBoardType = CBT_unknown;
++
++	{
++		unsigned MV_MSB = read_adc_channel(0);	// Module Version (MSB)
++		unsigned MV_LSB = read_adc_channel(6);	// Module Version (LSB)
++		unsigned CBT_MSB = read_adc_channel(3);	// Carrier Board Type (MSB)
++		unsigned CBT_LSB = read_adc_channel(2);	// Carrier Board Type (LSB)
++		int i;
++
++		// Detecting module version
++		for (i = 0; i < sizeof(supportedModules) / sizeof(supportedModules[0]); i++) {
++			if ((MV_MSB >= supportedModules[i].msb_min) && (MV_MSB <= supportedModules[i].msb_max)
++				&& (MV_LSB >= supportedModules[i].lsb_min) && (MV_LSB <= supportedModules[i].lsb_max)) {
++				board->moduleVersion = supportedModules[i].moduleVersion;
++				break;
++			}
++		}
++
++		// Detecting carrier board type
++		for (i = 0; i < sizeof(supportedCarrierBoards) / sizeof(supportedCarrierBoards[0]); i++) {
++			if ((CBT_MSB >= supportedCarrierBoards[i].msb_min) && (CBT_MSB <= supportedCarrierBoards[i].msb_max)
++				&& (CBT_LSB >= supportedCarrierBoards[i].lsb_min) && (CBT_LSB <= supportedCarrierBoards[i].lsb_max)) {
++				board->carrierBoardType = supportedCarrierBoards[i].boardType;
++				break;
++			}
++		}
++
++		// Try to check if we run some of obsolete revision of stream800 module
++		// L1 has not correctly implemented board detection support in HW, values used for detection are only experimental
++		if (board->moduleVersion == MV_unknown || board->carrierBoardType == CBT_unknown) {
++			if (MV_MSB >= 0xCD0 && MV_MSB <= 0xDC0 && MV_LSB >= 0xB00 && MV_LSB <= 0xBC8
++				&& CBT_MSB >= 0x078 && CBT_MSB <= 0x0B8 && CBT_LSB >= 0x050 && CBT_LSB <= 0x080) {
++				board->moduleVersion = MV_L1;
++				board->carrierBoardType = CBT_LanDockBoard;
++			} else if (MV_MSB >= 0xDA0 && MV_MSB <= 0xF00 && MV_LSB >= 0xBA0 && MV_LSB <= 0xD00
++				&& CBT_MSB >= 0xCA0 && CBT_MSB <= 0xE00 && CBT_LSB >= 0xCA0 && CBT_LSB <= 0xE00) {
++				board->moduleVersion = MV_L1;
++				board->carrierBoardType = CBT_SueDemoClientBoard;
++		// It is not recommend to use L1 or L2 with CBT_SueFirstCarrierBoard, values used for detection are only experimental
++			} else if (MV_MSB >= 0xDE0 && MV_MSB <= 0xF00 && MV_LSB >= 0xBD0 && MV_LSB <= 0xCD0
++				&& CBT_MSB >= 0xE80 && CBT_MSB <= 0xEB0 && CBT_LSB >= 0x4C0 && CBT_LSB <= 0x510) {
++				board->moduleVersion = MV_L1;
++				board->carrierBoardType = CBT_SueFirstCarrierBoard;
++			} else if (MV_MSB >= 0xCE0 && MV_MSB <= 0xD30 && MV_LSB >= 0x4D0 && MV_LSB <= 0x540
++				&& CBT_MSB >= 0xE50 && CBT_MSB <= 0xEF0 && CBT_LSB >= 0x000 && CBT_LSB <= 0x050) {
++				board->moduleVersion = MV_L2;
++				board->carrierBoardType = CBT_SueFirstCarrierBoard;
++			}
++		}
++	}
++}
++
+ #ifdef CONFIG_BOARD_LATE_INIT
+ int board_late_init(void)
+ {
+ #ifdef CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG
+-	// TODO: implement board detection
+ 	setenv("board_name", "stream800");
+-	setenv("board_rev", "L2");
++	switch (get_module_version()) {
++		case MV_L0: setenv("board_rev", "L0"); break;
++		case MV_L1: setenv("board_rev", "L1"); break;
++		case MV_L2: setenv("board_rev", "L2");break;
++		case MV_unknown:
++		default:
++			setenv("board_rev", "unknown");
++			setenv("bootcmd", "");
++			break;
++	}
+ #endif
+ 
++	switch (get_carrier_board_type()) {
++		case CBT_LanDockBoard:
++			lan_dock__init(&board);
++			break;
++		case CBT_SueDemoClientBoard:
++			demo_client__init(&board);
++			break;
++		case CBT_SueFirstCarrierBoard:
++			first_carrier__init(&board);
++			break;
++		default:
++			printf("board_late_init: Not supported board!\n");
++			//panic("Not supported board!");
++	}
++
+ 	return 0;
+ }
+ #endif
+@@ -262,27 +226,14 @@ static void cpsw_control(int enabled)
+ 	return;
+ }
+ 
+-static struct cpsw_slave_data cpsw_slaves[] = {
+-	{
+-		.slave_reg_ofs	= 0x208,
+-		.sliver_reg_ofs	= 0xd80,
+-		.phy_id		= 0,
+-	},
+-	{
+-		.slave_reg_ofs	= 0x308,
+-		.sliver_reg_ofs	= 0xdc0,
+-		.phy_id		= 1,
+-	},
+-};
+-
+ static struct cpsw_platform_data cpsw_data = {
+ 	.mdio_base		= AM335X_CPSW_MDIO_BASE,
+ 	.cpsw_base		= AM335X_CPSW_BASE,
+ 	.mdio_div		= 0xff,
+ 	.channels		= 8,
+ 	.cpdma_reg_ofs		= 0x800,
+-	.slaves			= 2,
+-	.slave_data		= cpsw_slaves,
++	.slaves			= 0,			// will be set later, depends on each carrier board type
++	.slave_data		= NULL,			// ditto
+ 	.ale_reg_ofs		= 0xd00,
+ 	.ale_entries		= 1024,
+ 	.host_port_reg_ofs	= 0x108,
+@@ -296,6 +247,7 @@ static struct cpsw_platform_data cpsw_data = {
+ 
+ #if defined(CONFIG_DRIVER_TI_CPSW) || \
+ 	(defined(CONFIG_USB_ETHER) && defined(CONFIG_MUSB_GADGET))
++
+ int board_eth_init(bd_t *bis)
+ {
+ 	int rv, n = 0;
+@@ -324,32 +276,43 @@ int board_eth_init(bd_t *bis)
+ 		}
+ 	}
+ 
+-	writel(RMII1_MODE_ENABLE | MII1_CLK_FROM_CHIP_PIN | RGMII2_MODE_ENABLE, &cdev->miisel);
+-	cpsw_slaves[0].phy_if = PHY_INTERFACE_MODE_RMII;
+-	cpsw_slaves[0].phy_id = 4;
+-	cpsw_slaves[1].phy_if = PHY_INTERFACE_MODE_RGMII;
+-	cpsw_slaves[1].phy_id = 0;
++	switch (get_carrier_board_type()) {
++		case CBT_LanDockBoard:
++			lan_dock__cpsw_eth_init(&board, &cpsw_data);
++			break;
++		case CBT_SueDemoClientBoard:
++			demo_client__cpsw_eth_init(&board, &cpsw_data);
++			break;
++		case CBT_SueFirstCarrierBoard:
++			first_carrier__cpsw_eth_init(&board, &cpsw_data);
++			break;
++		default:
++			printf("board_eth_init: Not supported board!\n");
++			//panic("Not supported board!");
++			goto try_usbether;
++	}
+ 
+ 	rv = cpsw_register(&cpsw_data);
+ 	if (rv < 0)
+ 		printf("Error %d registering CPSW switch\n", rv);
+ 	else
+ 		n += rv;
+-#endif
++#endif	// CONFIG_DRIVER_TI_CPSW
+ 
+ try_usbether:
+ 
+-#if defined(CONFIG_USB_ETHER) && !defined(CONFIG_SPL_BUILD)
+-	puts("board_eth_init: configuring USB eth ...\n");
++#if defined(CONFIG_USB_ETHER)
++	debug("board_eth_init: configuring USB eth ...\n");
+ 	rv = usb_eth_initialize(bis);
+ 	if (rv < 0)
+ 		printf("Error %d registering USB_ETHER\n", rv);
+ 	else
+ 		n += rv;
+ #else
+-	puts("board_eth_init: USB eth not enabled\n");
++	debug("board_eth_init: USB eth not enabled\n");
+ #endif
+ 
+ 	return n;
+ }
+-#endif
++
++#endif	// CONFIG_DRIVER_TI_CPSW) || (CONFIG_USB_ETHER && CONFIG_MUSB_GADGET)
+diff --git a/board/streamunlimited/stream800/board.h b/board/streamunlimited/stream800/board.h
+index 3277c22..6304e4e 100644
+--- a/board/streamunlimited/stream800/board.h
++++ b/board/streamunlimited/stream800/board.h
+@@ -19,40 +19,52 @@
+ #ifndef _BOARD_H_
+ #define _BOARD_H_
+ 
++#include <common.h>
++
+ /** Module version
+  * \see https://extern.streamunlimited.com:8443/display/Stream800/Stream800+Hardware+Configuration
+  */
+ typedef enum {
++	MV_unknown,
+ 	MV_L0,
+ 	MV_L1,
+ 	MV_L2
+ } Stream800ModuleVersion;
+ 
++static const char *stream800ModuleVersionStrings[] = {
++	[MV_unknown] = "unknown",
++	[MV_L0] = "stream800 rev.L0",
++	[MV_L1] = "stream800 rev.L1",
++	[MV_L2] = "stream800 rev.L2"
++};
++
++
+ /** Carrier board type
+  * \see https://extern.streamunlimited.com:8443/display/Stream800/Stream800+Hardware+Configuration
+  */
+ typedef enum {
+-	CBT_Sue,			///< SUE carrier board
+-	CBT_SueFactoryTest,	///< SUE factory test board
+-	CBT_SueDemoClient,	///< SUE demo client
+-	CBT_LanDock			///< Dictations LAN dock
++	CBT_unknown,
++	CBT_SueFactoryTestBoard,		///< SUE factory test board
++	CBT_SueFirstCarrierBoard,		///< SUE Carrier Board
++	CBT_SueDemoClientBoard,			///< SUE demo client
++	CBT_LanDockBoard				///< Dictations LAN dock
+ } Stream800CarrierBoardType;
+ 
++static const char *stream800CarrierBoardTypeStrings[] = {
++	[CBT_unknown]				= "unknown",
++	[CBT_SueFactoryTestBoard]	= "SUE factory test board",
++	[CBT_SueFirstCarrierBoard]	= "SUE first carrier board",
++	[CBT_SueDemoClientBoard]	= "SUE demo client board",
++	[CBT_LanDockBoard]			= "Dictations LAN dock board"
++};
++
+ 
+ struct Stream800Board {
+ 	Stream800ModuleVersion moduleVersion;
+ 	Stream800CarrierBoardType carrierBoardType;
+ };
+ 
+-void enable_board_pin_mux(struct Stream800Board *board);
+-
+-void enable_uart0_pin_mux(void);
+-void enable_uart1_pin_mux(void);
+-void enable_uart2_pin_mux(void);
+-void enable_uart3_pin_mux(void);
+-void enable_uart4_pin_mux(void);
+-void enable_uart5_pin_mux(void);
+-
+-void enable_i2c0_pin_mux(void);
++Stream800ModuleVersion get_module_version(void);
++Stream800CarrierBoardType get_carrier_board_type(void);
+ 
+ #endif	// _BOARD_H_
+diff --git a/board/streamunlimited/stream800/mux.c b/board/streamunlimited/stream800/mux.c
+index 564c12d..3df3c9c 100644
+--- a/board/streamunlimited/stream800/mux.c
++++ b/board/streamunlimited/stream800/mux.c
+@@ -19,7 +19,7 @@
+ #include <asm/arch/mux.h>
+ #include <asm/io.h>
+ #include <i2c.h>
+-#include "board.h"
++#include "mux.h"
+ 
+ static struct module_pin_mux uart0_pin_mux[] = {
+ 	{OFFSET(uart0_rxd), (MODE(0) | PULLUP_EN | RXACTIVE)},	/* UART0_RXD */
+@@ -246,11 +246,31 @@ void enable_i2c0_pin_mux(void)
+ void enable_board_pin_mux(struct Stream800Board *board)
+ {
+ 	configure_module_pin_mux(i2c1_pin_mux);
++	configure_module_pin_mux(nand_pin_mux);
++
++	switch (get_carrier_board_type()) {
++		case CBT_LanDockBoard:
+ #ifndef CONFIG_NO_ETH
+-	configure_module_pin_mux(rmii1_pin_mux);
+-	configure_module_pin_mux(rgmii2_pin_mux);
++			configure_module_pin_mux(rmii1_pin_mux);
+ #endif
++			break;
++		case CBT_SueDemoClientBoard:
++#ifndef CONFIG_NO_ETH
++			configure_module_pin_mux(rmii1_pin_mux);
++#endif
++			break;
++		case CBT_SueFirstCarrierBoard:
++#ifndef CONFIG_NO_ETH
++			configure_module_pin_mux(rmii1_pin_mux);
++			configure_module_pin_mux(rgmii2_pin_mux);
++#endif
++			break;
++		default:
++			printf("enable_board_pin_mux: Not supported board!\n");
++			//panic("Not supported board!")
++	}
++
+ 	//configure_module_pin_mux(mmc0_pin_mux);
+ 	//configure_module_pin_mux(mmc1_pin_mux);
+-	configure_module_pin_mux(nand_pin_mux);
++
+ }
+diff --git a/board/streamunlimited/stream800/mux.h b/board/streamunlimited/stream800/mux.h
+new file mode 100644
+index 0000000..e498693
+--- /dev/null
++++ b/board/streamunlimited/stream800/mux.h
+@@ -0,0 +1,35 @@
++/*
++ * mux.h
++ *
++ * Copyright (C) 2012, StreamUnlimited Engineering GmbH, http://www.streamunlimited.com/
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation; either version 2 of
++ * the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR /PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++#ifndef __MUX_H
++#define __MUX_H
++
++#include <common.h>
++#include "board.h"
++
++void enable_board_pin_mux(struct Stream800Board *board);
++
++void enable_uart0_pin_mux(void);
++void enable_uart1_pin_mux(void);
++void enable_uart2_pin_mux(void);
++void enable_uart3_pin_mux(void);
++void enable_uart4_pin_mux(void);
++void enable_uart5_pin_mux(void);
++
++void enable_i2c0_pin_mux(void);
++
++
++#endif	/* __MUX_H */
+-- 
+2.7.4
+

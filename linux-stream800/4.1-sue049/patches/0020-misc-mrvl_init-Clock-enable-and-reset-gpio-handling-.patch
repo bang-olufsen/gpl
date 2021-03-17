@@ -1,0 +1,262 @@
+From 013cb69cd172c1194801455e9fcde755b277e2d4 Mon Sep 17 00:00:00 2001
+From: Radek Dostal <radek.dostal@streamunlimited.com>
+Date: Wed, 25 Feb 2015 16:58:01 +0100
+Subject: [PATCH] misc: mrvl_init: Clock enable and reset gpio handling for
+ marvell wifi chip.
+
+This commit is based on:
+  7986d63d misc: mrvl_init: Clock enable and reset gpio handling for marvell wifi chip.
+  467879b1 misc: mrvl_init: Make mrvl init bool only to have compiled in kernel.
+
+Signed-off-by: Matus Ujhelyi <matus.ujhelyi@streamunlimited.com>
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+Signed-off-by: Radek Dostal <radek.dostal@streamunlimited.com>
+---
+ drivers/bluetooth/Kconfig            |   1 +
+ drivers/misc/Kconfig                 |   8 ++
+ drivers/misc/Makefile                |   1 +
+ drivers/misc/mrvl_init.c             | 148 +++++++++++++++++++++++++++++++++++
+ drivers/net/wireless/mwifiex/Kconfig |   1 +
+ include/misc/mrvl_init.h             |  23 ++++++
+ 6 files changed, 182 insertions(+)
+ create mode 100644 drivers/misc/mrvl_init.c
+ create mode 100644 include/misc/mrvl_init.h
+
+diff --git a/drivers/bluetooth/Kconfig b/drivers/bluetooth/Kconfig
+index ed5c273..3737413 100644
+--- a/drivers/bluetooth/Kconfig
++++ b/drivers/bluetooth/Kconfig
+@@ -251,6 +251,7 @@ config BT_MRVL_SDIO
+ 	tristate "Marvell BT-over-SDIO driver"
+ 	depends on BT_MRVL && MMC
+ 	select FW_LOADER
++	select MRVL_INIT
+ 	select WANT_DEV_COREDUMP
+ 	help
+ 	  The driver for Marvell Bluetooth chipsets with SDIO interface.
+diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
+index 006242c..a220fc1 100644
+--- a/drivers/misc/Kconfig
++++ b/drivers/misc/Kconfig
+@@ -515,6 +515,14 @@ config VEXPRESS_SYSCFG
+ 	  bus. System Configuration interface is one of the possible means
+ 	  of generating transactions on this bus.
+ 
++config MRVL_INIT
++	bool "Marvell clock and  gpio init platform driver."
++	default	n
++	help
++	  This option enables MRVL init driver to enable clocks and gpio pin.
++
++	  If unsure, say N.
++
+ source "drivers/misc/c2port/Kconfig"
+ source "drivers/misc/eeprom/Kconfig"
+ source "drivers/misc/cb710/Kconfig"
+diff --git a/drivers/misc/Makefile b/drivers/misc/Makefile
+index 7d5c4cd..47647d5 100644
+--- a/drivers/misc/Makefile
++++ b/drivers/misc/Makefile
+@@ -56,3 +56,4 @@ obj-$(CONFIG_GENWQE)		+= genwqe/
+ obj-$(CONFIG_ECHO)		+= echo/
+ obj-$(CONFIG_VEXPRESS_SYSCFG)	+= vexpress-syscfg.o
+ obj-$(CONFIG_CXL_BASE)		+= cxl/
++obj-$(CONFIG_MRVL_INIT)	+= mrvl_init.o
+diff --git a/drivers/misc/mrvl_init.c b/drivers/misc/mrvl_init.c
+new file mode 100644
+index 0000000..cc83120
+--- /dev/null
++++ b/drivers/misc/mrvl_init.c
+@@ -0,0 +1,148 @@
++/*
++ * drivers/misc/mrvl_init.c
++ *
++ * Driver for marvell chip init (clock and reset gpio).
++ *
++ * Copyright (C) 2013 StreamuUnlimited.
++ *
++ * Authors:
++ *	Matus Ujhelyi	<matus.ujhelyi@streamunlimited.com>
++ *
++ * This file is licensed under the terms of the GNU General Public License
++ * version 2. This program is licensed "as is" without any warranty of any
++ * kind, whether express or implied.
++ */
++
++#include <linux/module.h>
++#include <linux/init.h>
++#include <linux/kernel.h>
++#include <linux/timer.h>
++#include <linux/delay.h>
++#include <linux/clk.h>
++#include <linux/of.h>
++#include <linux/of_gpio.h>
++#include <linux/of_device.h>
++#include <linux/io.h>
++#include <linux/gpio.h>
++#include <linux/of_gpio.h>
++#include <asm/gpio.h>
++#include <misc/mrvl_init.h>
++
++#define DRIVER_NAME		"mrvl-init"
++
++#ifdef CONFIG_OF
++static const struct of_device_id mrvl_init_of_match[] = {
++	{
++		.compatible = "mrvl-init",
++	},
++	{},
++};
++MODULE_DEVICE_TABLE(of, mrvl_init_of_match);
++
++static int mrvl_init_get_devtree_pdata(struct device *dev,
++			struct mrvl_init_platform_data *pdata)
++{
++	struct device_node *np = dev->of_node;
++	enum of_gpio_flags flags;
++	int gpio;
++
++	gpio = of_get_gpio_flags(np, 0, &flags);
++	if (gpio < 0) {
++		if (gpio != -EPROBE_DEFER)
++			dev_err(dev, "Failed to get gpio flags (%d)\n", gpio);
++		return gpio;
++	}
++
++	pdata->gpio_nr = gpio;
++	/* probe() takes care of clock_name == NULL */
++	pdata->clock_name = of_get_property(np, "linux,clock-name", NULL);
++
++	return 0;
++}
++#else
++
++#define mrvl_init_get_devtree_pdata(dev, pdata)	(-ENOSYS)
++
++#endif
++
++static int mrvl_init_probe(struct platform_device *pdev)
++{
++	const struct mrvl_init_platform_data *pdata =
++					pdev->dev.platform_data;
++	int ret = 0;
++	struct clk *ck_32;
++
++	if (pdev->dev.of_node) {
++		struct mrvl_init_platform_data *dtpdata =
++			devm_kzalloc(&pdev->dev, sizeof(*dtpdata), GFP_KERNEL);
++		if (!dtpdata)
++			return -ENOMEM;
++		ret = mrvl_init_get_devtree_pdata(&pdev->dev, dtpdata);
++		if (ret)
++			return ret;
++		pdata = dtpdata;
++	}
++
++	if (!pdata) {
++		dev_err(&pdev->dev, "Platform data or device tree not defined.\n");
++		return -EINVAL;
++	}
++
++	if (pdata->gpio_nr < 0) {
++		dev_err(&pdev->dev, "Gpio not valid: %d\n", pdata->gpio_nr);
++		return -EINVAL;
++	}
++
++	if (!pdata->clock_name) {
++		dev_err(&pdev->dev, "Clock name empty\n");
++		return -EINVAL;
++	}
++
++	ret = devm_gpio_request(&pdev->dev, pdata->gpio_nr, "wifi-pdn");
++	if (ret < 0)
++		return ret;
++
++	gpio_direction_output(pdata->gpio_nr, 0);
++
++	ck_32 = clk_get(NULL, pdata->clock_name);
++        if (IS_ERR(ck_32)) {
++		dev_err(&pdev->dev, "Cannot clk_get() err: %lu\n", PTR_ERR(ck_32));
++		return PTR_RET(ck_32);
++        }
++
++	ret = clk_prepare(ck_32);
++	if (ret) {
++		goto err_clk;
++	}
++
++	ret = clk_enable(ck_32);
++	if (ret) {
++		goto err_clk;
++	}
++
++	/* reset chip */
++	udelay(2000);
++	gpio_set_value(pdata->gpio_nr, 1);
++
++	dev_info(&pdev->dev, "Marvel init probed\n");
++	return 0;
++
++err_clk:
++	clk_put(ck_32);
++	return ret;
++}
++
++static struct platform_driver mrvl_init_driver = {
++	.probe		= mrvl_init_probe,
++	.driver		= {
++		.name = DRIVER_NAME,
++		.owner = THIS_MODULE,
++		.of_match_table = of_match_ptr(mrvl_init_of_match),
++	},
++};
++
++module_platform_driver(mrvl_init_driver);
++MODULE_DESCRIPTION("MRVL init");
++MODULE_LICENSE("GPL");
++MODULE_ALIAS("platform:" DRIVER_NAME);
++MODULE_AUTHOR("StreamUnlimited");
+diff --git a/drivers/net/wireless/mwifiex/Kconfig b/drivers/net/wireless/mwifiex/Kconfig
+index aa01c9b..350c648 100644
+--- a/drivers/net/wireless/mwifiex/Kconfig
++++ b/drivers/net/wireless/mwifiex/Kconfig
+@@ -12,6 +12,7 @@ config MWIFIEX_SDIO
+ 	tristate "Marvell WiFi-Ex Driver for SD8786/SD8787/SD8797/SD8887/SD8897"
+ 	depends on MWIFIEX && MMC
+ 	select FW_LOADER
++	select MRVL_INIT
+ 	---help---
+ 	  This adds support for wireless adapters based on Marvell
+ 	  8786/8787/8797/8887/8897 chipsets with SDIO interface.
+diff --git a/include/misc/mrvl_init.h b/include/misc/mrvl_init.h
+new file mode 100644
+index 0000000..3a34f82
+--- /dev/null
++++ b/include/misc/mrvl_init.h
+@@ -0,0 +1,23 @@
++/*
++ * include/misc/mrvl_init.h
++ *
++ * Copyright (C) 2013 StreamuUnlimited.
++ *
++ * Authors:
++ *	Matus Ujhelyi	<matus.ujhelyi@streamunlimited.com>
++ *
++ * This file is licensed under the terms of the GNU General Public License
++ * version 2. This program is licensed "as is" without any warranty of any
++ * kind, whether express or implied.
++ */
++
++#ifndef __MRVL_INIT_H__
++#define __MRVL_INIT_H__
++
++struct mrvl_init_platform_data {
++	int		gpio_nr;
++	const char	*clock_name;
++};
++
++#endif /* __MRVL_INIT_H__ */
++
+-- 
+1.9.1
+

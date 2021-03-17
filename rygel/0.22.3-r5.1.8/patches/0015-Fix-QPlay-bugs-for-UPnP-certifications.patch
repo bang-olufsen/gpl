@@ -1,0 +1,234 @@
+From 579e2b953e70a09de310d5687b07fe1bf193d0a6 Mon Sep 17 00:00:00 2001
+From: Milan Plzik <milan.plzik@streamunlimited.com>
+Date: Fri, 13 Feb 2015 15:38:12 +0100
+Subject: [PATCH] Fix QPlay bugs for UPnP certifications
+
+Signed-off-by: Xia Zhou <xia.zhou@streamunlimited.com>
+Signed-off-by: Milan Plzik <milan.plzik@streamunlimited.com>
+---
+ src/librygel-renderer/rygel-qplay.c    | 88 ++++++++++++++++++++++++++++++++--
+ src/librygel-renderer/rygel-qplay.vala | 29 ++++++++++-
+ 2 files changed, 110 insertions(+), 7 deletions(-)
+
+diff --git a/src/librygel-renderer/rygel-qplay.c b/src/librygel-renderer/rygel-qplay.c
+index 199dba1..65b01c6 100644
+--- a/src/librygel-renderer/rygel-qplay.c
++++ b/src/librygel-renderer/rygel-qplay.c
+@@ -41,6 +41,7 @@
+ typedef struct _QPlay QPlay;
+ typedef struct _QPlayClass QPlayClass;
+ typedef struct _QPlayPrivate QPlayPrivate;
++#define _g_free0(var) (var = (g_free (var), NULL))
+ 
+ struct _QPlay {
+ 	GUPnPService parent_instance;
+@@ -51,10 +52,15 @@ struct _QPlayClass {
+ 	GUPnPServiceClass parent_class;
+ };
+ 
++struct _QPlayPrivate {
++	gchar* code;
++};
++
+ 
+ static gpointer qplay_parent_class = NULL;
+ 
+ GType qplay_get_type (void) G_GNUC_CONST;
++#define QPLAY_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), TYPE_QPLAY, QPlayPrivate))
+ enum  {
+ 	QPLAY_DUMMY_PROPERTY
+ };
+@@ -65,10 +71,13 @@ enum  {
+ static void qplay_real_constructed (GObject* base);
+ static void qplay_set_network_cb (QPlay* self, GUPnPService* registrar, GUPnPServiceAction* action);
+ static void _qplay_set_network_cb_gupnp_service_action_invoked (GUPnPService* _sender, GUPnPServiceAction* action, gpointer self);
++static void qplay_set_qplay_auth_cb (QPlay* self, GUPnPService* registrar, GUPnPServiceAction* action);
++static void _qplay_set_qplay_auth_cb_gupnp_service_action_invoked (GUPnPService* _sender, GUPnPServiceAction* action, gpointer self);
+ static void qplay_query_state (QPlay* self, GUPnPService* registrar, const gchar* variable, GValue* value);
+ static void _qplay_query_state_gupnp_service_query_variable (GUPnPService* _sender, const gchar* variable, GValue* value, gpointer self);
+ QPlay* qplay_new (void);
+ QPlay* qplay_construct (GType object_type);
++static void qplay_finalize (GObject* obj);
+ 
+ 
+ static void _qplay_set_network_cb_gupnp_service_action_invoked (GUPnPService* _sender, GUPnPServiceAction* action, gpointer self) {
+@@ -76,6 +85,11 @@ static void _qplay_set_network_cb_gupnp_service_action_invoked (GUPnPService* _s
+ }
+ 
+ 
++static void _qplay_set_qplay_auth_cb_gupnp_service_action_invoked (GUPnPService* _sender, GUPnPServiceAction* action, gpointer self) {
++	qplay_set_qplay_auth_cb ((QPlay*) self, _sender, action);
++}
++
++
+ static void _qplay_query_state_gupnp_service_query_variable (GUPnPService* _sender, const gchar* variable, GValue* value, gpointer self) {
+ 	qplay_query_state ((QPlay*) self, _sender, variable, value);
+ }
+@@ -86,7 +100,7 @@ static void qplay_real_constructed (GObject* base) {
+ 	self = (QPlay*) base;
+ 	G_OBJECT_CLASS (qplay_parent_class)->constructed ((GObject*) G_TYPE_CHECK_INSTANCE_CAST (self, gupnp_service_get_type (), GUPnPService));
+ 	g_signal_connect_object ((GUPnPService*) self, "action-invoked::SetNetwork", (GCallback) _qplay_set_network_cb_gupnp_service_action_invoked, self, 0);
+-	g_signal_connect_object ((GUPnPService*) self, "action-invoked::QPlayAuth", (GCallback) _qplay_set_network_cb_gupnp_service_action_invoked, self, 0);
++	g_signal_connect_object ((GUPnPService*) self, "action-invoked::QPlayAuth", (GCallback) _qplay_set_qplay_auth_cb_gupnp_service_action_invoked, self, 0);
+ 	g_signal_connect_object ((GUPnPService*) self, "query-variable::FakeState", (GCallback) _qplay_query_state_gupnp_service_query_variable, self, 0);
+ }
+ 
+@@ -94,8 +108,51 @@ static void qplay_real_constructed (GObject* base) {
+ static void qplay_set_network_cb (QPlay* self, GUPnPService* registrar, GUPnPServiceAction* action) {
+ 	GUPnPServiceAction* _tmp0_ = NULL;
+ 	guint _tmp1_ = 0U;
++	gchar* ssid = NULL;
++	GUPnPServiceAction* _tmp4_ = NULL;
++	const gchar* _tmp5_ = NULL;
++	GUPnPServiceAction* _tmp8_ = NULL;
++	g_return_if_fail (self != NULL);
++	g_return_if_fail (registrar != NULL);
++	g_return_if_fail (action != NULL);
++	_tmp0_ = action;
++	_tmp1_ = gupnp_service_action_get_argument_count (_tmp0_);
++	if (_tmp1_ != ((guint) 2)) {
++		GUPnPServiceAction* _tmp2_ = NULL;
++		const gchar* _tmp3_ = NULL;
++		_tmp2_ = action;
++		_tmp3_ = _ ("Invalid argument");
++		gupnp_service_action_return_error (_tmp2_, (guint) 402, _tmp3_);
++		return;
++	}
++	_tmp4_ = action;
++	gupnp_service_action_get (_tmp4_, "SSID", G_TYPE_STRING, &ssid, NULL);
++	_tmp5_ = ssid;
++	if (g_strcmp0 (_tmp5_, "") != 0) {
++		GUPnPServiceAction* _tmp6_ = NULL;
++		const gchar* _tmp7_ = NULL;
++		_tmp6_ = action;
++		_tmp7_ = _ ("Invalid Name");
++		gupnp_service_action_return_error (_tmp6_, (guint) 701, _tmp7_);
++		_g_free0 (ssid);
++		return;
++	}
++	_tmp8_ = action;
++	gupnp_service_action_return (_tmp8_);
++	_g_free0 (ssid);
++}
++
++
++static void qplay_set_qplay_auth_cb (QPlay* self, GUPnPService* registrar, GUPnPServiceAction* action) {
++	GUPnPServiceAction* _tmp0_ = NULL;
++	guint _tmp1_ = 0U;
+ 	GUPnPServiceAction* _tmp4_ = NULL;
+-	GUPnPServiceAction* _tmp5_ = NULL;
++	const gchar* _tmp5_ = NULL;
++	GUPnPServiceAction* _tmp6_ = NULL;
++	const gchar* _tmp7_ = NULL;
++	GUPnPServiceAction* _tmp8_ = NULL;
++	const gchar* _tmp9_ = NULL;
++	GUPnPServiceAction* _tmp10_ = NULL;
+ 	g_return_if_fail (self != NULL);
+ 	g_return_if_fail (registrar != NULL);
+ 	g_return_if_fail (action != NULL);
+@@ -110,9 +167,16 @@ static void qplay_set_network_cb (QPlay* self, GUPnPService* registrar, GUPnPSer
+ 		return;
+ 	}
+ 	_tmp4_ = action;
+-	gupnp_service_action_set (_tmp4_, "Result", G_TYPE_INT, 1, NULL);
+-	_tmp5_ = action;
+-	gupnp_service_action_return (_tmp5_);
++	_tmp5_ = self->priv->code;
++	gupnp_service_action_set (_tmp4_, "Code", G_TYPE_STRING, _tmp5_, NULL);
++	_tmp6_ = action;
++	_tmp7_ = self->priv->code;
++	gupnp_service_action_set (_tmp6_, "MID", G_TYPE_STRING, _tmp7_, NULL);
++	_tmp8_ = action;
++	_tmp9_ = self->priv->code;
++	gupnp_service_action_set (_tmp8_, "DID", G_TYPE_STRING, _tmp9_, NULL);
++	_tmp10_ = action;
++	gupnp_service_action_return (_tmp10_);
+ }
+ 
+ 
+@@ -140,11 +204,25 @@ QPlay* qplay_new (void) {
+ 
+ static void qplay_class_init (QPlayClass * klass) {
+ 	qplay_parent_class = g_type_class_peek_parent (klass);
++	g_type_class_add_private (klass, sizeof (QPlayPrivate));
+ 	G_OBJECT_CLASS (klass)->constructed = qplay_real_constructed;
++	G_OBJECT_CLASS (klass)->finalize = qplay_finalize;
+ }
+ 
+ 
+ static void qplay_instance_init (QPlay * self) {
++	gchar* _tmp0_ = NULL;
++	self->priv = QPLAY_GET_PRIVATE (self);
++	_tmp0_ = g_strdup ("Code");
++	self->priv->code = _tmp0_;
++}
++
++
++static void qplay_finalize (GObject* obj) {
++	QPlay * self;
++	self = G_TYPE_CHECK_INSTANCE_CAST (obj, TYPE_QPLAY, QPlay);
++	_g_free0 (self->priv->code);
++	G_OBJECT_CLASS (qplay_parent_class)->finalize (obj);
+ }
+ 
+ 
+diff --git a/src/librygel-renderer/rygel-qplay.vala b/src/librygel-renderer/rygel-qplay.vala
+index 8f3f3a6..1b6600f 100644
+--- a/src/librygel-renderer/rygel-qplay.vala
++++ b/src/librygel-renderer/rygel-qplay.vala
+@@ -38,11 +38,13 @@ internal class QPlay: Service {
+     public const string DESCRIPTION_PATH =
+                     "xml/QPlayDescription.xml";
+ 
++    private string code = "Code";
++
+     public override void constructed () {
+         base.constructed ();
+ 
+         this.action_invoked["SetNetwork"].connect (this.set_network_cb);
+-        this.action_invoked["QPlayAuth"].connect (this.set_network_cb);
++        this.action_invoked["QPlayAuth"].connect (this.set_qplay_auth_cb);
+ 
+         this.query_variable["FakeState"].connect
+                                         (this.query_state);
+@@ -51,13 +53,36 @@ internal class QPlay: Service {
+     /* SetNetwork and QPlayAuth action implementations (fake) */
+     private void set_network_cb (Service       registrar,
+                                  ServiceAction action) {
++        if (action.get_argument_count () != 2) {
++            action.return_error (402, _("Invalid argument"));
++
++            return;
++        }
++
++        string ssid;
++
++        action.get ("SSID", typeof (string), out ssid);
++
++        if (ssid != "") {
++            action.return_error (701, _("Invalid Name"));
++
++            return;
++        }
++
++        action.return ();
++    }
++
++    private void set_qplay_auth_cb (Service       registrar,
++                                    ServiceAction action) {
+         if (action.get_argument_count () != 1) {
+             action.return_error (402, _("Invalid argument"));
+ 
+             return;
+         }
+ 
+-        action.set ("Result", typeof (int), 1);
++        action.set ("Code", typeof (string), this.code);
++        action.set ("MID", typeof (string), this.code);
++        action.set ("DID", typeof (string), this.code);
+ 
+         action.return ();
+     }
+-- 
+1.9.1
+

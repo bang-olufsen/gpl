@@ -1,0 +1,153 @@
+From c77bc4078dae916d0ff03c3f4b7f06eef72a8a25 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Fri, 11 Apr 2014 07:33:08 +0200
+Subject: [PATCH] sue:s800: board-spl: Update to latest spl framework
+
+Remove cusotm s_init and use common + define 4 necessary callbacks
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ board/streamunlimited/stream800/board-spl.c | 93 ++++++++---------------------
+ 1 file changed, 24 insertions(+), 69 deletions(-)
+
+diff --git a/board/streamunlimited/stream800/board-spl.c b/board/streamunlimited/stream800/board-spl.c
+index 7e4e61b..79901e7 100644
+--- a/board/streamunlimited/stream800/board-spl.c
++++ b/board/streamunlimited/stream800/board-spl.c
+@@ -40,30 +40,6 @@
+ 
+ DECLARE_GLOBAL_DATA_PTR;
+ 
+-static struct wd_timer *wdtimer = (struct wd_timer *)WDT_BASE;
+-static struct uart_sys *uart_base = (struct uart_sys *)DEFAULT_UART_BASE;
+-
+-
+-#define UART_RESET		(0x1 << 1)
+-#define UART_CLK_RUNNING_MASK	0x1
+-#define UART_SMART_IDLE_EN	(0x1 << 0x3)
+-
+-static void rtc32k_enable(void)
+-{
+-	struct rtc_regs *rtc = (struct rtc_regs *)AM335X_RTC_BASE;
+-
+-	/*
+-	 * Unlock the RTC's registers.  For more details please see the
+-	 * RTC_SS section of the TRM.  In order to unlock we need to
+-	 * write these specific values (keys) in this order.
+-	 */
+-	writel(0x83e70b13, &rtc->kick0r);
+-	writel(0x95a4f1e0, &rtc->kick1r);
+-
+-	/* Enable the RTC 32K OSC by setting bits 3 and 6. */
+-	writel((1 << 3) | (1 << 6), &rtc->osc);
+-}
+-
+ static const struct ddr_data ddr2_data = {
+ 	.datardsratio0 = ((MT47H128M16RT25E_RD_DQS<<30) |
+ 			  (MT47H128M16RT25E_RD_DQS<<20) |
+@@ -89,21 +65,16 @@ static const struct ddr_data ddr2_data = {
+ 			  (MT47H128M16RT25E_PHY_WR_DATA<<20) |
+ 			  (MT47H128M16RT25E_PHY_WR_DATA<<10) |
+ 			  (MT47H128M16RT25E_PHY_WR_DATA<<0)),
+-	.datauserank0delay = MT47H128M16RT25E_PHY_RANK0_DELAY,
+-	.datadldiff0 = PHY_DLL_LOCK_DIFF,
+ };
+ 
+ static const struct cmd_control ddr2_cmd_ctrl_data = {
+ 	.cmd0csratio = MT47H128M16RT25E_RATIO,
+-	.cmd0dldiff = MT47H128M16RT25E_DLL_LOCK_DIFF,
+ 	.cmd0iclkout = MT47H128M16RT25E_INVERT_CLKOUT,
+ 
+ 	.cmd1csratio = MT47H128M16RT25E_RATIO,
+-	.cmd1dldiff = MT47H128M16RT25E_DLL_LOCK_DIFF,
+ 	.cmd1iclkout = MT47H128M16RT25E_INVERT_CLKOUT,
+ 
+ 	.cmd2csratio = MT47H128M16RT25E_RATIO,
+-	.cmd2dldiff = MT47H128M16RT25E_DLL_LOCK_DIFF,
+ 	.cmd2iclkout = MT47H128M16RT25E_INVERT_CLKOUT,
+ };
+ 
+@@ -116,30 +87,20 @@ static const struct emif_regs ddr2_emif_reg_data = {
+ 	.emif_ddr_phy_ctlr_1 = MT47H128M16RT25E_EMIF_READ_LATENCY,
+ };
+ 
+-/*
+- * early system init of muxing and clocks.
+- */
+-void s_init(void)
+-{
+-	/* WDT1 is already running when the bootloader gets control
+-	 * Disable it to avoid "random" resets
+-	 */
+-	writel(0xAAAA, &wdtimer->wdtwspr);
+-	while (readl(&wdtimer->wdtwwps) != 0x0)
+-		;
+-	writel(0x5555, &wdtimer->wdtwspr);
+-	while (readl(&wdtimer->wdtwwps) != 0x0)
+-		;
+-
+-	/* Setup the PLLs and the clocks for the peripherals */
+-	pll_init();
+-
+-	/* Enable RTC32K clock */
+-	rtc32k_enable();
++const struct ctrl_ioregs ioregs = {
++	.cm0ioctl		= MT47H128M16RT25E_IOCTRL_VALUE,
++	.cm1ioctl		= MT47H128M16RT25E_IOCTRL_VALUE,
++	.cm2ioctl		= MT47H128M16RT25E_IOCTRL_VALUE,
++	.dt0ioctl		= MT47H128M16RT25E_IOCTRL_VALUE,
++	.dt1ioctl		= MT47H128M16RT25E_IOCTRL_VALUE,
++};
+ 
+-	/* UART softreset */
+-	u32 regVal;
++void set_mux_conf_regs(void)
++{
++}
+ 
++void set_uart_mux_conf(void)
++{
+ #ifdef CONFIG_SERIAL1
+ 	enable_uart0_pin_mux();
+ #endif /* CONFIG_SERIAL1 */
+@@ -158,25 +119,19 @@ void s_init(void)
+ #ifdef CONFIG_SERIAL6
+ 	enable_uart5_pin_mux();
+ #endif /* CONFIG_SERIAL6 */
++}
+ 
+-	regVal = readl(&uart_base->uartsyscfg);
+-	regVal |= UART_RESET;
+-	writel(regVal, &uart_base->uartsyscfg);
+-	while ((readl(&uart_base->uartsyssts) &
+-		UART_CLK_RUNNING_MASK) != UART_CLK_RUNNING_MASK)
+-		;
+-
+-	/* Disable smart idle */
+-	regVal = readl(&uart_base->uartsyscfg);
+-	regVal |= UART_SMART_IDLE_EN;
+-	writel(regVal, &uart_base->uartsyscfg);
+-
+-	gd = &gdata;
+-
+-	preloader_console_init();
++void sdram_init(void)
++{
++	config_ddr(266, &ioregs, &ddr2_data,
++		   &ddr2_cmd_ctrl_data, &ddr2_emif_reg_data, 0);
++}
+ 
+-	config_ddr(266, MT47H128M16RT25E_IOCTRL_VALUE, &ddr2_data,
+-			   &ddr2_cmd_ctrl_data, &ddr2_emif_reg_data);
++#define OSC	(V_OSCK/1000000)
++const struct dpll_params dpll_ddr = {
++		266, OSC-1, 1, -1, -1, -1, -1};
+ 
+-	gpmc_init();
++const struct dpll_params *get_dpll_ddr_params(void)
++{
++	return &dpll_ddr;
+ }
+-- 
+2.7.4
+

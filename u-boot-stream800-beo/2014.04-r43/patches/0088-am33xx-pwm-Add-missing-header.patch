@@ -1,0 +1,25 @@
+From eedce706a726ec3c13c5d5bbae0ef7d54ebea5be Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Fri, 11 Apr 2014 13:56:31 +0200
+Subject: [PATCH] am33xx:pwm: Add missing header
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ arch/arm/cpu/armv7/am33xx/pwm.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/arm/cpu/armv7/am33xx/pwm.c b/arch/arm/cpu/armv7/am33xx/pwm.c
+index 4845ca5..460593e 100644
+--- a/arch/arm/cpu/armv7/am33xx/pwm.c
++++ b/arch/arm/cpu/armv7/am33xx/pwm.c
+@@ -32,6 +32,7 @@
+ #include <asm/io.h>
+ #include <asm/arch/pwm.h>
+ #include <asm/arch/clock.h>
++#include <asm/arch/hardware.h>
+ 
+ #define PERIOD_MAX 0xFFFF
+ #define NSEC_PER_SEC 1000000000L
+-- 
+2.7.4
+

@@ -1,0 +1,66 @@
+From af5ddc7f15894b85dbf2f5eae64ff451b7c2c60d Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@gmail.com>
+Date: Wed, 7 Oct 2015 15:25:21 +0200
+Subject: [PATCH] beo: kernel: Add handling to define audio mclk in devicetree
+
+Signed-off-by: Marek Belisko <marek.belisko@gmail.com>
+---
+ sound/soc/davinci/am33xx-s800.c | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
+
+diff --git a/sound/soc/davinci/am33xx-s800.c b/sound/soc/davinci/am33xx-s800.c
+index 1f16ece..f0e3d27 100644
+--- a/sound/soc/davinci/am33xx-s800.c
++++ b/sound/soc/davinci/am33xx-s800.c
+@@ -34,6 +34,7 @@ struct snd_soc_am33xx_s800 {
+ 	struct snd_soc_card	card;
+ 	struct clk 		*mclk;
+ 	struct clk		*mclk_rx;
++	unsigned int		mclk_rate_base_48k;
+ 	unsigned int		mclk_rate;
+ 	unsigned int		mclk_rate_rx;
+ 	signed int		drift;
+@@ -250,7 +251,9 @@ static int am33xx_s800_common_hw_params(struct snd_pcm_substream *substream,
+ 	int clk_id, div_mclk, div_bclk, div_lrclk;
+ 
+ 	rate = params_rate(params);
+-	mclk = (rate % 16000 == 0) ? MCLK_48k : MCLK_44k1;
++
++	unsigned int clk_base_48k = priv->mclk_rate_base_48k;
++	mclk = (rate % 16000 == 0) ? clk_base_48k : clk_base_48k / 48000 * 44100;
+ 
+ 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) {
+ 		priv->mclk_rate = mclk;
+@@ -499,7 +502,7 @@ static const struct of_device_id snd_soc_am33xx_s800_match[] = {
+ static int snd_soc_am33xx_s800_probe(struct platform_device *pdev)
+ {
+ 	int ret;
+-	unsigned int dai_fmt;
++	unsigned int dai_fmt, val;
+ 	struct device *dev = &pdev->dev;
+ 	struct device_node *top_node, *node;
+ 	struct snd_soc_am33xx_s800 *priv;
+@@ -519,6 +522,8 @@ static int snd_soc_am33xx_s800_probe(struct platform_device *pdev)
+ 
+ 	dai_fmt = SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF;
+ 
++
++
+ 	/* request pin mux */
+ 	priv->pinctrl = devm_pinctrl_get(dev);
+ 	if (IS_ERR(priv->pinctrl))
+@@ -567,6 +572,11 @@ static int snd_soc_am33xx_s800_probe(struct platform_device *pdev)
+ 		return 0;
+ 	}
+ 
++	if (of_property_read_u32(top_node, "sue,mclk-base-48k", &val) >= 0)
++		priv->mclk_rate_base_48k = val;
++	else
++		priv->mclk_rate_base_48k = MCLK_48k;
++
+ 	/* machine controls */
+ 	priv->card.controls = am33xx_s800_controls;
+ 	priv->card.num_controls = ARRAY_SIZE(am33xx_s800_controls);
+-- 
+1.9.1
+

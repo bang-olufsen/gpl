@@ -1,0 +1,57 @@
+# Serbian translation for libsecret.
+# Copyright (C) 2013 libsecret's COPYRIGHT HOLDER
+# This file is distributed under the same license as the libsecret package.
+# Miroslav Nikolić <miroslavnikolic@rocketmail.com>, 2013.
+msgid ""
+msgstr ""
+"Project-Id-Version: libsecret master\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=libsec"
+"ret&keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2013-02-18 14:22+0000\n"
+"PO-Revision-Date: 2013-02-20 20:24+0200\n"
+"Last-Translator: Miroslav Nikolić <miroslavnikolic@rocketmail.com>\n"
+"Language-Team: Serbian <gnom@prevod.org>\n"
+"Language: sr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=n==1? 3 : n%10==1 && n%100!=11 ? 0 : "
+"n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Project-Style: gnome\n"
+
+#: ../libsecret/secret-item.c:1164
+#, c-format
+msgid "Received invalid secret from the secret storage"
+msgstr "Primljena je neispravna tajna iz skladišta tajni"
+
+#: ../libsecret/secret-methods.c:1029
+msgid "Default keyring"
+msgstr "Osnovni privezak ključeva"
+
+#: ../libsecret/secret-session.c:244 ../libsecret/secret-session.c:281
+msgid "Couldn’t communicate with the secret storage"
+msgstr "Ne mogu da komuniciram sa skladištem tajni"
+
+#: ../tool/secret-tool.c:39
+msgid "the label for the new stored item"
+msgstr "natpis za novu uskladištenu stavku"
+
+#: ../tool/secret-tool.c:41
+msgid "the collection in which to place the stored item"
+msgstr "zbirka u kojoj će biti stavljena uskladištena stavka"
+
+#: ../tool/secret-tool.c:43 ../tool/secret-tool.c:50 ../tool/secret-tool.c:437
+msgid "attribute value pairs of item to lookup"
+msgstr "parovi vrednosti osobina stavke za traženje"
+
+#: ../tool/secret-tool.c:57
+msgid "attribute value pairs which match items to clear"
+msgstr "parovi vrednosti osobina koji odgovaraju stavkama za čišćenje"
+
+#: ../tool/secret-tool.c:433
+msgid "return all results, instead of just first one"
+msgstr "daje sve rezultate, umesto samo prvog"
+
+#: ../tool/secret-tool.c:435
+msgid "unlock item results if necessary"
+msgstr "otključava rezultate stavke ako je neophodno"

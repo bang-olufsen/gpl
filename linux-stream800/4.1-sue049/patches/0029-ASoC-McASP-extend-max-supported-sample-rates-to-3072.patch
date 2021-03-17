@@ -1,0 +1,30 @@
+From e8964478c6977900cfefe29e7df76b8145adfab6 Mon Sep 17 00:00:00 2001
+From: Lee Page <lee.page@streamunlimited.com>
+Date: Fri, 13 Mar 2015 12:42:58 +0100
+Subject: [PATCH] ASoC: McASP: extend max supported sample rates to 3072kHz
+
+Signed-off-by: Miroslav Rudisin <miero@seznam.cz>
+[extended to 3072kHz]
+Signed-off-by: Lee Page <lee.page@streamunlimited.com>
+[code polishing]
+Signed-off-by: Radek Dostal <radek.dostal@streamunlimited.com>
+---
+ sound/soc/davinci/davinci-mcasp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/sound/soc/davinci/davinci-mcasp.c b/sound/soc/davinci/davinci-mcasp.c
+index 3ef68ac..bb37884 100644
+--- a/sound/soc/davinci/davinci-mcasp.c
++++ b/sound/soc/davinci/davinci-mcasp.c
+@@ -1453,7 +1453,7 @@ static int davinci_mcasp_resume(struct snd_soc_dai *dai)
+ #define davinci_mcasp_resume NULL
+ #endif
+ 
+-#define DAVINCI_MCASP_RATES	SNDRV_PCM_RATE_8000_192000
++#define DAVINCI_MCASP_RATES	SNDRV_PCM_RATE_8000_3072000
+ 
+ #define DAVINCI_MCASP_PCM_FMTS (SNDRV_PCM_FMTBIT_S8 | \
+ 				SNDRV_PCM_FMTBIT_U8 | \
+-- 
+1.9.1
+

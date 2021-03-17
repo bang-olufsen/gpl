@@ -1,0 +1,28 @@
+From d530a7c94428d723f895401f3001bef197777d28 Mon Sep 17 00:00:00 2001
+From: Simon Glass <sjg@chromium.org>
+Date: Wed, 16 Apr 2014 08:41:44 -0600
+Subject: [PATCH] am33xx/omap: Enable secure boot with CONFIG_FIT_SIGNATURE
+
+Enable secure boot functionality.
+
+Signed-off-by: Simon Glass <sjg@chromium.org>
+---
+ include/configs/am335x_evm.h | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
+index 4356d37..7b4d7bf 100644
+--- a/include/configs/am335x_evm.h
++++ b/include/configs/am335x_evm.h
+@@ -20,6 +20,8 @@
+ 
+ #ifndef CONFIG_SPL_BUILD
+ # define CONFIG_FIT
++# define CONFIG_FIT_SIGNATURE
++# define CONFIG_RSA
+ # define CONFIG_OF_CONTROL
+ # define CONFIG_OF_SEPARATE
+ # define CONFIG_DEFAULT_DEVICE_TREE am335x-boneblack
+-- 
+2.7.4
+

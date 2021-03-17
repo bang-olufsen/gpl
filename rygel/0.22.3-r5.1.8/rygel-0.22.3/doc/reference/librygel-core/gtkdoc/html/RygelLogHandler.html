@@ -1,0 +1,194 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>librygel-core Reference Manual: RygelLogHandler</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="index.html" title="librygel-core Reference Manual">
+<link rel="up" href="api-main-list-c.html" title="librygel-core API Reference">
+<link rel="prev" href="RygelConfiguration.html" title="RygelConfiguration">
+<link rel="next" href="RygelResourceInfo.html" title="RygelResourceInfo">
+<meta name="generator" content="GTK-Doc V1.20.1 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#RygelLogHandler.description" class="shortcut">Description</a></span><span id="nav_hierarchy">  <span class="dim">|</span> 
+                  <a href="#RygelLogHandler.object-hierarchy" class="shortcut">Object Hierarchy</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="api-main-list-c.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="RygelConfiguration.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="RygelResourceInfo.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry">
+<a name="RygelLogHandler"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="RygelLogHandler.top_of_page"></a>RygelLogHandler</span></h2>
+<p>RygelLogHandler</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1">
+<a name="RygelLogHandler.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="functions_return">
+<col class="functions_name">
+</colgroup>
+<tbody>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a class="link" href="RygelLogHandler.html#RYGEL-TYPE-LOG-HANDLER:CAPS" title="RYGEL_TYPE_LOG_HANDLER">RYGEL_TYPE_LOG_HANDLER</a></td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="RygelLogHandler.html" title="RygelLogHandler"><span class="returnvalue">RygelLogHandler</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="RygelLogHandler.html#rygel-log-handler-get-default" title="rygel_log_handler_get_default ()">rygel_log_handler_get_default</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="RygelLogHandler.other"></a><h2>Types and Values</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="name">
+<col class="description">
+</colgroup>
+<tbody>
+<tr>
+<td class="datatype_keyword">struct</td>
+<td class="function_name"><a class="link" href="RygelLogHandler.html#RygelLogHandler-struct" title="struct RygelLogHandler">RygelLogHandler</a></td>
+</tr>
+<tr>
+<td class="datatype_keyword">struct</td>
+<td class="function_name"><a class="link" href="RygelLogHandler.html#RygelLogHandlerClass" title="struct RygelLogHandlerClass">RygelLogHandlerClass</a></td>
+</tr>
+<tr>
+<td class="datatype_keyword">enum</td>
+<td class="function_name"><a class="link" href="RygelLogHandler.html#RygelLogLevel" title="enum RygelLogLevel">RygelLogLevel</a></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="RygelLogHandler.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="screen">    <a href="/opt/rygel-stable/share/gtk-doc/html/gobject/gobject-Enumeration-and-Flag-Types.html">GEnum</a>
+    <span class="lineart">╰──</span> RygelLogLevel
+    <a href="../gobject/gobject-The-Base-Object-Type.html#GObject">GObject</a>
+    <span class="lineart">╰──</span> RygelLogHandler
+</pre>
+</div>
+<div class="refsect1">
+<a name="RygelLogHandler.description"></a><h2>Description</h2>
+</div>
+<div class="refsect1">
+<a name="RygelLogHandler.functions_details"></a><h2>Functions</h2>
+<div class="refsect2">
+<a name="RYGEL-TYPE-LOG-HANDLER:CAPS"></a><h3>RYGEL_TYPE_LOG_HANDLER</h3>
+<pre class="programlisting">#define RYGEL_TYPE_LOG_HANDLER (rygel_log_handler_get_type ())
+</pre>
+<p>The type for <a class="link" href="RygelLogHandler.html" title="RygelLogHandler"><span class="type">RygelLogHandler</span></a>.</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-log-handler-get-default"></a><h3>rygel_log_handler_get_default ()</h3>
+<pre class="programlisting"><a class="link" href="RygelLogHandler.html" title="RygelLogHandler"><span class="returnvalue">RygelLogHandler</span></a> *
+rygel_log_handler_get_default (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+</div>
+</div>
+<div class="refsect1">
+<a name="RygelLogHandler.other_details"></a><h2>Types and Values</h2>
+<div class="refsect2">
+<a name="RygelLogHandler-struct"></a><h3>struct RygelLogHandler</h3>
+<pre class="programlisting">struct RygelLogHandler;</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelLogHandlerClass"></a><h3>struct RygelLogHandlerClass</h3>
+<pre class="programlisting">struct RygelLogHandlerClass {
+	GObjectClass parent_class;
+};
+</pre>
+<p>The class structure for <a class="link" href="RygelLogHandler.html#RYGEL-TYPE-LOG-HANDLER:CAPS" title="RYGEL_TYPE_LOG_HANDLER"><code class="literal">RYGEL_TYPE_LOG_HANDLER</code></a>. All the fields in this structure are private and should never be accessed directly.</p>
+<div class="refsect3">
+<a name="id-1.3.4.8.3.5"></a><h4>Members</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="300px" class="struct_members_name">
+<col class="struct_members_description">
+<col width="200px" class="struct_members_annotations">
+</colgroup>
+<tbody><tr>
+<td class="struct_member_name"><p><a href="../gobject/gobject-The-Base-Object-Type.html#GObjectClass"><span class="type">GObjectClass</span></a> <em class="structfield"><code><a name="RygelLogHandlerClass.parent-class"></a>parent_class</code></em>;</p></td>
+<td class="struct_member_description"><p>the parent class structure</p></td>
+<td class="struct_member_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelLogLevel"></a><h3>enum RygelLogLevel</h3>
+<div class="refsect3">
+<a name="id-1.3.4.8.4.3"></a><h4>Members</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="300px" class="enum_members_name">
+<col class="enum_members_description">
+<col width="200px" class="enum_members_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="enum_member_name"><p><a name="RYGEL-LOG-LEVEL-INVALID:CAPS"></a>RYGEL_LOG_LEVEL_INVALID</p></td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="RYGEL-LOG-LEVEL-CRITICAL:CAPS"></a>RYGEL_LOG_LEVEL_CRITICAL</p></td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="RYGEL-LOG-LEVEL-ERROR:CAPS"></a>RYGEL_LOG_LEVEL_ERROR</p></td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="RYGEL-LOG-LEVEL-WARNING:CAPS"></a>RYGEL_LOG_LEVEL_WARNING</p></td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="RYGEL-LOG-LEVEL-INFO:CAPS"></a>RYGEL_LOG_LEVEL_INFO</p></td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="RYGEL-LOG-LEVEL-DEFAULT:CAPS"></a>RYGEL_LOG_LEVEL_DEFAULT</p></td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="RYGEL-LOG-LEVEL-DEBUG:CAPS"></a>RYGEL_LOG_LEVEL_DEBUG</p></td>
+<td> </td>
+<td> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.20.1</div>
+</body>
+</html>

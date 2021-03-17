@@ -1,0 +1,36 @@
+From 00004e265894b4b6940827a23fb7f25c3b28be82 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Thu, 7 Mar 2019 16:04:41 +0100
+Subject: [PATCH] device: Profile disconnect should finish also connect request
+
+When there are no available endpoint while connecting A2DP device it
+goes through states like this:
+
+a2dp-source state changed: disconnected -> connecting (0)
+a2dp-source state changed: connecting -> disconnecting (0)
+a2dp-source state changed: disconnecting -> disconnected (0)
+
+It will never enter connected state and connect request will never finish.
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ src/device.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/src/device.c b/src/device.c
+index 12af139..e4d1527 100644
+--- a/src/device.c
++++ b/src/device.c
+@@ -1976,6 +1976,9 @@ static DBusMessage *connect_profile(DBusConnection *conn, DBusMessage *msg,
+ static void device_profile_disconnected(struct btd_device *dev,
+ 					struct btd_profile *profile, int err)
+ {
++	if (dev->connect)
++		device_profile_connected(dev, profile, -ECANCELED);
++
+ 	if (!dev->disconnect)
+ 		return;
+ 
+-- 
+2.7.4
+

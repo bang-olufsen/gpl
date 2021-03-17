@@ -1,0 +1,7 @@
+0001-Switch-all-scripts-to-use-Python-3.x.patch -p1
+0001-Only-use-sort-name-on-versions-of-tar-which-support-.patch -p1
+0002-opkg-build-Use-local-time-for-build_date-since-opkg-.patch -p1
+threaded-xz.patch -p1
+pigz.patch -p1
+0001-update-alternatives-Fix-link-relocation-support.patch -p1
+0001-opkg-make-index-use-ctime-instead-of-mtime.patch -p1

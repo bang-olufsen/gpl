@@ -1,0 +1,145 @@
+<!-- ##### SECTION Title ##### -->
+gmime-part-iter
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GMimePartIter ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION g_mime_part_iter_new ##### -->
+<para>
+
+</para>
+
+@toplevel: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_part_iter_free ##### -->
+<para>
+
+</para>
+
+@iter: 
+
+
+<!-- ##### FUNCTION g_mime_part_iter_reset ##### -->
+<para>
+
+</para>
+
+@iter: 
+
+
+<!-- ##### FUNCTION g_mime_part_iter_jump_to ##### -->
+<para>
+
+</para>
+
+@iter: 
+@path: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_part_iter_is_valid ##### -->
+<para>
+
+</para>
+
+@iter: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_part_iter_next ##### -->
+<para>
+
+</para>
+
+@iter: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_part_iter_prev ##### -->
+<para>
+
+</para>
+
+@iter: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_part_iter_get_toplevel ##### -->
+<para>
+
+</para>
+
+@iter: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_part_iter_get_current ##### -->
+<para>
+
+</para>
+
+@iter: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_part_iter_get_parent ##### -->
+<para>
+
+</para>
+
+@iter: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_part_iter_get_path ##### -->
+<para>
+
+</para>
+
+@iter: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_part_iter_replace ##### -->
+<para>
+
+</para>
+
+@iter: 
+@replacement: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_part_iter_remove ##### -->
+<para>
+
+</para>
+
+@iter: 
+@Returns: 
+
+

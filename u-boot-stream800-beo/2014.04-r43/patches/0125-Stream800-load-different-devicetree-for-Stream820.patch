@@ -1,0 +1,59 @@
+From c487f8652c9b971cedf8f499368792c3961bb399 Mon Sep 17 00:00:00 2001
+From: Radek Dostal <radek.dostal@streamunlimited.com>
+Date: Fri, 9 Oct 2015 15:48:29 +0200
+Subject: [PATCH] Stream800: load different devicetree for Stream820
+
+Signed-off-by: Radek Dostal <radek.dostal@streamunlimited.com>
+---
+ board/streamunlimited/stream800/board.c | 32 ++++++++++++++++++++++++--------
+ 1 file changed, 24 insertions(+), 8 deletions(-)
+
+diff --git a/board/streamunlimited/stream800/board.c b/board/streamunlimited/stream800/board.c
+index c529448..048beab 100755
+--- a/board/streamunlimited/stream800/board.c
++++ b/board/streamunlimited/stream800/board.c
+@@ -357,17 +357,33 @@ int board_late_init(void)
+ 	 * Loading of DTB is located in include/configs/stream800.h
+ 	 * Change any variable of board_name, cramfsdir, board_rev can corrupt board boot !!
+ 	 */
+-	setenv("board_name", "stream800");
+ 	switch (get_module_version()) {
+-		case MV_L0: setenv("board_rev", "l0"); break;
+-		case MV_L1: setenv("board_rev", "l1"); break;
+-		case MV_L2: setenv("board_rev", "l2");break;
+-		/* The DDR3 modules are effectively L2 modules with DDR3 from a
+-		 * device tree POV. */
+-		case MV_L0_DDR3: setenv("board_rev", "l2"); break;
+-		case MV_L1_DDR3_HE: setenv("board_rev", "l2"); break;
++		case MV_L0:
++			setenv("board_name", "stream800");
++			setenv("board_rev", "l0");
++			break;
++		case MV_L1:
++			setenv("board_name", "stream800");
++			setenv("board_rev", "l1");
++			break;
++		case MV_L2:
++			setenv("board_name", "stream800");
++			setenv("board_rev", "l2");
++			break;
++		case MV_L0_DDR3:
++			/* The DDR3 modules are effectively L2 modules with DDR3 from a
++			 * device tree POV. */
++			setenv("board_name", "stream800");
++			setenv("board_rev", "l2");
++			break;
++		case MV_L1_DDR3_HE:
++			/* Stream820 (HighEnd module) contains faster CPU with graphical accelrator */
++			setenv("board_name", "stream820");
++			setenv("board_rev", "l1");
++			break;
+ 		case MV_unknown:
+ 		default:
++			setenv("board_name", "unknown");
+ 			setenv("board_rev", "unknown");
+ 			setenv("bootcmd", "");
+ 			break;
+-- 
+2.7.4
+

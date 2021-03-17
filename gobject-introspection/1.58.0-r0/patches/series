@@ -1,0 +1,9 @@
+0001-Revert-an-incomplete-upstream-attempt-at-cross-compi.patch -p1
+0002-configure.ac-add-host-gi-gi-cross-wrapper-gi-ldd-wra.patch -p1
+0003-giscanner-add-use-binary-wrapper-option.patch -p1
+0004-giscanner-add-a-use-ldd-wrapper-option.patch -p1
+0005-Prefix-pkg-config-paths-with-PKG_CONFIG_SYSROOT_DIR-.patch -p1
+0001-giscanner-add-a-lib-dirs-envvar-option.patch -p1
+0001-giscanner-ignore-error-return-codes-from-ldd-wrapper.patch -p1
+0001-configure.ac-make-GIR_DIR-configurable.patch -p1
+0002-g-ir-tools-respect-gir_dir_prefix.patch -p1

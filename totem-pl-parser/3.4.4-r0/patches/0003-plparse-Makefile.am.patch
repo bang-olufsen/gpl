@@ -1,0 +1,44 @@
+From a9ec939795d058c2246cd80f8ccf4452f75a17b8 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Fri, 6 Nov 2020 10:12:19 +0100
+Subject: [PATCH] plparse/Makefile.am
+
+---
+ plparse/Makefile.am | 12 +++++-------
+ 1 file changed, 5 insertions(+), 7 deletions(-)
+
+diff --git a/plparse/Makefile.am b/plparse/Makefile.am
+index f2cd2b1..6b961a0 100644
+--- a/plparse/Makefile.am
++++ b/plparse/Makefile.am
+@@ -4,7 +4,10 @@ DIST_SUBDIRS = tests
+ lib_LTLIBRARIES = libtotem-plparser.la libtotem-plparser-mini.la
+ 
+ MARSHALFILES = totemplparser-marshal.c totemplparser-marshal.h
+-BUILT_SOURCES = $(MARSHALFILES)
++
++BUILT_SOURCES = $(MARSHALFILES) \
++		totem-pl-parser-builtins.c
++		totem-pl-parser-builtins.h
+ 
+ totemplparser-marshal.c: totemplparser-marshal.list
+ 	 $(AM_V_GEN) $(GLIB_GENMARSHAL) --prefix=_totemplparser_marshal --header --body --internal $< > $@
+@@ -167,10 +170,7 @@ totem-pl-parser-builtins.c: totem-pl-parser.h totem-disc.h totem-pl-parser-built
+ 			--vtail "      { 0, NULL, NULL }\n    };\n    etype = g_@type@_register_static (\"@EnumName@\", values);\n  }\n  return etype;\n}\n" $^ > xgen-$(@F) \
+ 		&& mv -f xgen-$(@F) $@)
+ 
+-CLEANFILES = \
+-	totem-pl-parser-builtins.h \
+-	totem-pl-parser-builtins.c \
+-	$(BUILT_SOURCES)
++CLEANFILES = $(BUILT_SOURCES)
+ 
+ DISTCLEANFILES = $(CLEANFILES)
+ 
+@@ -218,6 +218,4 @@ typelib_DATA = $(INTROSPECTION_GIRS:.gir=.typelib)
+ CLEANFILES += $(gir_DATA) $(typelib_DATA)
+ endif
+ 
+-@GNOME_CODE_COVERAGE_RULES@
+-
+ -include $(top_srcdir)/git.mk

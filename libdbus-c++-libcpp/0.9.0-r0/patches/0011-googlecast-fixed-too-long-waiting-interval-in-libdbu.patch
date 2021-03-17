@@ -1,0 +1,30 @@
+From 075aac9a83cb5f34825190219c8581c43a015d33 Mon Sep 17 00:00:00 2001
+From: Stanislav Ruzani <stanislav.ruzani@streamunlimited.com>
+Date: Fri, 9 Jun 2017 06:44:41 +0200
+Subject: [PATCH 06/11] googlecast: fixed too long waiting interval in
+ libdbus-c++ event loop which was causing issues when connecting to A2DP sinks
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Signed-off-by: Stanislav Ružáni <stanislav.ruzani@streamunlimited.com>
+---
+ src/eventloop.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/eventloop.cpp b/src/eventloop.cpp
+index 7fb06a3..a141281 100644
+--- a/src/eventloop.cpp
++++ b/src/eventloop.cpp
+@@ -186,7 +186,7 @@ void DefaultMainLoop::dispatch()
+ 
+   _mutex_w.unlock();
+ 
+-  int wait_min = 10000;
++  int wait_min = 1000; // sru: changed from 10000 to fix issue with Connect() on A2DP
+ 
+   DefaultTimeouts::iterator ti;
+ 
+-- 
+2.7.4
+

@@ -1,0 +1,119 @@
+From 13e1e80fe51eb282332a1518a0cc0b853a8d237a Mon Sep 17 00:00:00 2001
+From: Frederik Spaldon <frederik.spaldon@streamunlimited.com>
+Date: Thu, 4 Jul 2019 13:12:22 +0200
+Subject: [PATCH] Use counter instead of time for LastUsed counter
+
+This fixes use cases when device doesn't have valid time.
+
+Signed-off-by: Frederik Spaldon <frederik.spaldon@streamunlimited.com>
+---
+ src/adapter.c | 19 +++++++++++++++++++
+ src/adapter.h |  2 ++
+ src/device.c  | 14 +++++++++++---
+ src/device.h  |  1 +
+ 4 files changed, 33 insertions(+), 3 deletions(-)
+
+diff --git a/src/adapter.c b/src/adapter.c
+index 2d7ec2a..6feb9e8 100644
+--- a/src/adapter.c
++++ b/src/adapter.c
+@@ -840,6 +840,25 @@ struct btd_device *btd_adapter_find_device(struct btd_adapter *adapter,
+ 	return device;
+ }
+ 
++int btd_adapter_get_last_used(struct btd_adapter *adapter)
++{
++	GSList *l, *next;
++	int max_used = 0;
++
++	for (l = adapter->devices; l != NULL; l = next) {
++		struct btd_device *dev = l->data;
++		int last_used = btd_device_get_last_used(dev);
++
++		if (last_used > max_used) {
++			max_used = last_used;
++		}
++
++		next = g_slist_next(l);
++	}
++
++	return max_used;
++}
++
+ static void uuid_to_uuid128(uuid_t *uuid128, const uuid_t *uuid)
+ {
+ 	if (uuid->type == SDP_UUID16)
+diff --git a/src/adapter.h b/src/adapter.h
+index b61e8d5..1b6ef9c 100644
+--- a/src/adapter.h
++++ b/src/adapter.h
+@@ -91,6 +91,8 @@ struct btd_device *btd_adapter_find_device(struct btd_adapter *adapter,
+ 							const bdaddr_t *dst,
+ 							uint8_t dst_type);
+ 
++int btd_adapter_get_last_used(struct btd_adapter *adapter);
++
+ const char *adapter_get_path(struct btd_adapter *adapter);
+ const bdaddr_t *btd_adapter_get_address(struct btd_adapter *adapter);
+ uint8_t btd_adapter_get_address_type(struct btd_adapter *adapter);
+diff --git a/src/device.c b/src/device.c
+index e4d1527..9b91b37 100644
+--- a/src/device.c
++++ b/src/device.c
+@@ -258,7 +258,7 @@ struct btd_device {
+ 	GIOChannel	*att_io;
+ 	guint		store_id;
+ 	
+-	time_t		last_used;
++	int			last_used;
+ 	uint8_t		disconnect_reason;
+ 	guint		enable_auto_connect_timer;
+ };
+@@ -1023,7 +1023,7 @@ static gboolean dev_property_get_last_used(const GDBusPropertyTable *property,
+ 					DBusMessageIter *iter, void *data)
+ {
+ 	struct btd_device *device = data;
+-	int val = (int)device->last_used;
++	int val = device->last_used;
+ 
+ 	dbus_message_iter_append_basic(iter, DBUS_TYPE_INT32, &val);
+ 
+@@ -2791,7 +2791,10 @@ void device_add_connection(struct btd_device *dev, uint8_t bdaddr_type)
+ 
+ 	state->connected = true;
+ 	
+-	dev->last_used = time(NULL);
++	int max_used = btd_adapter_get_last_used(dev->adapter);
++	if (max_used == 0 || dev->last_used < max_used)
++		dev->last_used = max_used + 1;
++
+ 	store_device_info(dev);
+ 
+ 	if (bdaddr_type == BDADDR_BREDR)
+@@ -4077,6 +4080,11 @@ uint16_t btd_device_get_version(struct btd_device *device)
+ 	return device->version;
+ }
+ 
++int btd_device_get_last_used(struct btd_device *device)
++{
++	return device->last_used;
++}
++
+ static void delete_folder_tree(const char *dirname)
+ {
+ 	DIR *dir;
+diff --git a/src/device.h b/src/device.h
+index 06505f9..4603f68 100644
+--- a/src/device.h
++++ b/src/device.h
+@@ -49,6 +49,7 @@ uint16_t btd_device_get_vendor(struct btd_device *device);
+ uint16_t btd_device_get_vendor_src(struct btd_device *device);
+ uint16_t btd_device_get_product(struct btd_device *device);
+ uint16_t btd_device_get_version(struct btd_device *device);
++int btd_device_get_last_used(struct btd_device *device);
+ void device_remove(struct btd_device *device, gboolean remove_stored);
+ int device_address_cmp(gconstpointer a, gconstpointer b);
+ int device_bdaddr_cmp(gconstpointer a, gconstpointer b);
+-- 
+2.17.1
+

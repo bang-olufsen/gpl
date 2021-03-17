@@ -1,0 +1,24 @@
+From b08c332a3ace742bdeae71368b15546d64d518d4 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Fri, 6 Nov 2020 13:26:39 +0100
+Subject: [PATCH] GstFlacDec: Allow byte to time conversion in base class for
+ flac for segment conversion
+
+---
+ ext/flac/gstflacdec.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/ext/flac/gstflacdec.c b/ext/flac/gstflacdec.c
+index 4583ceb..41448da 100644
+--- a/ext/flac/gstflacdec.c
++++ b/ext/flac/gstflacdec.c
+@@ -216,6 +216,9 @@ gst_flac_dec_start (GstAudioDecoder * audio_dec)
+ 
+   dec->got_headers = FALSE;
+ 
++  /* Allow byte to time conversion in base class for flac for segment conversion*/
++  gst_audio_decoder_set_estimate_rate (audio_dec, TRUE);
++
+   return TRUE;
+ }
+ 

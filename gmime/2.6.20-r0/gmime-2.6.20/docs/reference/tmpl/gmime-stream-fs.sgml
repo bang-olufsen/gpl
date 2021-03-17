@@ -1,0 +1,77 @@
+<!-- ##### SECTION Title ##### -->
+gmime-stream-fs
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GMimeStreamFs ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION g_mime_stream_fs_new ##### -->
+<para>
+
+</para>
+
+@fd: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_stream_fs_new_with_bounds ##### -->
+<para>
+
+</para>
+
+@fd: 
+@start: 
+@end: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_stream_fs_new_for_path ##### -->
+<para>
+
+</para>
+
+@path: 
+@flags: 
+@mode: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_stream_fs_get_owner ##### -->
+<para>
+
+</para>
+
+@stream: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_stream_fs_set_owner ##### -->
+<para>
+
+</para>
+
+@stream: 
+@owner: 
+
+

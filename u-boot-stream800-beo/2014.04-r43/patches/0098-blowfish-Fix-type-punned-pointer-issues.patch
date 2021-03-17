@@ -1,0 +1,95 @@
+From 34f64bd8a0acc0d9907aee12aed99425afe74a93 Mon Sep 17 00:00:00 2001
+From: Fionn Cleary <fionn.cleary@streamunlimited.com>
+Date: Tue, 12 Aug 2014 18:25:29 +0200
+Subject: [PATCH] blowfish: Fix type-punned pointer issues
+
+Issue is here:
+
+	data = *((unsigned long*)&BLOWFISH_DAT[offset]);
+
+and the second appearance a few lines further down.  BLOWFISH_DAT
+is (unsigned char*), and aliasing two different pointers with differing
+types is undefined behaviour as per the C standard:
+
+http://blog.qt.digia.com/blog/2011/06/10/type-punning-and-strict-aliasing/
+
+The code also has a #ifdef little_endian check, the correct approach is
+described here:
+
+http://commandcenter.blogspot.co.at/2012/04/byte-order-fallacy.html
+
+This approach also has the nice benefit that the type-punning problems
+disappear too.
+
+Signed-off-by: Fionn Cleary <fionn.cleary@streamunlimited.com>
+---
+ include/blowfish.h |  4 ----
+ lib/blowfish.c     | 32 ++++++++++----------------------
+ 2 files changed, 10 insertions(+), 26 deletions(-)
+
+diff --git a/include/blowfish.h b/include/blowfish.h
+index a100159..f08ea70 100644
+--- a/include/blowfish.h
++++ b/include/blowfish.h
+@@ -1,11 +1,7 @@
+ #ifndef _BLOWFISH_H_
+ #define _BLOWFISH_H_
+ 
+-/* TODO: set correct endian automatically */
+-
+ #define MAXKEYBYTES 56		/* 448 bits */
+-#define little_endian 1		/* Eg: Intel */
+-//#define big_endian 1		/* Eg: Motorola */
+ 
+ unsigned long F(unsigned long x);
+ void Blowfish_encipher(unsigned long *xl, unsigned long *xr);
+diff --git a/lib/blowfish.c b/lib/blowfish.c
+index c9700b8..30d24b1 100644
+--- a/lib/blowfish.c
++++ b/lib/blowfish.c
+@@ -107,32 +107,20 @@ void InitializeBlowfish(char key[], short keybytes)
+ 
+ 	/* Use the array initialization data (BLOWFISH_DAT[]) */
+ 	for (i = 0, offset = 0; i < N + 2; ++i, offset+=4) {
+-		data = *((unsigned long*)&BLOWFISH_DAT[offset]);
+-
+-#ifdef little_endian      /* Eg: Intel   We want to process things in byte   */
+-		/*   order, not as rearranged in a longword          */
+-		data = ((data & 0xFF000000) >> 24) |
+-			((data & 0x00FF0000) >>  8) |
+-			((data & 0x0000FF00) <<  8) |
+-			((data & 0x000000FF) << 24);
+-#endif
+-
+-		P[i] = data;
++		// BLOWFISH_DAT is in big-endian format
++		P[i] = ((BLOWFISH_DAT[offset+3]<<0) |
++				(BLOWFISH_DAT[offset+2]<<8) |
++				(BLOWFISH_DAT[offset+1]<<16) |
++				(BLOWFISH_DAT[offset+0]<<24));
+ 	}
+ 
+ 	for (i = 0; i < 4; ++i) {
+ 		for (j = 0; j < 256; ++j, offset+=4) {
+-			data = *((unsigned long*)&BLOWFISH_DAT[offset]);
+-
+-#ifdef little_endian      /* Eg: Intel   We want to process things in byte   */
+-			/*   order, not as rearranged in a longword          */
+-			data = ((data & 0xFF000000) >> 24) |
+-				((data & 0x00FF0000) >>  8) |
+-				((data & 0x0000FF00) <<  8) |
+-				((data & 0x000000FF) << 24);
+-	#endif
+-
+-			S[i][j] = data;
++			// BLOWFISH_DAT is in big-endian format
++			S[i][j] = ((BLOWFISH_DAT[offset+3]<<0) |
++					   (BLOWFISH_DAT[offset+2]<<8) |
++					   (BLOWFISH_DAT[offset+1]<<16) |
++					   (BLOWFISH_DAT[offset+0]<<24));
+ 		}
+ 	}
+ 
+-- 
+2.7.4
+

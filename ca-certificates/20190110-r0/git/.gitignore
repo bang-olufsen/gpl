@@ -1,0 +1,13 @@
+*.swp
+build-stamp
+configure-stamp
+debian/.debhelper
+debian/ca-certificates
+debian/ca-certificates.debhelper.log
+debian/ca-certificates.substvars
+debian/ca-certificates-udeb
+debian/ca-certificates-udeb.debhelper.log
+debian/ca-certificates-udeb.substvars
+debian/config
+debian/files
+mozilla/*.crt

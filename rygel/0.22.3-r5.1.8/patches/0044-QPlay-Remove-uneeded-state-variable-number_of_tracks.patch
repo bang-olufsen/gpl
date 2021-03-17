@@ -1,0 +1,409 @@
+From 9b64b7621813e5a77a1715bfc9ccfc051a833b77 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Wed, 25 Mar 2015 13:30:51 +0100
+Subject: [PATCH] QPlay: Remove uneeded state variable number_of_tracks
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ src/librygel-renderer/rygel-av-transport.c         |  2 -
+ .../rygel-media-renderer-plugin.c                  |  2 -
+ src/librygel-renderer/rygel-media-renderer.c       |  2 -
+ .../rygel-player-controller-interface.c            | 17 -----
+ .../rygel-player-controller-interface.vala         |  1 -
+ src/librygel-renderer/rygel-player-controller.c    | 81 ++++------------------
+ src/librygel-renderer/rygel-player-controller.vala | 14 ----
+ src/librygel-renderer/rygel-qplay.c                |  2 -
+ src/librygel-renderer/rygel-renderer.h             |  4 --
+ 9 files changed, 14 insertions(+), 111 deletions(-)
+
+diff --git a/src/librygel-renderer/rygel-av-transport.c b/src/librygel-renderer/rygel-av-transport.c
+index 82d655d..c58b079 100644
+--- a/src/librygel-renderer/rygel-av-transport.c
++++ b/src/librygel-renderer/rygel-av-transport.c
+@@ -195,8 +195,6 @@ struct _RygelPlayerControllerInterfaceIface {
+ 	void (*set_tracks_meta_data) (RygelPlayerControllerInterface* self, const gchar* value);
+ 	const gchar* (*get_number_of_success) (RygelPlayerControllerInterface* self);
+ 	void (*set_number_of_success) (RygelPlayerControllerInterface* self, const gchar* value);
+-	const gchar* (*get_number_of_tracks) (RygelPlayerControllerInterface* self);
+-	void (*set_number_of_tracks) (RygelPlayerControllerInterface* self, const gchar* value);
+ 	const gchar* (*get_next_index) (RygelPlayerControllerInterface* self);
+ 	void (*set_next_index) (RygelPlayerControllerInterface* self, const gchar* value);
+ 	const gchar* (*get_tracks_count) (RygelPlayerControllerInterface* self);
+diff --git a/src/librygel-renderer/rygel-media-renderer-plugin.c b/src/librygel-renderer/rygel-media-renderer-plugin.c
+index 705ebc0..8b27aa6 100644
+--- a/src/librygel-renderer/rygel-media-renderer-plugin.c
++++ b/src/librygel-renderer/rygel-media-renderer-plugin.c
+@@ -214,8 +214,6 @@ struct _RygelPlayerControllerInterfaceIface {
+ 	void (*set_tracks_meta_data) (RygelPlayerControllerInterface* self, const gchar* value);
+ 	const gchar* (*get_number_of_success) (RygelPlayerControllerInterface* self);
+ 	void (*set_number_of_success) (RygelPlayerControllerInterface* self, const gchar* value);
+-	const gchar* (*get_number_of_tracks) (RygelPlayerControllerInterface* self);
+-	void (*set_number_of_tracks) (RygelPlayerControllerInterface* self, const gchar* value);
+ 	const gchar* (*get_next_index) (RygelPlayerControllerInterface* self);
+ 	void (*set_next_index) (RygelPlayerControllerInterface* self, const gchar* value);
+ 	const gchar* (*get_tracks_count) (RygelPlayerControllerInterface* self);
+diff --git a/src/librygel-renderer/rygel-media-renderer.c b/src/librygel-renderer/rygel-media-renderer.c
+index d0b397f..aaaecf8 100644
+--- a/src/librygel-renderer/rygel-media-renderer.c
++++ b/src/librygel-renderer/rygel-media-renderer.c
+@@ -191,8 +191,6 @@ struct _RygelPlayerControllerInterfaceIface {
+ 	void (*set_tracks_meta_data) (RygelPlayerControllerInterface* self, const gchar* value);
+ 	const gchar* (*get_number_of_success) (RygelPlayerControllerInterface* self);
+ 	void (*set_number_of_success) (RygelPlayerControllerInterface* self, const gchar* value);
+-	const gchar* (*get_number_of_tracks) (RygelPlayerControllerInterface* self);
+-	void (*set_number_of_tracks) (RygelPlayerControllerInterface* self, const gchar* value);
+ 	const gchar* (*get_next_index) (RygelPlayerControllerInterface* self);
+ 	void (*set_next_index) (RygelPlayerControllerInterface* self, const gchar* value);
+ 	const gchar* (*get_tracks_count) (RygelPlayerControllerInterface* self);
+diff --git a/src/librygel-renderer/rygel-player-controller-interface.c b/src/librygel-renderer/rygel-player-controller-interface.c
+index 3bee155..533604c 100644
+--- a/src/librygel-renderer/rygel-player-controller-interface.c
++++ b/src/librygel-renderer/rygel-player-controller-interface.c
+@@ -92,8 +92,6 @@ struct _RygelPlayerControllerInterfaceIface {
+ 	void (*set_tracks_meta_data) (RygelPlayerControllerInterface* self, const gchar* value);
+ 	const gchar* (*get_number_of_success) (RygelPlayerControllerInterface* self);
+ 	void (*set_number_of_success) (RygelPlayerControllerInterface* self, const gchar* value);
+-	const gchar* (*get_number_of_tracks) (RygelPlayerControllerInterface* self);
+-	void (*set_number_of_tracks) (RygelPlayerControllerInterface* self, const gchar* value);
+ 	const gchar* (*get_next_index) (RygelPlayerControllerInterface* self);
+ 	void (*set_next_index) (RygelPlayerControllerInterface* self, const gchar* value);
+ 	const gchar* (*get_tracks_count) (RygelPlayerControllerInterface* self);
+@@ -162,8 +160,6 @@ const gchar* rygel_player_controller_interface_get_tracks_meta_data (RygelPlayer
+ void rygel_player_controller_interface_set_tracks_meta_data (RygelPlayerControllerInterface* self, const gchar* value);
+ const gchar* rygel_player_controller_interface_get_number_of_success (RygelPlayerControllerInterface* self);
+ void rygel_player_controller_interface_set_number_of_success (RygelPlayerControllerInterface* self, const gchar* value);
+-const gchar* rygel_player_controller_interface_get_number_of_tracks (RygelPlayerControllerInterface* self);
+-void rygel_player_controller_interface_set_number_of_tracks (RygelPlayerControllerInterface* self, const gchar* value);
+ const gchar* rygel_player_controller_interface_get_next_index (RygelPlayerControllerInterface* self);
+ void rygel_player_controller_interface_set_next_index (RygelPlayerControllerInterface* self, const gchar* value);
+ const gchar* rygel_player_controller_interface_get_tracks_count (RygelPlayerControllerInterface* self);
+@@ -501,18 +497,6 @@ void rygel_player_controller_interface_set_number_of_success (RygelPlayerControl
+ }
+ 
+ 
+-const gchar* rygel_player_controller_interface_get_number_of_tracks (RygelPlayerControllerInterface* self) {
+-	g_return_val_if_fail (self != NULL, NULL);
+-	return RYGEL_PLAYER_CONTROLLER_INTERFACE_GET_INTERFACE (self)->get_number_of_tracks (self);
+-}
+-
+-
+-void rygel_player_controller_interface_set_number_of_tracks (RygelPlayerControllerInterface* self, const gchar* value) {
+-	g_return_if_fail (self != NULL);
+-	RYGEL_PLAYER_CONTROLLER_INTERFACE_GET_INTERFACE (self)->set_number_of_tracks (self, value);
+-}
+-
+-
+ const gchar* rygel_player_controller_interface_get_next_index (RygelPlayerControllerInterface* self) {
+ 	g_return_val_if_fail (self != NULL, NULL);
+ 	return RYGEL_PLAYER_CONTROLLER_INTERFACE_GET_INTERFACE (self)->get_next_index (self);
+@@ -605,7 +589,6 @@ static void rygel_player_controller_interface_base_init (RygelPlayerControllerIn
+ 		g_object_interface_install_property (iface, g_param_spec_string ("starting-index", "starting-index", "starting-index", NULL, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE));
+ 		g_object_interface_install_property (iface, g_param_spec_string ("tracks-meta-data", "tracks-meta-data", "tracks-meta-data", NULL, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE));
+ 		g_object_interface_install_property (iface, g_param_spec_string ("number-of-success", "number-of-success", "number-of-success", NULL, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE));
+-		g_object_interface_install_property (iface, g_param_spec_string ("number-of-tracks", "number-of-tracks", "number-of-tracks", NULL, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE));
+ 		g_object_interface_install_property (iface, g_param_spec_string ("next-index", "next-index", "next-index", NULL, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE));
+ 		g_object_interface_install_property (iface, g_param_spec_string ("tracks-count", "tracks-count", "tracks-count", NULL, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE));
+ 		g_object_interface_install_property (iface, g_param_spec_string ("max-tracks", "max-tracks", "max-tracks", NULL, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE));
+diff --git a/src/librygel-renderer/rygel-player-controller-interface.vala b/src/librygel-renderer/rygel-player-controller-interface.vala
+index eb5eed7..a6587ea 100644
+--- a/src/librygel-renderer/rygel-player-controller-interface.vala
++++ b/src/librygel-renderer/rygel-player-controller-interface.vala
+@@ -70,7 +70,6 @@ public interface Rygel.PlayerControllerInterface : Object {
+     public abstract string number_of_success { get; set; }
+     public abstract void insert_tracks (string queue_id, string starting_index, string  tracks_meta_data);
+     public abstract void remove_tracks (string queue_id, string starting_index, string  number_of_tracks);
+-    public abstract string number_of_tracks { get; set; }
+     public abstract void get_tracks_info (string starting_index, string number_of_tracks);
+     public abstract void set_tracks_info (string queue_id, string starting_index, string next_index, string tracks_meta_data);
+     public abstract string next_index { get; set; }
+diff --git a/src/librygel-renderer/rygel-player-controller.c b/src/librygel-renderer/rygel-player-controller.c
+index 91af642..50faafb 100644
+--- a/src/librygel-renderer/rygel-player-controller.c
++++ b/src/librygel-renderer/rygel-player-controller.c
+@@ -119,8 +119,6 @@ struct _RygelPlayerControllerInterfaceIface {
+ 	void (*set_tracks_meta_data) (RygelPlayerControllerInterface* self, const gchar* value);
+ 	const gchar* (*get_number_of_success) (RygelPlayerControllerInterface* self);
+ 	void (*set_number_of_success) (RygelPlayerControllerInterface* self, const gchar* value);
+-	const gchar* (*get_number_of_tracks) (RygelPlayerControllerInterface* self);
+-	void (*set_number_of_tracks) (RygelPlayerControllerInterface* self, const gchar* value);
+ 	const gchar* (*get_next_index) (RygelPlayerControllerInterface* self);
+ 	void (*set_next_index) (RygelPlayerControllerInterface* self, const gchar* value);
+ 	const gchar* (*get_tracks_count) (RygelPlayerControllerInterface* self);
+@@ -184,7 +182,6 @@ struct _RygelPlayerControllerPrivate {
+ 	gchar* _starting_index;
+ 	gchar* _tracks_meta_data;
+ 	gchar* _number_of_success;
+-	gchar* _number_of_tracks;
+ 	gchar* _next_index;
+ 	gchar* _tracks_count;
+ 	gchar* _max_tracks;
+@@ -229,7 +226,6 @@ enum  {
+ 	RYGEL_PLAYER_CONTROLLER_STARTING_INDEX,
+ 	RYGEL_PLAYER_CONTROLLER_TRACKS_META_DATA,
+ 	RYGEL_PLAYER_CONTROLLER_NUMBER_OF_SUCCESS,
+-	RYGEL_PLAYER_CONTROLLER_NUMBER_OF_TRACKS,
+ 	RYGEL_PLAYER_CONTROLLER_TRACK,
+ 	RYGEL_PLAYER_CONTROLLER_URI,
+ 	RYGEL_PLAYER_CONTROLLER_METADATA,
+@@ -283,7 +279,6 @@ static void rygel_player_controller_real_set_network (RygelPlayerControllerInter
+ void rygel_player_controller_interface_set_network_ssid (RygelPlayerControllerInterface* self, const gchar* value);
+ void rygel_player_controller_interface_set_network_key (RygelPlayerControllerInterface* self, const gchar* value);
+ static void rygel_player_controller_real_get_tracks_info (RygelPlayerControllerInterface* base, const gchar* starting_index, const gchar* number_of_tracks);
+-void rygel_player_controller_interface_set_number_of_tracks (RygelPlayerControllerInterface* self, const gchar* value);
+ static void rygel_player_controller_real_set_tracks_info (RygelPlayerControllerInterface* base, const gchar* queue_id, const gchar* starting_index, const gchar* next_index, const gchar* tracks_meta_data);
+ void rygel_player_controller_interface_set_next_index (RygelPlayerControllerInterface* self, const gchar* value);
+ static void rygel_player_controller_real_calc_tracks_count (RygelPlayerControllerInterface* base);
+@@ -343,7 +338,6 @@ const gchar* rygel_player_controller_interface_get_queue_id (RygelPlayerControll
+ const gchar* rygel_player_controller_interface_get_starting_index (RygelPlayerControllerInterface* self);
+ const gchar* rygel_player_controller_interface_get_tracks_meta_data (RygelPlayerControllerInterface* self);
+ const gchar* rygel_player_controller_interface_get_number_of_success (RygelPlayerControllerInterface* self);
+-const gchar* rygel_player_controller_interface_get_number_of_tracks (RygelPlayerControllerInterface* self);
+ const gchar* rygel_player_controller_interface_get_play_mode (RygelPlayerControllerInterface* self);
+ gchar* rygel_player_controller_interface_get_track_uri (RygelPlayerControllerInterface* self);
+ gchar* rygel_player_controller_interface_get_track_metadata (RygelPlayerControllerInterface* self);
+@@ -583,14 +577,11 @@ static void rygel_player_controller_real_set_network (RygelPlayerControllerInter
+ static void rygel_player_controller_real_get_tracks_info (RygelPlayerControllerInterface* base, const gchar* starting_index, const gchar* number_of_tracks) {
+ 	RygelPlayerController * self;
+ 	const gchar* _tmp0_ = NULL;
+-	const gchar* _tmp1_ = NULL;
+ 	self = (RygelPlayerController*) base;
+ 	g_return_if_fail (starting_index != NULL);
+ 	g_return_if_fail (number_of_tracks != NULL);
+ 	_tmp0_ = starting_index;
+ 	rygel_player_controller_interface_set_starting_index ((RygelPlayerControllerInterface*) self, _tmp0_);
+-	_tmp1_ = number_of_tracks;
+-	rygel_player_controller_interface_set_number_of_tracks ((RygelPlayerControllerInterface*) self, _tmp1_);
+ }
+ 
+ 
+@@ -1009,7 +1000,7 @@ static void rygel_player_controller_setup_image_timeouts (RygelPlayerController*
+ 		timeout = (guint) _tmp2_;
+ 	}
+ 	_tmp3_ = timeout;
+-	g_debug ("rygel-player-controller.vala:627: Item is image, setup timer: %ld", (glong) _tmp3_);
++	g_debug ("rygel-player-controller.vala:613: Item is image, setup timer: %ld", (glong) _tmp3_);
+ 	_tmp4_ = self->priv->timeout_id;
+ 	if (_tmp4_ != ((guint) 0)) {
+ 		guint _tmp5_ = 0U;
+@@ -1071,7 +1062,7 @@ static void rygel_player_controller_on_setting_changed (RygelPlayerController* s
+ 		return;
+ 	}
+ 	_tmp7_ = self->priv->default_image_timeout;
+-	g_debug ("rygel-player-controller.vala:657: New image timeout: %lu", (gulong) _tmp7_);
++	g_debug ("rygel-player-controller.vala:643: New image timeout: %lu", (gulong) _tmp7_);
+ }
+ 
+ 
+@@ -1580,36 +1571,6 @@ static void rygel_player_controller_real_set_number_of_success (RygelPlayerContr
+ }
+ 
+ 
+-static const gchar* rygel_player_controller_real_get_number_of_tracks (RygelPlayerControllerInterface* base) {
+-	const gchar* result;
+-	RygelPlayerController* self;
+-	const gchar* _tmp0_ = NULL;
+-	self = (RygelPlayerController*) base;
+-	_tmp0_ = self->priv->_number_of_tracks;
+-	result = _tmp0_;
+-	return result;
+-}
+-
+-
+-static void rygel_player_controller_real_set_number_of_tracks (RygelPlayerControllerInterface* base, const gchar* value) {
+-	RygelPlayerController* self;
+-	const gchar* _tmp0_ = NULL;
+-	const gchar* _tmp1_ = NULL;
+-	self = (RygelPlayerController*) base;
+-	_tmp0_ = value;
+-	_tmp1_ = self->priv->_number_of_tracks;
+-	if (g_strcmp0 (_tmp0_, _tmp1_) != 0) {
+-		const gchar* _tmp2_ = NULL;
+-		gchar* _tmp3_ = NULL;
+-		_tmp2_ = value;
+-		_tmp3_ = g_strdup (_tmp2_);
+-		_g_free0 (self->priv->_number_of_tracks);
+-		self->priv->_number_of_tracks = _tmp3_;
+-		g_object_notify ((GObject*) self, "number-of-tracks");
+-	}
+-}
+-
+-
+ static guint rygel_player_controller_real_get_track (RygelPlayerControllerInterface* base) {
+ 	guint result;
+ 	RygelPlayerController* self;
+@@ -2213,7 +2174,6 @@ static void rygel_player_controller_class_init (RygelPlayerControllerClass * kla
+ 	g_object_class_install_property (G_OBJECT_CLASS (klass), RYGEL_PLAYER_CONTROLLER_STARTING_INDEX, g_param_spec_string ("starting-index", "starting-index", "starting-index", NULL, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE));
+ 	g_object_class_install_property (G_OBJECT_CLASS (klass), RYGEL_PLAYER_CONTROLLER_TRACKS_META_DATA, g_param_spec_string ("tracks-meta-data", "tracks-meta-data", "tracks-meta-data", NULL, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE));
+ 	g_object_class_install_property (G_OBJECT_CLASS (klass), RYGEL_PLAYER_CONTROLLER_NUMBER_OF_SUCCESS, g_param_spec_string ("number-of-success", "number-of-success", "number-of-success", NULL, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE));
+-	g_object_class_install_property (G_OBJECT_CLASS (klass), RYGEL_PLAYER_CONTROLLER_NUMBER_OF_TRACKS, g_param_spec_string ("number-of-tracks", "number-of-tracks", "number-of-tracks", NULL, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE));
+ 	g_object_class_install_property (G_OBJECT_CLASS (klass), RYGEL_PLAYER_CONTROLLER_TRACK, g_param_spec_uint ("track", "track", "track", 0, G_MAXUINT, 0, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE));
+ 	g_object_class_install_property (G_OBJECT_CLASS (klass), RYGEL_PLAYER_CONTROLLER_URI, g_param_spec_string ("uri", "uri", "uri", NULL, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE));
+ 	g_object_class_install_property (G_OBJECT_CLASS (klass), RYGEL_PLAYER_CONTROLLER_METADATA, g_param_spec_string ("metadata", "metadata", "metadata", NULL, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE));
+@@ -2271,8 +2231,6 @@ static void rygel_player_controller_rygel_player_controller_interface_interface_
+ 	iface->set_tracks_meta_data = rygel_player_controller_real_set_tracks_meta_data;
+ 	iface->get_number_of_success = rygel_player_controller_real_get_number_of_success;
+ 	iface->set_number_of_success = rygel_player_controller_real_set_number_of_success;
+-	iface->get_number_of_tracks = rygel_player_controller_real_get_number_of_tracks;
+-	iface->set_number_of_tracks = rygel_player_controller_real_set_number_of_tracks;
+ 	iface->get_track = rygel_player_controller_real_get_track;
+ 	iface->set_track = rygel_player_controller_real_set_track;
+ 	iface->get_uri = rygel_player_controller_real_get_uri;
+@@ -2320,7 +2278,6 @@ static void rygel_player_controller_instance_init (RygelPlayerController * self)
+ 	gchar* _tmp16_ = NULL;
+ 	gchar* _tmp17_ = NULL;
+ 	gchar* _tmp18_ = NULL;
+-	gchar* _tmp19_ = NULL;
+ 	self->priv = RYGEL_PLAYER_CONTROLLER_GET_PRIVATE (self);
+ 	_tmp0_ = g_strdup ("");
+ 	self->priv->_manufacture_id = _tmp0_;
+@@ -2343,25 +2300,23 @@ static void rygel_player_controller_instance_init (RygelPlayerController * self)
+ 	_tmp9_ = g_strdup ("");
+ 	self->priv->_number_of_success = _tmp9_;
+ 	_tmp10_ = g_strdup ("");
+-	self->priv->_number_of_tracks = _tmp10_;
++	self->priv->_next_index = _tmp10_;
+ 	_tmp11_ = g_strdup ("");
+-	self->priv->_next_index = _tmp11_;
++	self->priv->_tracks_count = _tmp11_;
+ 	_tmp12_ = g_strdup ("");
+-	self->priv->_tracks_count = _tmp12_;
++	self->priv->_max_tracks = _tmp12_;
+ 	_tmp13_ = g_strdup ("");
+-	self->priv->_max_tracks = _tmp13_;
++	self->priv->_uri = _tmp13_;
+ 	_tmp14_ = g_strdup ("");
+-	self->priv->_uri = _tmp14_;
+-	_tmp15_ = g_strdup ("");
+-	self->priv->_metadata = _tmp15_;
+-	_tmp16_ = g_strdup ("NORMAL");
+-	self->priv->_play_mode = _tmp16_;
++	self->priv->_metadata = _tmp14_;
++	_tmp15_ = g_strdup ("NORMAL");
++	self->priv->_play_mode = _tmp15_;
++	_tmp16_ = g_strdup ("");
++	self->priv->_next_uri = _tmp16_;
+ 	_tmp17_ = g_strdup ("");
+-	self->priv->_next_uri = _tmp17_;
+-	_tmp18_ = g_strdup ("");
+-	self->priv->_next_metadata = _tmp18_;
+-	_tmp19_ = g_strdup ("NO_MEDIA_PRESENT");
+-	self->priv->_playback_state = _tmp19_;
++	self->priv->_next_metadata = _tmp17_;
++	_tmp18_ = g_strdup ("NO_MEDIA_PRESENT");
++	self->priv->_playback_state = _tmp18_;
+ 	rygel_player_controller_interface_set_manufacture_id (self, "");
+ 	rygel_player_controller_interface_set_device_id (self, "");
+ 	rygel_player_controller_interface_set_auth_seed (self, "");
+@@ -2372,7 +2327,6 @@ static void rygel_player_controller_instance_init (RygelPlayerController * self)
+ 	rygel_player_controller_interface_set_starting_index (self, "");
+ 	rygel_player_controller_interface_set_tracks_meta_data (self, "");
+ 	rygel_player_controller_interface_set_number_of_success (self, "");
+-	rygel_player_controller_interface_set_number_of_tracks (self, "");
+ 	rygel_player_controller_interface_set_next_index (self, "");
+ 	rygel_player_controller_interface_set_tracks_count (self, "");
+ 	rygel_player_controller_interface_set_max_tracks (self, "");
+@@ -2394,7 +2348,6 @@ static void rygel_player_controller_finalize (GObject* obj) {
+ 	_g_free0 (self->priv->_starting_index);
+ 	_g_free0 (self->priv->_tracks_meta_data);
+ 	_g_free0 (self->priv->_number_of_success);
+-	_g_free0 (self->priv->_number_of_tracks);
+ 	_g_free0 (self->priv->_next_index);
+ 	_g_free0 (self->priv->_tracks_count);
+ 	_g_free0 (self->priv->_max_tracks);
+@@ -2488,9 +2441,6 @@ static void _vala_rygel_player_controller_get_property (GObject * object, guint
+ 		case RYGEL_PLAYER_CONTROLLER_NUMBER_OF_SUCCESS:
+ 		g_value_set_string (value, rygel_player_controller_interface_get_number_of_success ((RygelPlayerControllerInterface*) self));
+ 		break;
+-		case RYGEL_PLAYER_CONTROLLER_NUMBER_OF_TRACKS:
+-		g_value_set_string (value, rygel_player_controller_interface_get_number_of_tracks ((RygelPlayerControllerInterface*) self));
+-		break;
+ 		case RYGEL_PLAYER_CONTROLLER_TRACK:
+ 		g_value_set_uint (value, rygel_player_controller_interface_get_track ((RygelPlayerControllerInterface*) self));
+ 		break;
+@@ -2583,9 +2533,6 @@ static void _vala_rygel_player_controller_set_property (GObject * object, guint
+ 		case RYGEL_PLAYER_CONTROLLER_NUMBER_OF_SUCCESS:
+ 		rygel_player_controller_interface_set_number_of_success ((RygelPlayerControllerInterface*) self, g_value_get_string (value));
+ 		break;
+-		case RYGEL_PLAYER_CONTROLLER_NUMBER_OF_TRACKS:
+-		rygel_player_controller_interface_set_number_of_tracks ((RygelPlayerControllerInterface*) self, g_value_get_string (value));
+-		break;
+ 		case RYGEL_PLAYER_CONTROLLER_TRACK:
+ 		rygel_player_controller_interface_set_track ((RygelPlayerControllerInterface*) self, g_value_get_uint (value));
+ 		break;
+diff --git a/src/librygel-renderer/rygel-player-controller.vala b/src/librygel-renderer/rygel-player-controller.vala
+index 18d828e..039d932 100644
+--- a/src/librygel-renderer/rygel-player-controller.vala
++++ b/src/librygel-renderer/rygel-player-controller.vala
+@@ -61,7 +61,6 @@ public class Rygel.PlayerController : Object, PlayerControllerInterface {
+     private string _starting_index = "";
+     private string _tracks_meta_data = "";
+     private string _number_of_success = "";
+-    private string _number_of_tracks = "";
+     private string _next_index = "";
+     private string _tracks_count = "";
+     private string _max_tracks = "";
+@@ -209,18 +208,6 @@ public class Rygel.PlayerController : Object, PlayerControllerInterface {
+     }
+ 
+     [CCode (notify = false)]
+-    public string number_of_tracks {
+-        get { return this._number_of_tracks; }
+-        set {
+-            if (value != this._number_of_tracks) {
+-                this._number_of_tracks = value;
+-                this.notify_property ("number-of-tracks");
+-            }
+-        }
+-        default = "";
+-    }
+-
+-    [CCode (notify = false)]
+     public uint track {
+         get { return this._track; }
+         set {
+@@ -432,7 +419,6 @@ public class Rygel.PlayerController : Object, PlayerControllerInterface {
+     public void get_tracks_info (string starting_index,
+                                  string number_of_tracks) {
+         this.starting_index = starting_index;
+-        this.number_of_tracks = number_of_tracks;
+     }
+ 
+     public void set_tracks_info (string queue_id, string starting_index, string next_index, string tracks_meta_data)
+diff --git a/src/librygel-renderer/rygel-qplay.c b/src/librygel-renderer/rygel-qplay.c
+index 31f9932..46ca5ac 100644
+--- a/src/librygel-renderer/rygel-qplay.c
++++ b/src/librygel-renderer/rygel-qplay.c
+@@ -129,8 +129,6 @@ struct _RygelPlayerControllerInterfaceIface {
+ 	void (*set_tracks_meta_data) (RygelPlayerControllerInterface* self, const gchar* value);
+ 	const gchar* (*get_number_of_success) (RygelPlayerControllerInterface* self);
+ 	void (*set_number_of_success) (RygelPlayerControllerInterface* self, const gchar* value);
+-	const gchar* (*get_number_of_tracks) (RygelPlayerControllerInterface* self);
+-	void (*set_number_of_tracks) (RygelPlayerControllerInterface* self, const gchar* value);
+ 	const gchar* (*get_next_index) (RygelPlayerControllerInterface* self);
+ 	void (*set_next_index) (RygelPlayerControllerInterface* self, const gchar* value);
+ 	const gchar* (*get_tracks_count) (RygelPlayerControllerInterface* self);
+diff --git a/src/librygel-renderer/rygel-renderer.h b/src/librygel-renderer/rygel-renderer.h
+index ae412fb..270ac1b 100644
+--- a/src/librygel-renderer/rygel-renderer.h
++++ b/src/librygel-renderer/rygel-renderer.h
+@@ -161,8 +161,6 @@ struct _RygelPlayerControllerInterfaceIface {
+ 	void (*set_tracks_meta_data) (RygelPlayerControllerInterface* self, const gchar* value);
+ 	const gchar* (*get_number_of_success) (RygelPlayerControllerInterface* self);
+ 	void (*set_number_of_success) (RygelPlayerControllerInterface* self, const gchar* value);
+-	const gchar* (*get_number_of_tracks) (RygelPlayerControllerInterface* self);
+-	void (*set_number_of_tracks) (RygelPlayerControllerInterface* self, const gchar* value);
+ 	const gchar* (*get_next_index) (RygelPlayerControllerInterface* self);
+ 	void (*set_next_index) (RygelPlayerControllerInterface* self, const gchar* value);
+ 	const gchar* (*get_tracks_count) (RygelPlayerControllerInterface* self);
+@@ -289,8 +287,6 @@ const gchar* rygel_player_controller_interface_get_tracks_meta_data (RygelPlayer
+ void rygel_player_controller_interface_set_tracks_meta_data (RygelPlayerControllerInterface* self, const gchar* value);
+ const gchar* rygel_player_controller_interface_get_number_of_success (RygelPlayerControllerInterface* self);
+ void rygel_player_controller_interface_set_number_of_success (RygelPlayerControllerInterface* self, const gchar* value);
+-const gchar* rygel_player_controller_interface_get_number_of_tracks (RygelPlayerControllerInterface* self);
+-void rygel_player_controller_interface_set_number_of_tracks (RygelPlayerControllerInterface* self, const gchar* value);
+ const gchar* rygel_player_controller_interface_get_next_index (RygelPlayerControllerInterface* self);
+ void rygel_player_controller_interface_set_next_index (RygelPlayerControllerInterface* self, const gchar* value);
+ const gchar* rygel_player_controller_interface_get_tracks_count (RygelPlayerControllerInterface* self);
+-- 
+1.9.1
+

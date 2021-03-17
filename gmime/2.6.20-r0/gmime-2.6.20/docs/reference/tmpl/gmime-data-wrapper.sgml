@@ -1,0 +1,93 @@
+<!-- ##### SECTION Title ##### -->
+gmime-data-wrapper
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GMimeDataWrapper ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION g_mime_data_wrapper_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_data_wrapper_new_with_stream ##### -->
+<para>
+
+</para>
+
+@stream: 
+@encoding: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_data_wrapper_set_stream ##### -->
+<para>
+
+</para>
+
+@wrapper: 
+@stream: 
+
+
+<!-- ##### FUNCTION g_mime_data_wrapper_get_stream ##### -->
+<para>
+
+</para>
+
+@wrapper: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_data_wrapper_set_encoding ##### -->
+<para>
+
+</para>
+
+@wrapper: 
+@encoding: 
+
+
+<!-- ##### FUNCTION g_mime_data_wrapper_get_encoding ##### -->
+<para>
+
+</para>
+
+@wrapper: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_data_wrapper_write_to_stream ##### -->
+<para>
+
+</para>
+
+@wrapper: 
+@stream: 
+@Returns: 
+
+

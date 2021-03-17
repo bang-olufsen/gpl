@@ -1,0 +1,33 @@
+From 8c7d5550be6321de34f62d9ff86b8d2a6ae21e9f Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Fri, 16 Jun 2017 15:01:43 +0200
+Subject: [PATCH] hog-lib: Don't forward regular HID reports to uHID
+
+We received HID events twice: One from our local socket and one from HID
+input interface.
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ profiles/input/hog-lib.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/profiles/input/hog-lib.c b/profiles/input/hog-lib.c
+index 464aaae..9474784 100644
+--- a/profiles/input/hog-lib.c
++++ b/profiles/input/hog-lib.c
+@@ -364,6 +364,12 @@ static void report_value_cb(const guint8 *pdu, guint16 len, gpointer user_data)
+ 		return;
+ 	}
+ 
++	// We only forward regular HID reports through local socket to be
++	// able to use uHID for other use cases
++	if (len == ATT_NOTIFICATION_HEADER_SIZE + 2) {
++		return;
++	}
++
+ 	pdu += ATT_NOTIFICATION_HEADER_SIZE;
+ 	len -= ATT_NOTIFICATION_HEADER_SIZE;
+ 
+-- 
+2.7.4
+

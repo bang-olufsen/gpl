@@ -1,0 +1,96 @@
+From 3fe1c4a0f9a19785f2127fd8eb7ca3e48e86129f Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Fri, 15 Jul 2016 10:19:11 +0200
+Subject: [PATCH] Use common code for writing for both "null" and "copy"
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+
+%% original patch: 0004-Use-common-code-for-writing-for-both-null-and-copy.patch
+---
+ src/pcm/pcm_switch.c | 43 ++++++++++++-------------------------------
+ 1 file changed, 12 insertions(+), 31 deletions(-)
+
+diff --git a/src/pcm/pcm_switch.c b/src/pcm/pcm_switch.c
+index 3b089a6..d930ad6 100644
+--- a/src/pcm/pcm_switch.c
++++ b/src/pcm/pcm_switch.c
+@@ -777,16 +777,7 @@ static void apply_switch_value(snd_pcm_t *pcm)
+ 	if (pcm_state == SND_PCM_STATE_RUNNING) {
+ 		snd_pcm_switch_start(pcm);
+ 	}
+-}
+ 
+-static snd_pcm_sframes_t snd_pcm_switch_xfer_null_areas(snd_pcm_t *pcm,
+-                                                        const snd_pcm_channel_area_t *areas ATTRIBUTE_UNUSED,
+-                                                        snd_pcm_uframes_t offset ATTRIBUTE_UNUSED,
+-                                                        snd_pcm_uframes_t size)
+-{
+-	TRACE("");
+-	snd_pcm_mmap_appl_forward(pcm, size);
+-	return size;
+ }
+ 
+ static snd_pcm_sframes_t snd_pcm_switch_xfer_write_areas(snd_pcm_t *pcm,
+@@ -802,8 +793,9 @@ static snd_pcm_sframes_t snd_pcm_switch_xfer_write_areas(snd_pcm_t *pcm,
+ 	int err;
+ 
+ 	if (!slave) {
+-		DEBUG("Discard data on switch");
+-		return snd_pcm_switch_xfer_null_areas(pcm, areas, offset, size);
++		snd_pcm_mmap_appl_forward(pcm, size);
++
++		return size;
+ 	}
+ 
+ 	while (size > 0) {
+@@ -844,21 +836,17 @@ static snd_pcm_sframes_t snd_pcm_switch_writei(snd_pcm_t *pcm, const void *buffe
+ {
+ 	snd_pcm_switch_t *swtch = pcm->private_data;
+ 	snd_pcm_sframes_t frames;
++	snd_pcm_channel_area_t areas[pcm->channels];
++	snd_pcm_areas_from_buf(pcm, areas, (void*)buffer);
+ 
+-	if (swtch->gen.slave) {
+-		snd_pcm_channel_area_t areas[pcm->channels];
+-		snd_pcm_areas_from_buf(pcm, areas, (void*)buffer);
+-		frames = snd_pcm_write_areas(pcm, areas, 0, size, snd_pcm_switch_xfer_write_areas);
+-		TRACE("copy frames=%ld size=%ld", frames, size);
+-	}
+-	else {
+-		frames = snd_pcm_write_areas(pcm, NULL, 0, size, snd_pcm_switch_xfer_null_areas);
+-		TRACE("null frames=%ld size=%ld", frames, size);
+-
++	if (!swtch->gen.slave) {
+ 		/* Force state to running when we recieve data */
+ 		swtch->state = SND_PCM_STATE_RUNNING;
+ 	}
+ 
++	frames = snd_pcm_write_areas(pcm, areas, 0, size, snd_pcm_switch_xfer_write_areas);
++	TRACE("frames=%ld size=%ld", frames, size);
++
+ 	if (frames > 0)
+ 		swtch->updating = 0;
+ 
+@@ -868,16 +856,9 @@ static snd_pcm_sframes_t snd_pcm_switch_writei(snd_pcm_t *pcm, const void *buffe
+ static snd_pcm_sframes_t snd_pcm_switch_writen(snd_pcm_t *pcm, void **bufs, snd_pcm_uframes_t size)
+ {
+ 	DEBUG("");
+-	snd_pcm_switch_t *swtch = pcm->private_data;
+-
+-	if (swtch->gen.slave) {
+-		snd_pcm_channel_area_t areas[pcm->channels];
+-		snd_pcm_areas_from_bufs(pcm, areas, bufs);
+-		return snd_pcm_write_areas(pcm, areas, 0, size, snd_pcm_switch_xfer_write_areas);
+-	}
+-	else {
+-		return snd_pcm_write_areas(pcm, NULL, 0, size, snd_pcm_switch_xfer_null_areas);
+-	}
++	snd_pcm_channel_area_t areas[pcm->channels];
++	snd_pcm_areas_from_bufs(pcm, areas, bufs);
++	return snd_pcm_write_areas(pcm, areas, 0, size, snd_pcm_switch_xfer_write_areas);
+ }
+ 
+ static snd_pcm_sframes_t snd_pcm_switch_mmap_commit(snd_pcm_t *pcm, snd_pcm_uframes_t offset, snd_pcm_uframes_t size)
+-- 
+2.7.4
+

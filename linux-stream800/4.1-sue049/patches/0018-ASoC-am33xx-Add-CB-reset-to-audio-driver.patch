@@ -1,0 +1,48 @@
+From 01131dd4e925c204bc4c3aa9e98bb4dcc95e7ce8 Mon Sep 17 00:00:00 2001
+From: Martin Pietryka <martin.pietryka@streamunlimited.com>
+Date: Fri, 13 Feb 2015 11:30:33 +0100
+Subject: [PATCH] ASoC: am33xx: Add CB reset to audio driver
+
+The old pcm3060 reset option will still be available for legacy reasons.
+
+Signed-off-by: Martin Pietryka <martin.pietryka@streamunlimited.com>
+---
+ sound/soc/davinci/am33xx-s800.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
+
+diff --git a/sound/soc/davinci/am33xx-s800.c b/sound/soc/davinci/am33xx-s800.c
+index becbc83..26d4111 100644
+--- a/sound/soc/davinci/am33xx-s800.c
++++ b/sound/soc/davinci/am33xx-s800.c
+@@ -38,6 +38,7 @@ struct snd_soc_am33xx_s800 {
+ 	unsigned int		mclk_rate_rx;
+ 	signed int		drift;
+ 	int			passive_mode_gpio;
++	int			cb_reset_gpio;
+ 	int			amp_overheat_gpio;
+ 	int			amp_overcurrent_gpio;
+ 	struct snd_kcontrol	*amp_overheat_kctl;
+@@ -515,6 +516,20 @@ static int snd_soc_am33xx_s800_probe(struct platform_device *pdev)
+ 		return ret;
+ 	}
+ 
++	priv->cb_reset_gpio = of_get_named_gpio(top_node, "sue,cb-reset-gpio", 0);
++	if (gpio_is_valid(priv->cb_reset_gpio)) {
++		ret = devm_gpio_request_one(dev, priv->cb_reset_gpio, GPIOF_OUT_INIT_LOW, "Carrier board reset GPIO");
++
++		if (ret == 0) {
++			usleep_range(1000, 5000);
++			gpio_set_value(priv->cb_reset_gpio, 1);
++			usleep_range(1000, 5000);
++		}
++
++		if (ret < 0)
++			priv->cb_reset_gpio = -EINVAL;
++	}
++
+ 	ret = snd_soc_register_card(&priv->card);
+ 	if (ret < 0) {
+ 		dev_err(dev, "error registering card (%d)\n", ret);
+-- 
+1.9.1
+

@@ -1,0 +1,91 @@
+From cc04075e07c30ae9673052724d80a3f48b7dad1d Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Fri, 3 Jan 2014 11:31:08 +0100
+Subject: [PATCH] stream800: Avoid reset when we fetch sfupdate from usb or
+ tftp.
+
+Reset after verifying image isn't necessary because after reboot we
+read image again and do sanity checks again. This could save us maybe 30 secs
+in update process.
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ include/configs/stream800.h | 37 ++++++++++++++++++++++---------------
+ 1 file changed, 22 insertions(+), 15 deletions(-)
+
+diff --git a/include/configs/stream800.h b/include/configs/stream800.h
+index 6e9d12f..893ba50 100644
+--- a/include/configs/stream800.h
++++ b/include/configs/stream800.h
+@@ -320,9 +320,10 @@
+            "fi; " \
+            "echo \"INFO: setting fail flag...\"; " \
+            "fwup set fail; " \
+-           "echo \"INFO: reseting...\"; " \
+-           "reset; " \
++           "SFU_IMAGE_LOAD_VALID=yes;" \
++           "echo \"INFO: SFU image load and valid\"; " \
+         "else echo \"INFO: SFU image invalid\"; " \
++        "sfu errstate; " \
+         "fi;\0" \
+  \
+  \
+@@ -709,6 +710,7 @@
+  \
+     "sfu_boot=" \
+         "echo \"INFO: SFU firmware update process started...\"; " \
++        "SFU_IMAGE_LOAD_VALID=no; " \
+         "if fwup fail; " \
+             "then " \
+             "if test ${bootcount} -eq ${bootlimit}; " \
+@@ -809,29 +811,34 @@
+             "if test -z \\\\'${rootfs_vers}\\\\'; then echo \"INFO: rootfs_vers is missing\"; fi; " \
+             "bstate dontunplug; " \
+             "VALID_IMAGE=no; " \
+-            "echo \"INFO: Need to read the sfupdate from download partition...\"; " \
+-            "if nand read ${sfu_load_addr} download 0x10; " \
++            "if test ${SFU_IMAGE_LOAD_VALID} = yes; " \
+                 "then " \
+-                "if sfu magic ${sfu_load_addr}; " \
++                "VALID_IMAGE=yes; " \
++            "else " \
++                "echo \"INFO: Need to read the sfupdate from download partition...\"; " \
++                "if nand read ${sfu_load_addr} download 0x10; " \
+                     "then " \
+-                    "echo \"INFO: sfupdate image total length is ${SFU_TOTAL_LEN}\"; " \
+-                    "if nand read ${sfu_load_addr} download ${SFU_TOTAL_LEN}; " \
++                    "if sfu magic ${sfu_load_addr}; " \
+                         "then " \
+-                        "if sfu valid ${sfu_load_addr}; " \
++                        "echo \"INFO: sfupdate image total length is ${SFU_TOTAL_LEN}\"; " \
++                        "if nand read ${sfu_load_addr} download ${SFU_TOTAL_LEN}; " \
+                             "then " \
+-                            "echo \"INFO: SFU image in download partition is valid\"; " \
+-                            "VALID_IMAGE=yes; " \
++                            "if sfu valid ${sfu_load_addr}; " \
++                                "then " \
++                                "echo \"INFO: SFU image in download partition is valid\"; " \
++                                "VALID_IMAGE=yes; " \
++                            "else " \
++                                "echo \"ERROR: SFU image in download partition is invalid\"; " \
++                            "fi; " \
+                         "else " \
+-                            "echo \"ERROR: SFU image in download partition is invalid\"; " \
++                            "echo \"ERROR: nand read failed\"; " \
+                         "fi; " \
+                     "else " \
+-                        "echo \"ERROR: nand read failed\"; " \
++                        "echo \"ERROR: SFU image in download partition is invalid\"; " \
+                     "fi; " \
+                 "else " \
+-                    "echo \"ERROR: SFU image in download partition is invalid\"; " \
++                    "echo \"ERROR: nand read failed\"; " \
+                 "fi; " \
+-            "else " \
+-                "echo \"ERROR: nand read failed\"; " \
+             "fi; " \
+             "if test ${VALID_IMAGE} = yes; " \
+                 "then " \
+-- 
+2.7.4
+

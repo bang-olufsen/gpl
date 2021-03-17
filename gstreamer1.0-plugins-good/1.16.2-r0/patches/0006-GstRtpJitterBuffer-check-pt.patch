@@ -1,0 +1,120 @@
+From 5ae0c3d9c49da3ff21e8e61e3d5a8f533eecd262 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Fri, 6 Nov 2020 13:38:38 +0100
+Subject: [PATCH] GstRtpJitterBuffer:check-pt
+
+Check that the packet type (pt) of the incoming rtp buffers is the same as
+the latest negotiated pt, changing if the pt has changed. If disabled, the
+latest pt is assumed. This will typically be the payload defined in the
+caps. Disabling this can help in cases where an incoming stream has a
+broken/incorrect pt on its packages.
+---
+ gst/rtpmanager/gstrtpjitterbuffer.c | 39 ++++++++++++++++++++++++++++++++++---
+ 1 file changed, 36 insertions(+), 3 deletions(-)
+
+diff --git a/gst/rtpmanager/gstrtpjitterbuffer.c b/gst/rtpmanager/gstrtpjitterbuffer.c
+index e8b636f..744ccaf 100644
+--- a/gst/rtpmanager/gstrtpjitterbuffer.c
++++ b/gst/rtpmanager/gstrtpjitterbuffer.c
+@@ -154,6 +154,7 @@ enum
+ 
+ #define DEFAULT_AUTO_RTX_DELAY (20 * GST_MSECOND)
+ #define DEFAULT_AUTO_RTX_TIMEOUT (40 * GST_MSECOND)
++#define DEFAULT_CHECK_PT            TRUE
+ 
+ enum
+ {
+@@ -181,7 +182,8 @@ enum
+   PROP_MAX_DROPOUT_TIME,
+   PROP_MAX_MISORDER_TIME,
+   PROP_RFC7273_SYNC,
+-  PROP_FASTSTART_MIN_PACKETS
++  PROP_FASTSTART_MIN_PACKETS,
++  PROP_CHECK_PT,
+ };
+ 
+ #define JBUF_LOCK(priv)   G_STMT_START {			\
+@@ -317,6 +319,7 @@ struct _GstRtpJitterBufferPrivate
+   guint32 max_dropout_time;
+   guint32 max_misorder_time;
+   guint faststart_min_packets;
++  gboolean check_pt;
+ 
+   /* the last seqnum we pushed out */
+   guint32 last_popped_seqnum;
+@@ -766,6 +769,24 @@ gst_rtp_jitter_buffer_class_init (GstRtpJitterBufferClass * klass)
+           "The deadline for a valid RTX request in milliseconds. "
+           "(-1 automatic)", -1, G_MAXINT, DEFAULT_RTX_DEADLINE,
+           G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
++
++
++    /**
++   * GstRtpJitterBuffer:check-pt
++   *
++   * Check that the packet type (pt) of the incoming rtp buffers is the same as the
++   * latest negotiated pt, changing if the pt has changed. If disabled, the latest pt
++   * is assumed. This will typically be the payload defined in the caps. Disabling this 
++   * can help in cases where an incoming stream has a broken/incorrect pt on its packages.
++   *
++   * Since: 1.17
++   */
++  g_object_class_install_property (gobject_class, PROP_CHECK_PT,
++      g_param_spec_boolean ("check-pt", "Check the payload type",
++          "Check the payload type of incoming buffers. Disabling this can help "
++          "with streams containing incorrect pt values.",
++          DEFAULT_CHECK_PT, G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
++
+ /**
+    * GstRtpJitterBuffer::rtx-stats-timeout:
+    *
+@@ -1031,6 +1052,7 @@ gst_rtp_jitter_buffer_init (GstRtpJitterBuffer * jitterbuffer)
+   priv->max_dropout_time = DEFAULT_MAX_DROPOUT_TIME;
+   priv->max_misorder_time = DEFAULT_MAX_MISORDER_TIME;
+   priv->faststart_min_packets = DEFAULT_FASTSTART_MIN_PACKETS;
++  priv->check_pt = DEFAULT_CHECK_PT;
+ 
+   priv->ts_offset_remainder = 0;
+   priv->last_dts = -1;
+@@ -2985,7 +3007,7 @@ gst_rtp_jitter_buffer_chain (GstPad * pad, GstObject * parent,
+ 
+   JBUF_LOCK_CHECK (priv, out_flushing);
+ 
+-  if (G_UNLIKELY (priv->last_pt != pt)) {
++  if (G_UNLIKELY (priv->check_pt && priv->last_pt != pt)) {
+     GstCaps *caps;
+ 
+     GST_DEBUG_OBJECT (jitterbuffer, "pt changed from %u to %u", priv->last_pt,
+@@ -3003,7 +3025,7 @@ gst_rtp_jitter_buffer_chain (GstPad * pad, GstObject * parent,
+     }
+   }
+ 
+-  if (G_UNLIKELY (priv->clock_rate == -1)) {
++  if (G_UNLIKELY (priv->check_pt && priv->clock_rate == -1)) {
+     /* no clock rate given on the caps, try to get one with the signal */
+     if (gst_rtp_jitter_buffer_get_clock_rate (jitterbuffer,
+             pt) == GST_FLOW_FLUSHING)
+@@ -4621,6 +4643,12 @@ gst_rtp_jitter_buffer_set_property (GObject * object,
+       }
+       break;
+     }
++    case PROP_CHECK_PT:
++    { JBUF_LOCK (priv);
++      priv->check_pt = g_value_get_boolean (value);
++      JBUF_UNLOCK (priv);
++      break;
++    }
+     case PROP_DROP_ON_LATENCY:
+       JBUF_LOCK (priv);
+       priv->drop_on_latency = g_value_get_boolean (value);
+@@ -4761,6 +4789,11 @@ gst_rtp_jitter_buffer_get_property (GObject * object,
+       g_value_set_uint (value, priv->latency_ms);
+       JBUF_UNLOCK (priv);
+       break;
++    case PROP_CHECK_PT:
++      JBUF_LOCK (priv);
++      g_value_set_boolean (value, priv->check_pt);
++      JBUF_UNLOCK (priv);
++      break;
+     case PROP_DROP_ON_LATENCY:
+       JBUF_LOCK (priv);
+       g_value_set_boolean (value, priv->drop_on_latency);

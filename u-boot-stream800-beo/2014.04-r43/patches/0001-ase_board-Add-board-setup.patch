@@ -1,0 +1,352 @@
+From 39bb2b09c8ffa5799d8a791842fa46a73cc5d5bd Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@gmail.com>
+Date: Thu, 8 Oct 2015 08:47:56 +0200
+Subject: [PATCH] ase_board: Add board setup
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ board/streamunlimited/stream800/Makefile           |   2 +-
+ .../stream800/board-beo_ase_board.c                | 174 +++++++++++++++++++++
+ .../stream800/board-beo_ase_board.h                |  37 +++++
+ board/streamunlimited/stream800/board.c            |   7 +-
+ board/streamunlimited/stream800/board_defines.c    |   7 +
+ board/streamunlimited/stream800/board_defines.h    |   1 +
+ board/streamunlimited/stream800/mux.c              |   1 +
+ include/configs/stream800.h                        |   2 +
+ 8 files changed, 229 insertions(+), 2 deletions(-)
+ create mode 100644 board/streamunlimited/stream800/board-beo_ase_board.c
+ create mode 100644 board/streamunlimited/stream800/board-beo_ase_board.h
+
+diff --git a/board/streamunlimited/stream800/Makefile b/board/streamunlimited/stream800/Makefile
+index 6806d6a..203ae85 100644
+--- a/board/streamunlimited/stream800/Makefile
++++ b/board/streamunlimited/stream800/Makefile
+@@ -17,7 +17,7 @@
+ ifdef CONFIG_SPL_BUILD
+ obj-y += mux.o board-spl.o adc.o board_defines.o
+ else
+-obj-y += board.o mux.o adc.o board-sue_demo_client_board.o board-sue_first_carrier_board.o board-sue_factory_test_board.o fwupdate.o sfu_parser.o tftp_update.o board_defines.o
++obj-y += board.o mux.o adc.o board-sue_demo_client_board.o board-sue_first_carrier_board.o board-sue_factory_test_board.o board-beo_ase_board.o fwupdate.o sfu_parser.o tftp_update.o board_defines.o
+ endif
+ 
+ 
+diff --git a/board/streamunlimited/stream800/board-beo_ase_board.c b/board/streamunlimited/stream800/board-beo_ase_board.c
+new file mode 100644
+index 0000000..548f075
+--- /dev/null
++++ b/board/streamunlimited/stream800/board-beo_ase_board.c
+@@ -0,0 +1,174 @@
++/*
++ * board-beo_ase_board.c
++ *
++ * Copyright (C) 2013, StreamUnlimited Engineering GmbH, http://www.streamunlimited.com/
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation; either version 2 of
++ * the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR /PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++#include "board-beo_ase_board.h"
++
++/*
++ * "B&O ASE" - board specific initialization
++ */
++
++#include <common.h>
++#include <asm/io.h>
++#include <asm/arch/cpu.h>
++#include <asm/arch/clock.h>
++#include <asm/arch/hardware.h>
++#include <phy.h>
++#include <asm/arch-am33xx/phy.h>
++#include <asm-generic/gpio.h>
++#include <asm/arch/mux.h>
++#include <spi.h>
++
++static struct ctrl_dev *cdev = (struct ctrl_dev *)CTRL_DEVICE_BASE;
++static struct spi_slave *spi_mcu;
++static int update_flag = 0;
++
++/* GPIO1_9 - reset button status - check sfupdate file on USB if pressed during the boot-up */
++#define FW_UPDATE_BUTTON_STATUS_GPIO	(32 + 9)
++
++static struct module_pin_mux fw_update_button_pin_mux[] = {
++		{OFFSET(uart0_rtsn), (MODE(7) | PULLUP_EN | RXACTIVE)},	/* Reset button status gpio1_9, conflict: uart0_pin_mux rts */
++		{-1},
++	};
++
++static struct module_pin_mux spi1_pin_mux[] = {
++	{OFFSET(ecap0_in_pwm0_out), (MODE(4) | RXACTIVE | PULLUDDIS)},	/* SPI1_SCLK */
++	{OFFSET(uart0_ctsn), (MODE(4) | RXACTIVE |
++			PULLUDDIS | PULLUP_EN)},			/* SPI1_D0 */
++	{OFFSET(uart0_rtsn), (MODE(4) | RXACTIVE | PULLUDDIS)},	/* SPI1_D1 */
++	{OFFSET(uart1_rtsn), (MODE(4) | RXACTIVE |
++			PULLUDDIS | PULLUP_EN)},			/* SPI1_CS1 */
++	{-1},
++};
++
++void beo_ase__init(const struct Stream800Board *board)
++{
++	if (!board || board->carrierBoardType != CBT_BeoASEBoard)
++		BUG();
++
++	configure_module_pin_mux(fw_update_button_pin_mux);
++
++	//if (gpio_request(FW_UPDATE_BUTTON_STATUS_GPIO, "Reset status"))
++	//	printf("error: cannot request GPIO %d\n", FW_UPDATE_BUTTON_STATUS_GPIO);
++	//gpio_direction_input(FW_UPDATE_BUTTON_STATUS_GPIO);
++	//update_flag = ((gpio_get_value(FW_UPDATE_BUTTON_STATUS_GPIO) == 0) ? 1 : 0);
++
++	//configure_module_pin_mux(spi1_pin_mux);
++}
++
++void beo_ase__late_init(const struct Stream800Board *board)
++{
++	if (!board || board->carrierBoardType != CBT_BeoASEBoard)
++		BUG();
++
++	printf("TODO: 'B&O ASE' board late initialization.\n");
++
++	/* MCU is on 1:1, 1khz, mode 3 */
++	//spi_mcu = spi_setup_slave(1, 1, 0x1000, 3);
++	//if (!spi_mcu) {
++	//	printf("SPI: Failed to set up slave\n");
++	//}
++}
++
++#ifdef CONFIG_DRIVER_TI_CPSW
++static struct cpsw_slave_data cpsw_slaves[] = {
++	{
++		.slave_reg_ofs	= 0x208,
++		.sliver_reg_ofs	= 0xd80,	// CPSW_SL1
++		.phy_addr		= 4,
++		.phy_if			= PHY_INTERFACE_MODE_RMII
++	},
++};
++
++void beo_ase__cpsw_eth_init(const struct Stream800Board *board, struct cpsw_platform_data *cpsw_data)
++{
++	if (!board || board->carrierBoardType != CBT_BeoASEBoard)
++		BUG();
++
++	cpsw_data->slaves = 1;
++	cpsw_data->slave_data = cpsw_slaves;
++
++	// Advisory 1.0.10
++	// "The AM335x device does not support internal delay mode, so RGMII1_IDMODE and RGMII2_IDMODE must be set to 1b."
++	writel(RMII1_MODE_ENABLE | MII1_CLK_FROM_CHIP_PIN | RGMII1_NO_INTERNAL_DELAY
++		| MII2_MODE_NOT_USED , &cdev->miisel);
++}
++#endif /* CONFIG_DRIVER_TI_CPSW */
++
++int beo_ase__get_fw_update_button_status(void)
++{
++	return update_flag;
++}
++
++void beo_ase__on_board_state_changed(const struct Stream800Board *board, BoardState state)
++{
++	printf("TODO: Board state changed to '%s'\n", boardStateStrings[state]);
++
++	///* custom SPI MCU defined protocol, look at the kernel driver specification */
++
++	//// WIFI_white, slow blink (600/200ms)
++	//const u8 bootingStateLedCmd[] = { 0x20,0x80,0x10,0x00,0x04,0x00,0x00,0x00,0x04,0x00,0x01,0x0,0x26,0x0,0x0,0x0 };
++
++	//// WIFI_red, fast blink (200/100ms)
++	//const u8 failureStateLedCmd[] = { 0x20,0x80,0x10,0x00,0x04,0x00,0x00,0x00,0x09,0x00,0x01,0x0,0x12,0x0,0x0,0x0 };
++
++	//// ON_red, fast blink (100/100ms)
++	//const u8 flashingStateLedCmd[] = { 0x20,0x80,0x10,0x00,0x04,0x00,0x00,0x00,0x01,0x00,0x01,0x0,0x11,0x0,0x0,0x0 };
++
++	//// ON_red, off
++	//const u8 flashingOffStateLedCmd[] = { 0x20,0x80,0x10,0x00,0x04,0x00,0x00,0x00,0x01,0x00,0x00,0x00,0x00,0x0,0x0,0x0 };
++
++	//u8 bootStateReplay[20];
++
++	//switch (state) {
++	//	case BS_DontUnplug:
++	//		am335x_spi_write(spi_mcu, flashingStateLedCmd, 16);
++	//		am335x_spi_read(spi_mcu, bootStateReplay, 20);
++	//		break;
++	//	case BS_BootingKernel:
++	//		/* We power on the led only at boot withouth firmware update */
++	//		if (bootcount_load() <= 1) {
++	//			am335x_spi_write(spi_mcu, bootingStateLedCmd, 16);
++	//			am335x_spi_read(spi_mcu, bootStateReplay, 20);
++	//		}
++	//		break;
++	//	case BS_HardFailure:
++	//		am335x_spi_write(spi_mcu, flashingOffStateLedCmd, 16);
++	//		am335x_spi_read(spi_mcu, bootStateReplay, 20);
++	//		am335x_spi_write(spi_mcu, failureStateLedCmd, 16);
++	//		am335x_spi_read(spi_mcu, bootStateReplay, 20);
++	//		break;
++	//}
++}
++
++int beo_ase__do_usb_update(void)
++{
++	return (beo_ase__get_fw_update_button_status()) ? 1 : 0 ;	// fw update button -> check update file on USB
++}
++
++
++static struct StreamBoardInterface beo_ase_board_interface = {
++	.init = beo_ase__init,
++	.late_init = beo_ase__late_init,
++	.cpsw_eth_init = beo_ase__cpsw_eth_init,
++	.on_board_state_changed = beo_ase__on_board_state_changed,
++	.do_usb_update = beo_ase__do_usb_update,
++
++	.has_rmii1 = 1,
++};
++
++void beo_ase__set_board_interface(void) {
++	set_board_interface(&beo_ase_board_interface);
++}
+diff --git a/board/streamunlimited/stream800/board-beo_ase_board.h b/board/streamunlimited/stream800/board-beo_ase_board.h
+new file mode 100644
+index 0000000..5511a83
+--- /dev/null
++++ b/board/streamunlimited/stream800/board-beo_ase_board.h
+@@ -0,0 +1,37 @@
++/*
++ * board-beo_ase_board.h
++ *
++ * Copyright (C) 2013, StreamUnlimited Engineering GmbH, http://www.streamunlimited.com/
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation; either version 2 of
++ * the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR /PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++#ifndef __BOARD_BEO_HH1_BOARD_H
++#define __BOARD_BEO_HH1_BOARD_H
++
++#include <common.h>
++#include "board.h"
++#include <cpsw.h>
++
++void beo_ase__set_board_interface(void);
++
++void beo_ase__init(const struct Stream800Board *board);
++
++void beo_ase__late_init(const struct Stream800Board *board);
++
++#ifdef CONFIG_DRIVER_TI_CPSW
++void beo_ase__cpsw_eth_init(const struct Stream800Board *board, struct cpsw_platform_data *cpsw_data);
++#endif
++
++/* Handling board state change (LED indication, ...) */
++void beo_ase__on_board_state_changed(const struct Stream800Board *board, BoardState state);
++
++#endif	// __BOARD_BEO_HH1_BOARD_H
+diff --git a/board/streamunlimited/stream800/board.c b/board/streamunlimited/stream800/board.c
+index 46bb7e3..ce3a28f 100755
+--- a/board/streamunlimited/stream800/board.c
++++ b/board/streamunlimited/stream800/board.c
+@@ -157,6 +157,9 @@ int board_init(void)
+ 		case CBT_SueFactoryTestBoard:
+ 			factory_test__set_board_interface();
+ 			break;
++		case CBT_BeoASEBoard:
++			beo_ase__set_board_interface();
++			break;
+ 
+ 		// CUSTOMIZE: Add your board __set_board_interface() call here
+ 
+@@ -213,7 +216,6 @@ int board_init(void)
+ 	return 0;
+ }
+ 
+-
+ #ifdef CONFIG_BOOTCOUNT_LIMIT
+ void bootcount_store (ulong a)
+ {
+@@ -412,6 +414,9 @@ int board_late_init(void)
+ 		case CBT_SueFactoryTestBoard:
+ 			setenv("cramfsdir", "sue_factory_test_board");
+ 			break;
++		case CBT_BeoASEBoard:
++			setenv("cramfsdir", "beo_ase_board");
++			break;
+ 
+ 		// CUSTOMIZE: Add your board here
+ 
+diff --git a/board/streamunlimited/stream800/board_defines.c b/board/streamunlimited/stream800/board_defines.c
+index 57faa54..3e384fe 100644
+--- a/board/streamunlimited/stream800/board_defines.c
++++ b/board/streamunlimited/stream800/board_defines.c
+@@ -16,6 +16,7 @@ const char *stream800CarrierBoardTypeStrings[] = {
+ 	[CBT_SueFirstCarrierBoard]	= "SUE first carrier board",
+ 	[CBT_SueDemoClientBoard]	= "SUE demo client board",
+ 	[CBT_SueHighendDemoClientBoard]	= "SUE highend demo client board",
++	[CBT_BeoASEBoard]		= "B&O ASE board"
+ };
+ 
+ const char *boardStateStrings[] = {
+@@ -76,6 +77,12 @@ void board_detect(struct Stream800Board *board)
+ 		return;
+ 	}
+ 
++#ifdef ASE_BUILD
++	board->moduleVersion = MV_L2;
++	board->carrierBoardType = CBT_BeoASEBoard;
++	return;
++#endif
++
+ 	board->moduleVersion = MV_unknown;
+ 	board->carrierBoardType = CBT_unknown;
+ 
+diff --git a/board/streamunlimited/stream800/board_defines.h b/board/streamunlimited/stream800/board_defines.h
+index 0f7ac33..ad3d4b7 100644
+--- a/board/streamunlimited/stream800/board_defines.h
++++ b/board/streamunlimited/stream800/board_defines.h
+@@ -26,6 +26,7 @@ typedef enum {
+ 	CBT_SueFirstCarrierBoard,		///< SUE Carrier Board
+ 	CBT_SueDemoClientBoard,			///< SUE demo client
+ 	CBT_SueHighendDemoClientBoard,		///< SUE highend demo client
++	CBT_BeoASEBoard				///< B&O ASE
+ } Stream800CarrierBoardType;
+ 
+ extern const char *stream800CarrierBoardTypeStrings[];
+diff --git a/board/streamunlimited/stream800/mux.c b/board/streamunlimited/stream800/mux.c
+index 26cccfb..f19d49f 100644
+--- a/board/streamunlimited/stream800/mux.c
++++ b/board/streamunlimited/stream800/mux.c
+@@ -257,6 +257,7 @@ void enable_i2c0_pin_mux(void)
+ 
+ void enable_board_pin_mux(struct Stream800Board *board)
+ {
++	//TODO ASE pinmux based on board interface
+ 	configure_module_pin_mux(i2c0_pin_mux);
+ 	configure_module_pin_mux(i2c1_pin_mux);
+ 	configure_module_pin_mux(clk2_pll_pin_mux);
+diff --git a/include/configs/stream800.h b/include/configs/stream800.h
+index f5990bd..b4aaa62 100644
+--- a/include/configs/stream800.h
++++ b/include/configs/stream800.h
+@@ -25,6 +25,8 @@
+ 
+ #undef CONFIG_SPL_OS_BOOT
+ 
++#define ASE_BUILD 1
++
+ #define CONFIG_DMA_COHERENT
+ #define CONFIG_DMA_COHERENT_SIZE	(1 << 20)
+ 
+-- 
+2.7.4
+

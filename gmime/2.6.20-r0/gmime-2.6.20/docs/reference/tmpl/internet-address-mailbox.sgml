@@ -1,0 +1,56 @@
+<!-- ##### SECTION Title ##### -->
+internet-address-mailbox
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT InternetAddressMailbox ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION internet_address_mailbox_new ##### -->
+<para>
+
+</para>
+
+@name: 
+@addr: 
+@Returns: 
+
+
+<!-- ##### FUNCTION internet_address_mailbox_get_addr ##### -->
+<para>
+
+</para>
+
+@mailbox: 
+@Returns: 
+
+
+<!-- ##### FUNCTION internet_address_mailbox_set_addr ##### -->
+<para>
+
+</para>
+
+@mailbox: 
+@addr: 
+
+

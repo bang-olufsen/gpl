@@ -1,0 +1,36 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>librygel-server Reference Manual: Implementing Media Engines: Full Example</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="index.html" title="librygel-server Reference Manual">
+<link rel="up" href="implementing-media-engines.html" title="Implementing Rygel Media Engines">
+<link rel="prev" href="implementing-media-engines.html" title="Implementing Rygel Media Engines">
+<link rel="next" href="api-main-list.html" title="librygel-server API Reference">
+<meta name="generator" content="GTK-Doc V1.20.1 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts"></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="implementing-media-engines.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="implementing-media-engines.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="api-main-list.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="section">
+<div class="titlepage"><div><div><h2 class="title" style="clear: both">
+<a name="implementing-media-engines-full-example"></a>Implementing Media Engines: Full Example</h2></div></div></div>
+<p>In addition, the external <a class="ulink" href="http://git.gnome.org/browse/rygel-gst-0-10-media-engine" target="_top">rygel-gst-0-10-media-engine</a> project provides a Rygel media engine that uses an older GStreamer version and is an example of an external Rygel media-engine implemented in C.</p>
+<p>The media engine plugin provides a <code class="function">module_get_instance()</code> function, called by Rygel, which returns an instance of our derived <a class="link" href="RygelDataSource.html" title="RygelDataSource">RygelDataSource</a> class.</p>
+<p>This <code class="classname">RygelGstMediaEngine</code> class implements the virtual functions from its <a class="link" href="RygelMediaEngine.html" title="RygelMediaEngine">RygelMediaEngine</a> base class, such as <code class="function">get_dlna_profiles()</code>, <code class="function">get_transcoders()</code> to report what DLNA profiles this media engine supports and what transcoding capabilities it offers.</p>
+<p>It also implements the <code class="function">create_data_source()</code> virtual function, returning an instance of our <code class="classname">RygelGstDataSource</code> class, which implements the <a class="link" href="RygelDataSource.html" title="RygelDataSource">RygelDataSource</a> interface. This implements the virtual functions of the  <a class="link" href="RygelDataSource.html" title="RygelDataSource">RygelDataSource</a> interface, such as <code class="function">start()</code>, <code class="function">freeze()</code>, <code class="function">thaw()</code>, and <code class="function">stop()</code> by setting the state of its GStreamer <code class="classname">GstPipeline</code>.</p>
+<p>The list of transcoders returned by the <code class="classname">RygelGstMediaEngine</code> <code class="function">get_transcoders()</code> implementation provides instances of every transcoder provided by our media engine. These classes derive from <a class="link" href="RygelTranscoder.html" title="RygelTranscoder">RygelTranscoder</a>, implementing its <code class="function">create_source()</code> virtual function, returning an instance of our <code class="classname">RygelGstDataSource</code> class which uses a GStreamer <code class="classname">GstBin</code> that uses a GStreamer decoder and encoder to transcode the original data into the desired format. These derived <a class="link" href="RygelTranscoder.html" title="RygelTranscoder">RygelTranscoder</a> objects also have appropriate values for the <code class="literal">mime-type</code>, <code class="literal">dlna-profile</code>, and <code class="literal">extension</code> properties, allowing Rygel to decide which transcoder to use.</p>
+<p>The derived <a class="link" href="RygelTranscoder.html" title="RygelTranscoder">RygelTranscoder</a> classes also implement the <code class="function">add_resource</code> virtual function, to set transcoder-specific details on a <code class="classname">GUPnPDIDLLiteResource</code> that is first instantiated by calling the <code class="function">add_resource</code> implementation in the base class. For instance, by calling <code class="function">gupnp_didl_lite_resource_set_bitrate()</code>.</p>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.20.1</div>
+</body>
+</html>

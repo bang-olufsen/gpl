@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<html>
+  <head>
+    <title>Rygel.Transcoder &ndash; librygel-server &ndash; Vala Binding Reference</title>
+    <link href="../style.css" rel="stylesheet" type="text/css"/><script src="../scripts.js" type="text/javascript">
+    </script>
+  </head>
+  <body>
+    <div class="site_header">Rygel.Transcoder &ndash; librygel-server Reference Manual</div>
+    <div class="site_body">
+      <div class="site_navigation">
+        <ul class="navi_main">
+          <li class="package_index"><a href="../index.html">Packages</a></li>
+        </ul>
+        <hr class="navi_hr"/>
+        <ul class="navi_main">
+          <li class="package"><a href="index.htm">librygel-server</a></li>
+        </ul>
+        <hr class="navi_hr"/>
+        <ul class="navi_main">
+          <li class="namespace"><a href="Rygel.html">Rygel</a></li>
+        </ul>
+        <hr class="navi_hr"/>
+        <ul class="navi_main">
+          <li class="abstract_class">Transcoder</li>
+        </ul>
+        <hr class="navi_hr"/>
+        <ul class="navi_main">
+          <li class="property"><a href="Rygel.Transcoder.dlna_profile.html">dlna_profile</a></li>
+          <li class="property"><a href="Rygel.Transcoder.extension.html">extension</a></li>
+          <li class="property"><a href="Rygel.Transcoder.mime_type.html">mime_type</a></li>
+          <li class="creation_method"><a href="Rygel.Transcoder.Transcoder.html">Transcoder</a></li>
+          <li class="virtual_method"><a href="Rygel.Transcoder.add_resource.html">add_resource</a></li>
+          <li class="method"><a href="Rygel.Transcoder.can_handle.html">can_handle</a></li>
+          <li class="abstract_method"><a href="Rygel.Transcoder.create_source.html">create_source</a></li>
+          <li class="abstract_method"><a href="Rygel.Transcoder.get_distance.html">get_distance</a></li>
+          <li class="method"><a href="Rygel.Transcoder.mime_type_is_a.html">mime_type_is_a</a></li>
+        </ul>
+      </div>
+      <div class="site_content">
+        <h1 class="main_title">Transcoder</h1>
+        <hr class="main_hr"/>
+        <h2 class="main_title">Object Hierarchy:</h2>
+        <img class="main_diagram" usemap="#Rygel.Transcoder" alt="Object hierarchy for Transcoder" src="img/Rygel.Transcoder.png"/>
+
+      <map id="Rygel.Transcoder" name="Rygel.Transcoder">
+<area shape="rect" id="node1" href="Rygel.Transcoder.html" title="Rygel.Transcoder" alt="" coords="5,101,155,149"/>
+</map>
+
+        <h2 class="main_title">Description:</h2>
+        <div class="main_code_definition"><span class="main_keyword">public</span> <span class="main_keyword">abstract</span> <span class="main_keyword">class</span> <b><span css="abstract_class">Transcoder</span></b> : <span class="main_type"><code>Object</code></span>
+        </div>
+        <div class="description">
+          <p>The base Transcoder class. Each implementation derives from it and must implement create_source() and get_distance().</p>
+          <p>Transcoders are obtained from rygel_media_engine_get_transcoders() and are only expected to support the derived #RygelDataSource types 
+            provided by the same media engine.</p>
+        </div><br/>
+        <div class="namespace_note"><b>Namespace:</b> <a href="Rygel.html">Rygel</a>
+        </div>
+        <div class="package_note"><b>Package:</b> <a href="index.htm">librygel-server</a>
+        </div>
+        <h2 class="main_title">Content:</h2>
+        <h3 class="main_title">Properties:</h3>
+        <ul class="navi_inline">
+          <li class="property"><span class="leaf_code_definition"><span class="main_keyword">public</span> <span class="main_basic_type"><code>string</code></span> <b><a href="Rygel.Transcoder.mime_type.html" class="property">mime_type</a></b> { <span class="main_keyword">construct</span>; <span class="main_keyword">get</span>; }
+            </span>
+            <div class="leaf_brief_description">
+            </div></li>
+          <li class="property"><span class="leaf_code_definition"><span class="main_keyword">public</span> <span class="main_basic_type"><code>string</code></span> <b><a href="Rygel.Transcoder.dlna_profile.html" class="property">dlna_profile</a></b> { <span class="main_keyword">construct</span>; <span class="main_keyword">get</span>; }
+            </span>
+            <div class="leaf_brief_description">
+            </div></li>
+          <li class="property"><span class="leaf_code_definition"><span class="main_keyword">public</span> <span class="main_basic_type"><code>string</code></span> <b><a href="Rygel.Transcoder.extension.html" class="property">extension</a></b> { <span class="main_keyword">construct</span>; <span class="main_keyword">get</span>; }
+            </span>
+            <div class="leaf_brief_description">
+            </div></li>
+        </ul>
+        <h3 class="main_title">Creation methods:</h3>
+        <ul class="navi_inline">
+          <li class="creation_method"><span class="leaf_code_definition"><span class="main_keyword">public</span> <b><a href="Rygel.Transcoder.Transcoder.html" class="creation_method">Transcoder</a></b> ()
+            </span>
+            <div class="leaf_brief_description">
+            </div></li>
+        </ul>
+        <h3 class="main_title">Methods:</h3>
+        <ul class="navi_inline">
+          <li class="abstract_method"><span class="leaf_code_definition"><span class="main_keyword">public</span> <span class="main_keyword">abstract</span> <span class="main_type"><a href="Rygel.DataSource.html" class="interface">DataSource</a></span> <b><a href="Rygel.Transcoder.create_source.html" class="abstract_method">create_source</a></b> (<span class="main_type"><a href="Rygel.MediaItem.html" class="abstract_class">MediaItem</a></span> item, <span class="main_type"><a href="Rygel.DataSource.html" class="interface">DataSource</a></span> src) <span class="main_keyword">throws</span> <span class="main_type"><code>Error</code></span>
+            </span>
+            <div class="leaf_brief_description"><span class="brief_description">Creates a transcoding source.</span>
+            </div></li>
+          <li class="virtual_method"><span class="leaf_code_definition"><span class="main_keyword">public</span> <span class="main_keyword">virtual</span> <span class="main_type"><code>DIDLLiteResource</code></span>? <b><a href="Rygel.Transcoder.add_resource.html" class="virtual_method">add_resource</a></b> (<span class="main_type"><code>DIDLLiteItem</code></span> didl_item, <span class="main_type"><a href="Rygel.MediaItem.html" class="abstract_class">MediaItem</a></span> item, <span class="main_type"><a href="Rygel.TranscodeManager.html" class="abstract_class">TranscodeManager</a></span> manager) <span class="main_keyword">throws</span> <span class="main_type"><code>Error</code></span>
+            </span>
+            <div class="leaf_brief_description"><span class="brief_description">Derived classes should implement this function to fill a 
+                GUPnPDIDLLiteResource, representing the transcoded content, with parameters specific to the transcoder, such as bitrate or resolution.
+                The GUPnPDIDLLiteResource should be instantiated by calling this base class implementation, passing the provided didl_item, item and 
+                manager parameters.</span>
+            </div></li>
+          <li class="method"><span class="leaf_code_definition"><span class="main_keyword">public</span> <span class="main_basic_type"><code>bool</code></span> <b><a href="Rygel.Transcoder.can_handle.html" class="method">can_handle</a></b> (<span class="main_basic_type"><code>string</code></span> target)
+            </span>
+            <div class="leaf_brief_description"><span class="brief_description">Returns whether this trancoder can handle the specified DLNA profile. 
+                This is determined by the #RygelTranscodeManager, which checks the suitability of each #RygelTranscoder by calling 
+                rygel_transcoder_get_distance() with each #RygelMediaItem, choosing one DLNA profile for each transcoder to handle.</span>
+            </div></li>
+          <li class="abstract_method"><span class="leaf_code_definition"><span class="main_keyword">public</span> <span class="main_keyword">abstract</span> <span class="main_basic_type"><code>uint</code></span> <b><a href="Rygel.Transcoder.get_distance.html" class="abstract_method">get_distance</a></b> (<span class="main_type"><a href="Rygel.MediaItem.html" class="abstract_class">MediaItem</a></span> item)
+            </span>
+            <div class="leaf_brief_description"><span class="brief_description">Gets a numeric value that gives an gives an estimate of how hard it 
+                would be for this transcoder to trancode @item to the target profile of this transcoder.</span>
+            </div></li>
+          <li class="method"><span class="leaf_code_definition"><span class="main_keyword">protected</span> <span class="main_basic_type"><code>bool</code></span> <b><a href="Rygel.Transcoder.mime_type_is_a.html" class="method">mime_type_is_a</a></b> (<span class="main_basic_type"><code>string</code></span> mime_type1, <span class="main_basic_type"><code>string</code></span> mime_type2)
+            </span>
+            <div class="leaf_brief_description">
+            </div></li>
+        </ul>
+        <h3 class="main_title">Inherited Members:</h3>
+        <div class="box">
+          <div class="headline">
+            <div class="text">All known members inherited from class GLib.Object</div>
+            <div class="toggle">
+              <img onclick="toggle_box  (this, 'box-content-58')" src="../coll_open.png">&nbsp;</div>
+            </div>
+            <div class="content" id="box-content-58">
+              <div class="column">
+                <ul class="navi_inline">
+                  <li class="static_method">@new</li>
+                  <li class="static_method">newv</li>
+                  <li class="static_method">new_valist</li>
+                  <li class="method">get_type</li>
+                  <li class="method">get_class</li>
+                  <li class="method">@ref</li>
+                  <li class="method">unref</li>
+                  <li class="method">ref_sink</li>
+                  <li class="method">weak_ref</li>
+                  <li class="method">weak_unref</li>
+                  <li class="method">add_weak_pointer</li>
+                  <li class="method">remove_weak_pointer</li>
+                </ul>
+              </div>
+              <div class="column">
+                <ul class="navi_inline">
+                  <li class="method">@get</li>
+                  <li class="method">@set</li>
+                  <li class="method">get_property</li>
+                  <li class="method">set_property</li>
+                  <li class="method">get_data</li>
+                  <li class="method">set_data</li>
+                  <li class="method">set_data_full</li>
+                  <li class="method">steal_data</li>
+                  <li class="method">get_qdata</li>
+                  <li class="method">set_qdata</li>
+                  <li class="method">set_qdata_full</li>
+                  <li class="method">steal_qdata</li>
+                </ul>
+              </div>
+              <div class="column">
+                <ul class="navi_inline">
+                  <li class="method">freeze_notify</li>
+                  <li class="method">thaw_notify</li>
+                  <li class="virtual_method">dispose</li>
+                  <li class="virtual_method">constructed</li>
+                  <li class="method">notify_property</li>
+                  <li class="method">connect</li>
+                  <li class="method">disconnect</li>
+                  <li class="method">add_toggle_ref</li>
+                  <li class="method">remove_toggle_ref</li>
+                  <li class="method">bind_property</li>
+                  <li class="signal">notify</li>
+                  <li class="field">ref_count</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div><br/>
+      <div class="site_footer">Generated by <a href="http://www.valadoc.org/">Valadoc</a>
+      </div>
+    </body>
+  </html>

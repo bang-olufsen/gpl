@@ -1,0 +1,83 @@
+From 3305e7cacd3d901a39373b90a30fe7da7ba03289 Mon Sep 17 00:00:00 2001
+From: Martin Flaska <martin.flaska@streamunlimited.com>
+Date: Wed, 6 Feb 2013 10:46:54 +0100
+Subject: [PATCH] stream800: landock: swap LED 1 - LED 2
+
+Signed-off-by: Martin Flaska <martin.flaska@streamunlimited.com>
+---
+ .../stream800/board-lan_dock_board.c               | 28 +++++++++++-----------
+ 1 file changed, 14 insertions(+), 14 deletions(-)
+
+diff --git a/board/streamunlimited/stream800/board-lan_dock_board.c b/board/streamunlimited/stream800/board-lan_dock_board.c
+index 0f87b96..6aee8cf 100644
+--- a/board/streamunlimited/stream800/board-lan_dock_board.c
++++ b/board/streamunlimited/stream800/board-lan_dock_board.c
+@@ -35,20 +35,20 @@
+ static struct ctrl_dev *cdev = (struct ctrl_dev *)CTRL_DEVICE_BASE;
+ 
+ /* LED 1 : LAN status (active in low) */
+-#define LED1_R_GPIO	3
++#define LED1_R_GPIO	2
+ #define LED1_R_ON	gpio_set_value(LED1_R_GPIO, 0)
+ #define LED1_R_OFF	gpio_set_value(LED1_R_GPIO, 1)
+ 
+-#define LED1_G_GPIO	4
++#define LED1_G_GPIO	(32 + 8)
+ #define LED1_G_ON	gpio_set_value(LED1_G_GPIO, 0)
+ #define LED1_G_OFF	gpio_set_value(LED1_G_GPIO, 1)
+ 
+ /* LED 1 : Device & Recorder status (active in low) */
+-#define LED2_R_GPIO	2
++#define LED2_R_GPIO	3
+ #define LED2_R_ON	gpio_set_value(LED2_R_GPIO, 0)
+ #define LED2_R_OFF	gpio_set_value(LED2_R_GPIO, 1)
+ 
+-#define LED2_G_GPIO	(32 + 8)
++#define LED2_G_GPIO	4
+ #define LED2_G_ON	gpio_set_value(LED2_G_GPIO, 0)
+ #define LED2_G_OFF	gpio_set_value(LED2_G_GPIO, 1)
+ 
+@@ -56,10 +56,10 @@ static struct ctrl_dev *cdev = (struct ctrl_dev *)CTRL_DEVICE_BASE;
+ #define RESET_BUTTON_STATUS_GPIO	(32 + 9)
+ 
+ static struct module_pin_mux leds_pin_mux[] = {
+-		{OFFSET(spi0_sclk), (MODE(7))},	/* LED2 R (D12) gpio0_2, conflict: uart2_pin_mux, spi0_pin_mux */
+-		{OFFSET(spi0_d0), (MODE(7))},	/* LED1 R (D13) gpio0_3, conflict: uart2_pin_mux, spi0_pin_mux */
+-		{OFFSET(spi0_d1), (MODE(7))},	/* LED1 G (D13) gpio0_4  conflict: i2c1_pin_mux, spi0_pin_mux */
+-		{OFFSET(uart0_ctsn), (MODE(7))},/* LED2 G (D12) gpio1_8 */
++		{OFFSET(spi0_sclk), (MODE(7))},	/* LED1 R (D12) gpio0_2, conflict: uart2_pin_mux, spi0_pin_mux */
++		{OFFSET(spi0_d0), (MODE(7))},	/* LED2 R (D13) gpio0_3, conflict: uart2_pin_mux, spi0_pin_mux */
++		{OFFSET(spi0_d1), (MODE(7))},	/* LED2 G (D13) gpio0_4  conflict: i2c1_pin_mux, spi0_pin_mux */
++		{OFFSET(uart0_ctsn), (MODE(7))},/* LED1 G (D12) gpio1_8 */
+ 		{-1},
+ 	};
+ 
+@@ -75,8 +75,8 @@ void lan_dock__init(const struct Stream800Board *board)
+ 		BUG();
+ 
+ 	/* initialize GPIO for LEDs 1, 2
+-	 * LED1 (D11): red: GPIO_0_3, green: GPIO_0_4
+-	 * LED2 (D12): red: GPIO_0_2, green: GPIO_1_8
++	 * LED2 (D13): red: GPIO_0_3, green: GPIO_0_4
++	 * LED1 (D12): red: GPIO_0_2, green: GPIO_1_8
+ 	 *
+ 	 * Note: active in low
+ 	 */
+@@ -159,10 +159,10 @@ void lan_dock__cpsw_eth_init(const struct Stream800Board *board, struct cpsw_pla
+ void lan_dock__pin_mux_post_init(void)
+ {
+ 	static struct module_pin_mux leds_pin_mux[] = {
+-		{OFFSET(spi0_sclk), (MODE(7))},	/* LED2 R (D12) gpio0_2, conflict: uart2_pin_mux, spi0_pin_mux */
+-		{OFFSET(spi0_d0), (MODE(7))},	/* LED1 R (D13) gpio0_3, conflict: uart2_pin_mux, spi0_pin_mux */
+-		{OFFSET(spi0_d1), (MODE(7))},	/* LED1 G (D13) gpio0_4  conflict: i2c1_pin_mux, spi0_pin_mux */
+-		{OFFSET(uart0_ctsn), (MODE(7))},/* LED2 G (D12) gpio1_8 */
++		{OFFSET(spi0_sclk), (MODE(7))},	/* LED1 R (D12) gpio0_2, conflict: uart2_pin_mux, spi0_pin_mux */
++		{OFFSET(spi0_d0), (MODE(7))},	/* LED2 R (D13) gpio0_3, conflict: uart2_pin_mux, spi0_pin_mux */
++		{OFFSET(spi0_d1), (MODE(7))},	/* LED2 G (D13) gpio0_4  conflict: i2c1_pin_mux, spi0_pin_mux */
++		{OFFSET(uart0_ctsn), (MODE(7))},/* LED1 G (D12) gpio1_8 */
+ 		{-1},
+ 	};
+ 	configure_module_pin_mux(leds_pin_mux);
+-- 
+2.7.4
+

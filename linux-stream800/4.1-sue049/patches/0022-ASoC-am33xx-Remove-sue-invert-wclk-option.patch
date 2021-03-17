@@ -1,0 +1,35 @@
+From f920c3de09563524b0ac02429766378865158ee1 Mon Sep 17 00:00:00 2001
+From: Martin Pietryka <martin.pietryka@streamunlimited.com>
+Date: Thu, 19 Mar 2015 13:25:46 +0100
+Subject: [PATCH] ASoC: am33xx: Remove "sue,invert-wclk" option
+
+While using the McASP we have to invert the frame for I2S, but since
+this is now done in the davinci driver we dont need this option here
+anymore.
+
+Signed-off-by: Martin Pietryka <martin.pietryka@streamunlimited.com>
+---
+ sound/soc/davinci/am33xx-s800.c | 7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
+
+diff --git a/sound/soc/davinci/am33xx-s800.c b/sound/soc/davinci/am33xx-s800.c
+index 26d4111..593e6f8e 100644
+--- a/sound/soc/davinci/am33xx-s800.c
++++ b/sound/soc/davinci/am33xx-s800.c
+@@ -407,12 +407,7 @@ static int snd_soc_am33xx_s800_probe(struct platform_device *pdev)
+ 	if (!priv)
+ 		return -ENOMEM;
+ 
+-	dai_fmt = SND_SOC_DAIFMT_I2S;
+-
+-	if (of_get_property(top_node, "sue,invert-wclk", NULL))
+-		dai_fmt |= SND_SOC_DAIFMT_NB_IF;
+-	else
+-		dai_fmt |= SND_SOC_DAIFMT_NB_NF;
++	dai_fmt = SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF;
+ 
+ 	/* request pin mux */
+ 	pinctrl = devm_pinctrl_get_select_default(dev);
+-- 
+1.9.1
+

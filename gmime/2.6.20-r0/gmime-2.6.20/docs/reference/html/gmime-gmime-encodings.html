@@ -1,0 +1,992 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>gmime-encodings</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="GMime 2.6 Reference Manual">
+<link rel="up" href="core.html" title="Part III. GMime Core Reference">
+<link rel="prev" href="gmime-gmime-iconv-utils.html" title="gmime-iconv-utils">
+<link rel="next" href="gmime-gmime-utils.html" title="gmime-utils">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="gmime-gmime-iconv-utils.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="core.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">GMime 2.6 Reference Manual</th>
+<td><a accesskey="n" href="gmime-gmime-utils.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#gmime-gmime-encodings.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#gmime-gmime-encodings.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="gmime-gmime-encodings"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="gmime-gmime-encodings.top_of_page"></a>gmime-encodings</span></h2>
+<p>gmime-encodings — MIME encoding functions</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="gmime-gmime-encodings.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">enum                <a class="link" href="gmime-gmime-encodings.html#GMimeContentEncoding" title="enum GMimeContentEncoding">GMimeContentEncoding</a>;
+<a class="link" href="gmime-gmime-encodings.html#GMimeContentEncoding" title="enum GMimeContentEncoding"><span class="returnvalue">GMimeContentEncoding</span></a> <a class="link" href="gmime-gmime-encodings.html#g-mime-content-encoding-from-string" title="g_mime_content_encoding_from_string ()">g_mime_content_encoding_from_string</a>
+                                                        (<em class="parameter"><code>const <span class="type">char</span> *str</code></em>);
+const <span class="returnvalue">char</span> *        <a class="link" href="gmime-gmime-encodings.html#g-mime-content-encoding-to-string" title="g_mime_content_encoding_to_string ()">g_mime_content_encoding_to_string</a>   (<em class="parameter"><code><a class="link" href="gmime-gmime-encodings.html#GMimeContentEncoding" title="enum GMimeContentEncoding"><span class="type">GMimeContentEncoding</span></a> encoding</code></em>);
+enum                <a class="link" href="gmime-gmime-encodings.html#GMimeEncodingConstraint" title="enum GMimeEncodingConstraint">GMimeEncodingConstraint</a>;
+struct              <a class="link" href="gmime-gmime-encodings.html#GMimeEncoding" title="struct GMimeEncoding">GMimeEncoding</a>;
+<span class="returnvalue">void</span>                <a class="link" href="gmime-gmime-encodings.html#g-mime-encoding-init-encode" title="g_mime_encoding_init_encode ()">g_mime_encoding_init_encode</a>         (<em class="parameter"><code><a class="link" href="gmime-gmime-encodings.html#GMimeEncoding" title="struct GMimeEncoding"><span class="type">GMimeEncoding</span></a> *state</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="gmime-gmime-encodings.html#GMimeContentEncoding" title="enum GMimeContentEncoding"><span class="type">GMimeContentEncoding</span></a> encoding</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="gmime-gmime-encodings.html#g-mime-encoding-init-decode" title="g_mime_encoding_init_decode ()">g_mime_encoding_init_decode</a>         (<em class="parameter"><code><a class="link" href="gmime-gmime-encodings.html#GMimeEncoding" title="struct GMimeEncoding"><span class="type">GMimeEncoding</span></a> *state</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="gmime-gmime-encodings.html#GMimeContentEncoding" title="enum GMimeContentEncoding"><span class="type">GMimeContentEncoding</span></a> encoding</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="gmime-gmime-encodings.html#g-mime-encoding-reset" title="g_mime_encoding_reset ()">g_mime_encoding_reset</a>               (<em class="parameter"><code><a class="link" href="gmime-gmime-encodings.html#GMimeEncoding" title="struct GMimeEncoding"><span class="type">GMimeEncoding</span></a> *state</code></em>);
+<span class="returnvalue">size_t</span>              <a class="link" href="gmime-gmime-encodings.html#g-mime-encoding-outlen" title="g_mime_encoding_outlen ()">g_mime_encoding_outlen</a>              (<em class="parameter"><code><a class="link" href="gmime-gmime-encodings.html#GMimeEncoding" title="struct GMimeEncoding"><span class="type">GMimeEncoding</span></a> *state</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> inlen</code></em>);
+<span class="returnvalue">size_t</span>              <a class="link" href="gmime-gmime-encodings.html#g-mime-encoding-step" title="g_mime_encoding_step ()">g_mime_encoding_step</a>                (<em class="parameter"><code><a class="link" href="gmime-gmime-encodings.html#GMimeEncoding" title="struct GMimeEncoding"><span class="type">GMimeEncoding</span></a> *state</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *inbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> inlen</code></em>,
+                                                         <em class="parameter"><code><span class="type">char</span> *outbuf</code></em>);
+<span class="returnvalue">size_t</span>              <a class="link" href="gmime-gmime-encodings.html#g-mime-encoding-flush" title="g_mime_encoding_flush ()">g_mime_encoding_flush</a>               (<em class="parameter"><code><a class="link" href="gmime-gmime-encodings.html#GMimeEncoding" title="struct GMimeEncoding"><span class="type">GMimeEncoding</span></a> *state</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *inbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> inlen</code></em>,
+                                                         <em class="parameter"><code><span class="type">char</span> *outbuf</code></em>);
+#define             <a class="link" href="gmime-gmime-encodings.html#GMIME-BASE64-ENCODE-LEN:CAPS" title="GMIME_BASE64_ENCODE_LEN()">GMIME_BASE64_ENCODE_LEN</a>             (x)
+<span class="returnvalue">size_t</span>              <a class="link" href="gmime-gmime-encodings.html#g-mime-encoding-base64-decode-step" title="g_mime_encoding_base64_decode_step ()">g_mime_encoding_base64_decode_step</a>  (<em class="parameter"><code>const unsigned <span class="type">char</span> *inbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> inlen</code></em>,
+                                                         <em class="parameter"><code>unsigned <span class="type">char</span> *outbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> *state</code></em>,
+                                                         <em class="parameter"><code><span class="type">guint32</span> *save</code></em>);
+<span class="returnvalue">size_t</span>              <a class="link" href="gmime-gmime-encodings.html#g-mime-encoding-base64-encode-step" title="g_mime_encoding_base64_encode_step ()">g_mime_encoding_base64_encode_step</a>  (<em class="parameter"><code>const unsigned <span class="type">char</span> *inbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> inlen</code></em>,
+                                                         <em class="parameter"><code>unsigned <span class="type">char</span> *outbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> *state</code></em>,
+                                                         <em class="parameter"><code><span class="type">guint32</span> *save</code></em>);
+<span class="returnvalue">size_t</span>              <a class="link" href="gmime-gmime-encodings.html#g-mime-encoding-base64-encode-close" title="g_mime_encoding_base64_encode_close ()">g_mime_encoding_base64_encode_close</a> (<em class="parameter"><code>const unsigned <span class="type">char</span> *inbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> inlen</code></em>,
+                                                         <em class="parameter"><code>unsigned <span class="type">char</span> *outbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> *state</code></em>,
+                                                         <em class="parameter"><code><span class="type">guint32</span> *save</code></em>);
+#define             <a class="link" href="gmime-gmime-encodings.html#GMIME-UUDECODE-STATE-INIT:CAPS" title="GMIME_UUDECODE_STATE_INIT">GMIME_UUDECODE_STATE_INIT</a>
+#define             <a class="link" href="gmime-gmime-encodings.html#GMIME-UUDECODE-STATE-BEGIN:CAPS" title="GMIME_UUDECODE_STATE_BEGIN">GMIME_UUDECODE_STATE_BEGIN</a>
+#define             <a class="link" href="gmime-gmime-encodings.html#GMIME-UUDECODE-STATE-END:CAPS" title="GMIME_UUDECODE_STATE_END">GMIME_UUDECODE_STATE_END</a>
+#define             <a class="link" href="gmime-gmime-encodings.html#GMIME-UUENCODE-LEN:CAPS" title="GMIME_UUENCODE_LEN()">GMIME_UUENCODE_LEN</a>                  (x)
+<span class="returnvalue">size_t</span>              <a class="link" href="gmime-gmime-encodings.html#g-mime-encoding-uudecode-step" title="g_mime_encoding_uudecode_step ()">g_mime_encoding_uudecode_step</a>       (<em class="parameter"><code>const unsigned <span class="type">char</span> *inbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> inlen</code></em>,
+                                                         <em class="parameter"><code>unsigned <span class="type">char</span> *outbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> *state</code></em>,
+                                                         <em class="parameter"><code><span class="type">guint32</span> *save</code></em>);
+<span class="returnvalue">size_t</span>              <a class="link" href="gmime-gmime-encodings.html#g-mime-encoding-uuencode-step" title="g_mime_encoding_uuencode_step ()">g_mime_encoding_uuencode_step</a>       (<em class="parameter"><code>const unsigned <span class="type">char</span> *inbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> inlen</code></em>,
+                                                         <em class="parameter"><code>unsigned <span class="type">char</span> *outbuf</code></em>,
+                                                         <em class="parameter"><code>unsigned <span class="type">char</span> *uubuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> *state</code></em>,
+                                                         <em class="parameter"><code><span class="type">guint32</span> *save</code></em>);
+<span class="returnvalue">size_t</span>              <a class="link" href="gmime-gmime-encodings.html#g-mime-encoding-uuencode-close" title="g_mime_encoding_uuencode_close ()">g_mime_encoding_uuencode_close</a>      (<em class="parameter"><code>const unsigned <span class="type">char</span> *inbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> inlen</code></em>,
+                                                         <em class="parameter"><code>unsigned <span class="type">char</span> *outbuf</code></em>,
+                                                         <em class="parameter"><code>unsigned <span class="type">char</span> *uubuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> *state</code></em>,
+                                                         <em class="parameter"><code><span class="type">guint32</span> *save</code></em>);
+#define             <a class="link" href="gmime-gmime-encodings.html#GMIME-QP-ENCODE-LEN:CAPS" title="GMIME_QP_ENCODE_LEN()">GMIME_QP_ENCODE_LEN</a>                 (x)
+<span class="returnvalue">size_t</span>              <a class="link" href="gmime-gmime-encodings.html#g-mime-encoding-quoted-decode-step" title="g_mime_encoding_quoted_decode_step ()">g_mime_encoding_quoted_decode_step</a>  (<em class="parameter"><code>const unsigned <span class="type">char</span> *inbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> inlen</code></em>,
+                                                         <em class="parameter"><code>unsigned <span class="type">char</span> *outbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> *state</code></em>,
+                                                         <em class="parameter"><code><span class="type">guint32</span> *save</code></em>);
+<span class="returnvalue">size_t</span>              <a class="link" href="gmime-gmime-encodings.html#g-mime-encoding-quoted-encode-step" title="g_mime_encoding_quoted_encode_step ()">g_mime_encoding_quoted_encode_step</a>  (<em class="parameter"><code>const unsigned <span class="type">char</span> *inbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> inlen</code></em>,
+                                                         <em class="parameter"><code>unsigned <span class="type">char</span> *outbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> *state</code></em>,
+                                                         <em class="parameter"><code><span class="type">guint32</span> *save</code></em>);
+<span class="returnvalue">size_t</span>              <a class="link" href="gmime-gmime-encodings.html#g-mime-encoding-quoted-encode-close" title="g_mime_encoding_quoted_encode_close ()">g_mime_encoding_quoted_encode_close</a> (<em class="parameter"><code>const unsigned <span class="type">char</span> *inbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> inlen</code></em>,
+                                                         <em class="parameter"><code>unsigned <span class="type">char</span> *outbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> *state</code></em>,
+                                                         <em class="parameter"><code><span class="type">guint32</span> *save</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="gmime-gmime-encodings.description"></a><h2>Description</h2>
+<p>
+Utility functions to encode or decode MIME
+Content-Transfer-Encodings.
+</p>
+</div>
+<div class="refsect1">
+<a name="gmime-gmime-encodings.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="GMimeContentEncoding"></a><h3>enum GMimeContentEncoding</h3>
+<pre class="programlisting">typedef enum {
+	GMIME_CONTENT_ENCODING_DEFAULT,
+	GMIME_CONTENT_ENCODING_7BIT,
+	GMIME_CONTENT_ENCODING_8BIT,
+	GMIME_CONTENT_ENCODING_BINARY,
+	GMIME_CONTENT_ENCODING_BASE64,
+	GMIME_CONTENT_ENCODING_QUOTEDPRINTABLE,
+	GMIME_CONTENT_ENCODING_UUENCODE
+} GMimeContentEncoding;
+</pre>
+<p>
+A Content-Transfer-Encoding enumeration.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><a name="GMIME-CONTENT-ENCODING-DEFAULT:CAPS"></a><span class="term"><code class="literal">GMIME_CONTENT_ENCODING_DEFAULT</code></span></p></td>
+<td>Default transfer encoding.
+</td>
+</tr>
+<tr>
+<td><p><a name="GMIME-CONTENT-ENCODING-7BIT:CAPS"></a><span class="term"><code class="literal">GMIME_CONTENT_ENCODING_7BIT</code></span></p></td>
+<td>7bit text transfer encoding.
+</td>
+</tr>
+<tr>
+<td><p><a name="GMIME-CONTENT-ENCODING-8BIT:CAPS"></a><span class="term"><code class="literal">GMIME_CONTENT_ENCODING_8BIT</code></span></p></td>
+<td>8bit text transfer encoding.
+</td>
+</tr>
+<tr>
+<td><p><a name="GMIME-CONTENT-ENCODING-BINARY:CAPS"></a><span class="term"><code class="literal">GMIME_CONTENT_ENCODING_BINARY</code></span></p></td>
+<td>Binary transfer encoding.
+</td>
+</tr>
+<tr>
+<td><p><a name="GMIME-CONTENT-ENCODING-BASE64:CAPS"></a><span class="term"><code class="literal">GMIME_CONTENT_ENCODING_BASE64</code></span></p></td>
+<td>Base64 transfer encoding.
+</td>
+</tr>
+<tr>
+<td><p><a name="GMIME-CONTENT-ENCODING-QUOTEDPRINTABLE:CAPS"></a><span class="term"><code class="literal">GMIME_CONTENT_ENCODING_QUOTEDPRINTABLE</code></span></p></td>
+<td>Quoted-printable transfer encoding.
+</td>
+</tr>
+<tr>
+<td><p><a name="GMIME-CONTENT-ENCODING-UUENCODE:CAPS"></a><span class="term"><code class="literal">GMIME_CONTENT_ENCODING_UUENCODE</code></span></p></td>
+<td>Uuencode transfer encoding.
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-content-encoding-from-string"></a><h3>g_mime_content_encoding_from_string ()</h3>
+<pre class="programlisting"><a class="link" href="gmime-gmime-encodings.html#GMimeContentEncoding" title="enum GMimeContentEncoding"><span class="returnvalue">GMimeContentEncoding</span></a> g_mime_content_encoding_from_string
+                                                        (<em class="parameter"><code>const <span class="type">char</span> *str</code></em>);</pre>
+<p>
+Gets the appropriate <a class="link" href="gmime-gmime-encodings.html#GMimeContentEncoding" title="enum GMimeContentEncoding"><span class="type">GMimeContentEncoding</span></a> enumeration value based
+on the input string.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>str</code></em> :</span></p></td>
+<td>a string representing a Content-Transfer-Encoding value</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the <a class="link" href="gmime-gmime-encodings.html#GMimeContentEncoding" title="enum GMimeContentEncoding"><span class="type">GMimeContentEncoding</span></a> specified by <em class="parameter"><code>str</code></em> or
+<a class="link" href="gmime-gmime-encodings.html#GMIME-CONTENT-ENCODING-DEFAULT:CAPS"><span class="type">GMIME_CONTENT_ENCODING_DEFAULT</span></a> on error.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-content-encoding-to-string"></a><h3>g_mime_content_encoding_to_string ()</h3>
+<pre class="programlisting">const <span class="returnvalue">char</span> *        g_mime_content_encoding_to_string   (<em class="parameter"><code><a class="link" href="gmime-gmime-encodings.html#GMimeContentEncoding" title="enum GMimeContentEncoding"><span class="type">GMimeContentEncoding</span></a> encoding</code></em>);</pre>
+<p>
+Gets the string value of the content encoding.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>encoding</code></em> :</span></p></td>
+<td>a <a class="link" href="gmime-gmime-encodings.html#GMimeContentEncoding" title="enum GMimeContentEncoding"><span class="type">GMimeContentEncoding</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the encoding type as a string or <code class="literal">NULL</code> on error. Available
+values for the encoding are: <a class="link" href="gmime-gmime-encodings.html#GMIME-CONTENT-ENCODING-DEFAULT:CAPS"><span class="type">GMIME_CONTENT_ENCODING_DEFAULT</span></a>,
+<a class="link" href="gmime-gmime-encodings.html#GMIME-CONTENT-ENCODING-7BIT:CAPS"><span class="type">GMIME_CONTENT_ENCODING_7BIT</span></a>, <a class="link" href="gmime-gmime-encodings.html#GMIME-CONTENT-ENCODING-8BIT:CAPS"><span class="type">GMIME_CONTENT_ENCODING_8BIT</span></a>,
+<a class="link" href="gmime-gmime-encodings.html#GMIME-CONTENT-ENCODING-BINARY:CAPS"><span class="type">GMIME_CONTENT_ENCODING_BINARY</span></a>, <a class="link" href="gmime-gmime-encodings.html#GMIME-CONTENT-ENCODING-BASE64:CAPS"><span class="type">GMIME_CONTENT_ENCODING_BASE64</span></a>,
+<a class="link" href="gmime-gmime-encodings.html#GMIME-CONTENT-ENCODING-QUOTEDPRINTABLE:CAPS"><span class="type">GMIME_CONTENT_ENCODING_QUOTEDPRINTABLE</span></a> and
+<a class="link" href="gmime-gmime-encodings.html#GMIME-CONTENT-ENCODING-UUENCODE:CAPS"><span class="type">GMIME_CONTENT_ENCODING_UUENCODE</span></a>.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GMimeEncodingConstraint"></a><h3>enum GMimeEncodingConstraint</h3>
+<pre class="programlisting">typedef enum {
+	GMIME_ENCODING_CONSTRAINT_7BIT,
+	GMIME_ENCODING_CONSTRAINT_8BIT,
+	GMIME_ENCODING_CONSTRAINT_BINARY
+} GMimeEncodingConstraint;
+</pre>
+<p>
+Used with functions like <a class="link" href="GMimeFilterBest.html#g-mime-filter-best-encoding" title="g_mime_filter_best_encoding ()"><code class="function">g_mime_filter_best_encoding()</code></a> and
+<a class="link" href="GMimeObject.html#g-mime-object-encode" title="g_mime_object_encode ()"><code class="function">g_mime_object_encode()</code></a> as the 'constraint' argument. These values
+provide a means of letting the filter know what the encoding
+constraints are for the stream.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><a name="GMIME-ENCODING-CONSTRAINT-7BIT:CAPS"></a><span class="term"><code class="literal">GMIME_ENCODING_CONSTRAINT_7BIT</code></span></p></td>
+<td>The stream data must fit within the 7bit ASCII range.
+</td>
+</tr>
+<tr>
+<td><p><a name="GMIME-ENCODING-CONSTRAINT-8BIT:CAPS"></a><span class="term"><code class="literal">GMIME_ENCODING_CONSTRAINT_8BIT</code></span></p></td>
+<td>The stream data may have bytes with the high bit set, but no null bytes.
+</td>
+</tr>
+<tr>
+<td><p><a name="GMIME-ENCODING-CONSTRAINT-BINARY:CAPS"></a><span class="term"><code class="literal">GMIME_ENCODING_CONSTRAINT_BINARY</code></span></p></td>
+<td>The stream may contain any binary data.
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GMimeEncoding"></a><h3>struct GMimeEncoding</h3>
+<pre class="programlisting">struct GMimeEncoding {
+	GMimeContentEncoding encoding;
+	unsigned char uubuf[60];
+	gboolean encode;
+	guint32 save;
+	int state;
+};
+</pre>
+<p>
+A context used for encoding or decoding data.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><a class="link" href="gmime-gmime-encodings.html#GMimeContentEncoding" title="enum GMimeContentEncoding"><span class="type">GMimeContentEncoding</span></a> <em class="structfield"><code><a name="GMimeEncoding.encoding"></a>encoding</code></em>;</span></p></td>
+<td>the type of encoding</td>
+</tr>
+<tr>
+<td><p><span class="term">unsigned <span class="type">char</span> <em class="structfield"><code><a name="GMimeEncoding.uubuf"></a>uubuf</code></em>[60];</span></p></td>
+<td>a temporary buffer needed when uuencoding data</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">gboolean</span> <em class="structfield"><code><a name="GMimeEncoding.encode"></a>encode</code></em>;</span></p></td>
+<td>
+<code class="literal">TRUE</code> if encoding or <code class="literal">FALSE</code> if decoding</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">guint32</span> <em class="structfield"><code><a name="GMimeEncoding.save"></a>save</code></em>;</span></p></td>
+<td>saved bytes from the previous step</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">int</span> <em class="structfield"><code><a name="GMimeEncoding.state"></a>state</code></em>;</span></p></td>
+<td>current encder/decoder state</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-encoding-init-encode"></a><h3>g_mime_encoding_init_encode ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_encoding_init_encode         (<em class="parameter"><code><a class="link" href="gmime-gmime-encodings.html#GMimeEncoding" title="struct GMimeEncoding"><span class="type">GMimeEncoding</span></a> *state</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="gmime-gmime-encodings.html#GMimeContentEncoding" title="enum GMimeContentEncoding"><span class="type">GMimeContentEncoding</span></a> encoding</code></em>);</pre>
+<p>
+Initializes a <a class="link" href="gmime-gmime-encodings.html#GMimeEncoding" title="struct GMimeEncoding"><span class="type">GMimeEncoding</span></a> state machine for encoding to
+<em class="parameter"><code>encoding</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>state</code></em> :</span></p></td>
+<td>a <a class="link" href="gmime-gmime-encodings.html#GMimeEncoding" title="struct GMimeEncoding"><span class="type">GMimeEncoding</span></a> to initialize</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>encoding</code></em> :</span></p></td>
+<td>a <a class="link" href="gmime-gmime-encodings.html#GMimeContentEncoding" title="enum GMimeContentEncoding"><span class="type">GMimeContentEncoding</span></a> to use</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-encoding-init-decode"></a><h3>g_mime_encoding_init_decode ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_encoding_init_decode         (<em class="parameter"><code><a class="link" href="gmime-gmime-encodings.html#GMimeEncoding" title="struct GMimeEncoding"><span class="type">GMimeEncoding</span></a> *state</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="gmime-gmime-encodings.html#GMimeContentEncoding" title="enum GMimeContentEncoding"><span class="type">GMimeContentEncoding</span></a> encoding</code></em>);</pre>
+<p>
+Initializes a <a class="link" href="gmime-gmime-encodings.html#GMimeEncoding" title="struct GMimeEncoding"><span class="type">GMimeEncoding</span></a> state machine for decoding from
+<em class="parameter"><code>encoding</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>state</code></em> :</span></p></td>
+<td>a <a class="link" href="gmime-gmime-encodings.html#GMimeEncoding" title="struct GMimeEncoding"><span class="type">GMimeEncoding</span></a> to initialize</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>encoding</code></em> :</span></p></td>
+<td>a <a class="link" href="gmime-gmime-encodings.html#GMimeContentEncoding" title="enum GMimeContentEncoding"><span class="type">GMimeContentEncoding</span></a> to use</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-encoding-reset"></a><h3>g_mime_encoding_reset ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_encoding_reset               (<em class="parameter"><code><a class="link" href="gmime-gmime-encodings.html#GMimeEncoding" title="struct GMimeEncoding"><span class="type">GMimeEncoding</span></a> *state</code></em>);</pre>
+<p>
+Resets the state of the <a class="link" href="gmime-gmime-encodings.html#GMimeEncoding" title="struct GMimeEncoding"><span class="type">GMimeEncoding</span></a>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><em class="parameter"><code>state</code></em> :</span></p></td>
+<td>a <a class="link" href="gmime-gmime-encodings.html#GMimeEncoding" title="struct GMimeEncoding"><span class="type">GMimeEncoding</span></a> to reset</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-encoding-outlen"></a><h3>g_mime_encoding_outlen ()</h3>
+<pre class="programlisting"><span class="returnvalue">size_t</span>              g_mime_encoding_outlen              (<em class="parameter"><code><a class="link" href="gmime-gmime-encodings.html#GMimeEncoding" title="struct GMimeEncoding"><span class="type">GMimeEncoding</span></a> *state</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> inlen</code></em>);</pre>
+<p>
+Given the input length, <em class="parameter"><code>inlen</code></em>, calculate the needed output length
+to perform an encoding or decoding step.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>state</code></em> :</span></p></td>
+<td>a <a class="link" href="gmime-gmime-encodings.html#GMimeEncoding" title="struct GMimeEncoding"><span class="type">GMimeEncoding</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>inlen</code></em> :</span></p></td>
+<td>an input length</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the maximum number of bytes needed to encode or decode a
+buffer of <em class="parameter"><code>inlen</code></em> bytes.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-encoding-step"></a><h3>g_mime_encoding_step ()</h3>
+<pre class="programlisting"><span class="returnvalue">size_t</span>              g_mime_encoding_step                (<em class="parameter"><code><a class="link" href="gmime-gmime-encodings.html#GMimeEncoding" title="struct GMimeEncoding"><span class="type">GMimeEncoding</span></a> *state</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *inbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> inlen</code></em>,
+                                                         <em class="parameter"><code><span class="type">char</span> *outbuf</code></em>);</pre>
+<p>
+Incrementally encodes or decodes (depending on <em class="parameter"><code>state</code></em>) an input
+stream by 'stepping' through a block of input at a time.
+</p>
+<p>
+You should make sure <em class="parameter"><code>outbuf</code></em> is large enough by calling
+<a class="link" href="gmime-gmime-encodings.html#g-mime-encoding-outlen" title="g_mime_encoding_outlen ()"><code class="function">g_mime_encoding_outlen()</code></a> to find out how large <em class="parameter"><code>outbuf</code></em> might need
+to be.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>state</code></em> :</span></p></td>
+<td>a <a class="link" href="gmime-gmime-encodings.html#GMimeEncoding" title="struct GMimeEncoding"><span class="type">GMimeEncoding</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>inbuf</code></em> :</span></p></td>
+<td>an input buffer to encode or decode</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>inlen</code></em> :</span></p></td>
+<td>input buffer length</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>outbuf</code></em> :</span></p></td>
+<td>an output buffer</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the number of bytes written to <em class="parameter"><code>outbuf</code></em>.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-encoding-flush"></a><h3>g_mime_encoding_flush ()</h3>
+<pre class="programlisting"><span class="returnvalue">size_t</span>              g_mime_encoding_flush               (<em class="parameter"><code><a class="link" href="gmime-gmime-encodings.html#GMimeEncoding" title="struct GMimeEncoding"><span class="type">GMimeEncoding</span></a> *state</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *inbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> inlen</code></em>,
+                                                         <em class="parameter"><code><span class="type">char</span> *outbuf</code></em>);</pre>
+<p>
+Completes the incremental encode or decode of the input stream (see
+<a class="link" href="gmime-gmime-encodings.html#g-mime-encoding-step" title="g_mime_encoding_step ()"><code class="function">g_mime_encoding_step()</code></a> for details).
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>state</code></em> :</span></p></td>
+<td>a <a class="link" href="gmime-gmime-encodings.html#GMimeEncoding" title="struct GMimeEncoding"><span class="type">GMimeEncoding</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>inbuf</code></em> :</span></p></td>
+<td>an input buffer to encode or decode</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>inlen</code></em> :</span></p></td>
+<td>input buffer length</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>outbuf</code></em> :</span></p></td>
+<td>an output buffer</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the number of bytes written to <em class="parameter"><code>outbuf</code></em>.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GMIME-BASE64-ENCODE-LEN:CAPS"></a><h3>GMIME_BASE64_ENCODE_LEN()</h3>
+<pre class="programlisting">#define GMIME_BASE64_ENCODE_LEN(x) ((size_t) (((((x) + 2) / 57) * 77) + 77))
+</pre>
+<p>
+Calculates the maximum number of bytes needed to base64 encode the
+full input buffer of length <em class="parameter"><code>x</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>x</code></em> :</span></p></td>
+<td>Length of the input data to encode</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the number of output bytes needed to base64 encode an input
+buffer of size <em class="parameter"><code>x</code></em>.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-encoding-base64-decode-step"></a><h3>g_mime_encoding_base64_decode_step ()</h3>
+<pre class="programlisting"><span class="returnvalue">size_t</span>              g_mime_encoding_base64_decode_step  (<em class="parameter"><code>const unsigned <span class="type">char</span> *inbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> inlen</code></em>,
+                                                         <em class="parameter"><code>unsigned <span class="type">char</span> *outbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> *state</code></em>,
+                                                         <em class="parameter"><code><span class="type">guint32</span> *save</code></em>);</pre>
+<p>
+Decodes a chunk of base64 encoded data.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>inbuf</code></em> :</span></p></td>
+<td>input buffer</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>inlen</code></em> :</span></p></td>
+<td>input buffer length</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>outbuf</code></em> :</span></p></td>
+<td>output buffer</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>state</code></em> :</span></p></td>
+<td>holds the number of bits that are stored in <em class="parameter"><code>save</code></em>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>save</code></em> :</span></p></td>
+<td>leftover bits that have not yet been decoded</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the number of bytes decoded (which have been dumped in
+<em class="parameter"><code>outbuf</code></em>).</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-encoding-base64-encode-step"></a><h3>g_mime_encoding_base64_encode_step ()</h3>
+<pre class="programlisting"><span class="returnvalue">size_t</span>              g_mime_encoding_base64_encode_step  (<em class="parameter"><code>const unsigned <span class="type">char</span> *inbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> inlen</code></em>,
+                                                         <em class="parameter"><code>unsigned <span class="type">char</span> *outbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> *state</code></em>,
+                                                         <em class="parameter"><code><span class="type">guint32</span> *save</code></em>);</pre>
+<p>
+Base64 encodes a chunk of data. Performs an 'encode step', only
+encodes blocks of 3 characters to the output at a time, saves
+left-over state in state and save (initialise to 0 on first
+invocation).
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>inbuf</code></em> :</span></p></td>
+<td>input buffer</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>inlen</code></em> :</span></p></td>
+<td>input buffer length</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>outbuf</code></em> :</span></p></td>
+<td>output buffer</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>state</code></em> :</span></p></td>
+<td>holds the number of bits that are stored in <em class="parameter"><code>save</code></em>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>save</code></em> :</span></p></td>
+<td>leftover bits that have not yet been encoded</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the number of bytes encoded.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-encoding-base64-encode-close"></a><h3>g_mime_encoding_base64_encode_close ()</h3>
+<pre class="programlisting"><span class="returnvalue">size_t</span>              g_mime_encoding_base64_encode_close (<em class="parameter"><code>const unsigned <span class="type">char</span> *inbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> inlen</code></em>,
+                                                         <em class="parameter"><code>unsigned <span class="type">char</span> *outbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> *state</code></em>,
+                                                         <em class="parameter"><code><span class="type">guint32</span> *save</code></em>);</pre>
+<p>
+Base64 encodes the input stream to the output stream. Call this
+when finished encoding data with <a class="link" href="gmime-gmime-encodings.html#g-mime-encoding-base64-encode-step" title="g_mime_encoding_base64_encode_step ()"><code class="function">g_mime_encoding_base64_encode_step()</code></a>
+to flush off the last little bit.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>inbuf</code></em> :</span></p></td>
+<td>input buffer</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>inlen</code></em> :</span></p></td>
+<td>input buffer length</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>outbuf</code></em> :</span></p></td>
+<td>output buffer</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>state</code></em> :</span></p></td>
+<td>holds the number of bits that are stored in <em class="parameter"><code>save</code></em>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>save</code></em> :</span></p></td>
+<td>leftover bits that have not yet been encoded</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the number of bytes encoded.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GMIME-UUDECODE-STATE-INIT:CAPS"></a><h3>GMIME_UUDECODE_STATE_INIT</h3>
+<pre class="programlisting">#define GMIME_UUDECODE_STATE_INIT   (0)
+</pre>
+<p>
+Initial state for the <a class="link" href="gmime-gmime-encodings.html#g-mime-encoding-uudecode-step" title="g_mime_encoding_uudecode_step ()"><code class="function">g_mime_encoding_uudecode_step()</code></a> function.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GMIME-UUDECODE-STATE-BEGIN:CAPS"></a><h3>GMIME_UUDECODE_STATE_BEGIN</h3>
+<pre class="programlisting">#define GMIME_UUDECODE_STATE_BEGIN  (1 &lt;&lt; 16)
+</pre>
+<p>
+State for the <a class="link" href="gmime-gmime-encodings.html#g-mime-encoding-uudecode-step" title="g_mime_encoding_uudecode_step ()"><code class="function">g_mime_encoding_uudecode_step()</code></a> function, denoting that
+the 'begin' line has been found.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GMIME-UUDECODE-STATE-END:CAPS"></a><h3>GMIME_UUDECODE_STATE_END</h3>
+<pre class="programlisting">#define GMIME_UUDECODE_STATE_END    (1 &lt;&lt; 17)
+</pre>
+<p>
+State for the <a class="link" href="gmime-gmime-encodings.html#g-mime-encoding-uudecode-step" title="g_mime_encoding_uudecode_step ()"><code class="function">g_mime_encoding_uudecode_step()</code></a> function, denoting that
+the end of the UU encoded block has been found.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GMIME-UUENCODE-LEN:CAPS"></a><h3>GMIME_UUENCODE_LEN()</h3>
+<pre class="programlisting">#define GMIME_UUENCODE_LEN(x)      ((size_t) (((((x) + 2) / 45) * 62) + 64))
+</pre>
+<p>
+Calculates the maximum number of bytes needed to uuencode the full
+input buffer of length <em class="parameter"><code>x</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>x</code></em> :</span></p></td>
+<td>Length of the input data to encode</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the number of output bytes needed to uuencode an input
+buffer of size <em class="parameter"><code>x</code></em>.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-encoding-uudecode-step"></a><h3>g_mime_encoding_uudecode_step ()</h3>
+<pre class="programlisting"><span class="returnvalue">size_t</span>              g_mime_encoding_uudecode_step       (<em class="parameter"><code>const unsigned <span class="type">char</span> *inbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> inlen</code></em>,
+                                                         <em class="parameter"><code>unsigned <span class="type">char</span> *outbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> *state</code></em>,
+                                                         <em class="parameter"><code><span class="type">guint32</span> *save</code></em>);</pre>
+<p>
+Uudecodes a chunk of data. Performs a 'decode step' on a chunk of
+uuencoded data. Assumes the "begin mode filename" line has
+been stripped off.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>inbuf</code></em> :</span></p></td>
+<td>input buffer</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>inlen</code></em> :</span></p></td>
+<td>input buffer length</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>outbuf</code></em> :</span></p></td>
+<td>output buffer</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>state</code></em> :</span></p></td>
+<td>holds the number of bits that are stored in <em class="parameter"><code>save</code></em>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>save</code></em> :</span></p></td>
+<td>leftover bits that have not yet been decoded</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the number of bytes decoded.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-encoding-uuencode-step"></a><h3>g_mime_encoding_uuencode_step ()</h3>
+<pre class="programlisting"><span class="returnvalue">size_t</span>              g_mime_encoding_uuencode_step       (<em class="parameter"><code>const unsigned <span class="type">char</span> *inbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> inlen</code></em>,
+                                                         <em class="parameter"><code>unsigned <span class="type">char</span> *outbuf</code></em>,
+                                                         <em class="parameter"><code>unsigned <span class="type">char</span> *uubuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> *state</code></em>,
+                                                         <em class="parameter"><code><span class="type">guint32</span> *save</code></em>);</pre>
+<p>
+Uuencodes a chunk of data. Performs an 'encode step', only encodes
+blocks of 45 characters to the output at a time, saves left-over
+state in <em class="parameter"><code>uubuf</code></em>, <em class="parameter"><code>state</code></em> and <em class="parameter"><code>save</code></em> (initialize to 0 on first
+invocation).
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>inbuf</code></em> :</span></p></td>
+<td>input buffer</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>inlen</code></em> :</span></p></td>
+<td>input buffer length</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>outbuf</code></em> :</span></p></td>
+<td>output stream</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>uubuf</code></em> :</span></p></td>
+<td>temporary buffer of 60 bytes</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>state</code></em> :</span></p></td>
+<td>holds the number of bits that are stored in <em class="parameter"><code>save</code></em>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>save</code></em> :</span></p></td>
+<td>leftover bits that have not yet been encoded</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the number of bytes encoded.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-encoding-uuencode-close"></a><h3>g_mime_encoding_uuencode_close ()</h3>
+<pre class="programlisting"><span class="returnvalue">size_t</span>              g_mime_encoding_uuencode_close      (<em class="parameter"><code>const unsigned <span class="type">char</span> *inbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> inlen</code></em>,
+                                                         <em class="parameter"><code>unsigned <span class="type">char</span> *outbuf</code></em>,
+                                                         <em class="parameter"><code>unsigned <span class="type">char</span> *uubuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> *state</code></em>,
+                                                         <em class="parameter"><code><span class="type">guint32</span> *save</code></em>);</pre>
+<p>
+Uuencodes a chunk of data. Call this when finished encoding data
+with <a class="link" href="gmime-gmime-encodings.html#g-mime-encoding-uuencode-step" title="g_mime_encoding_uuencode_step ()"><code class="function">g_mime_encoding_uuencode_step()</code></a> to flush off the last little bit.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>inbuf</code></em> :</span></p></td>
+<td>input buffer</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>inlen</code></em> :</span></p></td>
+<td>input buffer length</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>outbuf</code></em> :</span></p></td>
+<td>output buffer</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>uubuf</code></em> :</span></p></td>
+<td>temporary buffer of 60 bytes</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>state</code></em> :</span></p></td>
+<td>holds the number of bits that are stored in <em class="parameter"><code>save</code></em>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>save</code></em> :</span></p></td>
+<td>leftover bits that have not yet been encoded</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the number of bytes encoded.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GMIME-QP-ENCODE-LEN:CAPS"></a><h3>GMIME_QP_ENCODE_LEN()</h3>
+<pre class="programlisting">#define GMIME_QP_ENCODE_LEN(x)     ((size_t) ((((x) / 24) * 74) + 74))
+</pre>
+<p>
+Calculates the maximum number of bytes needed to encode the full
+input buffer of length <em class="parameter"><code>x</code></em> using the quoted-printable encoding.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>x</code></em> :</span></p></td>
+<td>Length of the input data to encode</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the number of output bytes needed to encode an input buffer
+of size <em class="parameter"><code>x</code></em> using the quoted-printable encoding.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-encoding-quoted-decode-step"></a><h3>g_mime_encoding_quoted_decode_step ()</h3>
+<pre class="programlisting"><span class="returnvalue">size_t</span>              g_mime_encoding_quoted_decode_step  (<em class="parameter"><code>const unsigned <span class="type">char</span> *inbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> inlen</code></em>,
+                                                         <em class="parameter"><code>unsigned <span class="type">char</span> *outbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> *state</code></em>,
+                                                         <em class="parameter"><code><span class="type">guint32</span> *save</code></em>);</pre>
+<p>
+Decodes a block of quoted-printable encoded data. Performs a
+'decode step' on a chunk of QP encoded data.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>inbuf</code></em> :</span></p></td>
+<td>input buffer</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>inlen</code></em> :</span></p></td>
+<td>input buffer length</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>outbuf</code></em> :</span></p></td>
+<td>output buffer</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>state</code></em> :</span></p></td>
+<td>holds the number of bits that are stored in <em class="parameter"><code>save</code></em>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>save</code></em> :</span></p></td>
+<td>leftover bits that have not yet been decoded</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the number of bytes decoded.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-encoding-quoted-encode-step"></a><h3>g_mime_encoding_quoted_encode_step ()</h3>
+<pre class="programlisting"><span class="returnvalue">size_t</span>              g_mime_encoding_quoted_encode_step  (<em class="parameter"><code>const unsigned <span class="type">char</span> *inbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> inlen</code></em>,
+                                                         <em class="parameter"><code>unsigned <span class="type">char</span> *outbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> *state</code></em>,
+                                                         <em class="parameter"><code><span class="type">guint32</span> *save</code></em>);</pre>
+<p>
+Quoted-printable encodes a block of text. Performs an 'encode
+step', saves left-over state in state and save (initialise to -1 on
+first invocation).
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>inbuf</code></em> :</span></p></td>
+<td>input buffer</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>inlen</code></em> :</span></p></td>
+<td>input buffer length</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>outbuf</code></em> :</span></p></td>
+<td>output buffer</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>state</code></em> :</span></p></td>
+<td>holds the number of bits that are stored in <em class="parameter"><code>save</code></em>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>save</code></em> :</span></p></td>
+<td>leftover bits that have not yet been encoded</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the number of bytes encoded.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-encoding-quoted-encode-close"></a><h3>g_mime_encoding_quoted_encode_close ()</h3>
+<pre class="programlisting"><span class="returnvalue">size_t</span>              g_mime_encoding_quoted_encode_close (<em class="parameter"><code>const unsigned <span class="type">char</span> *inbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> inlen</code></em>,
+                                                         <em class="parameter"><code>unsigned <span class="type">char</span> *outbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> *state</code></em>,
+                                                         <em class="parameter"><code><span class="type">guint32</span> *save</code></em>);</pre>
+<p>
+Quoted-printable encodes a block of text. Call this when finished
+encoding data with <a class="link" href="gmime-gmime-encodings.html#g-mime-encoding-quoted-encode-step" title="g_mime_encoding_quoted_encode_step ()"><code class="function">g_mime_encoding_quoted_encode_step()</code></a> to flush off
+the last little bit.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>inbuf</code></em> :</span></p></td>
+<td>input buffer</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>inlen</code></em> :</span></p></td>
+<td>input buffer length</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>outbuf</code></em> :</span></p></td>
+<td>output buffer</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>state</code></em> :</span></p></td>
+<td>holds the number of bits that are stored in <em class="parameter"><code>save</code></em>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>save</code></em> :</span></p></td>
+<td>leftover bits that have not yet been encoded</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the number of bytes encoded.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

@@ -1,0 +1,25 @@
+From e03b4a9098311a0a2a3a3986ecc38b75cf5f77c4 Mon Sep 17 00:00:00 2001
+From: Cebtenzzre <cebtenzzre@gmail.com>
+Date: Sat, 6 Oct 2018 03:40:55 -0400
+Subject: [PATCH] Fix memory reallocation bug
+
+---
+ json.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/json.c b/json.c
+index dca52bb..b8bc803 100644
+--- a/json.c
++++ b/json.c
+@@ -979,7 +979,7 @@ static int dom_push(struct json_parser_dom *ctx, void *val)
+ 	if (ctx->stack_offset == ctx->stack_size) {
+ 		void *ptr;
+ 		uint32_t newsize = ctx->stack_size * 2;
+-		ptr = memory_realloc(ctx->user_realloc, ctx->stack, newsize);
++		ptr = memory_realloc(ctx->user_realloc, ctx->stack, newsize * sizeof(*(ctx->stack)));
+ 		if (!ptr)
+ 			return JSON_ERROR_NO_MEMORY;
+ 		ctx->stack = ptr;
+-- 
+2.7.4
+

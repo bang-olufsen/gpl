@@ -1,0 +1,41 @@
+From 85ef4bd960fc4467bb2071bcaafddcb2241ecd84 Mon Sep 17 00:00:00 2001
+From: Fionn Cleary <fionn.cleary@streamunlimited.com>
+Date: Fri, 9 Jan 2015 14:23:17 +0100
+Subject: [PATCH] conf: stream800: Update kernel bootargs for new driver
+
+Signed-off-by: Fionn Cleary <fionn.cleary@streamunlimited.com>
+[this is work ahead for upstream kernel, where this will be used instead of Vlado's patch]
+Signed-off-by: Radek Dostal <radek.dostal@streamunlimited.com>
+---
+ include/configs/stream800.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/include/configs/stream800.h b/include/configs/stream800.h
+index 732af5c..1f0ee40 100644
+--- a/include/configs/stream800.h
++++ b/include/configs/stream800.h
+@@ -214,10 +214,10 @@
+     "sfu_load_addr=0x80200000\0" \
+     "cramfsaddr=0x80200000\0" \
+     "dtb_load_addr=0x80800000\0" \
+-    "wdt_timeout=600\0" \
+-    "wdtargs=omap_wdt.timer_margin=600 omap_wdt.pwrup_disable=0\0" \
++    "wdtargs=omap_wdt.timer_margin=600 omap_wdt.early_disable=0\0" \
+ 	"bootargs_defaults=setenv bootargs " \
+ 		"console=${console} " \
++		"${wdtargs} " \
+ 		"optargs=${optargs}\0" \
+     "eraseSettings=" \
+         "if nand erase.part settings; " \
+@@ -271,7 +271,7 @@
+     "nandroot=ubi0:stream800-rootfs ubi.mtd=10,2048 rw\0" \
+     "nandrootfstype=ubifs rootwait=1\0" \
+     "nandargs=setenv bootargs console=${console} " \
+-        "root=${nandroot} noinitrd " \
++        "root=${nandroot} noinitrd ${wdtargs} " \
+         "rootfstype=${nandrootfstype} ${mtdparts}\0" \
+     "nand_boot=echo \"Booting from nand ...\"; " \
+         "run nandargs; " \
+-- 
+2.7.4
+

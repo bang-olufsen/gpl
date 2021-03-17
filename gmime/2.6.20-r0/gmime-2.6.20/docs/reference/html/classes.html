@@ -1,0 +1,197 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Part IV. GMime Classes</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="GMime 2.6 Reference Manual">
+<link rel="up" href="index.html" title="GMime 2.6 Reference Manual">
+<link rel="prev" href="gmime-gmime-utils.html" title="gmime-utils">
+<link rel="next" href="ch01.html" title="Class hierarchy">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2"><tr valign="middle">
+<td><a accesskey="p" href="gmime-gmime-utils.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td> </td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">GMime 2.6 Reference Manual</th>
+<td><a accesskey="n" href="ch01.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="part">
+<div class="titlepage"><div><div><h1 class="title">
+<a name="classes"></a>Part IV. GMime Classes</h1></div></div></div>
+<div class="toc">
+<p><b>Table of Contents</b></p>
+<dl>
+<dt><span class="chapter"><a href="ch01.html">Class hierarchy</a></span></dt>
+<dt><span class="chapter"><a href="Streams.html">Streams</a></span></dt>
+<dd><dl>
+<dt>
+<span class="refentrytitle"><a href="GMimeStream.html">GMimeStream</a></span><span class="refpurpose"> — Abstract stream class</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GMimeStreamFile.html">GMimeStreamFile</a></span><span class="refpurpose"> — A Standard-C FILE-based stream</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GMimeStreamFs.html">GMimeStreamFs</a></span><span class="refpurpose"> — A low-level FileSystem stream</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GMimeStreamMem.html">GMimeStreamMem</a></span><span class="refpurpose"> — A memory-backed stream</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GMimeStreamMmap.html">GMimeStreamMmap</a></span><span class="refpurpose"> — A memory-mapped file stream</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GMimeStreamNull.html">GMimeStreamNull</a></span><span class="refpurpose"> — A null stream</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GMimeStreamFilter.html">GMimeStreamFilter</a></span><span class="refpurpose"> — A filtering stream</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GMimeStreamBuffer.html">GMimeStreamBuffer</a></span><span class="refpurpose"> — A buffered stream</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GMimeStreamPipe.html">GMimeStreamPipe</a></span><span class="refpurpose"> — A low-level pipe stream</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GMimeStreamCat.html">GMimeStreamCat</a></span><span class="refpurpose"> — A concatenated stream</span>
+</dt>
+</dl></dd>
+<dt><span class="chapter"><a href="Filters.html">Stream Filters</a></span></dt>
+<dd><dl>
+<dt>
+<span class="refentrytitle"><a href="GMimeFilter.html">GMimeFilter</a></span><span class="refpurpose"> — Abstract filter class</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GMimeFilterBasic.html">GMimeFilterBasic</a></span><span class="refpurpose"> — Basic transfer encoding filter</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GMimeFilterBest.html">GMimeFilterBest</a></span><span class="refpurpose"> — Determine the best charset/encoding to use for a stream</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GMimeFilterCharset.html">GMimeFilterCharset</a></span><span class="refpurpose"> — Charset-conversion filter</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GMimeFilterCRLF.html">GMimeFilterCRLF</a></span><span class="refpurpose"> — Convert line-endings from LF to CRLF or vise versa</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GMimeFilterEnriched.html">GMimeFilterEnriched</a></span><span class="refpurpose"> — Convert text/enriched or text/rtf to HTML</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GMimeFilterFrom.html">GMimeFilterFrom</a></span><span class="refpurpose"> — Escape MBox From_ lines</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GMimeFilterGZip.html">GMimeFilterGZip</a></span><span class="refpurpose"> — GNU Zip compression/decompression</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GMimeFilterHTML.html">GMimeFilterHTML</a></span><span class="refpurpose"> — Convert plain text into HTML</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GMimeFilterMd5.html">GMimeFilterMd5</a></span><span class="refpurpose"> — Calculate an md5sum</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GMimeFilterStrip.html">GMimeFilterStrip</a></span><span class="refpurpose"> — Strip trailing whitespace from the end of lines</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GMimeFilterWindows.html">GMimeFilterWindows</a></span><span class="refpurpose"> — Determine if text is in a Microsoft Windows codepage</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GMimeFilterYenc.html">GMimeFilterYenc</a></span><span class="refpurpose"> — yEncode or yDecode</span>
+</dt>
+</dl></dd>
+<dt><span class="chapter"><a href="DataWrappers.html">Data Wrappers</a></span></dt>
+<dd><dl><dt>
+<span class="refentrytitle"><a href="GMimeDataWrapper.html">GMimeDataWrapper</a></span><span class="refpurpose"> — Content objects</span>
+</dt></dl></dd>
+<dt><span class="chapter"><a href="Headers.html">Message and MIME Headers</a></span></dt>
+<dd><dl>
+<dt>
+<span class="refentrytitle"><a href="gmime-GMimeHeader.html">GMimeHeader</a></span><span class="refpurpose"> — Message and MIME part headers</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GMimeContentType.html">GMimeContentType</a></span><span class="refpurpose"> — Content-Type fields</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GMimeContentDisposition.html">GMimeContentDisposition</a></span><span class="refpurpose"> — Content-Disposition fields</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="gmime-GMimeParam.html">GMimeParam</a></span><span class="refpurpose"> — Content-Type and Content-Disposition parameters</span>
+</dt>
+</dl></dd>
+<dt><span class="chapter"><a href="InternetAddresses.html">Internet Addresses</a></span></dt>
+<dd><dl>
+<dt>
+<span class="refentrytitle"><a href="InternetAddress.html">InternetAddress</a></span><span class="refpurpose"> — Internet addresses</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="InternetAddressGroup.html">InternetAddressGroup</a></span><span class="refpurpose"> — rfc822 'group' address</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="InternetAddressMailbox.html">InternetAddressMailbox</a></span><span class="refpurpose"> — rfc822 'mailbox' address</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="InternetAddressList.html">InternetAddressList</a></span><span class="refpurpose"> — A list of internet addresses</span>
+</dt>
+</dl></dd>
+<dt><span class="chapter"><a href="MimeParts.html">MIME Messages and Parts</a></span></dt>
+<dd><dl>
+<dt>
+<span class="refentrytitle"><a href="GMimeObject.html">GMimeObject</a></span><span class="refpurpose"> — Abstract MIME objects</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GMimeMessage.html">GMimeMessage</a></span><span class="refpurpose"> — Messages</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GMimePart.html">GMimePart</a></span><span class="refpurpose"> — MIME parts</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GMimeMultipart.html">GMimeMultipart</a></span><span class="refpurpose"> — MIME multiparts</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GMimeMultipartEncrypted.html">GMimeMultipartEncrypted</a></span><span class="refpurpose"> — Encrypted MIME multiparts</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GMimeMultipartSigned.html">GMimeMultipartSigned</a></span><span class="refpurpose"> — Signed MIME multiparts</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GMimeMessagePart.html">GMimeMessagePart</a></span><span class="refpurpose"> — Message parts</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GMimeMessagePartial.html">GMimeMessagePartial</a></span><span class="refpurpose"> — Partial MIME parts</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="gmime-GMimePartIter.html">GMimePartIter</a></span><span class="refpurpose"> — MIME part iterators</span>
+</dt>
+</dl></dd>
+<dt><span class="chapter"><a href="Parsers.html">Parsing Messages and MIME Parts</a></span></dt>
+<dd><dl><dt>
+<span class="refentrytitle"><a href="GMimeParser.html">GMimeParser</a></span><span class="refpurpose"> — Message and MIME part parser</span>
+</dt></dl></dd>
+<dt><span class="chapter"><a href="CryptoContexts.html">Cryptography Contexts</a></span></dt>
+<dd><dl>
+<dt>
+<span class="refentrytitle"><a href="GMimeCertificate.html">GMimeCertificate</a></span><span class="refpurpose"> — Digital certificates</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GMimeSignature.html">GMimeSignature</a></span><span class="refpurpose"> — Digital signatures</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GMimeCryptoContext.html">GMimeCryptoContext</a></span><span class="refpurpose"> — Encryption/signing contexts</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GMimeGpgContext.html">GMimeGpgContext</a></span><span class="refpurpose"> — GnuPG crypto contexts</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GMimePkcs7Context.html">GMimePkcs7Context</a></span><span class="refpurpose"> — PKCS7 crypto contexts</span>
+</dt>
+</dl></dd>
+</dl>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

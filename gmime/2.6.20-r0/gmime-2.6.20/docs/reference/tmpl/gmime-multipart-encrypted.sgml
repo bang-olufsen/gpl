@@ -1,0 +1,65 @@
+<!-- ##### SECTION Title ##### -->
+gmime-multipart-encrypted
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GMimeMultipartEncrypted ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION g_mime_multipart_encrypted_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_multipart_encrypted_encrypt ##### -->
+<para>
+
+</para>
+
+@mpe: 
+@content: 
+@ctx: 
+@sign: 
+@userid: 
+@digest: 
+@recipients: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_multipart_encrypted_decrypt ##### -->
+<para>
+
+</para>
+
+@mpe: 
+@ctx: 
+@result: 
+@err: 
+@Returns: 
+
+

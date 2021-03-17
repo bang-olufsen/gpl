@@ -1,0 +1,46 @@
+From 6819be0e4f7f3ee4c2ded9a35913f84ecb3031ba Mon Sep 17 00:00:00 2001
+From: Wiktor Drewniak <wiktor.drewniak@gmail.com>
+Date: Thu, 23 Jan 2020 11:47:10 +0000
+Subject: [PATCH] Process disconnected event before responding to disconnect
+ request
+
+wpa_supplicant roaming tries connecting to new ap while
+it still have connection. It gets response "already connected"
+from driver. As a reaction it sends blocking Disconnect
+request which waits until firmware and AP response.
+In result of this response driver generates Disconnect event
+to announce all receivers on nl80211 that it's disconnected
+and to clear connection status structure. If this event
+won't be processed then new Connect request from wpa_supplicant
+will result also in "already connected" error message.
+---
+ net/wireless/nl80211.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+
+diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
+index 81203bb..e033b99 100644
+--- a/net/wireless/nl80211.c
++++ b/net/wireless/nl80211.c
+@@ -10327,6 +10327,19 @@ static void nl80211_post_doit(const struct genl_ops *ops, struct sk_buff *skb,
+ 
+ 		memset(nlmsg_data(nlh), 0, nlmsg_len(nlh));
+ 	}
++
++	/* Make sure that Disconnected event will be processed before
++	 * next Connect request will come. If it's not guaranted we
++	 * could get race which will result in two "already connected"
++	 * responses from driver.
++	 */
++	if (ops->cmd == NL80211_CMD_DISCONNECT && ops->internal_flags & NL80211_FLAG_NEED_NETDEV){
++		struct net_device *dev = info->user_ptr[1];
++		struct wireless_dev *wdev = dev->ieee80211_ptr;
++		if(netif_running(dev) && !list_empty(&wdev->event_list)){
++			flush_workqueue(cfg80211_wq);
++		}
++	}
+ }
+ 
+ static const struct genl_ops nl80211_ops[] = {
+-- 
+2.7.4
+

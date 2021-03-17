@@ -1,0 +1,47 @@
+From 47771e0c872e0942e382f1957da099cf06297f1f Mon Sep 17 00:00:00 2001
+From: Martin Pietryka <martin.pietryka@streamunlimited.com>
+Date: Mon, 20 Jul 2015 15:36:04 +0200
+Subject: [PATCH] mach-omap2: Do not disable mcasp0 hardware in idle mode
+
+This adds a new flag HWMOD_NO_DISABLE to the omap_hwmod struct. If this
+flag is set, the hardware module will not be disabled after it went to
+the idle state.
+
+We need this to have the clocks running after any audio playback has
+stopped.
+
+Signed-off-by: Martin Pietryka <martin.pietryka@streamunlimited.com>
+---
+ arch/arm/mach-omap2/omap_hwmod.c                        | 3 +++
+ arch/arm/mach-omap2/omap_hwmod_33xx_43xx_ipblock_data.c | 1 +
+ 2 files changed, 4 insertions(+)
+
+diff --git a/arch/arm/mach-omap2/omap_hwmod.c b/arch/arm/mach-omap2/omap_hwmod.c
+index dee6831..6395dd7 100644
+--- a/arch/arm/mach-omap2/omap_hwmod.c
++++ b/arch/arm/mach-omap2/omap_hwmod.c
+@@ -1809,6 +1809,9 @@ static int _omap4_disable_module(struct omap_hwmod *oh)
+ {
+ 	int v;
+ 
++	if (oh->flags & HWMOD_NO_IDLE)
++		return 0;
++
+ 	if (!oh->clkdm || !oh->prcm.omap4.modulemode)
+ 		return -EINVAL;
+ 
+diff --git a/arch/arm/mach-omap2/omap_hwmod_33xx_43xx_ipblock_data.c b/arch/arm/mach-omap2/omap_hwmod_33xx_43xx_ipblock_data.c
+index cabc569..65c5c8f 100644
+--- a/arch/arm/mach-omap2/omap_hwmod_33xx_43xx_ipblock_data.c
++++ b/arch/arm/mach-omap2/omap_hwmod_33xx_43xx_ipblock_data.c
+@@ -798,6 +798,7 @@ struct omap_hwmod am33xx_mcasp0_hwmod = {
+ 	.class		= &am33xx_mcasp_hwmod_class,
+ 	.clkdm_name	= "l3s_clkdm",
+ 	.main_clk	= "mcasp0_fck",
++	.flags		= HWMOD_NO_IDLE,
+ 	.prcm		= {
+ 		.omap4	= {
+ 			.modulemode	= MODULEMODE_SWCTRL,
+-- 
+2.7.4
+

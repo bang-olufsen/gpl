@@ -1,0 +1,26 @@
+From b416eea9c9a1285eb4104c365f90b7575327ff92 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Fri, 11 Apr 2014 07:27:46 +0200
+Subject: [PATCH] sue:s800: fwupdate: Fix RTC_BASE define name
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ board/streamunlimited/stream800/fwupdate.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/board/streamunlimited/stream800/fwupdate.c b/board/streamunlimited/stream800/fwupdate.c
+index 38701b1..43c44ae 100644
+--- a/board/streamunlimited/stream800/fwupdate.c
++++ b/board/streamunlimited/stream800/fwupdate.c
+@@ -33,7 +33,7 @@
+ #include "sfu_parser.h"
+ #endif
+ 
+-static struct rtc_regs *rtcregs = (struct rtc_regs *)AM335X_RTC_BASE;
++static struct rtc_regs *rtcregs = (struct rtc_regs *)RTC_BASE;
+ 
+ /* offset indexes in RTC scratch0 register for each flag */
+ #define UPDATE_FLAG_INDEX	0
+-- 
+2.7.4
+

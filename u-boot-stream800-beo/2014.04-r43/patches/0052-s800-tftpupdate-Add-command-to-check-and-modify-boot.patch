@@ -1,0 +1,53 @@
+From c8a33bed1d0d4a4e422f460239ec02f2474a0ce4 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Wed, 6 Aug 2014 09:45:26 +0200
+Subject: [PATCH] s800: tftpupdate: Add command to check and modify bootfile if
+ necessary
+
+We check if bootfile is empty or original and if we replace '.' in ipaddr
+by '_' and set it as bootfile. If bootfile is retrieved don't change it.
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ board/streamunlimited/stream800/tftp_update.c | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
+
+diff --git a/board/streamunlimited/stream800/tftp_update.c b/board/streamunlimited/stream800/tftp_update.c
+index 0dbc58d..3f79566 100644
+--- a/board/streamunlimited/stream800/tftp_update.c
++++ b/board/streamunlimited/stream800/tftp_update.c
+@@ -63,6 +63,24 @@ static int do_stftpup(cmd_tbl_t * cmdtp, int flag, int argc, char * const argv[]
+ 		setenv("netmask", "255.255.255.0");
+ 		setenv("bootfile", "169_254_0_100");
+ 		setenv("serverip", "169.254.0.10");
++	} else if (strcmp(cmd, "check_modify_bootfile") == 0) {
++		char *bootfile = getenv("bootfile");
++		char tmp[20];
++		int i;
++		printf("Actual bootfile: %s\n", bootfile);
++
++		// invalid bootfile -> use local ipaddr from dhcp
++		if ((bootfile[0] == 0) || (strcmp(bootfile, "uImage") == 0)) {
++			ip_to_string(NetOurIP, tmp);
++
++			// replace '.' by '_' and use as bootfile
++			for (i = 0; i < strlen(tmp); i++) {
++				if (tmp[i] == '.')
++					tmp[i] = '_';
++			}
++
++			setenv("bootfile", tmp);
++		}
+ 	}
+ 
+ 	return 0;
+@@ -76,5 +94,6 @@ U_BOOT_CMD(
+ 		"data - run dhcp to get bootfile, rootpath and serverip\n"
+ 		"stftpup use_local_ip - serverip unknown use local ip just replace last digit with 10\n"
+ 		"stftpup - use_static_data - set serverip, netmask, bootfile to static values\n"
++		"check_modify_bootfile - create correct bootfile if empty received from dhcp lease\n"
+ 		);
+ 
+-- 
+2.7.4
+

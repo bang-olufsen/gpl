@@ -1,0 +1,27 @@
+From 2bde860be68e04c7dfaca4b2ab72a82a3337d1df Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Fri, 29 Nov 2013 10:41:20 +0100
+Subject: [PATCH] Enable setexpr command.
+
+we need that for computation purposes.
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ include/configs/stream800.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/include/configs/stream800.h b/include/configs/stream800.h
+index 5756f08..aeb7127 100644
+--- a/include/configs/stream800.h
++++ b/include/configs/stream800.h
+@@ -1210,6 +1210,7 @@
+ #define CONFIG_CMD_MD5SUM
+ #define CONFIG_CMD_SHA256SUM
+ #define CONFIG_BLOWFISH
++#define CONFIG_CMD_SETEXPR
+ 
+ #undef CONFIG_USB_ETHER
+ 
+-- 
+2.7.4
+

@@ -1,0 +1,139 @@
+From 14b2fd20dba0ac70ded7ff587a1cf8891a7f1048 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Tue, 13 Jun 2017 12:49:21 +0200
+Subject: [PATCH] attrib-server:Implement notify function for ATT notif
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ src/attrib-server.c | 106 ++++++++++++++++++++++++++++++++++++++++++++++++++++
+ src/attrib-server.h |   3 ++
+ 2 files changed, 109 insertions(+)
+
+diff --git a/src/attrib-server.c b/src/attrib-server.c
+index 7c15a4e..639a107 100644
+--- a/src/attrib-server.c
++++ b/src/attrib-server.c
+@@ -1652,3 +1652,109 @@ int attrib_gap_set(struct btd_adapter *adapter, uint16_t uuid,
+ 
+ 	return attrib_db_update(adapter, handle, NULL, value, len, NULL);
+ }
++
++#define CEIL_DIV(a, b) (((a) / (b)) + ((a) % (b) ? 1 : 0));
++
++int attrib_notify(struct btd_device *device, uint16_t handle, uint16_t ccc_handle,
++					const uint8_t *value, size_t len, gboolean fragment)
++{
++	struct gatt_server *server;
++	struct gatt_channel *channel;
++	GSList *l;
++	size_t pdu_len, max_pdu_len, pdu_i, payload_len;
++	int header_size, pdu_count;
++	bdaddr_t adapter_address;
++	uint16_t cccval;
++	uint8_t *pdu;
++
++	g_assert(device);
++
++	if (!btd_device_is_connected(device)) {
++		error("Device not connected - didn't notify");
++		return -EINVAL;
++	}
++
++	bacpy( &adapter_address, btd_adapter_get_address(device_get_adapter(device)));
++
++	server = find_gatt_server(&adapter_address);
++	if (!server) {
++		error("Couldn't find server - didn't notify");
++		return -ENOENT;
++	}
++
++	for (l = server->clients; l; l = g_slist_next(l)) {
++		channel = l->data;
++		if (device == channel->device) {
++			break;
++		}
++	}
++	if (!l) {
++		error("Didn't find gattrib channel - didn't notify");
++		return -ENOENT;
++	}
++
++	if (read_device_ccc(channel->device, ccc_handle, &cccval) == 0) {
++		// read ccc ok
++		if (!(cccval & (GATT_CLIENT_CHARAC_CFG_NOTIF_BIT | GATT_CLIENT_CHARAC_CFG_IND_BIT))) {
++			error("Notifications not allowed for device - didn't notify");
++			return -EINVAL;
++		}
++	} else {
++		error("Couldn't find ccc for device - didn't notify");
++		return -EINVAL;
++	}
++
++	pdu = g_attrib_get_buffer(channel->attrib, &max_pdu_len);
++	header_size = (sizeof(pdu[0]) + sizeof(uint16_t)) + 2;
++
++	if (fragment) {
++		pdu_count = CEIL_DIV(len, max_pdu_len - header_size);
++		pdu_i = 0;
++	}
++	// Check if we have enough space for message
++	else if (len > (max_pdu_len - header_size)) {
++		error("Message is longer than max MTU size - didn't notify");
++		return -EINVAL;
++	}
++
++	while (len) {
++		// Write att header
++		if (cccval | GATT_CLIENT_CHARAC_CFG_NOTIF_BIT) {
++			pdu_len = enc_notification(handle, (uint8_t *)value, 0, pdu, max_pdu_len);
++		} else {
++			pdu_len = enc_indication(handle, (uint8_t *)value, 0, pdu, max_pdu_len);
++		}
++
++		if (fragment) {
++			// Write fragmentation header
++			pdu[pdu_len++] = pdu_i++;
++			pdu[pdu_len++] = pdu_count;
++		}
++
++		// Write payload
++		payload_len = max_pdu_len - pdu_len;
++		if (len < payload_len)
++			payload_len = len;
++		memcpy(&pdu[pdu_len], value, payload_len);
++		pdu_len += payload_len;
++
++/*
++		if (fragment) {
++			DBG("%s[%zu/%d] handle=0x%04x value='%.*s'",
++				((ccc_handle | GATT_CLIENT_CHARAC_CFG_NOTIF_BIT) ? "notification" : "indication"),
++				pdu_i, pdu_count, handle, (int)payload_len, value);
++		} else {
++			DBG("%s handle=0x%04x value='%.*s'",
++				((ccc_handle | GATT_CLIENT_CHARAC_CFG_NOTIF_BIT) ? "notification" : "indication"),
++				handle, (int)payload_len, value);
++		}
++*/
++
++		g_attrib_send(channel->attrib, 0, pdu, pdu_len, NULL, NULL, NULL);
++
++		len -= payload_len;
++		value += payload_len;
++	}
++
++	return 0;
++}
+diff --git a/src/attrib-server.h b/src/attrib-server.h
+index 063cb66..b518c4c 100644
+--- a/src/attrib-server.h
++++ b/src/attrib-server.h
+@@ -40,3 +40,6 @@ void attrib_free_sdp(struct btd_adapter *adapter, uint32_t sdp_handle);
+ GAttrib *attrib_from_device(struct btd_device *device);
+ guint attrib_channel_attach(GAttrib *attrib);
+ gboolean attrib_channel_detach(GAttrib *attrib, guint id);
++
++int attrib_notify(struct btd_device *device, uint16_t handle, uint16_t ccc_handle,
++					const uint8_t *value, size_t len, gboolean fragment);
+-- 
+2.7.4
+

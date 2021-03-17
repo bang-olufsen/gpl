@@ -1,0 +1,4 @@
+pkgconfig.patch -p1
+0001-syscfg-Support-ARC-CPUs-and-simplify-aliasing-table.patch -p1
+0002-syscfg-Add-support-for-arc-unknown-linux-gnu.patch -p1
+libgpg-error-1.35-gawk5-support.patch -p1

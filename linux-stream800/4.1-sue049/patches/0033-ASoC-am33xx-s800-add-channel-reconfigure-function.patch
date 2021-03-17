@@ -1,0 +1,112 @@
+From 4c8eb6a5f433e77645c522f69c69c231be691173 Mon Sep 17 00:00:00 2001
+From: Lee Page <lee.page@streamunlimited.com>
+Date: Fri, 13 Mar 2015 11:26:06 +0100
+Subject: [PATCH] ASoC: am33xx-s800: add channel reconfigure function
+
+Signed-off-by: Lee Page <lee.page@streamunlimited.com>
+[clean whitespaces]
+Signed-off-by: Radek Dostal <radek.dostal@streamunlimited.com>
+---
+ sound/soc/davinci/am33xx-s800.c | 77 +++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 77 insertions(+)
+
+diff --git a/sound/soc/davinci/am33xx-s800.c b/sound/soc/davinci/am33xx-s800.c
+index 593e6f8e..74e7612 100644
+--- a/sound/soc/davinci/am33xx-s800.c
++++ b/sound/soc/davinci/am33xx-s800.c
+@@ -43,8 +43,78 @@ struct snd_soc_am33xx_s800 {
+ 	int			amp_overcurrent_gpio;
+ 	struct snd_kcontrol	*amp_overheat_kctl;
+ 	struct regulator	*regulator;
++	const char		*serial_config; /* I (I2S only), D (DSD only), M (I2S and DSD), S (SPDIF), - (do not use) */
+ };
+ 
++static int am33xx_s800_setup_mcasp(struct snd_pcm_substream *substream, snd_pcm_format_t format)
++{
++	struct snd_soc_pcm_runtime *rtd = substream->private_data;
++	struct snd_soc_dai *codec_dai = rtd->codec_dai;
++	struct snd_soc_dai *cpu_dai = rtd->cpu_dai;
++	struct snd_soc_card *card = codec_dai->component->card;
++	struct snd_soc_am33xx_s800 *priv = snd_soc_card_get_drvdata(card);
++	const char *serial_config = priv->serial_config;
++
++	int n_i2s = 0;
++	int n_dsd = 0;
++	int n_spdif = 0;
++	int i;
++	int tx_slots[4];
++	int nch = 0;
++	int ret;
++	bool is_dsd = (format == SNDRV_PCM_FORMAT_DSD_U8);
++
++	if (!serial_config) {
++		dev_warn(card->dev, "Serial configuration is empty, skipping reconfiguration\n");
++		return 0;
++	}
++
++	for (i = 0; i < 4; i++) {
++		switch (serial_config[i]) {
++			case 'I':
++				if (is_dsd) continue;
++				n_i2s++;
++				break;
++			case 'D':
++				if (!is_dsd) continue;
++				n_dsd++;
++				break;
++			case 'M':
++				n_i2s++;
++				n_dsd++;
++				break;
++			case 'S':
++				n_spdif++;
++				break;
++			case '-':
++				continue;
++				break;
++			default:
++				dev_warn(card->dev, "Invalid character '%c' in serial config\n", serial_config[i]);
++				return -EINVAL;
++		}
++		tx_slots[nch++] = i;
++	}
++
++	if (n_spdif > 0 && (n_i2s + n_dsd) != 0) {
++		dev_warn(card->dev, "SPDIF is not compatiable with other formats\n");
++		return -EINVAL;
++	}
++
++	if (n_dsd == 0 && is_dsd) {
++		dev_warn(card->dev, "No pins defined for DSD, yet DSD is detected!\n");
++		return -EINVAL;
++	}
++
++	ret = snd_soc_dai_set_channel_map(cpu_dai, nch, tx_slots, 0, NULL);
++	if (ret < 0) {
++		dev_warn(card->dev, "Failed to reconfigure channel map\n");
++		return ret;
++	}
++
++	return 0;
++}
++
+ static int am33xx_s800_set_mclk(struct snd_soc_am33xx_s800 *priv, int stream)
+ {
+ 	struct clk *mclk;
+@@ -525,6 +595,13 @@ static int snd_soc_am33xx_s800_probe(struct platform_device *pdev)
+ 			priv->cb_reset_gpio = -EINVAL;
+ 	}
+ 
++	of_property_read_string(top_node, "sue,serial-config", &priv->serial_config);
++	if (priv->serial_config) {
++		dev_info(dev, "Found serial config %s \n", priv->serial_config);
++	} else {
++		dev_warn(dev, "No serial config\n");
++	}
++
+ 	ret = snd_soc_register_card(&priv->card);
+ 	if (ret < 0) {
+ 		dev_err(dev, "error registering card (%d)\n", ret);
+-- 
+1.9.1
+

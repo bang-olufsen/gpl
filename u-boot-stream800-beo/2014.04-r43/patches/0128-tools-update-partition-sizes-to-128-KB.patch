@@ -1,0 +1,41 @@
+From dcf8ad3ffc60f33357b879a65c6f99872207d70c Mon Sep 17 00:00:00 2001
+From: Radek Dostal <radek.dostal@streamunlimited.com>
+Date: Wed, 4 Nov 2015 14:51:02 +0100
+Subject: [PATCH] tools: update partition sizes to 128 KB
+
+Configs for userspace tools were not updated after commit:
+"Stream800: keep space for spare blocks for env and const"
+
+Number of sectors is staying the same, as it is used as the limit when
+skipping bad sectors, which is exactly what we want.
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+Signed-off-by: Radek Dostal <radek.dostal@streamunlimited.com>
+---
+ tools/env/fw_const.config | 2 +-
+ tools/env/fw_env.config   | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/tools/env/fw_const.config b/tools/env/fw_const.config
+index 0c27a38..4c53050 100644
+--- a/tools/env/fw_const.config
++++ b/tools/env/fw_const.config
+@@ -16,4 +16,4 @@
+ #/dev/mtd6		0x4200		0x4200
+ 
+ # NAND example
+-/dev/mtd6		0x0		0x80000		0x20000			4
++/dev/mtd6		0x0		0x20000		0x20000			4
+diff --git a/tools/env/fw_env.config b/tools/env/fw_env.config
+index 3d5b193..9891ca6 100644
+--- a/tools/env/fw_env.config
++++ b/tools/env/fw_env.config
+@@ -20,4 +20,4 @@
+ 
+ # Block device example
+ #/dev/mmcblk0		0xc0000		0x20000
+-/dev/mtd5		0x0		0x80000		0x20000			4
++/dev/mtd5		0x0		0x20000		0x20000			4
+-- 
+2.7.4
+

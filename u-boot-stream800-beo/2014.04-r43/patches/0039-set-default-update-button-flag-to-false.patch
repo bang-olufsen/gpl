@@ -1,0 +1,25 @@
+From 539192c38da9f8811d6a5fd17dbf1e4a5f392ab1 Mon Sep 17 00:00:00 2001
+From: Martin Geier <martin.geier@streamunlimited.com>
+Date: Wed, 9 Jul 2014 16:03:36 +0200
+Subject: [PATCH] set default update button flag to false
+
+---
+ board/streamunlimited/stream800/ase_fep.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/board/streamunlimited/stream800/ase_fep.c b/board/streamunlimited/stream800/ase_fep.c
+index edf612c..e5c32fd 100644
+--- a/board/streamunlimited/stream800/ase_fep.c
++++ b/board/streamunlimited/stream800/ase_fep.c
+@@ -128,7 +128,7 @@ bool is_pressed_update_button(struct ase_fep *fep)
+ 		}
+ 	}
+ 
+-	return true;
++	return false;
+ }
+ 
+ static void disable_net_leds(struct ase_fep *fep)
+-- 
+2.7.4
+

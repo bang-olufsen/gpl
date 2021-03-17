@@ -1,0 +1,169 @@
+From c65ebe5b2b567eb21f2eba995fbc1ca53263a5da Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Thu, 28 Jul 2016 16:00:48 +0200
+Subject: [PATCH] Fix synchronizing samples
+
+- Fix software clock frame counting
+
+- Don't drop samples when switching
+  - on copy->null switch we just update appl_ptr
+  - on null->copy switch we copy empty samples
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+
+%% original patch: 0005-Fix-synchronizing-samples.patch
+---
+ src/pcm/pcm_switch.c | 63 ++++++++++++++++++++++++++++++++--------------------
+ 1 file changed, 39 insertions(+), 24 deletions(-)
+
+diff --git a/src/pcm/pcm_switch.c b/src/pcm/pcm_switch.c
+index d930ad6..ec45890 100644
+--- a/src/pcm/pcm_switch.c
++++ b/src/pcm/pcm_switch.c
+@@ -28,6 +28,8 @@ enum {
+ static void apply_switch_value(snd_pcm_t *pcm);
+ static const char *const _switch_ctl_names[] = { "Off", "On" };
+ 
++static snd_pcm_sframes_t snd_pcm_switch_writei(snd_pcm_t *pcm, const void *buffer, snd_pcm_uframes_t size);
++
+ #ifndef PIC
+ /* entry for static linking */
+ const char *_snd_module_pcm_switch = "";
+@@ -70,18 +72,17 @@ static void update_softvare_clock(snd_pcm_t *pcm)
+ 	snd_pcm_switch_t *swtch = pcm->private_data;
+ 
+ 	struct timespec clock;
+-	clock_gettime(CLOCK_MONOTONIC, &clock);
++	gettimestamp(&clock, pcm->tstamp_type);
+ 
+-	if (swtch->clock.tv_sec > 0) {
+-		u_int64_t forward_usec;
+-		unsigned diff_nsec, forward;
++	if (!swtch->gen.slave && swtch->clock.tv_sec > 0) {
++		u_int64_t forward_usec, diff_nsec, forward;
+ 
+-		diff_nsec = 1000000000 * (clock.tv_sec - swtch->clock.tv_sec) + (clock.tv_nsec - swtch->clock.tv_nsec);
+-		forward_usec = ((u_int64_t) (pcm->rate * diff_nsec) / 1000) + swtch->clock_diff_usec;
+-		forward = forward_usec / 1000000;
+-		swtch->clock_diff_usec = forward_usec % 1000000;
++		diff_nsec = 1000000000ULL * (clock.tv_sec - swtch->clock.tv_sec) + (clock.tv_nsec - swtch->clock.tv_nsec);
++		forward_usec = ((pcm->rate * diff_nsec) / 1000ULL) + swtch->clock_diff_usec;
++		forward = forward_usec / 1000000ULL;
++		swtch->clock_diff_usec = forward_usec % 1000000ULL;
+ 
+-		snd_pcm_mmap_hw_forward(pcm, forward * pcm->channels);
++		snd_pcm_mmap_hw_forward(pcm, forward);
+ 	}
+ 
+ 	swtch->clock = clock;
+@@ -393,22 +394,19 @@ static void snd_pcm_switch_dump(snd_pcm_t *pcm, snd_output_t *out)
+ static snd_pcm_sframes_t snd_pcm_switch_avail_update(snd_pcm_t *pcm)
+ {
+ 	snd_pcm_switch_t *swtch = pcm->private_data;
+-	snd_pcm_sframes_t slave_size;
+-	snd_pcm_uframes_t avail;
++	snd_pcm_sframes_t avail;
+ 
+ 	check_switch_value(pcm);
++	update_softvare_clock(pcm);
+ 
+ 	if (swtch->gen.slave) {
+-		snd_pcm_t *slave = swtch->gen.slave;
+-		slave_size = snd_pcm_avail_update(slave);
+-		TRACE("copy avail=%ld ", slave_size);
++		avail = snd_pcm_avail_update(swtch->gen.slave);
++		TRACE("copy avail=%ld ", avail);
+ 
+-		*pcm->hw.ptr = *slave->hw.ptr;
+-		return slave_size;
++		*pcm->hw.ptr = *swtch->gen.slave->hw.ptr;
++		return avail;
+ 	}
+ 	else {
+-		update_softvare_clock(pcm);
+-
+ 		avail = snd_pcm_mmap_avail(pcm);
+ 		TRACE("null avail=%ld", avail);
+ 		return avail;
+@@ -434,6 +432,8 @@ static int snd_pcm_switch_status(snd_pcm_t *pcm, snd_pcm_status_t * status)
+ 			return err;
+ 		status->appl_ptr = *pcm->appl.ptr;
+ 		status->hw_ptr = *pcm->hw.ptr;
++		if (!status->tstamp.tv_sec && !status->tstamp.tv_nsec)
++			status->tstamp = swtch->clock;
+ 		return 0;
+ 	}
+ 	else {
+@@ -441,9 +441,9 @@ static int snd_pcm_switch_status(snd_pcm_t *pcm, snd_pcm_status_t * status)
+ 		memset(status, 0, sizeof(*status));
+ 		status->state = swtch->state;
+ 		status->trigger_tstamp = swtch->trigger_tstamp;
+-		gettimestamp(&status->tstamp, pcm->tstamp_type);
+ 		status->avail = snd_pcm_switch_avail_update(pcm);
+ 		status->avail_max = pcm->buffer_size;
++		status->tstamp = swtch->clock;
+ 
+ 		status->appl_ptr = *pcm->appl.ptr;
+ 		status->hw_ptr = *pcm->hw.ptr;
+@@ -730,6 +730,7 @@ static void apply_switch_value(snd_pcm_t *pcm)
+ 	snd_pcm_switch_t *swtch = pcm->private_data;
+ 	snd_pcm_t *slave;
+ 	snd_pcm_state_t pcm_state;
++	snd_pcm_uframes_t avail_playback;
+ 
+ 	swtch->needs_update = 0;
+ 
+@@ -741,9 +742,11 @@ static void apply_switch_value(snd_pcm_t *pcm)
+ 	}
+ 	swtch->active_switch = swtch->cur_switch;
+ 
++	pcm_state = snd_pcm_state(pcm);
++	avail_playback = snd_pcm_avail_update(pcm);
++
+ 	if (swtch->cur_switch == SWITCH_CTL_ON)	{
+ 		DEBUG("~~~ OPEN SLAVE");
+-		pcm_state = swtch->state;
+ 
+ 		snd_pcm_open_slave(&slave, swtch->root,
+ 		                   swtch->sconf, swtch->stream,
+@@ -762,11 +765,8 @@ static void apply_switch_value(snd_pcm_t *pcm)
+ 	else {
+ 		DEBUG("~~~ CLOSE SLAVE");
+ 		slave = swtch->gen.slave;
+-		pcm_state = snd_pcm_state(swtch->gen.slave);
+-		clock_gettime(CLOCK_MONOTONIC, &swtch->clock);
+ 		swtch->gen.slave = NULL;
+ 		swtch->state = SND_PCM_STATE_OPEN;
+-		snd_pcm_close(slave);
+ 	}
+ 
+ 	if (pcm_state == SND_PCM_STATE_PREPARED ||
+@@ -775,9 +775,24 @@ static void apply_switch_value(snd_pcm_t *pcm)
+ 	}
+ 
+ 	if (pcm_state == SND_PCM_STATE_RUNNING) {
+-		snd_pcm_switch_start(pcm);
++
++		/* Don't drop audio when on switch value change */
++		if (swtch->cur_switch != SWITCH_CTL_ON) {
++			snd_pcm_switch_start(pcm);
++			if (avail_playback > 0)
++				snd_pcm_mmap_appl_forward(pcm, pcm->buffer_size - avail_playback);
++		} else {
++			if (avail_playback > 0) {
++				void *buffer = calloc(pcm->buffer_size - avail_playback, pcm->frame_bits / 8);
++				snd_pcm_switch_writei(pcm, buffer, pcm->buffer_size - avail_playback);
++				free(buffer);
++			}
++			snd_pcm_switch_start(pcm);
++		}
+ 	}
+ 
++	if (swtch->cur_switch != SWITCH_CTL_ON)
++		snd_pcm_close(slave);
+ }
+ 
+ static snd_pcm_sframes_t snd_pcm_switch_xfer_write_areas(snd_pcm_t *pcm,
+-- 
+2.7.4
+

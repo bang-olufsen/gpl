@@ -1,0 +1,62 @@
+<!-- ##### SECTION Title ##### -->
+gmime-multipart-signed
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GMimeMultipartSigned ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION g_mime_multipart_signed_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_multipart_signed_sign ##### -->
+<para>
+
+</para>
+
+@mps: 
+@content: 
+@ctx: 
+@userid: 
+@digest: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_multipart_signed_verify ##### -->
+<para>
+
+</para>
+
+@mps: 
+@ctx: 
+@err: 
+@Returns: 
+
+

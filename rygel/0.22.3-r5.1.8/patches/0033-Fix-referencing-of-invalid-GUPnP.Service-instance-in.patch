@@ -1,0 +1,304 @@
+From 8edd75c60bd869eddf8d3c8393db4c91c96ae3d9 Mon Sep 17 00:00:00 2001
+From: Milan Plzik <milan.plzik@streamunlimited.com>
+Date: Wed, 25 Feb 2015 17:52:11 +0100
+Subject: [PATCH] Fix referencing of invalid GUPnP.Service instance in
+ Rygel.ChangeLog.timeout()
+
+Rygel.ChangeLog was holding an unowned reference to GUPnP.Service. In a case
+when the Service was already destroyed and ChangeLog's timeout method was
+invoked, this resulted in accessing of already-destroyed instance. This patch
+fixes it by using a WeakRef to the Service.
+
+Signed-off-by: Milan Plzik <milan.plzik@streamunlimited.com>
+---
+ src/librygel-renderer/rygel-changelog.c    | 134 +++++++++++------------------
+ src/librygel-renderer/rygel-changelog.vala |  13 ++-
+ 2 files changed, 58 insertions(+), 89 deletions(-)
+
+diff --git a/src/librygel-renderer/rygel-changelog.c b/src/librygel-renderer/rygel-changelog.c
+index dbf997a..43275db 100644
+--- a/src/librygel-renderer/rygel-changelog.c
++++ b/src/librygel-renderer/rygel-changelog.c
+@@ -26,10 +26,10 @@
+ 
+ #include <glib.h>
+ #include <glib-object.h>
+-#include <libgupnp/gupnp.h>
+ #include <stdlib.h>
+ #include <string.h>
+ #include <gee.h>
++#include <libgupnp/gupnp.h>
+ 
+ 
+ #define RYGEL_TYPE_CHANGE_LOG (rygel_change_log_get_type ())
+@@ -49,6 +49,7 @@ typedef struct _RygelChangeLogPrivate RygelChangeLogPrivate;
+ struct _RygelChangeLog {
+ 	GObject parent_instance;
+ 	RygelChangeLogPrivate * priv;
++	GWeakRef service;
+ };
+ 
+ struct _RygelChangeLogClass {
+@@ -56,7 +57,6 @@ struct _RygelChangeLogClass {
+ };
+ 
+ struct _RygelChangeLogPrivate {
+-	GUPnPService* _service;
+ 	gchar* service_ns;
+ 	GString* str;
+ 	GeeHashMap* hash;
+@@ -69,22 +69,17 @@ static gpointer rygel_change_log_parent_class = NULL;
+ GType rygel_change_log_get_type (void) G_GNUC_CONST;
+ #define RYGEL_CHANGE_LOG_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RYGEL_TYPE_CHANGE_LOG, RygelChangeLogPrivate))
+ enum  {
+-	RYGEL_CHANGE_LOG_DUMMY_PROPERTY,
+-	RYGEL_CHANGE_LOG_SERVICE
++	RYGEL_CHANGE_LOG_DUMMY_PROPERTY
+ };
+ RygelChangeLog* rygel_change_log_new (GUPnPService* service, const gchar* service_ns);
+ RygelChangeLog* rygel_change_log_construct (GType object_type, GUPnPService* service, const gchar* service_ns);
+-void rygel_change_log_set_service (RygelChangeLog* self, GUPnPService* value);
+ static gboolean rygel_change_log_timeout (RygelChangeLog* self);
+-GUPnPService* rygel_change_log_get_service (RygelChangeLog* self);
+ gchar* rygel_change_log_finish (RygelChangeLog* self);
+ static void rygel_change_log_ensure_timeout (RygelChangeLog* self);
+ static gboolean _rygel_change_log_timeout_gsource_func (gpointer self);
+ void rygel_change_log_log (RygelChangeLog* self, const gchar* variable, const gchar* value);
+ void rygel_change_log_log_with_channel (RygelChangeLog* self, const gchar* variable, const gchar* value, const gchar* channel);
+ static void rygel_change_log_finalize (GObject* obj);
+-static void _vala_rygel_change_log_get_property (GObject * object, guint property_id, GValue * value, GParamSpec * pspec);
+-static void _vala_rygel_change_log_set_property (GObject * object, guint property_id, const GValue * value, GParamSpec * pspec);
+ 
+ 
+ RygelChangeLog* rygel_change_log_construct (GType object_type, GUPnPService* service, const gchar* service_ns) {
+@@ -97,7 +92,8 @@ RygelChangeLog* rygel_change_log_construct (GType object_type, GUPnPService* ser
+ 	g_return_val_if_fail (service_ns != NULL, NULL);
+ 	self = (RygelChangeLog*) g_object_new (object_type, NULL);
+ 	_tmp0_ = service;
+-	rygel_change_log_set_service (self, _tmp0_);
++	g_weak_ref_clear (&self->service);
++	g_weak_ref_init (&self->service, (GObject*) _tmp0_);
+ 	_tmp1_ = service_ns;
+ 	_tmp2_ = g_strdup (_tmp1_);
+ 	_g_free0 (self->priv->service_ns);
+@@ -119,24 +115,36 @@ RygelChangeLog* rygel_change_log_new (GUPnPService* service, const gchar* servic
+ 
+ static gboolean rygel_change_log_timeout (RygelChangeLog* self) {
+ 	gboolean result = FALSE;
+-	GUPnPService* _tmp0_ = NULL;
+-	gchar* _tmp1_ = NULL;
+-	gchar* _tmp2_ = NULL;
+-	GeeHashMap* _tmp3_ = NULL;
+-	GString* _tmp4_ = NULL;
++	GUPnPService* service = NULL;
++	GObject* _tmp0_ = NULL;
++	GUPnPService* _tmp1_ = NULL;
++	GUPnPService* _tmp2_ = NULL;
++	gchar* _tmp3_ = NULL;
++	gchar* _tmp4_ = NULL;
++	GeeHashMap* _tmp5_ = NULL;
++	GString* _tmp6_ = NULL;
+ 	g_return_val_if_fail (self != NULL, FALSE);
+-	_tmp0_ = self->priv->_service;
+-	_tmp1_ = rygel_change_log_finish (self);
+-	_tmp2_ = _tmp1_;
+-	gupnp_service_notify (_tmp0_, "LastChange", G_TYPE_STRING, _tmp2_, NULL);
+-	_g_free0 (_tmp2_);
+-	g_debug ("rygel-changelog.vala:55: LastChange sent");
+-	_tmp3_ = self->priv->hash;
+-	gee_abstract_map_clear ((GeeAbstractMap*) _tmp3_);
+-	_tmp4_ = self->priv->str;
+-	g_string_erase (_tmp4_, (gssize) 0, (gssize) (-1));
++	_tmp0_ = g_weak_ref_get (&self->service);
++	service = G_TYPE_CHECK_INSTANCE_CAST (_tmp0_, gupnp_service_get_type (), GUPnPService);
++	_tmp1_ = service;
++	if (_tmp1_ == NULL) {
++		result = FALSE;
++		_g_object_unref0 (service);
++		return result;
++	}
++	_tmp2_ = service;
++	_tmp3_ = rygel_change_log_finish (self);
++	_tmp4_ = _tmp3_;
++	gupnp_service_notify (_tmp2_, "LastChange", G_TYPE_STRING, _tmp4_, NULL);
++	_g_free0 (_tmp4_);
++	g_debug ("rygel-changelog.vala:60: LastChange sent");
++	_tmp5_ = self->priv->hash;
++	gee_abstract_map_clear ((GeeAbstractMap*) _tmp5_);
++	_tmp6_ = self->priv->str;
++	g_string_erase (_tmp6_, (gssize) 0, (gssize) (-1));
+ 	self->priv->timeout_id = (guint) 0;
+ 	result = FALSE;
++	_g_object_unref0 (service);
+ 	return result;
+ }
+ 
+@@ -150,21 +158,26 @@ static gboolean _rygel_change_log_timeout_gsource_func (gpointer self) {
+ 
+ static void rygel_change_log_ensure_timeout (RygelChangeLog* self) {
+ 	gboolean _tmp0_ = FALSE;
+-	GUPnPService* _tmp1_ = NULL;
++	GObject* _tmp1_ = NULL;
++	GObject* _tmp2_ = NULL;
++	gboolean _tmp3_ = FALSE;
+ 	g_return_if_fail (self != NULL);
+-	_tmp1_ = self->priv->_service;
+-	if (_tmp1_ != NULL) {
+-		guint _tmp2_ = 0U;
+-		_tmp2_ = self->priv->timeout_id;
+-		_tmp0_ = _tmp2_ == ((guint) 0);
++	_tmp1_ = g_weak_ref_get (&self->service);
++	_tmp2_ = _tmp1_;
++	_tmp3_ = _tmp2_ != NULL;
++	_g_object_unref0 (_tmp2_);
++	if (_tmp3_) {
++		guint _tmp4_ = 0U;
++		_tmp4_ = self->priv->timeout_id;
++		_tmp0_ = _tmp4_ == ((guint) 0);
+ 	} else {
+ 		_tmp0_ = FALSE;
+ 	}
+ 	if (_tmp0_) {
+-		guint _tmp3_ = 0U;
+-		g_debug ("rygel-changelog.vala:68: Setting up timeout for LastChange");
+-		_tmp3_ = g_timeout_add_full (G_PRIORITY_DEFAULT, (guint) 150, _rygel_change_log_timeout_gsource_func, g_object_ref (self), g_object_unref);
+-		self->priv->timeout_id = _tmp3_;
++		guint _tmp5_ = 0U;
++		g_debug ("rygel-changelog.vala:73: Setting up timeout for LastChange");
++		_tmp5_ = g_timeout_add_full (G_PRIORITY_DEFAULT, (guint) 150, _rygel_change_log_timeout_gsource_func, g_object_ref (self), g_object_unref);
++		self->priv->timeout_id = _tmp5_;
+ 	}
+ }
+ 
+@@ -185,7 +198,7 @@ void rygel_change_log_log (RygelChangeLog* self, const gchar* variable, const gc
+ 	g_return_if_fail (value != NULL);
+ 	_tmp0_ = variable;
+ 	_tmp1_ = value;
+-	g_debug ("rygel-changelog.vala:74: '%s = %s' logged", _tmp0_, _tmp1_);
++	g_debug ("rygel-changelog.vala:79: '%s = %s' logged", _tmp0_, _tmp1_);
+ 	_tmp2_ = self->priv->hash;
+ 	_tmp3_ = variable;
+ 	_tmp4_ = variable;
+@@ -307,32 +320,10 @@ gchar* rygel_change_log_finish (RygelChangeLog* self) {
+ }
+ 
+ 
+-GUPnPService* rygel_change_log_get_service (RygelChangeLog* self) {
+-	GUPnPService* result;
+-	GUPnPService* _tmp0_ = NULL;
+-	g_return_val_if_fail (self != NULL, NULL);
+-	_tmp0_ = self->priv->_service;
+-	result = _tmp0_;
+-	return result;
+-}
+-
+-
+-void rygel_change_log_set_service (RygelChangeLog* self, GUPnPService* value) {
+-	GUPnPService* _tmp0_ = NULL;
+-	g_return_if_fail (self != NULL);
+-	_tmp0_ = value;
+-	self->priv->_service = _tmp0_;
+-	g_object_notify ((GObject *) self, "service");
+-}
+-
+-
+ static void rygel_change_log_class_init (RygelChangeLogClass * klass) {
+ 	rygel_change_log_parent_class = g_type_class_peek_parent (klass);
+ 	g_type_class_add_private (klass, sizeof (RygelChangeLogPrivate));
+-	G_OBJECT_CLASS (klass)->get_property = _vala_rygel_change_log_get_property;
+-	G_OBJECT_CLASS (klass)->set_property = _vala_rygel_change_log_set_property;
+ 	G_OBJECT_CLASS (klass)->finalize = rygel_change_log_finalize;
+-	g_object_class_install_property (G_OBJECT_CLASS (klass), RYGEL_CHANGE_LOG_SERVICE, g_param_spec_object ("service", "service", "service", gupnp_service_get_type (), G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE));
+ }
+ 
+ 
+@@ -352,6 +343,7 @@ static void rygel_change_log_finalize (GObject* obj) {
+ 		_tmp1_ = self->priv->timeout_id;
+ 		g_source_remove (_tmp1_);
+ 	}
++	g_weak_ref_clear (&self->service);
+ 	_g_free0 (self->priv->service_ns);
+ 	_g_string_free0 (self->priv->str);
+ 	_g_object_unref0 (self->priv->hash);
+@@ -371,32 +363,4 @@ GType rygel_change_log_get_type (void) {
+ }
+ 
+ 
+-static void _vala_rygel_change_log_get_property (GObject * object, guint property_id, GValue * value, GParamSpec * pspec) {
+-	RygelChangeLog * self;
+-	self = G_TYPE_CHECK_INSTANCE_CAST (object, RYGEL_TYPE_CHANGE_LOG, RygelChangeLog);
+-	switch (property_id) {
+-		case RYGEL_CHANGE_LOG_SERVICE:
+-		g_value_set_object (value, rygel_change_log_get_service (self));
+-		break;
+-		default:
+-		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+-		break;
+-	}
+-}
+-
+-
+-static void _vala_rygel_change_log_set_property (GObject * object, guint property_id, const GValue * value, GParamSpec * pspec) {
+-	RygelChangeLog * self;
+-	self = G_TYPE_CHECK_INSTANCE_CAST (object, RYGEL_TYPE_CHANGE_LOG, RygelChangeLog);
+-	switch (property_id) {
+-		case RYGEL_CHANGE_LOG_SERVICE:
+-		rygel_change_log_set_service (self, g_value_get_object (value));
+-		break;
+-		default:
+-		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+-		break;
+-	}
+-}
+-
+-
+ 
+diff --git a/src/librygel-renderer/rygel-changelog.vala b/src/librygel-renderer/rygel-changelog.vala
+index 6f54c92..4f3933d 100644
+--- a/src/librygel-renderer/rygel-changelog.vala
++++ b/src/librygel-renderer/rygel-changelog.vala
+@@ -26,7 +26,7 @@ using Gee;
+ 
+ // Helper class for building LastChange messages
+ internal class Rygel.ChangeLog : Object {
+-    public unowned Service service { get; set; }
++    public WeakRef service;
+ 
+     private string service_ns;
+ 
+@@ -37,7 +37,7 @@ internal class Rygel.ChangeLog : Object {
+     private uint timeout_id = 0;
+ 
+     public ChangeLog (Service? service, string service_ns) {
+-        this.service = service;
++        this.service = WeakRef(service);
+         this.service_ns = service_ns;
+         this.str = new StringBuilder ();
+         this.hash = new HashMap<string, string> ();
+@@ -50,8 +50,13 @@ internal class Rygel.ChangeLog : Object {
+     }
+ 
+     private bool timeout () {
++        // Check whether the AVTransport service has not been destroyed already
++        Service? service = (Service?)this.service.get();
++        if (service == null)
++            return false;
++
+         // Emit notification
+-        this.service.notify ("LastChange", typeof (string), this.finish ());
++        service.notify ("LastChange", typeof (string), this.finish ());
+         debug ("LastChange sent");
+ 
+         // Reset
+@@ -64,7 +69,7 @@ internal class Rygel.ChangeLog : Object {
+ 
+     private void ensure_timeout () {
+         // Make sure we have a notification timeout
+-        if (this.service != null && this.timeout_id == 0) {
++        if (this.service.get() != null && this.timeout_id == 0) {
+             debug ("Setting up timeout for LastChange");
+             this.timeout_id = Timeout.add (150, this.timeout);
+         }
+-- 
+1.9.1
+

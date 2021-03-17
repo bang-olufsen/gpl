@@ -1,0 +1,294 @@
+From 70c6e35ef7cf9feb866a2e5254f8965ea0a3f307 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Mon, 8 Jan 2018 15:41:54 +0100
+Subject: [PATCH] Added handling to read/write otp area on macronix/micron ONFI
+ flashes
+
+Basically we extend few methods + add small handling for OTP in new ONFI flashes.
+
+Signed-off-by: Marek Belisko <marek.belisko@open-nandra.com>
+---
+ drivers/mtd/mtdchar.c        |  23 +++++++
+ drivers/mtd/nand/nand_base.c | 156 +++++++++++++++++++++++++++++++++++--------
+ 2 files changed, 152 insertions(+), 27 deletions(-)
+
+diff --git a/drivers/mtd/mtdchar.c b/drivers/mtd/mtdchar.c
+index 62bf907..f4bb763 100644
+--- a/drivers/mtd/mtdchar.c
++++ b/drivers/mtd/mtdchar.c
+@@ -589,6 +589,21 @@ static int mtdchar_write_ioctl(struct mtd_info *mtd,
+ 	return ret;
+ }
+ 
++static int mtdchar_get_otp_len(struct mtd_info *mtd)
++{
++	struct otp_info buf;
++	size_t retlen;
++	int ret;
++
++	ret = mtd_get_user_prot_info(mtd, sizeof(struct otp_info), &retlen, &buf);
++	if (ret) {
++		pr_warn("Error reading OTP info:%d\n", ret);
++		return -EFAULT;
++	}
++
++	return buf.length;
++}
++
+ static int mtdchar_ioctl(struct file *file, u_int cmd, u_long arg)
+ {
+ 	struct mtd_file_info *mfi = file->private_data;
+@@ -926,6 +941,10 @@ static int mtdchar_ioctl(struct file *file, u_int cmd, u_long arg)
+ 
+ 		pr_debug("OTP_read\n");
+ 
++		/* for new flash use offset 2 pages (OPT available from 0x2h-0x1fh */
++		if (mtdchar_get_otp_len(mtd) > 1)
++			ppos = 0x2 * OTP_PAGE_SIZE;
++
+ 		kbuf = mtd_kmalloc_up_to(mtd, &count);
+ 		if (!kbuf)
+ 			return -ENOMEM;
+@@ -969,6 +988,10 @@ static int mtdchar_ioctl(struct file *file, u_int cmd, u_long arg)
+ 
+ 		pr_debug("OTP_write\n");
+ 
++		/* for new flash use offset 2 pages (OTP available from 0x2h-0x1fh */
++		if (mtdchar_get_otp_len(mtd) > 1)
++			ppos = 0x2 * OTP_PAGE_SIZE;
++
+ 		if (ppos == mtd->size)
+ 			return -ENOSPC;
+ 
+diff --git a/drivers/mtd/nand/nand_base.c b/drivers/mtd/nand/nand_base.c
+index 7adc824..6337e59 100644
+--- a/drivers/mtd/nand/nand_base.c
++++ b/drivers/mtd/nand/nand_base.c
+@@ -3800,6 +3800,84 @@ ident_done:
+ 
+ #ifdef CONFIG_MTD_NAND_OTP
+ 
++static int is_new_otp_chip(struct mtd_info *mtd)
++{
++	struct nand_chip *chip = mtd->priv;
++	struct nand_onfi_params *p = &chip->onfi_params;
++
++	return (!strcmp(p->manufacturer, "MACRONIX") ||
++			!strcmp(p->manufacturer, "MICRON"));
++}
++
++static int do_otp_enter(struct mtd_info *mtd)
++{
++	struct nand_chip *chip = mtd->priv;
++	int ret = 0;
++
++	/* Enter OTP access mode */
++	if (!is_new_otp_chip(mtd)) {
++		/* For old SPANSION flashes */
++		chip->cmdfunc(mtd, (NAND_CMD_OTP_ACCESS >> 24) & 0xff, -1, -1);
++		chip->cmdfunc(mtd, (NAND_CMD_OTP_ACCESS >> 16) & 0xff, -1, -1);
++		chip->cmdfunc(mtd, (NAND_CMD_OTP_ACCESS >> 8) & 0xff, -1, -1);
++		chip->cmdfunc(mtd, (NAND_CMD_OTP_ACCESS >> 0) & 0xff, -1, -1);
++
++	} else {
++		/* For replacement macronix ONFI flashes */
++		uint8_t feature[ONFI_SUBFEATURE_PARAM_LEN] = {1, 0, 0, 0};
++
++		ret = chip->onfi_set_features(mtd, chip, 0x90, feature);
++		if (ret < 0)
++			pr_warn("Unable to enter OTP mode\n");
++	}
++
++	chip->waitfunc(mtd, chip);
++	return ret;
++}
++
++static int do_otp_leave(struct mtd_info *mtd)
++{
++	struct nand_chip *chip = mtd->priv;
++	int ret = 0;
++
++	/* Exit OTP access mode */
++	if (!is_new_otp_chip(mtd)) {
++		chip->cmdfunc(mtd, NAND_CMD_RESET, -1, -1);
++	} else {
++		/* For replacement macronix ONFI flashes */
++		uint8_t feature[ONFI_SUBFEATURE_PARAM_LEN] = {0, 0, 0, 0};
++
++		ret = chip->onfi_set_features(mtd, chip, 0x90, feature);
++		if (ret < 0)
++			pr_warn("Unable to exit OTP mode\n");
++	}
++
++	chip->waitfunc(mtd, chip);
++	return ret;
++}
++
++static int do_otp_lock(struct mtd_info *mtd)
++{
++	struct nand_chip *chip = mtd->priv;
++	int ret = 0;
++
++	/* Lock OTP area mode */
++	if (!is_new_otp_chip(mtd)) {
++		return 0;
++	} else {
++		/* For replacement macronix ONFI flashes */
++		uint8_t feature[ONFI_SUBFEATURE_PARAM_LEN] = {3, 0, 0, 0};
++
++		ret = chip->onfi_set_features(mtd, chip, 0x90, feature);
++		if (ret < 0)
++			pr_warn("Unable to enter OTP lock mode\n");
++	}
++
++	chip->waitfunc(mtd, chip);
++	return ret;
++
++}
++
+ /* Internal OTP operation */
+ typedef int (*otp_op_t)(struct mtd_info *mtd, loff_t form, size_t len,
+ 		size_t *retlen, u_char *buf);
+@@ -3817,7 +3895,6 @@ typedef int (*otp_op_t)(struct mtd_info *mtd, loff_t form, size_t len,
+ static int do_otp_read(struct mtd_info *mtd, loff_t from, size_t len,
+ 		size_t *retlen, u_char *buf)
+ {
+-	struct nand_chip *this = mtd->priv;
+ 	struct mtd_oob_ops ops = {
+ 		.len	= len,
+ 		.ooblen	= 0,
+@@ -3826,20 +3903,12 @@ static int do_otp_read(struct mtd_info *mtd, loff_t from, size_t len,
+ 	};
+ 	int ret;
+ 
+-	/* Enter OTP access mode */
+-	this->cmdfunc(mtd, (NAND_CMD_OTP_ACCESS >> 24) & 0xff, -1, -1);
+-	this->cmdfunc(mtd, (NAND_CMD_OTP_ACCESS >> 16) & 0xff, -1, -1);
+-	this->cmdfunc(mtd, (NAND_CMD_OTP_ACCESS >> 8) & 0xff, -1, -1);
+-	this->cmdfunc(mtd, (NAND_CMD_OTP_ACCESS >> 0) & 0xff, -1, -1);
+-
+-	this->waitfunc(mtd, this);
+-
++	ret = do_otp_enter(mtd);
++	if (ret)
++		return ret;
+ 	ret = nand_do_read_ops(mtd, from, &ops);
+ 	*retlen = ops.retlen;
+-
+-	/* Exit OTP access mode */
+-	this->cmdfunc(mtd, NAND_CMD_RESET, -1, -1);
+-	this->waitfunc(mtd, this);
++	do_otp_leave(mtd);
+ 
+ 	return ret;
+ }
+@@ -3857,18 +3926,13 @@ static int do_otp_read(struct mtd_info *mtd, loff_t from, size_t len,
+ static int do_otp_write(struct mtd_info *mtd, loff_t to, size_t len,
+ 		size_t *retlen, u_char *buf)
+ {
+-	struct nand_chip *this = mtd->priv;
+ 	unsigned char *pbuf = buf;
+ 	int ret;
+ 	struct mtd_oob_ops ops;
+ 
+-	/* Enter OTP access mode */
+-	this->cmdfunc(mtd, (NAND_CMD_OTP_ACCESS >> 24) & 0xff, -1, -1);
+-	this->cmdfunc(mtd, (NAND_CMD_OTP_ACCESS >> 16) & 0xff, -1, -1);
+-	this->cmdfunc(mtd, (NAND_CMD_OTP_ACCESS >> 8) & 0xff, -1, -1);
+-	this->cmdfunc(mtd, (NAND_CMD_OTP_ACCESS >> 0) & 0xff, -1, -1);
+-
+-	this->waitfunc(mtd, this);
++	ret = do_otp_enter(mtd);
++	if (ret)
++		return ret;
+ 
+ 	ops.len = len;
+ 	ops.ooblen = 0;
+@@ -3877,9 +3941,23 @@ static int do_otp_write(struct mtd_info *mtd, loff_t to, size_t len,
+ 	ret = nand_do_write_ops(mtd, to, &ops);
+ 	*retlen = ops.retlen;
+ 
+-	/* Exit OTP access mode */
+-	this->cmdfunc(mtd, NAND_CMD_RESET, -1, -1);
+-	this->waitfunc(mtd, this);
++	do_otp_leave(mtd);
++
++	return ret;
++}
++
++static int do_otp_lock_area(struct mtd_info *mtd, loff_t to, size_t len,
++		size_t *retlen, u_char *buf)
++{
++	int ret;
++
++	ret = do_otp_lock(mtd);
++	if (ret)
++		return ret;
++
++	*retlen = len;
++
++	ret = do_otp_leave(mtd);
+ 
+ 	return ret;
+ }
+@@ -3900,12 +3978,16 @@ static int nand_otp_walk(struct mtd_info *mtd, loff_t from, size_t len,
+ 			size_t *retlen, u_char *buf,
+ 			otp_op_t action, int mode)
+ {
+-	struct nand_chip *this = mtd->priv;
+ 	int otp_pages = 1;
++	struct nand_chip *chip = mtd->priv;
+ 	int ret = 0;
+ 
+ 	*retlen = 0;
+ 
++	/* HACK: for macronix flash we have 30 pages available */
++	if (is_new_otp_chip(mtd))
++		otp_pages = 0x20;
++
+ 	/* Check User/Factory boundary */
+ 	if (mode == MTD_OTP_USER) {
+ 		if (mtd->writesize * otp_pages < from + len)
+@@ -3982,6 +4064,26 @@ static int nand_read_fact_prot_reg(struct mtd_info *mtd, loff_t from,
+ 	return 0;
+ }
+ 
++static int nand_lock_user_prot_reg(struct mtd_info *mtd, loff_t from, size_t len)
++{
++	size_t retlen;
++	u_char buf[1] = {0};
++
++	return nand_otp_walk(mtd, from, len, &retlen, buf, do_otp_lock_area, MTD_OTP_USER);
++}
++
++static int nand_get_region_info(struct mtd_info *mtd, size_t len, size_t *retlen, struct otp_info *buf)
++{
++	struct nand_chip *chip = mtd->priv;
++	buf->length = 1;
++
++	if (is_new_otp_chip(mtd))
++		buf->length = 30;
++
++	*retlen = sizeof(struct otp_info);
++	return 0;
++}
++
+ #endif	/* CONFIG_MTD_NAND_OTP */
+ 
+ /**
+@@ -4369,10 +4471,10 @@ int nand_scan_tail(struct mtd_info *mtd)
+ #ifdef CONFIG_MTD_NAND_OTP
+ 	mtd->_get_fact_prot_info = NULL;
+ 	mtd->_read_fact_prot_reg = nand_read_fact_prot_reg;
+-	mtd->_get_user_prot_info = NULL;
++	mtd->_get_user_prot_info = nand_get_region_info;
+ 	mtd->_read_user_prot_reg = nand_read_user_prot_reg;
+ 	mtd->_write_user_prot_reg = nand_write_user_prot_reg;
+-	mtd->_lock_user_prot_reg = NULL;
++	mtd->_lock_user_prot_reg = nand_lock_user_prot_reg;
+ 
+ #endif
+ 
+-- 
+2.7.4
+

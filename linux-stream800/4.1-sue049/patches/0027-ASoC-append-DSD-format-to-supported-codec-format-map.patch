@@ -1,0 +1,26 @@
+From d648173349d9e0bd1588970fd0d9eb553c1838fa Mon Sep 17 00:00:00 2001
+From: Lee Page <lee.page@streamunlimited.com>
+Date: Fri, 13 Mar 2015 12:00:45 +0100
+Subject: [PATCH] ASoC: append DSD format to supported codec format map
+
+Signed-off-by: Miroslav Rudisin <miero@seznam.cz>
+Signed-off-by: Lee Page <lee.page@streamunlimited.com>
+---
+ sound/soc/soc-core.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/sound/soc/soc-core.c b/sound/soc/soc-core.c
+index 2373252..b8b06db 100644
+--- a/sound/soc/soc-core.c
++++ b/sound/soc/soc-core.c
+@@ -2982,6 +2982,7 @@ static u64 codec_format_map[] = {
+ 	SNDRV_PCM_FMTBIT_FLOAT64_LE | SNDRV_PCM_FMTBIT_FLOAT64_BE,
+ 	SNDRV_PCM_FMTBIT_IEC958_SUBFRAME_LE
+ 	| SNDRV_PCM_FMTBIT_IEC958_SUBFRAME_BE,
++	SNDRV_PCM_FMTBIT_DSD_U8
+ };
+ 
+ /* Fix up the DAI formats for endianness: codecs don't actually see
+-- 
+1.9.1
+

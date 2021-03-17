@@ -1,0 +1,50 @@
+From 314b2fb0debfc95e0d3fc394d1b23ddb2693d742 Mon Sep 17 00:00:00 2001
+From: Radek Dostal <radek.dostal@streamunlimited.com>
+Date: Mon, 29 Oct 2012 17:09:03 +0100
+Subject: [PATCH] add CMakeLists.txt
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Signed-off-by: Branislav Katreniak <branislav.katreniak@streamunlimited.com>
+Signed-off-by: Jozef Šiška <jozef.siska@streamunlimited.com>
+Signed-off-by: Radek Dostal <radek.dostal@streamunlimited.com>
+---
+ CMakeLists.txt |   25 +++++++++++++++++++++++++
+ 1 files changed, 25 insertions(+), 0 deletions(-)
+ create mode 100644 CMakeLists.txt
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+new file mode 100644
+index 0000000..c396591
+--- /dev/null
++++ b/CMakeLists.txt
+@@ -0,0 +1,25 @@
++project(json-sax)
++SET(json-sax_VERSION 1)
++SET(json-sax_SOVERSION 1.0)
++
++
++SET(json-sax_HEADERS
++	json.h
++)
++
++SET(json-sax_SOURCES
++	json.c
++)
++
++ADD_LIBRARY(json-sax SHARED
++	${json-sax_SOURCES}
++)
++
++SET_TARGET_PROPERTIES(json-sax PROPERTIES
++	LINKER_LANGUAGE C
++	VERSION ${json-sax_VERSION}
++	SOVERSION ${json-sax_SOVERSION}
++)
++
++install(TARGETS json-sax DESTINATION "${CMAKE_INSTALL_LIBDIR}")
++install(FILES ${json-sax_HEADERS} DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/json-sax")
+-- 
+1.7.0.4
+

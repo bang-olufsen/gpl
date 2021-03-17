@@ -1,0 +1,62 @@
+From 7c94e60ec267ea3a515b40a43863f17bc371708a Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Thu, 10 Apr 2014 13:15:12 +0200
+Subject: [PATCH] Makefile: create also the list of default environment
+ variables when u-boot is being built
+
+Signed-off-by: Martin Flaska <martin.flaska@streamunlimited.com>
+Signed-off-by: Matus Ujhelyi <matus.ujhelyi@streamunlimited.com>
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ .gitignore     | 3 +++
+ Makefile       | 3 ++-
+ tools/Makefile | 1 +
+ 3 files changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/.gitignore b/.gitignore
+index cba5eac..de71a7c 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -87,3 +87,6 @@ GTAGS
+ *.orig
+ *~
+ \#*#
++# generated img and txt file of env partition data
++/u-boot-env.txt
++/u-boot-env.img
+diff --git a/Makefile b/Makefile
+index c91c10e..3364f4b 100644
+--- a/Makefile
++++ b/Makefile
+@@ -805,6 +805,7 @@ MKIMAGEFLAGS_u-boot.pbl = -n $(srctree)/$(CONFIG_SYS_FSL_PBL_RCW:"%"=%) \
+ 
+ u-boot.img u-boot.kwb u-boot.pbl: u-boot.bin FORCE
+ 	$(call if_changed,mkimage)
++	tools/env/fw_printenv -d > u-boot-env.txt
+ 
+ u-boot.sha1:	u-boot.bin
+ 		tools/ubsha1 u-boot.bin
+@@ -1159,7 +1160,7 @@ include/license.h: tools/bin2header COPYING
+ CLEAN_DIRS  += $(MODVERDIR)
+ CLEAN_FILES += u-boot.lds include/bmp_logo.h include/bmp_logo_data.h \
+ 	       include/autoconf.mk* include/spl-autoconf.mk \
+-	       include/tpl-autoconf.mk
++	       include/tpl-autoconf.mk u-boot-env.txt u-boot-env.img
+ 
+ # Directories & files removed with 'make clobber'
+ CLOBBER_DIRS  += $(patsubst %,spl/%, $(filter-out Makefile, \
+diff --git a/tools/Makefile b/tools/Makefile
+index 097cc1d..0c4f9a4 100644
+--- a/tools/Makefile
++++ b/tools/Makefile
+@@ -26,6 +26,7 @@ endif
+ 
+ subdir-$(HOST_TOOLS_ALL) += easylogo
+ subdir-$(HOST_TOOLS_ALL) += gdb
++subdir-y += env
+ 
+ # Merge all the different vars for envcrc into one
+ ENVCRC-$(CONFIG_ENV_IS_EMBEDDED) = y
+-- 
+2.7.4
+

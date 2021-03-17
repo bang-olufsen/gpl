@@ -1,0 +1,37 @@
+From 3d368d1747468f23b7351732efb5cc28b51f3cc3 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Tue, 4 Apr 2017 15:15:12 +0200
+Subject: [PATCH] Fix applying agents when multiple same host_data paths are
+ registered
+
+When removing and adding interface in Rygel host_data path are not released
+This will cause that we have registered multiple host_data paths and
+agent will apply to old host_data path - this is important for V1 hacks
+in Rygel.
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ libgupnp/gupnp-context.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/libgupnp/gupnp-context.c b/libgupnp/gupnp-context.c
+index bc0e16e..7df33f1 100644
+--- a/libgupnp/gupnp-context.c
++++ b/libgupnp/gupnp-context.c
+@@ -1248,9 +1248,13 @@ gupnp_context_host_path_for_agent (GUPnPContext *context,
+         g_return_val_if_fail (server_path != NULL, FALSE);
+         g_return_val_if_fail (user_agent != NULL, FALSE);
+ 
++        // Search list backwards
++        context->priv->host_path_datas = g_list_reverse(context->priv->host_path_datas);
+         node = g_list_find_custom (context->priv->host_path_datas,
+                                    server_path,
+                                    (GCompareFunc) path_compare_func);
++        context->priv->host_path_datas = g_list_reverse(context->priv->host_path_datas);
++
+         if (node != NULL) {
+                 HostPathData *path_data;
+                 UserAgent *agent;
+-- 
+2.7.4
+

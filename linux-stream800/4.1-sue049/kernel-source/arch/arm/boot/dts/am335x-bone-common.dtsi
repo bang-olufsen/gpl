@@ -1,0 +1,522 @@
+/*
+ * Copyright (C) 2012 Texas Instruments Incorporated - http://www.ti.com/
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ */
+
+#include <dt-bindings/interrupt-controller/irq.h>
+
+/ {
+	cpus {
+		cpu@0 {
+			cpu0-supply = <&dcdc2_reg>;
+		};
+	};
+
+	memory {
+		device_type = "memory";
+		reg = <0x80000000 0x10000000>; /* 256 MB */
+	};
+
+	leds {
+		pinctrl-names = "default";
+		pinctrl-0 = <&user_leds_s0>;
+
+		compatible = "gpio-leds";
+
+		led@2 {
+			label = "beaglebone:green:heartbeat";
+			gpios = <&gpio1 21 GPIO_ACTIVE_HIGH>;
+			linux,default-trigger = "heartbeat";
+			default-state = "off";
+		};
+
+		led@3 {
+			label = "beaglebone:green:mmc0";
+			gpios = <&gpio1 22 GPIO_ACTIVE_HIGH>;
+			linux,default-trigger = "mmc0";
+			default-state = "off";
+		};
+
+		led@4 {
+			label = "beaglebone:green:usr2";
+			gpios = <&gpio1 23 GPIO_ACTIVE_HIGH>;
+			linux,default-trigger = "cpu0";
+			default-state = "off";
+		};
+
+		led@5 {
+			label = "beaglebone:green:usr3";
+			gpios = <&gpio1 24 GPIO_ACTIVE_HIGH>;
+			linux,default-trigger = "mmc1";
+			default-state = "off";
+		};
+	};
+
+	vmmcsd_fixed: fixedregulator@0 {
+		compatible = "regulator-fixed";
+		regulator-name = "vmmcsd_fixed";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+	};
+
+	wlan_en_reg: fixedregulator@1 {
+		compatible = "regulator-fixed";
+		regulator-name = "wlan-en-regulator";
+		regulator-min-microvolt = <1800000>;
+		regulator-max-microvolt = <1800000>;
+
+		/* WLAN_EN GPIO for this board - Bank1, pin26 */
+		gpio = <&gpio0 26 0>;
+
+		/* WLAN card specific delay */
+		startup-delay-us = <70000>;
+		enable-active-high;
+	};
+
+	audio {
+		compatible = "sue,am33xx-generic-audio";
+		pinctrl-names = "default";
+		pinctrl-0 = <&audio_pins>;
+		sue,card-name = "Stream Audio";
+		/*sue,early-mclk;*/
+		clocks = <&si5351a 0>, <&si5351a 0>; /* playback clk, receive clk */
+		sue,persistent-clocks;
+
+		links {
+			link@0 {
+				sue,name = "analog";
+				sue,stream-name = "I2S";
+
+				sue,platform = <&mcasp0>;
+				sue,cpu-dai-name = "48038000.mcasp";
+				sue,codec = <&pcm_dummy>;
+				sue,codec-dai-name = "Dummy PCM Codec";
+			};
+		};
+	};
+
+	/* 25MHz output from quartz next to SI5351a */
+	ref25: ref25M {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <25000000>;
+	};
+
+	/* dummy pcm codec */
+	pcm_dummy: pcm_dummy {
+		compatible = "sue,pcm_dummy";
+		mute-gpio = <&gpio0 22 0>;
+	};
+
+	supersync {
+		compatible = "supersync";
+
+		/* TODO: Add input-timer device tree binding inside kernel */
+		/* input-timer = <&timer4>; */
+		clocks = <&si5351a 0>;
+
+		pinctrl-names = "default";
+		pinctrl-0 = <&supersync_pins>;
+
+		status="okay";
+	};
+};
+
+&am33xx_pinmux {
+	pinctrl-names = "default", "sleep";
+	pinctrl-0 = <&wlan_pins>;
+	pinctrl-1 = <&wlan_pins_sleep>;
+
+	user_leds_s0: user_leds_s0 {
+		pinctrl-single,pins = <
+			0x54 (PIN_OUTPUT_PULLDOWN | MUX_MODE7)	/* gpmc_a5.gpio1_21 */
+			0x58 (PIN_OUTPUT_PULLUP | MUX_MODE7)	/* gpmc_a6.gpio1_22 */
+			0x5c (PIN_OUTPUT_PULLDOWN | MUX_MODE7)	/* gpmc_a7.gpio1_23 */
+			0x60 (PIN_OUTPUT_PULLUP | MUX_MODE7)	/* gpmc_a8.gpio1_24 */
+		>;
+	};
+
+	i2c0_pins: pinmux_i2c0_pins {
+		pinctrl-single,pins = <
+			0x188 (PIN_INPUT_PULLUP | MUX_MODE0)	/* i2c0_sda.i2c0_sda */
+			0x18c (PIN_INPUT_PULLUP | MUX_MODE0)	/* i2c0_scl.i2c0_scl */
+		>;
+	};
+
+	i2c2_pins: pinmux_i2c2_pins {
+		pinctrl-single,pins = <
+			0x178 (PIN_INPUT_PULLUP | MUX_MODE3)	/* uart1_ctsn.i2c2_sda */
+			0x17c (PIN_INPUT_PULLUP | MUX_MODE3)	/* uart1_rtsn.i2c2_scl */
+		>;
+	};
+
+	uart0_pins: pinmux_uart0_pins {
+		pinctrl-single,pins = <
+			0x170 (PIN_INPUT_PULLUP | MUX_MODE0)	/* uart0_rxd.uart0_rxd */
+			0x174 (PIN_OUTPUT_PULLDOWN | MUX_MODE0)	/* uart0_txd.uart0_txd */
+		>;
+	};
+
+	cpsw_default: cpsw_default {
+		pinctrl-single,pins = <
+			/* Slave 1 */
+			0x110 (PIN_INPUT_PULLUP | MUX_MODE0)	/* mii1_rxerr.mii1_rxerr */
+			0x114 (PIN_OUTPUT_PULLDOWN | MUX_MODE0)	/* mii1_txen.mii1_txen */
+			0x118 (PIN_INPUT_PULLUP | MUX_MODE0)	/* mii1_rxdv.mii1_rxdv */
+			0x11c (PIN_OUTPUT_PULLDOWN | MUX_MODE0)	/* mii1_txd3.mii1_txd3 */
+			0x120 (PIN_OUTPUT_PULLDOWN | MUX_MODE0)	/* mii1_txd2.mii1_txd2 */
+			0x124 (PIN_OUTPUT_PULLDOWN | MUX_MODE0)	/* mii1_txd1.mii1_txd1 */
+			0x128 (PIN_OUTPUT_PULLDOWN | MUX_MODE0)	/* mii1_txd0.mii1_txd0 */
+			0x12c (PIN_INPUT_PULLUP | MUX_MODE0)	/* mii1_txclk.mii1_txclk */
+			0x130 (PIN_INPUT_PULLUP | MUX_MODE0)	/* mii1_rxclk.mii1_rxclk */
+			0x134 (PIN_INPUT_PULLUP | MUX_MODE0)	/* mii1_rxd3.mii1_rxd3 */
+			0x138 (PIN_INPUT_PULLUP | MUX_MODE0)	/* mii1_rxd2.mii1_rxd2 */
+			0x13c (PIN_INPUT_PULLUP | MUX_MODE0)	/* mii1_rxd1.mii1_rxd1 */
+			0x140 (PIN_INPUT_PULLUP | MUX_MODE0)	/* mii1_rxd0.mii1_rxd0 */
+		>;
+	};
+
+	cpsw_sleep: cpsw_sleep {
+		pinctrl-single,pins = <
+			/* Slave 1 reset value */
+			0x110 (PIN_INPUT_PULLDOWN | MUX_MODE7)
+			0x114 (PIN_INPUT_PULLDOWN | MUX_MODE7)
+			0x118 (PIN_INPUT_PULLDOWN | MUX_MODE7)
+			0x11c (PIN_INPUT_PULLDOWN | MUX_MODE7)
+			0x120 (PIN_INPUT_PULLDOWN | MUX_MODE7)
+			0x124 (PIN_INPUT_PULLDOWN | MUX_MODE7)
+			0x128 (PIN_INPUT_PULLDOWN | MUX_MODE7)
+			0x12c (PIN_INPUT_PULLDOWN | MUX_MODE7)
+			0x130 (PIN_INPUT_PULLDOWN | MUX_MODE7)
+			0x134 (PIN_INPUT_PULLDOWN | MUX_MODE7)
+			0x138 (PIN_INPUT_PULLDOWN | MUX_MODE7)
+			0x13c (PIN_INPUT_PULLDOWN | MUX_MODE7)
+			0x140 (PIN_INPUT_PULLDOWN | MUX_MODE7)
+		>;
+	};
+
+	davinci_mdio_default: davinci_mdio_default {
+		pinctrl-single,pins = <
+			/* MDIO */
+			0x148 (PIN_INPUT_PULLUP | SLEWCTRL_FAST | MUX_MODE0)	/* mdio_data.mdio_data */
+			0x14c (PIN_OUTPUT_PULLUP | MUX_MODE0)			/* mdio_clk.mdio_clk */
+		>;
+	};
+
+	davinci_mdio_sleep: davinci_mdio_sleep {
+		pinctrl-single,pins = <
+			/* MDIO reset value */
+			0x148 (PIN_INPUT_PULLDOWN | MUX_MODE7)
+			0x14c (PIN_INPUT_PULLDOWN | MUX_MODE7)
+		>;
+	};
+
+	mmc1_pins: pinmux_mmc1_pins {
+		pinctrl-single,pins = <
+			0x160 (PIN_INPUT | MUX_MODE7) /* GPIO0_6 */
+		>;
+	};
+
+	mmc2_pins: pinmux_mmc2_pins {
+		pinctrl-single,pins = <
+			0x80 (PIN_INPUT_PULLUP | MUX_MODE2) /* gpmc_csn1.mmc1_clk */
+			0x84 (PIN_INPUT_PULLUP | MUX_MODE2) /* gpmc_csn2.mmc1_cmd */
+			0x00 (PIN_INPUT_PULLUP | MUX_MODE1) /* gpmc_ad0.mmc1_dat0 */
+			0x04 (PIN_INPUT_PULLUP | MUX_MODE1) /* gpmc_ad1.mmc1_dat1 */
+			0x08 (PIN_INPUT_PULLUP | MUX_MODE1) /* gpmc_ad2.mmc1_dat2 */
+			0x0c (PIN_INPUT_PULLUP | MUX_MODE1) /* gpmc_ad3.mmc1_dat3 */
+		>;
+	};
+
+	mmc2_pins_sleep: pinmux_mmc2_pins_sleep {
+		pinctrl-single,pins = <
+			0x80 (PIN_INPUT_PULLDOWN | MUX_MODE7) /* gpmc_csn1.mmc1_clk */
+			0x84 (PIN_INPUT_PULLDOWN | MUX_MODE7) /* gpmc_csn2.mmc1_cmd */
+			0x00 (PIN_INPUT_PULLDOWN | MUX_MODE7) /* gpmc_ad0.mmc1_dat0 */
+			0x04 (PIN_INPUT_PULLDOWN | MUX_MODE7) /* gpmc_ad1.mmc1_dat1 */
+			0x08 (PIN_INPUT_PULLDOWN | MUX_MODE7) /* gpmc_ad2.mmc1_dat2 */
+			0x0c (PIN_INPUT_PULLDOWN | MUX_MODE7) /* gpmc_ad3.mmc1_dat3 */
+		>;
+	};
+
+	/* wl12xx/wl18xx card enable/irq GPIOs. */
+	wlan_pins: pinmux_wlan_pins {
+		pinctrl-single,pins = <
+			0x28 (PIN_OUTPUT_PULLDOWN | MUX_MODE7)	/* gpmc_ad10.gpio0_26 WL_EN*/
+			0x2C (PIN_INPUT_PULLUP | MUX_MODE7)	/* gpmc_ad11.gpio0_27 WL_IRQ*/
+			0x30 (PIN_OUTPUT_PULLDOWN | MUX_MODE7)	/* gpmc_ad12.gpio1_12 BT_EN*/
+			0x7C (PIN_OUTPUT_PULLUP | MUX_MODE0)	/* gpmc_csn0.gpio1_29 BF_EN*/
+		>;
+	};
+
+	/* wl12xx/wl18xx card enable/irq GPIOs. */
+	wlan_pins_sleep: pinmux_wlan_pins_sleep {
+		pinctrl-single,pins = <
+			0x28 (PIN_OUTPUT_PULLUP | MUX_MODE7)	/* gpmc_ad10.gpio0_26 WL_EN*/
+			0x2C (PIN_INPUT_PULLUP | MUX_MODE7)	/* gpmc_ad11.gpio0_27 WL_IRQ*/
+			0x30 (PIN_OUTPUT_PULLUP | MUX_MODE7)	/* gpmc_ad12.gpio1_12 BT_EN*/
+			0x7C (PIN_OUTPUT_PULLUP | MUX_MODE0)	/* gpmc_csn0.gpio1_29 BF_EN*/
+		>;
+	};
+
+	audio_pins: pinmux_audio_pins {
+		pinctrl-single,pins = < /*  pin-name     -> function      (S800 name) */
+			0x6c (PIN_OUTPUT_PULLDOWN | MUX_MODE7)	/* conf_gpmc_a11.gpio1_27 HDMI clock disable node */
+			0x9c (PIN_INPUT | MUX_MODE7)		/* conf_gpmc_ben0_cle.gpio2_5 needs to be disabled */
+			0x108 (PIN_OUTPUT_PULLDOWN | MUX_MODE4)	/* GMII1_COL -> MCASP1_AXR2      (SPDIF_OUT)     - out */
+			0x190 (PIN_OUTPUT_PULLDOWN | MUX_MODE0)	/* MCASP0_ACLKX -> MCASP0_ACLKX		(I2S_BCLK_OUT) - out */
+			0x194 (PIN_OUTPUT_PULLDOWN | MUX_MODE0)	/* MCASP0_FSX -> MCASP0_FSX		(I2S_WCLK_OUT) - out */
+			0x198 (PIN_INPUT | MUX_MODE0)		/* MCASP0_AXR0 -> MCASP0_AXR0		(I2S_DATA_IN) - in */
+			0x19c (PIN_OUTPUT_PULLDOWN | MUX_MODE2)	/* MCASP0_AHCLKR -> MCASP0_AXR2 (I2S_DATA_OUT) -out */
+			0x1a8 (PIN_INPUT | MUX_MODE7)		/* MCASP0_AXR1 -> GPIO3_20 */
+			0x1ac (PIN_INPUT_PULLDOWN | MUX_MODE0)	/* MCASP0_AHCLKX -> MCASP0_AHCLKX	(I2S_MCLK_OUT)- in */
+		>;
+	};
+
+	supersync_pins: supersync_pins {
+		pinctrl-single,pins = <
+			0x1b4 (PIN_INPUT | MUX_MODE2)   /* xdma_event_intr1.tclkin */
+			0x90 (PIN_OUTPUT | MUX_MODE2)   /* gpmc_advn_ale.timer4 */
+			0x44 (PIN_OUTPUT | MUX_MODE7)   /* gpmc_a1.GPIO1_17 */
+		>;
+	};
+};
+
+&uart0 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart0_pins>;
+
+	status = "okay";
+};
+
+&usb {
+	status = "okay";
+};
+
+&usb_ctrl_mod {
+	status = "okay";
+};
+
+&usb0_phy {
+	status = "okay";
+};
+
+&usb1_phy {
+	status = "okay";
+};
+
+&usb0 {
+	status = "okay";
+	dr_mode = "peripheral";
+};
+
+&usb1 {
+	status = "okay";
+	dr_mode = "host";
+};
+
+&cppi41dma  {
+	status = "okay";
+};
+
+&i2c0 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&i2c0_pins>;
+
+	status = "okay";
+	clock-frequency = <400000>;
+
+	tps: tps@24 {
+		reg = <0x24>;
+	};
+
+};
+
+&i2c2 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&i2c2_pins>;
+
+	status = "okay";
+	clock-frequency = <100000>;
+
+	/* Si5351a i2c clock generator */
+	si5351a: clock-generator@60 {
+		compatible = "silabs,si5351a-msop";
+		reg = <0x60>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+		#clock-cells = <1>;
+
+		/* connect xtal input to 25MHz reference */
+		clocks = <&ref25>;
+		clock-names = "xtal";
+
+		/* connect xtal input as source of pll0 and pll1 */
+		silabs,pll-source = <0 0>, <1 0>;
+
+		/*
+		 * overwrite clkout0 configuration with:
+		 * - 8mA output drive strength
+		 * - pll0 as clock source of multisynth0
+		 * - multisynth0 as clock source of output divider
+		 * - multisynth0 can change pll0
+		 */
+		clkout0 {
+			reg = <0>;
+			silabs,drive-strength = <8>;
+			silabs,multisynth-source = <0>;
+			silabs,clock-source = <0>;
+			silabs,pll-master;
+		};
+	};
+};
+
+
+&mcasp0 {
+	status = "okay";
+	op-mode = <0>;          /* MCASP_IIS_MODE */
+	tdm-slots = <2>;        /*I2S = 2 channles, other: TDM */
+	num-serializer = <4>;   /*num of serializers*/
+	serial-dir = <  2 0 1 0 >; /* 0: INACTIVE, 1: TX, 2: RX */
+	tx-num-evt = <2>;       /*tx FIFO buffer lenght */
+	rx-num-evt = <1>;       /*rx FIFO buffer lenght */
+};
+
+
+/include/ "tps65217.dtsi"
+
+&tps {
+	/*
+	 * Configure pmic to enter OFF-state instead of SLEEP-state ("RTC-only
+	 * mode") at poweroff.  Most BeagleBone versions do not support RTC-only
+	 * mode and risk hardware damage if this mode is entered.
+	 *
+	 * For details, see linux-omap mailing list May 2015 thread
+	 *	[PATCH] ARM: dts: am335x-bone* enable pmic-shutdown-controller
+	 * In particular, messages:
+	 *	http://www.spinics.net/lists/linux-omap/msg118585.html
+	 *	http://www.spinics.net/lists/linux-omap/msg118615.html
+	 *
+	 * You can override this later with
+	 *	&tps {  /delete-property/ ti,pmic-shutdown-controller;  }
+	 * if you want to use RTC-only mode and made sure you are not affected
+	 * by the hardware problems. (Tip: double-check by performing a current
+	 * measurement after shutdown: it should be less than 1 mA.)
+	 */
+	ti,pmic-shutdown-controller;
+
+	regulators {
+		dcdc1_reg: regulator@0 {
+			regulator-name = "vdds_dpr";
+			regulator-always-on;
+		};
+
+		dcdc2_reg: regulator@1 {
+			/* VDD_MPU voltage limits 0.95V - 1.26V with +/-4% tolerance */
+			regulator-name = "vdd_mpu";
+			regulator-min-microvolt = <925000>;
+			regulator-max-microvolt = <1325000>;
+			regulator-boot-on;
+			regulator-always-on;
+		};
+
+		dcdc3_reg: regulator@2 {
+			/* VDD_CORE voltage limits 0.95V - 1.1V with +/-4% tolerance */
+			regulator-name = "vdd_core";
+			regulator-min-microvolt = <925000>;
+			regulator-max-microvolt = <1150000>;
+			regulator-boot-on;
+			regulator-always-on;
+		};
+
+		ldo1_reg: regulator@3 {
+			regulator-name = "vio,vrtc,vdds";
+			regulator-always-on;
+		};
+
+		ldo2_reg: regulator@4 {
+			regulator-name = "vdd_3v3aux";
+			regulator-always-on;
+		};
+
+		ldo3_reg: regulator@5 {
+			regulator-name = "vdd_1v8";
+			regulator-always-on;
+		};
+
+		ldo4_reg: regulator@6 {
+			regulator-name = "vdd_3v3a";
+			regulator-always-on;
+		};
+	};
+};
+
+&cpsw_emac0 {
+	phy_id = <&davinci_mdio>, <0>;
+	phy-mode = "mii";
+};
+
+&cpsw_emac1 {
+	phy_id = <&davinci_mdio>, <1>;
+	phy-mode = "mii";
+};
+
+&mac {
+	pinctrl-names = "default", "sleep";
+	pinctrl-0 = <&cpsw_default>;
+	pinctrl-1 = <&cpsw_sleep>;
+	status = "okay";
+};
+
+&davinci_mdio {
+	pinctrl-names = "default", "sleep";
+	pinctrl-0 = <&davinci_mdio_default>;
+	pinctrl-1 = <&davinci_mdio_sleep>;
+	status = "okay";
+};
+
+&mmc1 {
+	status = "okay";
+	bus-width = <0x4>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&mmc1_pins>;
+	cd-gpios = <&gpio0 6 GPIO_ACTIVE_HIGH>;
+	cd-inverted;
+};
+
+&aes {
+	status = "okay";
+};
+
+&sham {
+	status = "okay";
+};
+
+&mmc2 {
+	status = "okay";
+	vmmc-supply = <&wlan_en_reg>;
+	bus-width = <4>;
+	pinctrl-names = "default", "sleep";
+	pinctrl-0 = <&mmc2_pins>;
+	pinctrl-1 = <&mmc2_pins_sleep>;
+	ti,non-removable;
+	ti,needs-special-hs-handling;
+	cap-power-off-card;
+	keep-power-in-suspend;
+
+	#address-cells = <1>;
+	#size-cells = <0>;
+	wlcore: wlcore@0 {
+		compatible = "ti,wl1835";
+		reg = <2>;
+		interrupt-parent = <&gpio0>;
+		interrupts = <27 IRQ_TYPE_LEVEL_HIGH>;
+	};
+};
+
+&timer4 {
+	ti,timer-alwon;
+};

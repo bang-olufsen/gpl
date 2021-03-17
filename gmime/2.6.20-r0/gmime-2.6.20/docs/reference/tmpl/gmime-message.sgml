@@ -1,0 +1,223 @@
+<!-- ##### SECTION Title ##### -->
+gmime-message
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### ENUM GMimeRecipientType ##### -->
+<para>
+
+</para>
+
+@GMIME_RECIPIENT_TYPE_TO: 
+@GMIME_RECIPIENT_TYPE_CC: 
+@GMIME_RECIPIENT_TYPE_BCC: 
+
+<!-- ##### STRUCT GMimeMessage ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION g_mime_message_new ##### -->
+<para>
+
+</para>
+
+@pretty_headers: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_message_set_sender ##### -->
+<para>
+
+</para>
+
+@message: 
+@sender: 
+
+
+<!-- ##### FUNCTION g_mime_message_get_sender ##### -->
+<para>
+
+</para>
+
+@message: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_message_set_reply_to ##### -->
+<para>
+
+</para>
+
+@message: 
+@reply_to: 
+
+
+<!-- ##### FUNCTION g_mime_message_get_reply_to ##### -->
+<para>
+
+</para>
+
+@message: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_message_add_recipient ##### -->
+<para>
+
+</para>
+
+@message: 
+@type: 
+@name: 
+@addr: 
+
+
+<!-- ##### FUNCTION g_mime_message_get_recipients ##### -->
+<para>
+
+</para>
+
+@message: 
+@type: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_message_get_all_recipients ##### -->
+<para>
+
+</para>
+
+@message: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_message_set_subject ##### -->
+<para>
+
+</para>
+
+@message: 
+@subject: 
+
+
+<!-- ##### FUNCTION g_mime_message_get_subject ##### -->
+<para>
+
+</para>
+
+@message: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_message_set_date ##### -->
+<para>
+
+</para>
+
+@message: 
+@date: 
+@tz_offset: 
+
+
+<!-- ##### FUNCTION g_mime_message_get_date ##### -->
+<para>
+
+</para>
+
+@message: 
+@date: 
+@tz_offset: 
+
+
+<!-- ##### FUNCTION g_mime_message_set_date_as_string ##### -->
+<para>
+
+</para>
+
+@message: 
+@str: 
+
+
+<!-- ##### FUNCTION g_mime_message_get_date_as_string ##### -->
+<para>
+
+</para>
+
+@message: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_message_set_message_id ##### -->
+<para>
+
+</para>
+
+@message: 
+@message_id: 
+
+
+<!-- ##### FUNCTION g_mime_message_get_message_id ##### -->
+<para>
+
+</para>
+
+@message: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_message_set_mime_part ##### -->
+<para>
+
+</para>
+
+@message: 
+@mime_part: 
+
+
+<!-- ##### FUNCTION g_mime_message_get_mime_part ##### -->
+<para>
+
+</para>
+
+@message: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_message_foreach ##### -->
+<para>
+
+</para>
+
+@message: 
+@callback: 
+@user_data: 
+
+
+<!-- ##### FUNCTION g_mime_message_get_body ##### -->
+<para>
+
+</para>
+
+@message: 
+@Returns: 
+
+

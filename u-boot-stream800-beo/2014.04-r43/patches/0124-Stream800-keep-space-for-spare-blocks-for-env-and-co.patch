@@ -1,0 +1,39 @@
+From 5dee3b3b4d2e4263d7fbd86a1a06379659973519 Mon Sep 17 00:00:00 2001
+From: Radek Dostal <radek.dostal@streamunlimited.com>
+Date: Thu, 24 Sep 2015 15:16:35 +0200
+Subject: [PATCH] Stream800: keep space for spare blocks for env and const
+ [STREAMEIGHT-959]
+
+In case there are some bad blocks, in env partition, sfupdate failes
+as it is not able to flash 512KiB image into smaller amount of NAND.
+
+In reality our environment variables have ca 25 KiB, so using 128 KiB
+should be more than sufficient.
+
+Same applies to const partition, except it did not caused any errors so
+far => fix it as well
+
+Signed-off-by: Radek Dostal <radek.dostal@streamunlimited.com>
+---
+ include/configs/stream800.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/include/configs/stream800.h b/include/configs/stream800.h
+index b2db757..f5990bd 100644
+--- a/include/configs/stream800.h
++++ b/include/configs/stream800.h
+@@ -28,9 +28,9 @@
+ #define CONFIG_DMA_COHERENT
+ #define CONFIG_DMA_COHERENT_SIZE	(1 << 20)
+ 
+-#define CONFIG_ENV_SIZE			(512 << 10) /* 512 KiB */
++#define CONFIG_ENV_SIZE			(128 << 10) /* 128 KiB (+384 KiB for spare blocks) */
+ #define CONFIG_CONST_ENV_COMMON
+-#define CONFIG_CONSTANTS_SIZE   (512 << 10) /* 512 KiB */
++#define CONFIG_CONSTANTS_SIZE		(128 << 10) /* 128 KiB (+384 KiB for spare blocks) */
+ 
+ #if (defined CONFIG_SYS_MALLOC_LEN)
+ #undef CONFIG_SYS_MALLOC_LEN
+-- 
+2.7.4
+

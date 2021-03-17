@@ -1,0 +1,357 @@
+From 56d6a6eb8272c5aa95c74de663a9237a87785732 Mon Sep 17 00:00:00 2001
+From: Xia Zhou <xia.zhou@streamunlimited.com>
+Date: Fri, 21 Nov 2014 15:41:55 +0100
+Subject: [PATCH] Fix GetProtocolInfo output to not omit a comma in some cases
+ [ASE-676]
+
+Signed-off-by: Xia Zhou <xia.zhou@streamunlimited.com>
+Signed-off-by: Milan Plzik <milan.plzik@streamunlimited.com>
+---
+ .../rygel-media-renderer-plugin.c                  | 248 ++++++++++-----------
+ .../rygel-media-renderer-plugin.vala               |   2 +-
+ 2 files changed, 123 insertions(+), 127 deletions(-)
+
+diff --git a/src/librygel-renderer/rygel-media-renderer-plugin.c b/src/librygel-renderer/rygel-media-renderer-plugin.c
+index d77e815..b883045 100644
+--- a/src/librygel-renderer/rygel-media-renderer-plugin.c
++++ b/src/librygel-renderer/rygel-media-renderer-plugin.c
+@@ -400,8 +400,8 @@ gchar* rygel_media_renderer_plugin_get_protocol_info (RygelMediaRendererPlugin*
+ 	RygelMediaPlayer* _tmp0_ = NULL;
+ 	RygelMediaPlayer* _tmp1_ = NULL;
+ 	const gchar* _tmp3_ = NULL;
+-	const gchar* _tmp69_ = NULL;
+-	gchar* _tmp70_ = NULL;
++	const gchar* _tmp67_ = NULL;
++	gchar* _tmp68_ = NULL;
+ 	g_return_val_if_fail (self != NULL, NULL);
+ 	_tmp0_ = rygel_media_renderer_plugin_get_player (self);
+ 	player = _tmp0_;
+@@ -425,13 +425,13 @@ gchar* rygel_media_renderer_plugin_get_protocol_info (RygelMediaRendererPlugin*
+ 		gchar** _tmp8_ = NULL;
+ 		gint _tmp8__length1 = 0;
+ 		gchar** mime_types = NULL;
+-		RygelMediaPlayer* _tmp40_ = NULL;
+-		gint _tmp41_ = 0;
+-		gchar** _tmp42_ = NULL;
++		RygelMediaPlayer* _tmp38_ = NULL;
++		gint _tmp39_ = 0;
++		gchar** _tmp40_ = NULL;
+ 		gint mime_types_length1 = 0;
+ 		gint _mime_types_size_ = 0;
+-		gchar** _tmp43_ = NULL;
+-		gint _tmp43__length1 = 0;
++		gchar** _tmp41_ = NULL;
++		gint _tmp41__length1 = 0;
+ 		_tmp4_ = g_strdup ("");
+ 		_g_free0 (self->priv->sink_protocol_info);
+ 		self->priv->sink_protocol_info = _tmp4_;
+@@ -486,59 +486,55 @@ gchar* rygel_media_renderer_plugin_get_protocol_info (RygelMediaRendererPlugin*
+ 								GList* _tmp17_ = NULL;
+ 								GList* _tmp18_ = NULL;
+ 								gconstpointer _tmp19_ = NULL;
+-								const gchar* _tmp20_ = NULL;
+-								RygelDLNAProfile* _tmp21_ = NULL;
+-								const gchar* _tmp22_ = NULL;
+-								const gchar* _tmp25_ = NULL;
+-								const gchar* _tmp26_ = NULL;
+-								gchar* _tmp27_ = NULL;
+-								gchar* _tmp28_ = NULL;
+-								RygelDLNAProfile* _tmp29_ = NULL;
+-								const gchar* _tmp30_ = NULL;
++								RygelDLNAProfile* _tmp20_ = NULL;
++								const gchar* _tmp23_ = NULL;
++								const gchar* _tmp24_ = NULL;
++								gchar* _tmp25_ = NULL;
++								gchar* _tmp26_ = NULL;
++								RygelDLNAProfile* _tmp27_ = NULL;
++								const gchar* _tmp28_ = NULL;
++								gchar* _tmp29_ = NULL;
++								gchar* _tmp30_ = NULL;
+ 								gchar* _tmp31_ = NULL;
+ 								gchar* _tmp32_ = NULL;
+-								gchar* _tmp33_ = NULL;
+-								gchar* _tmp34_ = NULL;
+-								RygelDLNAProfile* _tmp35_ = NULL;
+-								const gchar* _tmp36_ = NULL;
++								RygelDLNAProfile* _tmp33_ = NULL;
++								const gchar* _tmp34_ = NULL;
++								gchar* _tmp35_ = NULL;
++								gchar* _tmp36_ = NULL;
+ 								gchar* _tmp37_ = NULL;
+-								gchar* _tmp38_ = NULL;
+-								gchar* _tmp39_ = NULL;
+ 								_tmp17_ = rygel_media_renderer_plugin_get_supported_profiles (self);
+ 								_tmp18_ = _tmp17_;
+ 								_tmp19_ = _tmp18_->data;
+-								_tmp20_ = ((RygelDLNAProfile*) _tmp19_)->name;
+-								_tmp21_ = profile;
+-								_tmp22_ = _tmp21_->name;
+-								if (g_strcmp0 (_tmp20_, _tmp22_) != 0) {
+-									const gchar* _tmp23_ = NULL;
+-									gchar* _tmp24_ = NULL;
+-									_tmp23_ = self->priv->sink_protocol_info;
+-									_tmp24_ = g_strconcat (_tmp23_, ",", NULL);
++								_tmp20_ = profile;
++								if (((RygelDLNAProfile*) _tmp19_) != _tmp20_) {
++									const gchar* _tmp21_ = NULL;
++									gchar* _tmp22_ = NULL;
++									_tmp21_ = self->priv->sink_protocol_info;
++									_tmp22_ = g_strconcat (_tmp21_, ",", NULL);
+ 									_g_free0 (self->priv->sink_protocol_info);
+-									self->priv->sink_protocol_info = _tmp24_;
++									self->priv->sink_protocol_info = _tmp22_;
+ 								}
+-								_tmp25_ = self->priv->sink_protocol_info;
+-								_tmp26_ = protocol;
+-								_tmp27_ = g_strconcat (_tmp26_, ":*:", NULL);
+-								_tmp28_ = _tmp27_;
+-								_tmp29_ = profile;
+-								_tmp30_ = _tmp29_->mime;
+-								_tmp31_ = g_strconcat (_tmp28_, _tmp30_, NULL);
++								_tmp23_ = self->priv->sink_protocol_info;
++								_tmp24_ = protocol;
++								_tmp25_ = g_strconcat (_tmp24_, ":*:", NULL);
++								_tmp26_ = _tmp25_;
++								_tmp27_ = profile;
++								_tmp28_ = _tmp27_->mime;
++								_tmp29_ = g_strconcat (_tmp26_, _tmp28_, NULL);
++								_tmp30_ = _tmp29_;
++								_tmp31_ = g_strconcat (_tmp30_, ":DLNA.ORG_PN=", NULL);
+ 								_tmp32_ = _tmp31_;
+-								_tmp33_ = g_strconcat (_tmp32_, ":DLNA.ORG_PN=", NULL);
+-								_tmp34_ = _tmp33_;
+-								_tmp35_ = profile;
+-								_tmp36_ = _tmp35_->name;
+-								_tmp37_ = g_strconcat (_tmp34_, _tmp36_, NULL);
+-								_tmp38_ = _tmp37_;
+-								_tmp39_ = g_strconcat (_tmp25_, _tmp38_, NULL);
++								_tmp33_ = profile;
++								_tmp34_ = _tmp33_->name;
++								_tmp35_ = g_strconcat (_tmp32_, _tmp34_, NULL);
++								_tmp36_ = _tmp35_;
++								_tmp37_ = g_strconcat (_tmp23_, _tmp36_, NULL);
+ 								_g_free0 (self->priv->sink_protocol_info);
+-								self->priv->sink_protocol_info = _tmp39_;
+-								_g_free0 (_tmp38_);
+-								_g_free0 (_tmp34_);
++								self->priv->sink_protocol_info = _tmp37_;
++								_g_free0 (_tmp36_);
+ 								_g_free0 (_tmp32_);
+-								_g_free0 (_tmp28_);
++								_g_free0 (_tmp30_);
++								_g_free0 (_tmp26_);
+ 							}
+ 						}
+ 					}
+@@ -546,108 +542,108 @@ gchar* rygel_media_renderer_plugin_get_protocol_info (RygelMediaRendererPlugin*
+ 				}
+ 			}
+ 		}
+-		_tmp40_ = player;
+-		_tmp42_ = rygel_media_player_get_mime_types (_tmp40_, &_tmp41_);
+-		mime_types = _tmp42_;
+-		mime_types_length1 = _tmp41_;
++		_tmp38_ = player;
++		_tmp40_ = rygel_media_player_get_mime_types (_tmp38_, &_tmp39_);
++		mime_types = _tmp40_;
++		mime_types_length1 = _tmp39_;
+ 		_mime_types_size_ = mime_types_length1;
+-		_tmp43_ = protocols;
+-		_tmp43__length1 = protocols_length1;
++		_tmp41_ = protocols;
++		_tmp41__length1 = protocols_length1;
+ 		{
+ 			gchar** protocol_collection = NULL;
+ 			gint protocol_collection_length1 = 0;
+ 			gint _protocol_collection_size_ = 0;
+ 			gint protocol_it = 0;
+-			protocol_collection = _tmp43_;
+-			protocol_collection_length1 = _tmp43__length1;
+-			for (protocol_it = 0; protocol_it < _tmp43__length1; protocol_it = protocol_it + 1) {
+-				gchar* _tmp44_ = NULL;
++			protocol_collection = _tmp41_;
++			protocol_collection_length1 = _tmp41__length1;
++			for (protocol_it = 0; protocol_it < _tmp41__length1; protocol_it = protocol_it + 1) {
++				gchar* _tmp42_ = NULL;
+ 				gchar* protocol = NULL;
+-				_tmp44_ = g_strdup (protocol_collection[protocol_it]);
+-				protocol = _tmp44_;
++				_tmp42_ = g_strdup (protocol_collection[protocol_it]);
++				protocol = _tmp42_;
+ 				{
+-					gboolean _tmp45_ = FALSE;
+-					gchar** _tmp46_ = NULL;
+-					gint _tmp46__length1 = 0;
+-					const gchar* _tmp47_ = NULL;
+-					const gchar* _tmp48_ = NULL;
+-					gchar** _tmp52_ = NULL;
+-					gint _tmp52__length1 = 0;
+-					_tmp46_ = protocols;
+-					_tmp46__length1 = protocols_length1;
+-					_tmp47_ = _tmp46_[0];
+-					_tmp48_ = protocol;
+-					if (g_strcmp0 (_tmp47_, _tmp48_) != 0) {
+-						_tmp45_ = TRUE;
++					gboolean _tmp43_ = FALSE;
++					gchar** _tmp44_ = NULL;
++					gint _tmp44__length1 = 0;
++					const gchar* _tmp45_ = NULL;
++					const gchar* _tmp46_ = NULL;
++					gchar** _tmp50_ = NULL;
++					gint _tmp50__length1 = 0;
++					_tmp44_ = protocols;
++					_tmp44__length1 = protocols_length1;
++					_tmp45_ = _tmp44_[0];
++					_tmp46_ = protocol;
++					if (g_strcmp0 (_tmp45_, _tmp46_) != 0) {
++						_tmp43_ = TRUE;
+ 					} else {
+-						const gchar* _tmp49_ = NULL;
+-						_tmp49_ = self->priv->sink_protocol_info;
+-						_tmp45_ = g_strcmp0 (_tmp49_, "") != 0;
++						const gchar* _tmp47_ = NULL;
++						_tmp47_ = self->priv->sink_protocol_info;
++						_tmp43_ = g_strcmp0 (_tmp47_, "") != 0;
+ 					}
+-					if (_tmp45_) {
+-						const gchar* _tmp50_ = NULL;
+-						gchar* _tmp51_ = NULL;
+-						_tmp50_ = self->priv->sink_protocol_info;
+-						_tmp51_ = g_strconcat (_tmp50_, ",", NULL);
++					if (_tmp43_) {
++						const gchar* _tmp48_ = NULL;
++						gchar* _tmp49_ = NULL;
++						_tmp48_ = self->priv->sink_protocol_info;
++						_tmp49_ = g_strconcat (_tmp48_, ",", NULL);
+ 						_g_free0 (self->priv->sink_protocol_info);
+-						self->priv->sink_protocol_info = _tmp51_;
++						self->priv->sink_protocol_info = _tmp49_;
+ 					}
+-					_tmp52_ = mime_types;
+-					_tmp52__length1 = mime_types_length1;
++					_tmp50_ = mime_types;
++					_tmp50__length1 = mime_types_length1;
+ 					{
+ 						gchar** mime_type_collection = NULL;
+ 						gint mime_type_collection_length1 = 0;
+ 						gint _mime_type_collection_size_ = 0;
+ 						gint mime_type_it = 0;
+-						mime_type_collection = _tmp52_;
+-						mime_type_collection_length1 = _tmp52__length1;
+-						for (mime_type_it = 0; mime_type_it < _tmp52__length1; mime_type_it = mime_type_it + 1) {
+-							gchar* _tmp53_ = NULL;
++						mime_type_collection = _tmp50_;
++						mime_type_collection_length1 = _tmp50__length1;
++						for (mime_type_it = 0; mime_type_it < _tmp50__length1; mime_type_it = mime_type_it + 1) {
++							gchar* _tmp51_ = NULL;
+ 							gchar* mime_type = NULL;
+-							_tmp53_ = g_strdup (mime_type_collection[mime_type_it]);
+-							mime_type = _tmp53_;
++							_tmp51_ = g_strdup (mime_type_collection[mime_type_it]);
++							mime_type = _tmp51_;
+ 							{
+-								gchar** _tmp54_ = NULL;
+-								gint _tmp54__length1 = 0;
+-								const gchar* _tmp55_ = NULL;
+-								const gchar* _tmp56_ = NULL;
+-								const gchar* _tmp59_ = NULL;
+-								const gchar* _tmp60_ = NULL;
+-								gchar* _tmp61_ = NULL;
++								gchar** _tmp52_ = NULL;
++								gint _tmp52__length1 = 0;
++								const gchar* _tmp53_ = NULL;
++								const gchar* _tmp54_ = NULL;
++								const gchar* _tmp57_ = NULL;
++								const gchar* _tmp58_ = NULL;
++								gchar* _tmp59_ = NULL;
++								gchar* _tmp60_ = NULL;
++								const gchar* _tmp61_ = NULL;
+ 								gchar* _tmp62_ = NULL;
+-								const gchar* _tmp63_ = NULL;
++								gchar* _tmp63_ = NULL;
+ 								gchar* _tmp64_ = NULL;
+ 								gchar* _tmp65_ = NULL;
+ 								gchar* _tmp66_ = NULL;
+-								gchar* _tmp67_ = NULL;
+-								gchar* _tmp68_ = NULL;
+-								_tmp54_ = mime_types;
+-								_tmp54__length1 = mime_types_length1;
+-								_tmp55_ = _tmp54_[0];
+-								_tmp56_ = mime_type;
+-								if (g_strcmp0 (_tmp55_, _tmp56_) != 0) {
+-									const gchar* _tmp57_ = NULL;
+-									gchar* _tmp58_ = NULL;
+-									_tmp57_ = self->priv->sink_protocol_info;
+-									_tmp58_ = g_strconcat (_tmp57_, ",", NULL);
++								_tmp52_ = mime_types;
++								_tmp52__length1 = mime_types_length1;
++								_tmp53_ = _tmp52_[0];
++								_tmp54_ = mime_type;
++								if (g_strcmp0 (_tmp53_, _tmp54_) != 0) {
++									const gchar* _tmp55_ = NULL;
++									gchar* _tmp56_ = NULL;
++									_tmp55_ = self->priv->sink_protocol_info;
++									_tmp56_ = g_strconcat (_tmp55_, ",", NULL);
+ 									_g_free0 (self->priv->sink_protocol_info);
+-									self->priv->sink_protocol_info = _tmp58_;
++									self->priv->sink_protocol_info = _tmp56_;
+ 								}
+-								_tmp59_ = self->priv->sink_protocol_info;
+-								_tmp60_ = protocol;
+-								_tmp61_ = g_strconcat (_tmp60_, ":*:", NULL);
+-								_tmp62_ = _tmp61_;
+-								_tmp63_ = mime_type;
+-								_tmp64_ = g_strconcat (_tmp62_, _tmp63_, NULL);
++								_tmp57_ = self->priv->sink_protocol_info;
++								_tmp58_ = protocol;
++								_tmp59_ = g_strconcat (_tmp58_, ":*:", NULL);
++								_tmp60_ = _tmp59_;
++								_tmp61_ = mime_type;
++								_tmp62_ = g_strconcat (_tmp60_, _tmp61_, NULL);
++								_tmp63_ = _tmp62_;
++								_tmp64_ = g_strconcat (_tmp63_, ":*", NULL);
+ 								_tmp65_ = _tmp64_;
+-								_tmp66_ = g_strconcat (_tmp65_, ":*", NULL);
+-								_tmp67_ = _tmp66_;
+-								_tmp68_ = g_strconcat (_tmp59_, _tmp67_, NULL);
++								_tmp66_ = g_strconcat (_tmp57_, _tmp65_, NULL);
+ 								_g_free0 (self->priv->sink_protocol_info);
+-								self->priv->sink_protocol_info = _tmp68_;
+-								_g_free0 (_tmp67_);
++								self->priv->sink_protocol_info = _tmp66_;
+ 								_g_free0 (_tmp65_);
+-								_g_free0 (_tmp62_);
++								_g_free0 (_tmp63_);
++								_g_free0 (_tmp60_);
+ 								_g_free0 (mime_type);
+ 							}
+ 						}
+@@ -659,9 +655,9 @@ gchar* rygel_media_renderer_plugin_get_protocol_info (RygelMediaRendererPlugin*
+ 		mime_types = (_vala_array_free (mime_types, mime_types_length1, (GDestroyNotify) g_free), NULL);
+ 		protocols = (_vala_array_free (protocols, protocols_length1, (GDestroyNotify) g_free), NULL);
+ 	}
+-	_tmp69_ = self->priv->sink_protocol_info;
+-	_tmp70_ = g_strdup (_tmp69_);
+-	result = _tmp70_;
++	_tmp67_ = self->priv->sink_protocol_info;
++	_tmp68_ = g_strdup (_tmp67_);
++	result = _tmp68_;
+ 	_g_object_unref0 (player);
+ 	return result;
+ }
+diff --git a/src/librygel-renderer/rygel-media-renderer-plugin.vala b/src/librygel-renderer/rygel-media-renderer-plugin.vala
+index 1905b18..47b857d 100644
+--- a/src/librygel-renderer/rygel-media-renderer-plugin.vala
++++ b/src/librygel-renderer/rygel-media-renderer-plugin.vala
+@@ -144,7 +144,7 @@ public class Rygel.MediaRendererPlugin : Rygel.Plugin {
+                 }
+ 
+                 foreach (var profile in this.supported_profiles) {
+-                    if (supported_profiles.data.name != profile.name) {
++                    if (supported_profiles.data != profile) {
+                         this.sink_protocol_info += ",";
+                     }
+                     this.sink_protocol_info += protocol + ":*:" +
+-- 
+1.9.1
+

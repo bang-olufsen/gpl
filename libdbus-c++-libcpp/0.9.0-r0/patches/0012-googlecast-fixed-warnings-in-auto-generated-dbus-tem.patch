@@ -1,0 +1,26 @@
+From 3019667ce48db8cf76b549bb69b0db22a5adf353 Mon Sep 17 00:00:00 2001
+From: Stanislav Ruzani <stanislav.ruzani@streamunlimited.com>
+Date: Wed, 14 Jun 2017 10:01:05 +0200
+Subject: [PATCH 07/11] googlecast: fixed warnings in auto-generated dbus
+ templates (generated via dbusxx-xml2cpp)
+
+Signed-off-by: Stanislav Ruzani <stanislav.ruzani@streamunlimited.com>
+---
+ tools/generate_adaptor.cpp | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/tools/generate_adaptor.cpp b/tools/generate_adaptor.cpp
+index f7972be..5c38678 100644
+--- a/tools/generate_adaptor.cpp
++++ b/tools/generate_adaptor.cpp
+@@ -487,6 +487,7 @@ void generate_adaptor(Xml::Document &doc, const char *filename)
+       body << tab << "::DBus::Message " << stub_name(method.get("name")) << "(const ::DBus::CallMessage &call)" << endl
+            << tab << "{" << endl
+            << tab << tab << "::DBus::MessageIter ri = call.reader();" << endl
++           << tab << tab << "(void)ri;" << endl
+            << endl;
+ 
+       // generate the 'in' variables
+-- 
+2.7.4
+

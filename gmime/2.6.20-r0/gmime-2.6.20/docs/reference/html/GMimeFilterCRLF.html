@@ -1,0 +1,121 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GMimeFilterCRLF</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="GMime 2.6 Reference Manual">
+<link rel="up" href="Filters.html" title="Stream Filters">
+<link rel="prev" href="GMimeFilterCharset.html" title="GMimeFilterCharset">
+<link rel="next" href="GMimeFilterEnriched.html" title="GMimeFilterEnriched">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="GMimeFilterCharset.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="Filters.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">GMime 2.6 Reference Manual</th>
+<td><a accesskey="n" href="GMimeFilterEnriched.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#GMimeFilterCRLF.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#GMimeFilterCRLF.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#GMimeFilterCRLF.object-hierarchy" class="shortcut">Object Hierarchy</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="GMimeFilterCRLF"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="GMimeFilterCRLF.top_of_page"></a>GMimeFilterCRLF</span></h2>
+<p>GMimeFilterCRLF — Convert line-endings from LF to CRLF or vise versa</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="GMimeFilterCRLF.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">struct              <a class="link" href="GMimeFilterCRLF.html#GMimeFilterCRLF-struct" title="struct GMimeFilterCRLF">GMimeFilterCRLF</a>;
+<a class="link" href="GMimeFilter.html" title="GMimeFilter"><span class="returnvalue">GMimeFilter</span></a> *       <a class="link" href="GMimeFilterCRLF.html#g-mime-filter-crlf-new" title="g_mime_filter_crlf_new ()">g_mime_filter_crlf_new</a>              (<em class="parameter"><code><span class="type">gboolean</span> encode</code></em>,
+                                                         <em class="parameter"><code><span class="type">gboolean</span> dots</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="GMimeFilterCRLF.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  GObject
+   +----<a class="link" href="GMimeFilter.html" title="GMimeFilter">GMimeFilter</a>
+         +----GMimeFilterCRLF
+</pre>
+</div>
+<div class="refsect1">
+<a name="GMimeFilterCRLF.description"></a><h2>Description</h2>
+<p>
+A <a class="link" href="GMimeFilter.html" title="GMimeFilter"><span class="type">GMimeFilter</span></a> for converting between DOS and UNIX line-endings.
+</p>
+</div>
+<div class="refsect1">
+<a name="GMimeFilterCRLF.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="GMimeFilterCRLF-struct"></a><h3>struct GMimeFilterCRLF</h3>
+<pre class="programlisting">struct GMimeFilterCRLF;</pre>
+<p>
+A filter to convert between line-ending formats and encode/decode
+lines beginning with a '.'.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-filter-crlf-new"></a><h3>g_mime_filter_crlf_new ()</h3>
+<pre class="programlisting"><a class="link" href="GMimeFilter.html" title="GMimeFilter"><span class="returnvalue">GMimeFilter</span></a> *       g_mime_filter_crlf_new              (<em class="parameter"><code><span class="type">gboolean</span> encode</code></em>,
+                                                         <em class="parameter"><code><span class="type">gboolean</span> dots</code></em>);</pre>
+<p>
+Creates a new <a class="link" href="GMimeFilterCRLF.html" title="GMimeFilterCRLF"><span class="type">GMimeFilterCRLF</span></a> filter.
+</p>
+<p>
+If <em class="parameter"><code>encode</code></em> is <code class="literal">TRUE</code>, then lone line-feeds ('\n') will be 'encoded'
+into the canonical CRLF end-of-line sequence ("\r\n") otherwise
+CRLF sequences will be 'decoded' into the UNIX line-ending form
+('\n').
+</p>
+<p>
+The <em class="parameter"><code>dots</code></em> parameter tells the filter whether or not it should
+encode or decode lines beginning with a dot ('.'). If both <em class="parameter"><code>encode</code></em>
+and <em class="parameter"><code>dots</code></em> are <code class="literal">TRUE</code>, then a '.' at the beginning of a line will be
+'encoded' into "..". If <em class="parameter"><code>encode</code></em> is <code class="literal">FALSE</code>, then ".." at the
+beginning of a line will be decoded into a single '.'.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>encode</code></em> :</span></p></td>
+<td>
+<code class="literal">TRUE</code> if the filter should encode or <code class="literal">FALSE</code> otherwise</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>dots</code></em> :</span></p></td>
+<td>encode/decode dots (as for SMTP)</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new <a class="link" href="GMimeFilterCRLF.html" title="GMimeFilterCRLF"><span class="type">GMimeFilterCRLF</span></a> filter.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

@@ -1,0 +1,82 @@
+From 135ef74a08eb63ab6414c3704ec66aea515106a8 Mon Sep 17 00:00:00 2001
+From: Maros Medvec <maros.medvec@streamunlimited.com>
+Date: Thu, 24 Aug 2017 18:51:12 +0200
+Subject: [PATCH] mwifiex: fixed reporting scan abort to upper layers
+
+Signed-off-by: Maros Medvec <maros.medvec@streamunlimited.com>
+---
+ drivers/net/wireless/mwifiex/main.h        |  1 +
+ drivers/net/wireless/mwifiex/scan.c        | 27 +++++++++++++++++++++++++++
+ drivers/net/wireless/mwifiex/sta_cmdresp.c |  6 +-----
+ 3 files changed, 29 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/net/wireless/mwifiex/main.h b/drivers/net/wireless/mwifiex/main.h
+index c6e777d..5a857e8 100644
+--- a/drivers/net/wireless/mwifiex/main.h
++++ b/drivers/net/wireless/mwifiex/main.h
+@@ -960,6 +960,7 @@ int mwifiex_free_cmd_buffer(struct mwifiex_adapter *adapter);
+ void mwifiex_cancel_all_pending_cmd(struct mwifiex_adapter *adapter);
+ void mwifiex_cancel_pending_ioctl(struct mwifiex_adapter *adapter);
+ void mwifiex_cancel_pending_scan_cmd(struct mwifiex_adapter *adapter);
++void mwifiex_cancel_scan(struct mwifiex_adapter *adapter);
+ 
+ void mwifiex_insert_cmd_to_free_q(struct mwifiex_adapter *adapter,
+ 				  struct cmd_ctrl_node *cmd_node);
+diff --git a/drivers/net/wireless/mwifiex/scan.c b/drivers/net/wireless/mwifiex/scan.c
+index 9006344..0fbcac6 100644
+--- a/drivers/net/wireless/mwifiex/scan.c
++++ b/drivers/net/wireless/mwifiex/scan.c
+@@ -1856,6 +1856,33 @@ static void mwifiex_check_next_scan_command(struct mwifiex_private *priv)
+ 	return;
+ }
+ 
++void mwifiex_cancel_scan(struct mwifiex_adapter *adapter)
++{
++	struct mwifiex_private *priv;
++	unsigned long cmd_flags;
++	int i;
++
++	mwifiex_cancel_pending_scan_cmd(adapter);
++
++	if (adapter->scan_processing) {
++		spin_lock_irqsave(&adapter->mwifiex_cmd_lock, cmd_flags);
++		adapter->scan_processing = false;
++		spin_unlock_irqrestore(&adapter->mwifiex_cmd_lock, cmd_flags);
++		for (i = 0; i < adapter->priv_num; i++) {
++			priv = adapter->priv[i];
++			if (!priv)
++				continue;
++			if (priv->scan_request) {
++				dev_dbg(adapter->dev,
++					    "info: aborting scan\n");
++				cfg80211_scan_done(priv->scan_request, true);
++				priv->scan_request = NULL;
++				priv->scan_aborting = false;
++			}
++		}
++	}
++}
++
+ /*
+  * This function handles the command response of scan.
+  *
+diff --git a/drivers/net/wireless/mwifiex/sta_cmdresp.c b/drivers/net/wireless/mwifiex/sta_cmdresp.c
+index 83180c2..54fd383 100644
+--- a/drivers/net/wireless/mwifiex/sta_cmdresp.c
++++ b/drivers/net/wireless/mwifiex/sta_cmdresp.c
+@@ -70,11 +70,7 @@ mwifiex_process_cmdresp_error(struct mwifiex_private *priv,
+ 		break;
+ 	case HostCmd_CMD_802_11_SCAN:
+ 	case HostCmd_CMD_802_11_SCAN_EXT:
+-		mwifiex_cancel_pending_scan_cmd(adapter);
+-
+-		spin_lock_irqsave(&adapter->mwifiex_cmd_lock, flags);
+-		adapter->scan_processing = false;
+-		spin_unlock_irqrestore(&adapter->mwifiex_cmd_lock, flags);
++		mwifiex_cancel_scan(adapter);
+ 		break;
+ 
+ 	case HostCmd_CMD_MAC_CONTROL:
+-- 
+2.7.4
+

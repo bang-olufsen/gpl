@@ -1,0 +1,80 @@
+From 61fbefb0a87db29d6ca6fc2c7463983301b17c3a Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Wed, 18 Jul 2018 09:33:46 +0200
+Subject: [PATCH] Leave mDNS multicast group before joining to avoid stale
+ state
+
+This fixes WAC issues on some routers.
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ include/linux/inetdevice.h |  1 +
+ net/ipv4/igmp.c            | 17 +++++++++++++++++
+ 2 files changed, 18 insertions(+)
+
+diff --git a/include/linux/inetdevice.h b/include/linux/inetdevice.h
+index 0a21fbe..62e6bc4 100644
+--- a/include/linux/inetdevice.h
++++ b/include/linux/inetdevice.h
+@@ -38,6 +38,7 @@ struct in_device {
+ 	unsigned char		mr_qrv;
+ 	unsigned char		mr_gq_running;
+ 	unsigned char		mr_ifc_count;
++	unsigned char		mr_mdns_leave;
+ 	struct timer_list	mr_gq_timer;	/* general query timer */
+ 	struct timer_list	mr_ifc_timer;	/* interface change timer */
+ 
+diff --git a/net/ipv4/igmp.c b/net/ipv4/igmp.c
+index a3a697f..193d4c9 100644
+--- a/net/ipv4/igmp.c
++++ b/net/ipv4/igmp.c
+@@ -123,6 +123,8 @@
+ 
+ #define IGMP_INITIAL_REPORT_DELAY		(1)
+ 
++#define MDNS_GROUP_ADDRESS htonl(0xe00000fbU)
++
+ /* IGMP_INITIAL_REPORT_DELAY is not from IGMP specs!
+  * IGMP specs require to report membership immediately after
+  * joining a group, but we delay the first report by a
+@@ -774,8 +776,19 @@ static void igmp_timer_expire(unsigned long data)
+ 		igmp_start_timer(im, unsolicited_report_interval(in_dev));
+ 	}
+ 	im->reporter = 1;
++
+ 	spin_unlock(&im->lock);
+ 
++	/* Before first report memebership group we will leave mDNS
++	 * multicast group to ensure that routers will clear any
++	 * old mDNS records. Don't do this for IMGPv1 because it
++	 * doesn't support leaving multicast groups.
++	 */
++	if (in_dev->mr_mdns_leave && im->multiaddr == MDNS_GROUP_ADDRESS && !IGMP_V1_SEEN(in_dev)) {
++		in_dev->mr_mdns_leave = 0;
++		igmp_send_report(in_dev, im, IGMP_HOST_LEAVE_MESSAGE);
++	}
++
+ 	if (IGMP_V1_SEEN(in_dev))
+ 		igmp_send_report(in_dev, im, IGMP_HOST_MEMBERSHIP_REPORT);
+ 	else if (IGMP_V2_SEEN(in_dev))
+@@ -1312,6 +1325,8 @@ void ip_mc_inc_group(struct in_device *in_dev, __be32 addr)
+ 	im->interface = in_dev;
+ 	in_dev_hold(in_dev);
+ 	im->multiaddr = addr;
++	if (addr == MDNS_GROUP_ADDRESS)
++		in_dev->mr_mdns_leave = 1;
+ 	/* initial mode is (EX, empty) */
+ 	im->sfmode = MCAST_EXCLUDE;
+ 	im->sfcount[MCAST_EXCLUDE] = 1;
+@@ -1471,6 +1486,8 @@ void ip_mc_up(struct in_device *in_dev)
+ 
+ 	ASSERT_RTNL();
+ 
++	in_dev->mr_mdns_leave = 1;
++
+ #ifdef CONFIG_IP_MULTICAST
+ 	in_dev->mr_qrv = sysctl_igmp_qrv;
+ #endif
+-- 
+2.7.4
+

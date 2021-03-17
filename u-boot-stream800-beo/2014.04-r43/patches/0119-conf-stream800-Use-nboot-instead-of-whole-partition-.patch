@@ -1,0 +1,31 @@
+From 9dc73b245c1de9a8ae31dafef4c78cb9a24499d2 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Thu, 8 Jan 2015 15:09:46 +0100
+Subject: [PATCH] conf: stream800: Use nboot instead of whole partition reading
+
+nboot will detect image format and read only appropriate amount of data from flash
+instead reading whole partition.
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+[Fionn Cleary changed ${fitaddr} to ${sfu_load_addr} - sugested by Marek Belisko]
+Signed-off-by: Radek Dostal <radek.dostal@streamunlimited.com>
+---
+ include/configs/stream800.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/configs/stream800.h b/include/configs/stream800.h
+index f47b00a..b2db757 100644
+--- a/include/configs/stream800.h
++++ b/include/configs/stream800.h
+@@ -229,7 +229,7 @@
+         "fi; \0" \
+     "mtdparts=" MTDPARTS_DEFAULT "\0" \
+     "readuImage=" \
+-        "if nand read ${sfu_load_addr} kernel; " \
++        "if nboot ${sfu_load_addr} kernel; " \
+             "then " \
+             "echo \"INFO: kernel partition load successful\"; " \
+         "else " \
+-- 
+2.7.4
+

@@ -1,0 +1,52 @@
+From d66665101a678b84ccc43bac2c75f4c9841cf4ca Mon Sep 17 00:00:00 2001
+From: Martin Geier <martin.geier@streamunlimited.com>
+Date: Mon, 21 May 2018 14:07:53 +0200
+Subject: [PATCH] use monotonic time to measure intervals
+
+gettimeofday is affected by time changes so expired slot can be called
+in wrong time.
+
+Signed-off-by: Martin Geier <martin.geier@streamunlimited.com>
+---
+ src/eventloop.cpp | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/src/eventloop.cpp b/src/eventloop.cpp
+index 7b3303a..9b22182 100644
+--- a/src/eventloop.cpp
++++ b/src/eventloop.cpp
+@@ -36,16 +36,16 @@
+ using namespace DBus;
+ using namespace std;
+ 
+-static double millis(timeval tv)
++static double millis(timespec tp)
+ {
+-  return (tv.tv_sec * 1000.0 + tv.tv_usec / 1000.0);
++  return (tp.tv_sec * 1000.0 + tp.tv_nsec / 1000000.0);
+ }
+ 
+ DefaultTimeout::DefaultTimeout(int interval, bool repeat, DefaultMainLoop *ed)
+   : _enabled(true), _interval(interval), _repeat(repeat), _expiration(0), _data(0), _disp(ed)
+ {
+-  timeval now;
+-  gettimeofday(&now, NULL);
++  timespec now;
++  clock_gettime(CLOCK_MONOTONIC, &now);
+ 
+   _expiration = millis(now) + interval;
+ 
+@@ -205,8 +205,8 @@ void DefaultMainLoop::dispatch()
+ 
+   poll(fds, nfd, wait_min);
+ 
+-  timeval now;
+-  gettimeofday(&now, NULL);
++  timespec now;
++  clock_gettime(CLOCK_MONOTONIC, &now);
+ 
+   double now_millis = millis(now);
+ 
+-- 
+2.7.4
+

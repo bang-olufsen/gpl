@@ -1,0 +1,27 @@
+From 5aa3453641f94561c3b98fd5854015234cd76c0a Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Fri, 7 Feb 2020 13:54:45 +0100
+Subject: [PATCH] fdt: Add missing includes
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ include/linux/libfdt.h | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/include/linux/libfdt.h b/include/linux/libfdt.h
+index 641ebc5..15c7ca1 100644
+--- a/include/linux/libfdt.h
++++ b/include/linux/libfdt.h
+@@ -52,7 +52,9 @@
+  */
+ 
+ #include <linux/libfdt_env.h>
++#include <linux/string.h>
+ #include <fdt.h>
++#include <inttypes.h>
+ 
+ #define FDT_FIRST_SUPPORTED_VERSION	0x10
+ #define FDT_LAST_SUPPORTED_VERSION	0x11
+-- 
+2.7.4
+

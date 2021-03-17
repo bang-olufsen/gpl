@@ -1,0 +1,27 @@
+From 149d393e2938eca3e02fd827915bd11d4f9fed1e Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Tue, 15 Apr 2014 08:46:27 +0200
+Subject: [PATCH] ase_board: Set proper i2c bus number for Si5351 chip
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ board/streamunlimited/stream800/board.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/board/streamunlimited/stream800/board.c b/board/streamunlimited/stream800/board.c
+index 580d3e3..883bfb0 100755
+--- a/board/streamunlimited/stream800/board.c
++++ b/board/streamunlimited/stream800/board.c
+@@ -172,6 +172,9 @@ int board_init(void)
+ 	enable_board_pin_mux(&board);
+ 
+ 	i2c_init(CONFIG_SYS_I2C_SPEED, CONFIG_SYS_I2C_SLAVE);
++	/* ASE have si5351 on i2c1 bus */
++	i2c_set_bus_num(1);
++
+ 	init_si5351x();
+ 	boost_cpu_speed();
+ 
+-- 
+2.7.4
+

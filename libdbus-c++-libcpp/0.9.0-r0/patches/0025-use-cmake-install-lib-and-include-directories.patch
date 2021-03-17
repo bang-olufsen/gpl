@@ -1,0 +1,34 @@
+From de793f9cec206dc386157f37b41b2aea147fd419 Mon Sep 17 00:00:00 2001
+From: Martin Geier <martin.geier@streamunlimited.com>
+Date: Wed, 13 Feb 2019 15:39:48 +0100
+Subject: [PATCH] use cmake install lib and include directories
+
+Signed-off-by: Martin Geier <martin.geier@streamunlimited.com>
+---
+ CMakeLists.txt | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 4b2e352..ea9b933 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -43,11 +43,11 @@ target_link_libraries(dbus-c++-1
+ set_target_properties(dbus-c++-1 PROPERTIES VERSION "0.9.0" SOVERSION 0)
+ 
+ set (prefix ${CMAKE_INSTALL_PREFIX})
+-set (libdir ${CMAKE_INSTALL_PREFIX}/lib)
+-set (includedir ${CMAKE_INSTALL_PREFIX}/include/)
++set (libdir ${CMAKE_INSTALL_LIBDIR})
++set (includedir ${CMAKE_INSTALL_INCLUDEDIR})
+ 
+ configure_file("dbus-c++-1.pc.in" "dbus-c++-1.pc" @ONLY)
+ 
+-install(TARGETS dbus-c++-1 DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
+-install(DIRECTORY ${CMAKE_SOURCE_DIR}/include/ DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
+-install(FILES ${CMAKE_BINARY_DIR}/dbus-c++-1.pc DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/pkgconfig)
++install(TARGETS dbus-c++-1 DESTINATION ${CMAKE_INSTALL_LIBDIR})
++install(DIRECTORY ${CMAKE_SOURCE_DIR}/include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
++install(FILES ${CMAKE_BINARY_DIR}/dbus-c++-1.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+-- 
+2.7.4
+

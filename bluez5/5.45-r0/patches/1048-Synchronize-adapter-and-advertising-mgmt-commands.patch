@@ -1,0 +1,74 @@
+From e89ab23021458d15bb3e411c0212566fbfc97864 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Fri, 22 Feb 2019 13:58:42 +0100
+Subject: [PATCH] Synchronize adapter and advertising mgmt commands
+
+There is a race in kernel when advertising and connectable state are
+changed at the same time. This is because changing connectable also changes
+advertisement parameters (random address is changed to public) by calling
+LE_SET_ADVERTISING_PARAMETERS.
+
+That means when connectable is enabled exactly between
+MGMT_ADD_ADVERTISEMENT and MGMT_EV_ADVERTISING_ADDED it will fail because
+bluetooth chip will disallow to update advertisement parameters when
+already advertising.
+
+It can be reproduced with these commands:
+btmgmt clr-adv; btmgmt connectable off
+btmgmt add-adv -u 180d -u 180f -d 080954657374204C45 1 & btmgmt connectable on
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ src/adapter.c     | 8 ++++++++
+ src/adapter.h     | 1 +
+ src/advertising.c | 3 ++-
+ 3 files changed, 11 insertions(+), 1 deletion(-)
+
+diff --git a/src/adapter.c b/src/adapter.c
+index b881baa..2d7ec2a 100644
+--- a/src/adapter.c
++++ b/src/adapter.c
+@@ -312,6 +312,14 @@ uint16_t btd_adapter_get_index(struct btd_adapter *adapter)
+ 	return adapter->dev_id;
+ }
+ 
++struct mgmt *btd_adapter_get_mgmt(struct btd_adapter *adapter)
++{
++	if (!adapter)
++		return NULL;
++
++	return adapter->mgmt;
++}
++
+ static gboolean process_auth_queue(gpointer user_data);
+ 
+ static void dev_class_changed_callback(uint16_t index, uint16_t length,
+diff --git a/src/adapter.h b/src/adapter.h
+index a804603..b61e8d5 100644
+--- a/src/adapter.h
++++ b/src/adapter.h
+@@ -37,6 +37,7 @@ struct btd_device;
+ struct btd_adapter *btd_adapter_get_default(void);
+ bool btd_adapter_is_default(struct btd_adapter *adapter);
+ uint16_t btd_adapter_get_index(struct btd_adapter *adapter);
++struct mgmt *btd_adapter_get_mgmt(struct btd_adapter *adapter);
+ 
+ typedef void (*adapter_cb) (struct btd_adapter *adapter, gpointer user_data);
+ 
+diff --git a/src/advertising.c b/src/advertising.c
+index 5829802..4425931 100644
+--- a/src/advertising.c
++++ b/src/advertising.c
+@@ -971,7 +971,8 @@ static struct btd_adv_manager *manager_create(struct btd_adapter *adapter)
+ 	manager = new0(struct btd_adv_manager, 1);
+ 	manager->adapter = adapter;
+ 
+-	manager->mgmt = mgmt_new_default();
++	manager->mgmt = btd_adapter_get_mgmt(adapter);
++	mgmt_ref(manager->mgmt);
+ 
+ 	if (!manager->mgmt) {
+ 		error("Failed to access management interface");
+-- 
+2.7.4
+

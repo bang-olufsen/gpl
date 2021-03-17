@@ -1,0 +1,8 @@
+0001-introspection.m4-prefix-pkgconfig-paths-with-PKG_CON.patch -p1
+gtk-doc-tweaks.patch -p1
+0001-gst-gstpluginloader.c-when-env-var-is-set-do-not-fal.patch -p1
+add-a-target-to-compile-tests.patch -p1
+0001-Implement-gst_bus_discard_filtered.patch -p1
+0002-Take-out-the-monotonically-increasing-requirement-fo.patch -p1
+0003-Export-gst_debug_print_object-symbol.patch -p1
+0004-Allow-empty-strings-in-the-gst_structure-title-field.patch -p1

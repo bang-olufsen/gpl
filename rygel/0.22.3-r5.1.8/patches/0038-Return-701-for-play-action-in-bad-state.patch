@@ -1,0 +1,146 @@
+From 5650c605ce93ef7cdba799e162474dc6cd03455c Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Thu, 26 Feb 2015 15:49:20 +0100
+Subject: [PATCH] Return 701 for play action in bad state
+
+Only accept play actions in state STOPPED or PAUSED
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ src/librygel-renderer/rygel-av-transport.c    | 59 +++++++++++++++++++--------
+ src/librygel-renderer/rygel-av-transport.vala |  7 ++++
+ 2 files changed, 50 insertions(+), 16 deletions(-)
+
+diff --git a/src/librygel-renderer/rygel-av-transport.c b/src/librygel-renderer/rygel-av-transport.c
+index a0f1083..cc8ce85 100644
+--- a/src/librygel-renderer/rygel-av-transport.c
++++ b/src/librygel-renderer/rygel-av-transport.c
+@@ -1560,10 +1560,14 @@ static void rygel_av_transport_play_cb (RygelAVTransport* self, GUPnPService* se
+ 	gchar** _tmp7_ = NULL;
+ 	gint _tmp7__length1 = 0;
+ 	gboolean _tmp8_ = FALSE;
+-	RygelMediaPlayer* _tmp11_ = NULL;
+-	const gchar* _tmp12_ = NULL;
+-	RygelPlayerControllerInterface* _tmp13_ = NULL;
+-	GUPnPServiceAction* _tmp14_ = NULL;
++	gboolean _tmp11_ = FALSE;
++	RygelPlayerControllerInterface* _tmp12_ = NULL;
++	const gchar* _tmp13_ = NULL;
++	const gchar* _tmp14_ = NULL;
++	RygelMediaPlayer* _tmp20_ = NULL;
++	const gchar* _tmp21_ = NULL;
++	RygelPlayerControllerInterface* _tmp22_ = NULL;
++	GUPnPServiceAction* _tmp23_ = NULL;
+ 	g_return_if_fail (self != NULL);
+ 	g_return_if_fail (service != NULL);
+ 	g_return_if_fail (action != NULL);
+@@ -1592,13 +1596,36 @@ static void rygel_av_transport_play_cb (RygelAVTransport* self, GUPnPService* se
+ 		_g_free0 (speed);
+ 		return;
+ 	}
+-	_tmp11_ = self->priv->player;
+-	_tmp12_ = speed;
+-	rygel_media_player_set_playback_speed (_tmp11_, _tmp12_);
+-	_tmp13_ = self->priv->controller;
+-	rygel_player_controller_interface_set_playback_state (_tmp13_, "PLAYING");
+-	_tmp14_ = action;
+-	gupnp_service_action_return (_tmp14_);
++	_tmp12_ = self->priv->controller;
++	_tmp13_ = rygel_player_controller_interface_get_playback_state (_tmp12_);
++	_tmp14_ = _tmp13_;
++	if (g_strcmp0 (_tmp14_, "STOPPED") != 0) {
++		RygelPlayerControllerInterface* _tmp15_ = NULL;
++		const gchar* _tmp16_ = NULL;
++		const gchar* _tmp17_ = NULL;
++		_tmp15_ = self->priv->controller;
++		_tmp16_ = rygel_player_controller_interface_get_playback_state (_tmp15_);
++		_tmp17_ = _tmp16_;
++		_tmp11_ = g_strcmp0 (_tmp17_, "PAUSED_PLAYBACK") != 0;
++	} else {
++		_tmp11_ = FALSE;
++	}
++	if (_tmp11_) {
++		GUPnPServiceAction* _tmp18_ = NULL;
++		const gchar* _tmp19_ = NULL;
++		_tmp18_ = action;
++		_tmp19_ = _ ("Transition not available");
++		gupnp_service_action_return_error (_tmp18_, (guint) 701, _tmp19_);
++		_g_free0 (speed);
++		return;
++	}
++	_tmp20_ = self->priv->player;
++	_tmp21_ = speed;
++	rygel_media_player_set_playback_speed (_tmp20_, _tmp21_);
++	_tmp22_ = self->priv->controller;
++	rygel_player_controller_interface_set_playback_state (_tmp22_, "PLAYING");
++	_tmp23_ = action;
++	gupnp_service_action_return (_tmp23_);
+ 	_g_free0 (speed);
+ }
+ 
+@@ -1708,7 +1735,7 @@ static void rygel_av_transport_seek_cb (RygelAVTransport* self, GUPnPService* se
+ 				_tmp8_ = rygel_time_utils_time_from_string (_tmp7_);
+ 				seek_target = _tmp8_;
+ 				_tmp9_ = seek_target;
+-				g_debug ("rygel-av-transport.vala:524: Seeking to %lld sec", _tmp9_ / G_TIME_SPAN_SECOND);
++				g_debug ("rygel-av-transport.vala:531: Seeking to %lld sec", _tmp9_ / G_TIME_SPAN_SECOND);
+ 				_tmp10_ = self->priv->player;
+ 				_tmp11_ = rygel_media_player_get_can_seek (_tmp10_);
+ 				_tmp12_ = _tmp11_;
+@@ -1774,7 +1801,7 @@ static void rygel_av_transport_seek_cb (RygelAVTransport* self, GUPnPService* se
+ 					seek_target = _tmp24_ + _tmp27_;
+ 				}
+ 				_tmp28_ = seek_target;
+-				g_debug ("rygel-av-transport.vala:549: Seeking to %lld bytes.", _tmp28_);
++				g_debug ("rygel-av-transport.vala:556: Seeking to %lld bytes.", _tmp28_);
+ 				_tmp29_ = self->priv->player;
+ 				_tmp30_ = rygel_media_player_get_can_seek_bytes (_tmp29_);
+ 				_tmp31_ = _tmp30_;
+@@ -1822,7 +1849,7 @@ static void rygel_av_transport_seek_cb (RygelAVTransport* self, GUPnPService* se
+ 				gint _tmp52_ = 0;
+ 				GUPnPServiceAction* _tmp53_ = NULL;
+ 				_tmp40_ = target;
+-				g_debug ("rygel-av-transport.vala:567: Setting track to %s.", _tmp40_);
++				g_debug ("rygel-av-transport.vala:574: Setting track to %s.", _tmp40_);
+ 				_tmp41_ = target;
+ 				_tmp42_ = atoi (_tmp41_);
+ 				track = _tmp42_;
+@@ -2702,7 +2729,7 @@ static void rygel_av_transport_check_resource (RygelAVTransport* self, SoupMessa
+ 		SoupSession* _tmp22_ = NULL;
+ 		SoupMessage* _tmp23_ = NULL;
+ 		SoupMessage* _tmp24_ = NULL;
+-		g_debug ("rygel-av-transport.vala:774: Peer does not support HEAD, trying GET");
++		g_debug ("rygel-av-transport.vala:781: Peer does not support HEAD, trying GET");
+ 		_tmp20_ = msg;
+ 		g_object_set (_tmp20_, "method", "GET", NULL);
+ 		_tmp21_ = msg;
+@@ -2773,7 +2800,7 @@ static void rygel_av_transport_check_resource (RygelAVTransport* self, SoupMessa
+ 		GUPnPServiceAction* _tmp53_ = NULL;
+ 		const gchar* _tmp54_ = NULL;
+ 		_tmp52_ = mime;
+-		g_debug ("rygel-av-transport.vala:804: Unsupported mime type %s", _tmp52_);
++		g_debug ("rygel-av-transport.vala:811: Unsupported mime type %s", _tmp52_);
+ 		_tmp53_ = action;
+ 		_tmp54_ = _ ("Illegal MIME-type");
+ 		gupnp_service_action_return_error (_tmp53_, (guint) 714, _tmp54_);
+diff --git a/src/librygel-renderer/rygel-av-transport.vala b/src/librygel-renderer/rygel-av-transport.vala
+index 6c83c8b..68a7d6a 100644
+--- a/src/librygel-renderer/rygel-av-transport.vala
++++ b/src/librygel-renderer/rygel-av-transport.vala
+@@ -481,6 +481,13 @@ internal class Rygel.AVTransport : Service {
+             return;
+         }
+ 
++        if (this.controller.playback_state != "STOPPED"
++            && this.controller.playback_state != "PAUSED_PLAYBACK") {
++            action.return_error (701, _("Transition not available"));
++
++            return;
++        }
++
+         // Speed change will take effect when playback state is changed
+         this.player.playback_speed = speed;
+         this.controller.playback_state = "PLAYING";
+-- 
+1.9.1
+

@@ -1,0 +1,261 @@
+From 5ac5767bdbed515a741da5ca746afed52c33b6bf Mon Sep 17 00:00:00 2001
+From: Xia Zhou <xia.zhou@streamunlimited.com>
+Date: Wed, 20 Aug 2014 12:08:13 +0200
+Subject: [PATCH] change Rygel.Qplay service to QPlay
+
+Signed-off-by: Xia Zhou <xia.zhou@streamunlimited.com>
+---
+ .../rygel-media-renderer-plugin.c                  |  26 ++---
+ src/librygel-renderer/rygel-qplay.c                | 120 ++++++++++-----------
+ src/librygel-renderer/rygel-qplay.vala             |   2 +-
+ 3 files changed, 74 insertions(+), 74 deletions(-)
+
+diff --git a/src/librygel-renderer/rygel-media-renderer-plugin.c b/src/librygel-renderer/rygel-media-renderer-plugin.c
+index cd79f6c..8811076 100644
+--- a/src/librygel-renderer/rygel-media-renderer-plugin.c
++++ b/src/librygel-renderer/rygel-media-renderer-plugin.c
+@@ -98,15 +98,15 @@ typedef struct _RygelAVTransportClass RygelAVTransportClass;
+ typedef struct _RygelRenderingControl RygelRenderingControl;
+ typedef struct _RygelRenderingControlClass RygelRenderingControlClass;
+ 
+-#define RYGEL_TYPE_QPLAY (rygel_qplay_get_type ())
+-#define RYGEL_QPLAY(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), RYGEL_TYPE_QPLAY, RygelQPlay))
+-#define RYGEL_QPLAY_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), RYGEL_TYPE_QPLAY, RygelQPlayClass))
+-#define RYGEL_IS_QPLAY(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), RYGEL_TYPE_QPLAY))
+-#define RYGEL_IS_QPLAY_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), RYGEL_TYPE_QPLAY))
+-#define RYGEL_QPLAY_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), RYGEL_TYPE_QPLAY, RygelQPlayClass))
++#define TYPE_QPLAY (qplay_get_type ())
++#define QPLAY(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), TYPE_QPLAY, QPlay))
++#define QPLAY_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), TYPE_QPLAY, QPlayClass))
++#define IS_QPLAY(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), TYPE_QPLAY))
++#define IS_QPLAY_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), TYPE_QPLAY))
++#define QPLAY_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), TYPE_QPLAY, QPlayClass))
+ 
+-typedef struct _RygelQPlay RygelQPlay;
+-typedef struct _RygelQPlayClass RygelQPlayClass;
++typedef struct _QPlay QPlay;
++typedef struct _QPlayClass QPlayClass;
+ 
+ #define RYGEL_TYPE_PLAYER_CONTROLLER (rygel_player_controller_get_type ())
+ #define RYGEL_PLAYER_CONTROLLER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), RYGEL_TYPE_PLAYER_CONTROLLER, RygelPlayerController))
+@@ -220,10 +220,10 @@ GType rygel_av_transport_get_type (void) G_GNUC_CONST;
+ #define RYGEL_RENDERING_CONTROL_UPNP_TYPE "urn:schemas-upnp-org:service:RenderingControl:2"
+ #define RYGEL_RENDERING_CONTROL_DESCRIPTION_PATH "xml/RenderingControl2.xml"
+ GType rygel_rendering_control_get_type (void) G_GNUC_CONST;
+-#define RYGEL_QPLAY_UPNP_ID "urn:tencent-com:serviceId:QPlay"
+-#define RYGEL_QPLAY_UPNP_TYPE "urn:tencent-com:service:QPlay:1"
+-#define RYGEL_QPLAY_DESCRIPTION_PATH "xml/QPlayDescription.xml"
+-GType rygel_qplay_get_type (void) G_GNUC_CONST;
++#define QPLAY_UPNP_ID "urn:tencent-com:serviceId:QPlay"
++#define QPLAY_UPNP_TYPE "urn:tencent-com:service:QPlay:1"
++#define QPLAY_DESCRIPTION_PATH "xml/QPlayDescription.xml"
++GType qplay_get_type (void) G_GNUC_CONST;
+ RygelMediaPlayer* rygel_media_renderer_plugin_get_player (RygelMediaRendererPlugin* self);
+ static RygelMediaPlayer* rygel_media_renderer_plugin_real_get_player (RygelMediaRendererPlugin* self);
+ RygelPlayerControllerInterface* rygel_media_renderer_plugin_get_controller (RygelMediaRendererPlugin* self);
+@@ -320,7 +320,7 @@ static void rygel_media_renderer_plugin_real_constructed (GObject* base) {
+ 	resource = _tmp4_;
+ 	_tmp5_ = resource;
+ 	rygel_plugin_add_resource ((RygelPlugin*) self, _tmp5_);
+-	_tmp6_ = rygel_resource_info_new (RYGEL_QPLAY_UPNP_ID, RYGEL_QPLAY_UPNP_TYPE, RYGEL_QPLAY_DESCRIPTION_PATH, RYGEL_TYPE_QPLAY);
++	_tmp6_ = rygel_resource_info_new (QPLAY_UPNP_ID, QPLAY_UPNP_TYPE, QPLAY_DESCRIPTION_PATH, TYPE_QPLAY);
+ 	_rygel_resource_info_unref0 (resource);
+ 	resource = _tmp6_;
+ 	_tmp7_ = resource;
+diff --git a/src/librygel-renderer/rygel-qplay.c b/src/librygel-renderer/rygel-qplay.c
+index fe4d0a2..199dba1 100644
+--- a/src/librygel-renderer/rygel-qplay.c
++++ b/src/librygel-renderer/rygel-qplay.c
+@@ -31,67 +31,67 @@
+ #include <glib/gi18n-lib.h>
+ 
+ 
+-#define RYGEL_TYPE_QPLAY (rygel_qplay_get_type ())
+-#define RYGEL_QPLAY(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), RYGEL_TYPE_QPLAY, RygelQPlay))
+-#define RYGEL_QPLAY_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), RYGEL_TYPE_QPLAY, RygelQPlayClass))
+-#define RYGEL_IS_QPLAY(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), RYGEL_TYPE_QPLAY))
+-#define RYGEL_IS_QPLAY_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), RYGEL_TYPE_QPLAY))
+-#define RYGEL_QPLAY_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), RYGEL_TYPE_QPLAY, RygelQPlayClass))
+-
+-typedef struct _RygelQPlay RygelQPlay;
+-typedef struct _RygelQPlayClass RygelQPlayClass;
+-typedef struct _RygelQPlayPrivate RygelQPlayPrivate;
+-
+-struct _RygelQPlay {
++#define TYPE_QPLAY (qplay_get_type ())
++#define QPLAY(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), TYPE_QPLAY, QPlay))
++#define QPLAY_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), TYPE_QPLAY, QPlayClass))
++#define IS_QPLAY(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), TYPE_QPLAY))
++#define IS_QPLAY_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), TYPE_QPLAY))
++#define QPLAY_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), TYPE_QPLAY, QPlayClass))
++
++typedef struct _QPlay QPlay;
++typedef struct _QPlayClass QPlayClass;
++typedef struct _QPlayPrivate QPlayPrivate;
++
++struct _QPlay {
+ 	GUPnPService parent_instance;
+-	RygelQPlayPrivate * priv;
++	QPlayPrivate * priv;
+ };
+ 
+-struct _RygelQPlayClass {
++struct _QPlayClass {
+ 	GUPnPServiceClass parent_class;
+ };
+ 
+ 
+-static gpointer rygel_qplay_parent_class = NULL;
++static gpointer qplay_parent_class = NULL;
+ 
+-GType rygel_qplay_get_type (void) G_GNUC_CONST;
++GType qplay_get_type (void) G_GNUC_CONST;
+ enum  {
+-	RYGEL_QPLAY_DUMMY_PROPERTY
++	QPLAY_DUMMY_PROPERTY
+ };
+-#define RYGEL_QPLAY_UPNP_ID "urn:tencent-com:serviceId:QPlay"
+-#define RYGEL_QPLAY_UPNP_TYPE "urn:tencent-com:service:QPlay:1"
+-#define RYGEL_QPLAY_COMPAT_TYPE "urn:schemas-tencent-com:service:QPlay:1"
+-#define RYGEL_QPLAY_DESCRIPTION_PATH "xml/QPlayDescription.xml"
+-static void rygel_qplay_real_constructed (GObject* base);
+-static void rygel_qplay_set_network_cb (RygelQPlay* self, GUPnPService* registrar, GUPnPServiceAction* action);
+-static void _rygel_qplay_set_network_cb_gupnp_service_action_invoked (GUPnPService* _sender, GUPnPServiceAction* action, gpointer self);
+-static void rygel_qplay_query_state (RygelQPlay* self, GUPnPService* registrar, const gchar* variable, GValue* value);
+-static void _rygel_qplay_query_state_gupnp_service_query_variable (GUPnPService* _sender, const gchar* variable, GValue* value, gpointer self);
+-RygelQPlay* rygel_qplay_new (void);
+-RygelQPlay* rygel_qplay_construct (GType object_type);
+-
+-
+-static void _rygel_qplay_set_network_cb_gupnp_service_action_invoked (GUPnPService* _sender, GUPnPServiceAction* action, gpointer self) {
+-	rygel_qplay_set_network_cb ((RygelQPlay*) self, _sender, action);
++#define QPLAY_UPNP_ID "urn:tencent-com:serviceId:QPlay"
++#define QPLAY_UPNP_TYPE "urn:tencent-com:service:QPlay:1"
++#define QPLAY_COMPAT_TYPE "urn:schemas-tencent-com:service:QPlay:1"
++#define QPLAY_DESCRIPTION_PATH "xml/QPlayDescription.xml"
++static void qplay_real_constructed (GObject* base);
++static void qplay_set_network_cb (QPlay* self, GUPnPService* registrar, GUPnPServiceAction* action);
++static void _qplay_set_network_cb_gupnp_service_action_invoked (GUPnPService* _sender, GUPnPServiceAction* action, gpointer self);
++static void qplay_query_state (QPlay* self, GUPnPService* registrar, const gchar* variable, GValue* value);
++static void _qplay_query_state_gupnp_service_query_variable (GUPnPService* _sender, const gchar* variable, GValue* value, gpointer self);
++QPlay* qplay_new (void);
++QPlay* qplay_construct (GType object_type);
++
++
++static void _qplay_set_network_cb_gupnp_service_action_invoked (GUPnPService* _sender, GUPnPServiceAction* action, gpointer self) {
++	qplay_set_network_cb ((QPlay*) self, _sender, action);
+ }
+ 
+ 
+-static void _rygel_qplay_query_state_gupnp_service_query_variable (GUPnPService* _sender, const gchar* variable, GValue* value, gpointer self) {
+-	rygel_qplay_query_state ((RygelQPlay*) self, _sender, variable, value);
++static void _qplay_query_state_gupnp_service_query_variable (GUPnPService* _sender, const gchar* variable, GValue* value, gpointer self) {
++	qplay_query_state ((QPlay*) self, _sender, variable, value);
+ }
+ 
+ 
+-static void rygel_qplay_real_constructed (GObject* base) {
+-	RygelQPlay * self;
+-	self = (RygelQPlay*) base;
+-	G_OBJECT_CLASS (rygel_qplay_parent_class)->constructed ((GObject*) G_TYPE_CHECK_INSTANCE_CAST (self, gupnp_service_get_type (), GUPnPService));
+-	g_signal_connect_object ((GUPnPService*) self, "action-invoked::SetNetwork", (GCallback) _rygel_qplay_set_network_cb_gupnp_service_action_invoked, self, 0);
+-	g_signal_connect_object ((GUPnPService*) self, "action-invoked::QPlayAuth", (GCallback) _rygel_qplay_set_network_cb_gupnp_service_action_invoked, self, 0);
+-	g_signal_connect_object ((GUPnPService*) self, "query-variable::FakeState", (GCallback) _rygel_qplay_query_state_gupnp_service_query_variable, self, 0);
++static void qplay_real_constructed (GObject* base) {
++	QPlay * self;
++	self = (QPlay*) base;
++	G_OBJECT_CLASS (qplay_parent_class)->constructed ((GObject*) G_TYPE_CHECK_INSTANCE_CAST (self, gupnp_service_get_type (), GUPnPService));
++	g_signal_connect_object ((GUPnPService*) self, "action-invoked::SetNetwork", (GCallback) _qplay_set_network_cb_gupnp_service_action_invoked, self, 0);
++	g_signal_connect_object ((GUPnPService*) self, "action-invoked::QPlayAuth", (GCallback) _qplay_set_network_cb_gupnp_service_action_invoked, self, 0);
++	g_signal_connect_object ((GUPnPService*) self, "query-variable::FakeState", (GCallback) _qplay_query_state_gupnp_service_query_variable, self, 0);
+ }
+ 
+ 
+-static void rygel_qplay_set_network_cb (RygelQPlay* self, GUPnPService* registrar, GUPnPServiceAction* action) {
++static void qplay_set_network_cb (QPlay* self, GUPnPService* registrar, GUPnPServiceAction* action) {
+ 	GUPnPServiceAction* _tmp0_ = NULL;
+ 	guint _tmp1_ = 0U;
+ 	GUPnPServiceAction* _tmp4_ = NULL;
+@@ -116,7 +116,7 @@ static void rygel_qplay_set_network_cb (RygelQPlay* self, GUPnPService* registra
+ }
+ 
+ 
+-static void rygel_qplay_query_state (RygelQPlay* self, GUPnPService* registrar, const gchar* variable, GValue* value) {
++static void qplay_query_state (QPlay* self, GUPnPService* registrar, const gchar* variable, GValue* value) {
+ 	g_return_if_fail (self != NULL);
+ 	g_return_if_fail (registrar != NULL);
+ 	g_return_if_fail (variable != NULL);
+@@ -126,40 +126,40 @@ static void rygel_qplay_query_state (RygelQPlay* self, GUPnPService* registrar,
+ }
+ 
+ 
+-RygelQPlay* rygel_qplay_construct (GType object_type) {
+-	RygelQPlay * self = NULL;
+-	self = (RygelQPlay*) g_object_new (object_type, NULL);
++QPlay* qplay_construct (GType object_type) {
++	QPlay * self = NULL;
++	self = (QPlay*) g_object_new (object_type, NULL);
+ 	return self;
+ }
+ 
+ 
+-RygelQPlay* rygel_qplay_new (void) {
+-	return rygel_qplay_construct (RYGEL_TYPE_QPLAY);
++QPlay* qplay_new (void) {
++	return qplay_construct (TYPE_QPLAY);
+ }
+ 
+ 
+-static void rygel_qplay_class_init (RygelQPlayClass * klass) {
+-	rygel_qplay_parent_class = g_type_class_peek_parent (klass);
+-	G_OBJECT_CLASS (klass)->constructed = rygel_qplay_real_constructed;
++static void qplay_class_init (QPlayClass * klass) {
++	qplay_parent_class = g_type_class_peek_parent (klass);
++	G_OBJECT_CLASS (klass)->constructed = qplay_real_constructed;
+ }
+ 
+ 
+-static void rygel_qplay_instance_init (RygelQPlay * self) {
++static void qplay_instance_init (QPlay * self) {
+ }
+ 
+ 
+ /**
+  * Basic implementation of QPlay service version 1.
+  */
+-GType rygel_qplay_get_type (void) {
+-	static volatile gsize rygel_qplay_type_id__volatile = 0;
+-	if (g_once_init_enter (&rygel_qplay_type_id__volatile)) {
+-		static const GTypeInfo g_define_type_info = { sizeof (RygelQPlayClass), (GBaseInitFunc) NULL, (GBaseFinalizeFunc) NULL, (GClassInitFunc) rygel_qplay_class_init, (GClassFinalizeFunc) NULL, NULL, sizeof (RygelQPlay), 0, (GInstanceInitFunc) rygel_qplay_instance_init, NULL };
+-		GType rygel_qplay_type_id;
+-		rygel_qplay_type_id = g_type_register_static (gupnp_service_get_type (), "RygelQPlay", &g_define_type_info, 0);
+-		g_once_init_leave (&rygel_qplay_type_id__volatile, rygel_qplay_type_id);
++GType qplay_get_type (void) {
++	static volatile gsize qplay_type_id__volatile = 0;
++	if (g_once_init_enter (&qplay_type_id__volatile)) {
++		static const GTypeInfo g_define_type_info = { sizeof (QPlayClass), (GBaseInitFunc) NULL, (GBaseFinalizeFunc) NULL, (GClassInitFunc) qplay_class_init, (GClassFinalizeFunc) NULL, NULL, sizeof (QPlay), 0, (GInstanceInitFunc) qplay_instance_init, NULL };
++		GType qplay_type_id;
++		qplay_type_id = g_type_register_static (gupnp_service_get_type (), "QPlay", &g_define_type_info, 0);
++		g_once_init_leave (&qplay_type_id__volatile, qplay_type_id);
+ 	}
+-	return rygel_qplay_type_id__volatile;
++	return qplay_type_id__volatile;
+ }
+ 
+ 
+diff --git a/src/librygel-renderer/rygel-qplay.vala b/src/librygel-renderer/rygel-qplay.vala
+index 1f21103..8f3f3a6 100644
+--- a/src/librygel-renderer/rygel-qplay.vala
++++ b/src/librygel-renderer/rygel-qplay.vala
+@@ -25,7 +25,7 @@ using GUPnP;
+ /**
+  * Basic implementation of QPlay service version 1.
+  */
+-internal class Rygel.QPlay: Service {
++internal class QPlay: Service {
+     public const string UPNP_ID =
+                     "urn:tencent-com:serviceId:QPlay";
+     // UPnP requires that points replaced by hyphens in domain names
+-- 
+1.9.1
+

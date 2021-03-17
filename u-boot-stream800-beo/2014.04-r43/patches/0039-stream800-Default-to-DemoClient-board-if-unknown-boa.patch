@@ -1,0 +1,28 @@
+From 05907e837cd81f463a8222ca6f425776e3a2c7a4 Mon Sep 17 00:00:00 2001
+From: Vladimir Koutny <vladimir.koutny@streamunlimited.com>
+Date: Wed, 29 May 2013 17:18:03 +0200
+Subject: [PATCH] stream800: Default to DemoClient board if unknown board
+ detected
+
+Signed-off-by: Vladimir Koutny <vladimir.koutny@streamunlimited.com>
+---
+ board/streamunlimited/stream800/board.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/board/streamunlimited/stream800/board.c b/board/streamunlimited/stream800/board.c
+index dd4835d..25dc394 100644
+--- a/board/streamunlimited/stream800/board.c
++++ b/board/streamunlimited/stream800/board.c
+@@ -144,7 +144,8 @@ int board_init(void)
+ 		// CUSTOMIZE: Add your board __set_board_interface() call here
+ 
+ 		default:
+-			printf("board_late_init: Not supported board!\n");
++			printf("board_late_init: Not supported board - assuming DemoClient!\n");
++			demo_client__set_board_interface();
+ 			//panic("Not supported board!");
+ 	}
+ 
+-- 
+2.7.4
+

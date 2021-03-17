@@ -1,0 +1,102 @@
+From 443b98d2bc4b942abcf5c1f4840c5aef1cdf8a1f Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Thu, 6 Apr 2017 17:02:47 +0200
+Subject: [PATCH] Fix timestamps returned from status call when switch disabled
+
+This fixes dropouts in GoogleCast.
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+
+%% original patch: 0015-Fix-timestamps-returned-from-status-call-when-switch.patch
+---
+ src/pcm/pcm_switch.c | 49 ++++++++++++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 44 insertions(+), 5 deletions(-)
+
+diff --git a/src/pcm/pcm_switch.c b/src/pcm/pcm_switch.c
+index 0ae8173..3a342c2 100644
+--- a/src/pcm/pcm_switch.c
++++ b/src/pcm/pcm_switch.c
+@@ -66,6 +66,7 @@ typedef struct {
+ 	snd_pcm_uframes_t hw_ptr;
+ 	snd_pcm_chmap_query_t **chmap;
+ 	struct timespec clock;
++	struct timespec clock_offset;
+ 	unsigned clock_diff_usec;
+ 	int poll_fd;
+ } snd_pcm_switch_t;
+@@ -488,8 +489,13 @@ static int snd_pcm_switch_status(snd_pcm_t *pcm, snd_pcm_status_t * status)
+ 		status->appl_ptr = *pcm->appl.ptr;
+ 		status->hw_ptr = *pcm->hw.ptr;
+ 		if (!status->tstamp.tv_sec && !status->tstamp.tv_nsec)
++			/* if we don't have clock from hw use system clock instead */
+ 			status->tstamp = swtch->clock;
+-		return 0;
++		else {
++			/* save offset to synchronize hw clock timestamps and system clock timestamp */
++			swtch->clock_offset.tv_sec = status->tstamp.tv_sec - swtch->clock.tv_sec;
++			swtch->clock_offset.tv_nsec = status->tstamp.tv_nsec - swtch->clock.tv_nsec;
++		}
+ 	}
+ 	else {
+ 		TRACE("null");
+@@ -498,13 +504,44 @@ static int snd_pcm_switch_status(snd_pcm_t *pcm, snd_pcm_status_t * status)
+ 		status->trigger_tstamp = swtch->trigger_tstamp;
+ 		status->avail = snd_pcm_switch_avail_update(pcm);
+ 		status->avail_max = pcm->buffer_size;
+-		status->tstamp = swtch->clock;
+-
+ 		status->appl_ptr = *pcm->appl.ptr;
+ 		status->hw_ptr = *pcm->hw.ptr;
+-
+-		return 0;
++		status->delay = snd_pcm_mmap_playback_hw_avail(pcm);
++
++		/* add clock offset and normalize nanoseconds */
++		status->tstamp.tv_sec = swtch->clock.tv_sec + swtch->clock_offset.tv_sec;
++		status->tstamp.tv_nsec = swtch->clock.tv_nsec + swtch->clock_offset.tv_nsec;
++		while (status->tstamp.tv_nsec >= 1000000000) {
++			status->tstamp.tv_nsec -= 1000000000;
++			status->tstamp.tv_sec += 1;
++		}
++		while (status->tstamp.tv_nsec < 0) {
++			status->tstamp.tv_nsec += 1000000000;
++			status->tstamp.tv_sec -= 1;
++		}
+ 	}
++/*
++	DEBUG ("%s:\n"
++	       "state=%d\n"
++	       "trigger_tstamp=%lld.%.9ld\n"
++	       "avail=%lu\n""avail_max=%lu\n"
++	       "tstamp=%lld.%.9ld\n"
++	       "appl_ptr=%lu\n"
++	       "hw_ptr=%lu\n"
++	       "delay=%ld\n"
++	       "overrange=%lu"
++	       , (swtch->gen.slave ? "copy" : "null")
++	       , status->state
++	       , status->trigger_tstamp.tv_sec, status->trigger_tstamp.tv_nsec
++	       , status->avail
++	       , status->avail_max
++	       , status->tstamp.tv_sec, status->tstamp.tv_nsec
++	       , status->appl_ptr
++	       , status->hw_ptr
++	       , status->delay
++	       , status->overrange);
++*/
++	return 0;
+ }
+ 
+ static snd_pcm_state_t snd_pcm_switch_state(snd_pcm_t *pcm)
+@@ -1467,6 +1504,8 @@ static const snd_pcm_fast_ops_t snd_pcm_switch_fast_ops = {
+  * \param stream Stream type
+  * \param ctl_card card index of the control
+  * \param ctl_id The control element
++ * \param drift_elem_name Drift element compensator control name
++ * \param drift_mult Multiplier of drift element control value
+  * \retval zero on success otherwise a negative error code
+  * \warning Using of this function might be dangerous in the sense
+  *          of compatibility reasons. The prototype might be freely
+-- 
+2.7.4
+

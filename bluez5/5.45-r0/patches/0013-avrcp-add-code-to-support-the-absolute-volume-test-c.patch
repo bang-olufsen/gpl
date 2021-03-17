@@ -1,0 +1,82 @@
+From 452c01224aba12ce618da21d2f5476124a040991 Mon Sep 17 00:00:00 2001
+From: Bernhard Miller <bernhard.miller@streamunlimited.com>
+Date: Wed, 15 Mar 2017 12:41:21 +0100
+Subject: [PATCH] avrcp: add code to support the absolute volume test cases in
+ PTS
+
+Signed-off-by: Bernhard Miller <bernhard.miller@streamunlimited.com>
+---
+ profiles/audio/avrcp.c |  4 ++++
+ src/device.c           | 20 ++++++++++++++++++++
+ 2 files changed, 24 insertions(+)
+
+diff --git a/profiles/audio/avrcp.c b/profiles/audio/avrcp.c
+index abb9c86..760e56b 100644
+--- a/profiles/audio/avrcp.c
++++ b/profiles/audio/avrcp.c
+@@ -1692,6 +1692,8 @@ static uint8_t avrcp_handle_set_absolute_volume(struct avrcp *session,
+ 
+ 	volume = pdu->params[0] & 0x7F;
+ 
++	DBG("Received volume %u", volume);
++
+ 	media_transport_update_device_volume(session->dev, volume);
+ 
+ 	return AVC_CTYPE_ACCEPTED;
+@@ -4365,6 +4367,8 @@ static gboolean avrcp_handle_set_volume(struct avctp *conn, uint8_t code,
+ 
+ 	volume = pdu->params[0] & 0x7F;
+ 
++	DBG("Received volume %u", volume);
++
+ 	if (player != NULL)
+ 		player->cb->set_volume(volume, session->dev, player->user_data);
+ 
+diff --git a/src/device.c b/src/device.c
+index 2db13f5..d12b2d7 100644
+--- a/src/device.c
++++ b/src/device.c
+@@ -75,6 +75,8 @@
+ #include "attrib-server.h"
+ #include "eir.h"
+ 
++#include "profiles/audio/avrcp.h"
++
+ #define IO_CAPABILITY_NOINPUTNOOUTPUT	0x03
+ 
+ #define DISCONNECT_TIMER	2
+@@ -2538,6 +2540,22 @@ static DBusMessage *cancel_pairing(DBusConnection *conn, DBusMessage *msg,
+ 	return dbus_message_new_method_return(msg);
+ }
+ 
++static DBusMessage *send_volume_pts(DBusConnection *conn, DBusMessage *msg,
++								void *data)
++{
++	struct btd_device *device = data;
++	uint8_t vol;
++
++	if (!dbus_message_get_args(msg, NULL, DBUS_TYPE_BYTE, &vol,
++							DBUS_TYPE_INVALID))
++		return btd_error_invalid_args(msg);
++
++	DBG("Send volume - PTS testing only. vol=%u", vol);
++	avrcp_set_volume(device, vol, false);
++
++	return dbus_message_new_method_return(msg);
++}
++
+ static const GDBusMethodTable device_methods[] = {
+ 	{ GDBUS_ASYNC_METHOD("Disconnect", NULL, NULL, dev_disconnect) },
+ 	{ GDBUS_ASYNC_METHOD("Connect", NULL, NULL, dev_connect) },
+@@ -2547,6 +2565,8 @@ static const GDBusMethodTable device_methods[] = {
+ 						NULL, disconnect_profile) },
+ 	{ GDBUS_ASYNC_METHOD("Pair", NULL, NULL, pair_device) },
+ 	{ GDBUS_METHOD("CancelPairing", NULL, NULL, cancel_pairing) },
++	{ GDBUS_METHOD("SendVolumePTS", GDBUS_ARGS({ "volume", "y" }),
++						NULL, send_volume_pts) },
+ 	{ }
+ };
+ 
+-- 
+2.7.4
+

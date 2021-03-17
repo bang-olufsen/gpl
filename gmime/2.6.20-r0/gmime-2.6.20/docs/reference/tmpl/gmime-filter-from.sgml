@@ -1,0 +1,46 @@
+<!-- ##### SECTION Title ##### -->
+gmime-filter-from
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GMimeFilterFrom ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ENUM GMimeFilterFromMode ##### -->
+<para>
+
+</para>
+
+@GMIME_FILTER_FROM_MODE_DEFAULT: 
+@GMIME_FILTER_FROM_MODE_ESCAPE: 
+@GMIME_FILTER_FROM_MODE_ARMOR: 
+
+<!-- ##### FUNCTION g_mime_filter_from_new ##### -->
+<para>
+
+</para>
+
+@mode: 
+@Returns: 
+
+

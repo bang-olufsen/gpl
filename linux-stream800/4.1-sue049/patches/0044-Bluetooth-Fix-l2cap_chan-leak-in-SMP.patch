@@ -1,0 +1,49 @@
+From afd216c8b366cb8460f83e9980c5397b1a25aadd Mon Sep 17 00:00:00 2001
+From: Johan Hedberg <johan.hedberg@intel.com>
+Date: Wed, 11 Nov 2015 21:47:12 +0200
+Subject: [PATCH] Bluetooth: Fix l2cap_chan leak in SMP
+
+The L2CAP core expects channel implementations to manage the reference
+returned by the new_connection callback. With sockets this is already
+handled with each channel being tied to the corresponding socket. With
+SMP however there's no context to tie the pointer to in the
+smp_new_conn_cb function. The function can also not just drop the
+reference since it's the only one at that point.
+
+For fixed channels (like SMP) the code path inside the L2CAP core from
+new_connection() to ready() is short and straight-forwards. The
+crucial difference is that in ready() the implementation has access to
+the l2cap_conn that SMP needs associate its l2cap_chan. Instead of
+taking a new reference in smp_ready_cb() we can simply assume to
+already own the reference created in smp_new_conn_cb(), i.e. there is
+no need to call l2cap_chan_hold().
+
+Signed-off-by: Johan Hedberg <johan.hedberg@intel.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Cc: stable@vger.kernel.org # 3.19+
+---
+ net/bluetooth/smp.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/net/bluetooth/smp.c b/net/bluetooth/smp.c
+index 69ad509..ea4dafc 100644
+--- a/net/bluetooth/smp.c
++++ b/net/bluetooth/smp.c
+@@ -2984,8 +2984,13 @@ static void smp_ready_cb(struct l2cap_chan *chan)
+ 
+ 	BT_DBG("chan %p", chan);
+ 
++	/* No need to call l2cap_chan_hold() here since we already own
++	 * the reference taken in smp_new_conn_cb(). This is just the
++	 * first time that we tie it to a specific pointer. The code in
++	 * l2cap_core.c ensures that there's no risk this function wont
++	 * get called if smp_new_conn_cb was previously called.
++	 */
+ 	conn->smp = chan;
+-	l2cap_chan_hold(chan);
+ 
+ 	if (hcon->type == ACL_LINK && test_bit(HCI_CONN_ENCRYPT, &hcon->flags))
+ 		bredr_pairing(chan);
+-- 
+2.7.4
+

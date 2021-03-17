@@ -1,0 +1,126 @@
+<!-- ##### SECTION Title ##### -->
+gmime-disposition
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### MACRO GMIME_DISPOSITION_ATTACHMENT ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO GMIME_DISPOSITION_INLINE ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### STRUCT GMimeContentDisposition ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION g_mime_content_disposition_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_content_disposition_new_from_string ##### -->
+<para>
+
+</para>
+
+@str: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_content_disposition_set_disposition ##### -->
+<para>
+
+</para>
+
+@disposition: 
+@value: 
+
+
+<!-- ##### FUNCTION g_mime_content_disposition_get_disposition ##### -->
+<para>
+
+</para>
+
+@disposition: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_content_disposition_get_params ##### -->
+<para>
+
+</para>
+
+@disposition: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_content_disposition_set_params ##### -->
+<para>
+
+</para>
+
+@disposition: 
+@params: 
+
+
+<!-- ##### FUNCTION g_mime_content_disposition_set_parameter ##### -->
+<para>
+
+</para>
+
+@disposition: 
+@attribute: 
+@value: 
+
+
+<!-- ##### FUNCTION g_mime_content_disposition_get_parameter ##### -->
+<para>
+
+</para>
+
+@disposition: 
+@attribute: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_content_disposition_to_string ##### -->
+<para>
+
+</para>
+
+@disposition: 
+@fold: 
+@Returns: 
+
+

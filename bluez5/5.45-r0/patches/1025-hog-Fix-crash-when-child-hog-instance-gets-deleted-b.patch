@@ -1,0 +1,68 @@
+From 170edff6f9e65a4481a1c715b2f817f2aa66ebf7 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Thu, 6 Jul 2017 11:23:13 +0200
+Subject: [PATCH] hog: Fix crash when child hog instance gets deleted before
+ parent
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ profiles/input/hog-lib.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
+
+diff --git a/profiles/input/hog-lib.c b/profiles/input/hog-lib.c
+index 885bb3d..50d2e7a 100644
+--- a/profiles/input/hog-lib.c
++++ b/profiles/input/hog-lib.c
+@@ -115,6 +115,7 @@ struct bt_hog {
+ 	int				streamsdk_fd;
+ 	unsigned int	streamsdk_att;
+ 	gboolean		pending_key_release;
++	struct bt_hog		*parent;
+ };
+ 
+ struct report {
+@@ -1266,6 +1267,16 @@ static void cancel_gatt_req(struct gatt_request *req)
+ static void hog_free(void *data)
+ {
+ 	struct bt_hog *hog = data;
++	GSList *l;
++
++	// Clean up parent from all children before delete
++	for (l = hog->instances; l; l = l->next) {
++		struct bt_hog *instance = l->data;
++		instance->parent = NULL;
++	}
++	// Clean up ourself from parent
++	if (hog->parent)
++		hog->parent->instances = g_slist_remove(hog->parent->instances, hog);
+ 
+ 	bt_hog_detach(hog);
+ 
+@@ -1439,6 +1450,7 @@ static struct bt_hog *hog_new(int fd, const char *name, uint16_t vendor,
+ 	hog->attr = attr;
+ 	hog->streamsdk_fd = -1;
+ 	hog->pending_key_release = FALSE;
++	hog->parent = NULL;
+ 
+ 	return hog;
+ }
+@@ -1459,6 +1471,7 @@ static void hog_attach_instace(struct bt_hog *hog,
+ 	if (!instance)
+ 		return;
+ 
++	instance->parent = hog;
+ 	hog->instances = g_slist_append(hog->instances, instance);
+ }
+ 
+@@ -1614,6 +1627,8 @@ static void hog_attach_hog(struct bt_hog *hog, struct gatt_primary *primary)
+ 			primary->range.end, find_included_cb, instance);
+ 
+ 	bt_hog_attach(instance, hog->attrib);
++
++	instance->parent = hog;
+ 	hog->instances = g_slist_append(hog->instances, instance);
+ }
+ 
+-- 
+2.7.4
+

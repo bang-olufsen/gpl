@@ -1,0 +1,43 @@
+From d747bad8e6592c8e30affe72ccf7886df86c81ca Mon Sep 17 00:00:00 2001
+From: Matus Ujhelyi <matus.ujhelyi@streamunlimited.com>
+Date: Fri, 4 Apr 2014 11:49:34 +0200
+Subject: [PATCH] ase_board: enable i2c1 config
+
+Signed-off-by: Matus Ujhelyi <matus.ujhelyi@streamunlimited.com>
+---
+ board/streamunlimited/stream800/mux.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
+
+diff --git a/board/streamunlimited/stream800/mux.c b/board/streamunlimited/stream800/mux.c
+index 582ddff..22006af 100644
+--- a/board/streamunlimited/stream800/mux.c
++++ b/board/streamunlimited/stream800/mux.c
+@@ -123,7 +123,15 @@ static struct module_pin_mux i2c1_pin_mux[] = {
+ 	{-1},
+ };
+ 
+-static struct module_pin_mux spi0_pin_mux[] __attribute__((unused)) = {
++static struct module_pin_mux ase_i2c1_pin_mux[] = {
++	{OFFSET(uart1_txd), (MODE(3) | RXACTIVE |
++			PULLUDEN | SLEWCTRL)},	/* I2C_SCLK */
++	{OFFSET(uart1_rxd), (MODE(3) | RXACTIVE |
++			PULLUDEN | SLEWCTRL)},	/* I2C_DATA */
++	{-1},
++};
++
++static struct module_pin_mux spi0_pin_mux[] = {
+ 	{OFFSET(spi0_sclk), (MODE(0) | RXACTIVE | PULLUDEN)},	/* SPI0_SCLK */
+ 	{OFFSET(spi0_d0), (MODE(0) | RXACTIVE |
+ 			PULLUDEN | PULLUP_EN)},			/* SPI0_D0 */
+@@ -258,7 +266,7 @@ void enable_i2c0_pin_mux(void)
+ void enable_board_pin_mux(struct Stream800Board *board)
+ {
+ 	configure_module_pin_mux(i2c0_pin_mux);
+-	configure_module_pin_mux(i2c1_pin_mux);
++	configure_module_pin_mux(ase_i2c1_pin_mux);
+ 	//ASE DO NOT USE IT AS OUTPUT
+ 	//configure_module_pin_mux(clk2_pll_pin_mux);
+ 	configure_module_pin_mux(nand_pin_mux);
+-- 
+2.7.4
+

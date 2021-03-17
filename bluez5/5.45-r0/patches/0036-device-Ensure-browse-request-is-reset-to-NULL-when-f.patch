@@ -1,0 +1,76 @@
+From bf99c5f2ceff4a9b9848078a22a5b6215d12f290 Mon Sep 17 00:00:00 2001
+From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Date: Fri, 7 Jul 2017 10:13:05 +0300
+Subject: [PATCH] device: Ensure browse request is reset to NULL when freed
+
+This makes the code simpler as browse_request_free always reset the
+device pointer to NULL when freeing its data.
+---
+ src/device.c | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
+
+diff --git a/src/device.c b/src/device.c
+index 7c89f6a..69e87b3 100644
+--- a/src/device.c
++++ b/src/device.c
+@@ -531,6 +531,11 @@ void device_store_cached_name(struct btd_device *dev, const char *name)
+ 
+ static void browse_request_free(struct browse_req *req)
+ {
++	struct btd_device *device = req->device;
++
++	if (device->browse == req)
++		device->browse = NULL;
++
+ 	if (req->listener_id)
+ 		g_dbus_remove_watch(dbus_conn, req->listener_id);
+ 	if (req->msg)
+@@ -610,7 +615,6 @@ static void browse_request_cancel(struct browse_req *req)
+ 
+ 	attio_cleanup(device);
+ 
+-	device->browse = NULL;
+ 	browse_request_free(req);
+ }
+ 
+@@ -2375,7 +2379,6 @@ static void device_svc_resolved(struct btd_device *dev, uint8_t bdaddr_type,
+ 	if (!req)
+ 		return;
+ 
+-	dev->browse = NULL;
+ 	browse_request_complete(req, bdaddr_type, err);
+ }
+ 
+@@ -5106,12 +5109,10 @@ static void att_connect_cb(GIOChannel *io, GError *gerr, gpointer user_data)
+ 			adapter_connect_list_add(device->adapter, device);
+ 		}
+ 
+-		if (device->browse) {
++		if (device->browse)
+ 			browse_request_complete(device->browse,
+ 						device->bdaddr_type,
+ 						-ECONNABORTED);
+-			device->browse = NULL;
+-		}
+ 
+ 		err = -ECONNABORTED;
+ 		goto done;
+@@ -5279,7 +5280,6 @@ static int device_browse_gatt(struct btd_device *device, DBusMessage *msg)
+ 				BT_IO_OPT_INVALID);
+ 
+ 	if (device->att_io == NULL) {
+-		device->browse = NULL;
+ 		browse_request_free(req);
+ 		return -EIO;
+ 	}
+@@ -5331,7 +5331,6 @@ static int device_browse_sdp(struct btd_device *device, DBusMessage *msg)
+ 				&device->bdaddr, &uuid, browse_cb, req, NULL,
+ 				req->sdp_flags);
+ 	if (err < 0) {
+-		device->browse = NULL;
+ 		browse_request_free(req);
+ 		return err;
+ 	}
+-- 
+2.7.4
+

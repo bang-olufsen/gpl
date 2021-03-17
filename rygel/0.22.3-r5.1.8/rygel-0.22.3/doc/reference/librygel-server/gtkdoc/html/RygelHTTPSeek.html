@@ -1,0 +1,630 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>librygel-server Reference Manual: RygelHTTPSeek</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="index.html" title="librygel-server Reference Manual">
+<link rel="up" href="api-main-list.html" title="librygel-server API Reference">
+<link rel="prev" href="RygelDataSource.html" title="RygelDataSource">
+<link rel="next" href="RygelImageItem.html" title="RygelImageItem">
+<meta name="generator" content="GTK-Doc V1.20.1 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#RygelHTTPSeek.description" class="shortcut">Description</a></span><span id="nav_hierarchy">  <span class="dim">|</span> 
+                  <a href="#RygelHTTPSeek.object-hierarchy" class="shortcut">Object Hierarchy</a></span><span id="nav_properties">  <span class="dim">|</span> 
+                  <a href="#RygelHTTPSeek.properties" class="shortcut">Properties</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="api-main-list.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="RygelDataSource.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="RygelImageItem.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry">
+<a name="RygelHTTPSeek"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="RygelHTTPSeek.top_of_page"></a>RygelHTTPSeek</span></h2>
+<p>RygelHTTPSeek — HTTPSeek is an abstract representation of a ranged HTTP request.</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1">
+<a name="RygelHTTPSeek.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="functions_return">
+<col class="functions_name">
+</colgroup>
+<tbody>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a class="link" href="RygelHTTPSeek.html#RYGEL-TYPE-HTTP-SEEK:CAPS" title="RYGEL_TYPE_HTTP_SEEK">RYGEL_TYPE_HTTP_SEEK</a></td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="RygelHTTPSeek.html#rygel-http-seek-add-response-headers" title="rygel_http_seek_add_response_headers ()">rygel_http_seek_add_response_headers</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="RygelHTTPSeek.html#RygelHTTPSeekType" title="enum RygelHTTPSeekType"><span class="returnvalue">RygelHTTPSeekType</span></a>
+</td>
+<td class="function_name">
+<a class="link" href="RygelHTTPSeek.html#rygel-http-seek-get-seek-type" title="rygel_http_seek_get_seek_type ()">rygel_http_seek_get_seek_type</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="RygelHTTPSeek.html#rygel-http-seek-set-seek-type" title="rygel_http_seek_set_seek_type ()">rygel_http_seek_set_seek_type</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a href="../libsoup-2.4/SoupMessage.html"><span class="returnvalue">SoupMessage</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="RygelHTTPSeek.html#rygel-http-seek-get-msg" title="rygel_http_seek_get_msg ()">rygel_http_seek_get_msg</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a href="../glib/glib-Basic-Types.html#gint64"><span class="returnvalue">gint64</span></a>
+</td>
+<td class="function_name">
+<a class="link" href="RygelHTTPSeek.html#rygel-http-seek-get-start" title="rygel_http_seek_get_start ()">rygel_http_seek_get_start</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a href="../glib/glib-Basic-Types.html#gint64"><span class="returnvalue">gint64</span></a>
+</td>
+<td class="function_name">
+<a class="link" href="RygelHTTPSeek.html#rygel-http-seek-get-stop" title="rygel_http_seek_get_stop ()">rygel_http_seek_get_stop</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a href="../glib/glib-Basic-Types.html#gint64"><span class="returnvalue">gint64</span></a>
+</td>
+<td class="function_name">
+<a class="link" href="RygelHTTPSeek.html#rygel-http-seek-get-step" title="rygel_http_seek_get_step ()">rygel_http_seek_get_step</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a href="../glib/glib-Basic-Types.html#gint64"><span class="returnvalue">gint64</span></a>
+</td>
+<td class="function_name">
+<a class="link" href="RygelHTTPSeek.html#rygel-http-seek-get-length" title="rygel_http_seek_get_length ()">rygel_http_seek_get_length</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a href="../glib/glib-Basic-Types.html#gint64"><span class="returnvalue">gint64</span></a>
+</td>
+<td class="function_name">
+<a class="link" href="RygelHTTPSeek.html#rygel-http-seek-get-total-length" title="rygel_http_seek_get_total_length ()">rygel_http_seek_get_total_length</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="RygelHTTPSeek.properties"></a><h2>Properties</h2>
+<div class="informaltable"><table border="0">
+<colgroup>
+<col width="150px" class="properties_type">
+<col width="300px" class="properties_name">
+<col width="200px" class="properties_flags">
+</colgroup>
+<tbody>
+<tr>
+<td class="property_type"><a href="../glib/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a></td>
+<td class="property_name"><a class="link" href="RygelHTTPSeek.html#RygelHTTPSeek--length" title="The “length” property">length</a></td>
+<td class="property_flags">Read</td>
+</tr>
+<tr>
+<td class="property_type">
+<a href="../libsoup-2.4/SoupMessage.html"><span class="type">SoupMessage</span></a> *</td>
+<td class="property_name"><a class="link" href="RygelHTTPSeek.html#RygelHTTPSeek--msg" title="The “msg” property">msg</a></td>
+<td class="property_flags">Read</td>
+</tr>
+<tr>
+<td class="property_type"><a class="link" href="RygelHTTPSeek.html#RygelHTTPSeekType" title="enum RygelHTTPSeekType"><span class="type">RygelHTTPSeekType</span></a></td>
+<td class="property_name"><a class="link" href="RygelHTTPSeek.html#RygelHTTPSeek--seek-type" title="The “seek-type” property">seek-type</a></td>
+<td class="property_flags">Read / Write</td>
+</tr>
+<tr>
+<td class="property_type"><a href="../glib/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a></td>
+<td class="property_name"><a class="link" href="RygelHTTPSeek.html#RygelHTTPSeek--start" title="The “start” property">start</a></td>
+<td class="property_flags">Read</td>
+</tr>
+<tr>
+<td class="property_type"><a href="../glib/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a></td>
+<td class="property_name"><a class="link" href="RygelHTTPSeek.html#RygelHTTPSeek--step" title="The “step” property">step</a></td>
+<td class="property_flags">Read</td>
+</tr>
+<tr>
+<td class="property_type"><a href="../glib/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a></td>
+<td class="property_name"><a class="link" href="RygelHTTPSeek.html#RygelHTTPSeek--stop" title="The “stop” property">stop</a></td>
+<td class="property_flags">Read</td>
+</tr>
+<tr>
+<td class="property_type"><a href="../glib/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a></td>
+<td class="property_name"><a class="link" href="RygelHTTPSeek.html#RygelHTTPSeek--total-length" title="The “total-length” property">total-length</a></td>
+<td class="property_flags">Read</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="RygelHTTPSeek.other"></a><h2>Types and Values</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="name">
+<col class="description">
+</colgroup>
+<tbody>
+<tr>
+<td class="datatype_keyword">struct</td>
+<td class="function_name"><a class="link" href="RygelHTTPSeek.html#RygelHTTPSeek-struct" title="struct RygelHTTPSeek">RygelHTTPSeek</a></td>
+</tr>
+<tr>
+<td class="datatype_keyword">struct</td>
+<td class="function_name"><a class="link" href="RygelHTTPSeek.html#RygelHTTPSeekClass" title="struct RygelHTTPSeekClass">RygelHTTPSeekClass</a></td>
+</tr>
+<tr>
+<td class="datatype_keyword">enum</td>
+<td class="function_name"><a class="link" href="RygelHTTPSeek.html#RygelHTTPSeekType" title="enum RygelHTTPSeekType">RygelHTTPSeekType</a></td>
+</tr>
+<tr>
+<td class="datatype_keyword">enum</td>
+<td class="function_name"><a class="link" href="RygelHTTPSeek.html#RygelHTTPSeekError" title="enum RygelHTTPSeekError">RygelHTTPSeekError</a></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="RygelHTTPSeek.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="screen">    <a href="/opt/rygel-stable/share/gtk-doc/html/gobject/gobject-Enumeration-and-Flag-Types.html">GEnum</a>
+    <span class="lineart">╰──</span> RygelHTTPSeekType
+    <a href="../gobject/gobject-The-Base-Object-Type.html#GObject">GObject</a>
+    <span class="lineart">╰──</span> RygelHTTPSeek
+</pre>
+</div>
+<div class="refsect1">
+<a name="RygelHTTPSeek.description"></a><h2>Description</h2>
+<p>It can be one of:</p>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: none; "><li class="listitem" style="list-style-type: none">
+<p>- The classic Range request (seek_type == HTTPSeekType.BYTE), with start and stop in bytes. </p>
+<p>- The DLNA-Specific "TimeSeekRange.dlna.org" request (seek_type == HTTPSeekType.TIME) with start and stop in microseconds.</p>
+</li></ul></div>
+</div>
+<div class="refsect1">
+<a name="RygelHTTPSeek.functions_details"></a><h2>Functions</h2>
+<div class="refsect2">
+<a name="RYGEL-TYPE-HTTP-SEEK:CAPS"></a><h3>RYGEL_TYPE_HTTP_SEEK</h3>
+<pre class="programlisting">#define RYGEL_TYPE_HTTP_SEEK (rygel_http_seek_get_type ())
+</pre>
+<p>The type for <a class="link" href="RygelHTTPSeek.html" title="RygelHTTPSeek"><span class="type">RygelHTTPSeek</span></a>.</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-http-seek-add-response-headers"></a><h3>rygel_http_seek_add_response_headers ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+rygel_http_seek_add_response_headers (<em class="parameter"><code><a class="link" href="RygelHTTPSeek.html" title="RygelHTTPSeek"><span class="type">RygelHTTPSeek</span></a> *self</code></em>);</pre>
+<div class="refsect3">
+<a name="id-1.6.4.8.3.4"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelHTTPSeek.html" title="RygelHTTPSeek"><span class="type">RygelHTTPSeek</span></a> instance</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-http-seek-get-seek-type"></a><h3>rygel_http_seek_get_seek_type ()</h3>
+<pre class="programlisting"><a class="link" href="RygelHTTPSeek.html#RygelHTTPSeekType" title="enum RygelHTTPSeekType"><span class="returnvalue">RygelHTTPSeekType</span></a>
+rygel_http_seek_get_seek_type (<em class="parameter"><code><a class="link" href="RygelHTTPSeek.html" title="RygelHTTPSeek"><span class="type">RygelHTTPSeek</span></a> *self</code></em>);</pre>
+<p>Get and return the current value of the <a class="link" href="RygelHTTPSeek.html#RygelHTTPSeek--seek-type" title="The “seek-type” property"><span class="type">"seek-type"</span></a> property.</p>
+<p>Identifies whether this is a class Range request or a DLNA-specific "TimeSeekRange.dlna.org" request.</p>
+<div class="refsect3">
+<a name="id-1.6.4.8.4.6"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelHTTPSeek.html" title="RygelHTTPSeek"><span class="type">RygelHTTPSeek</span></a> instance to query</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.6.4.8.4.7"></a><h4>Returns</h4>
+<p> the value of the <a class="link" href="RygelHTTPSeek.html#RygelHTTPSeek--seek-type" title="The “seek-type” property"><span class="type">"seek-type"</span></a> property</p>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-http-seek-set-seek-type"></a><h3>rygel_http_seek_set_seek_type ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+rygel_http_seek_set_seek_type (<em class="parameter"><code><a class="link" href="RygelHTTPSeek.html" title="RygelHTTPSeek"><span class="type">RygelHTTPSeek</span></a> *self</code></em>,
+                               <em class="parameter"><code><a class="link" href="RygelHTTPSeek.html#RygelHTTPSeekType" title="enum RygelHTTPSeekType"><span class="type">RygelHTTPSeekType</span></a> value</code></em>);</pre>
+<p>Set the value of the <a class="link" href="RygelHTTPSeek.html#RygelHTTPSeek--seek-type" title="The “seek-type” property"><span class="type">"seek-type"</span></a> property to <em class="parameter"><code>value</code></em>
+.</p>
+<p>Identifies whether this is a class Range request or a DLNA-specific "TimeSeekRange.dlna.org" request.</p>
+<div class="refsect3">
+<a name="id-1.6.4.8.5.6"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelHTTPSeek.html" title="RygelHTTPSeek"><span class="type">RygelHTTPSeek</span></a> instance to modify</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>value</p></td>
+<td class="parameter_description"><p>the new value of the <a class="link" href="RygelHTTPSeek.html#RygelHTTPSeek--seek-type" title="The “seek-type” property"><span class="type">"seek-type"</span></a> property</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-http-seek-get-msg"></a><h3>rygel_http_seek_get_msg ()</h3>
+<pre class="programlisting"><a href="../libsoup-2.4/SoupMessage.html"><span class="returnvalue">SoupMessage</span></a> *
+rygel_http_seek_get_msg (<em class="parameter"><code><a class="link" href="RygelHTTPSeek.html" title="RygelHTTPSeek"><span class="type">RygelHTTPSeek</span></a> *self</code></em>);</pre>
+<p>Get and return the current value of the <a class="link" href="RygelHTTPSeek.html#RygelHTTPSeek--msg" title="The “msg” property"><span class="type">"msg"</span></a> property.</p>
+<div class="refsect3">
+<a name="id-1.6.4.8.6.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelHTTPSeek.html" title="RygelHTTPSeek"><span class="type">RygelHTTPSeek</span></a> instance to query</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.6.4.8.6.6"></a><h4>Returns</h4>
+<p> the value of the <a class="link" href="RygelHTTPSeek.html#RygelHTTPSeek--msg" title="The “msg” property"><span class="type">"msg"</span></a> property</p>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-http-seek-get-start"></a><h3>rygel_http_seek_get_start ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gint64"><span class="returnvalue">gint64</span></a>
+rygel_http_seek_get_start (<em class="parameter"><code><a class="link" href="RygelHTTPSeek.html" title="RygelHTTPSeek"><span class="type">RygelHTTPSeek</span></a> *self</code></em>);</pre>
+<p>Get and return the current value of the <a class="link" href="RygelHTTPSeek.html#RygelHTTPSeek--start" title="The “start” property"><span class="type">"start"</span></a> property.</p>
+<p>The start of the range as a number of bytes (classic) or as microseconds (DLNA-specific). See seek_type.</p>
+<div class="refsect3">
+<a name="id-1.6.4.8.7.6"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelHTTPSeek.html" title="RygelHTTPSeek"><span class="type">RygelHTTPSeek</span></a> instance to query</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.6.4.8.7.7"></a><h4>Returns</h4>
+<p> the value of the <a class="link" href="RygelHTTPSeek.html#RygelHTTPSeek--start" title="The “start” property"><span class="type">"start"</span></a> property</p>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-http-seek-get-stop"></a><h3>rygel_http_seek_get_stop ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gint64"><span class="returnvalue">gint64</span></a>
+rygel_http_seek_get_stop (<em class="parameter"><code><a class="link" href="RygelHTTPSeek.html" title="RygelHTTPSeek"><span class="type">RygelHTTPSeek</span></a> *self</code></em>);</pre>
+<p>Get and return the current value of the <a class="link" href="RygelHTTPSeek.html#RygelHTTPSeek--stop" title="The “stop” property"><span class="type">"stop"</span></a> property.</p>
+<p>The end of the range as a number of bytes (classic) or as microseconds (DLNA-specific). See seek_type.</p>
+<div class="refsect3">
+<a name="id-1.6.4.8.8.6"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelHTTPSeek.html" title="RygelHTTPSeek"><span class="type">RygelHTTPSeek</span></a> instance to query</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.6.4.8.8.7"></a><h4>Returns</h4>
+<p> the value of the <a class="link" href="RygelHTTPSeek.html#RygelHTTPSeek--stop" title="The “stop” property"><span class="type">"stop"</span></a> property</p>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-http-seek-get-step"></a><h3>rygel_http_seek_get_step ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gint64"><span class="returnvalue">gint64</span></a>
+rygel_http_seek_get_step (<em class="parameter"><code><a class="link" href="RygelHTTPSeek.html" title="RygelHTTPSeek"><span class="type">RygelHTTPSeek</span></a> *self</code></em>);</pre>
+<p>Get and return the current value of the <a class="link" href="RygelHTTPSeek.html#RygelHTTPSeek--step" title="The “step” property"><span class="type">"step"</span></a> property.</p>
+<p>Either 1 byte (classic) or as 1000 G_TIME_SPAN_MILLISECOND microseconds (DLNA-specific). See seek_type.</p>
+<div class="refsect3">
+<a name="id-1.6.4.8.9.6"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelHTTPSeek.html" title="RygelHTTPSeek"><span class="type">RygelHTTPSeek</span></a> instance to query</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.6.4.8.9.7"></a><h4>Returns</h4>
+<p> the value of the <a class="link" href="RygelHTTPSeek.html#RygelHTTPSeek--step" title="The “step” property"><span class="type">"step"</span></a> property</p>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-http-seek-get-length"></a><h3>rygel_http_seek_get_length ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gint64"><span class="returnvalue">gint64</span></a>
+rygel_http_seek_get_length (<em class="parameter"><code><a class="link" href="RygelHTTPSeek.html" title="RygelHTTPSeek"><span class="type">RygelHTTPSeek</span></a> *self</code></em>);</pre>
+<p>Get and return the current value of the <a class="link" href="RygelHTTPSeek.html#RygelHTTPSeek--length" title="The “length” property"><span class="type">"length"</span></a> property.</p>
+<p>The length of the range as a number of bytes (classic) or as microseconds (DLNA-specific). See seek_type.</p>
+<div class="refsect3">
+<a name="id-1.6.4.8.10.6"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelHTTPSeek.html" title="RygelHTTPSeek"><span class="type">RygelHTTPSeek</span></a> instance to query</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.6.4.8.10.7"></a><h4>Returns</h4>
+<p> the value of the <a class="link" href="RygelHTTPSeek.html#RygelHTTPSeek--length" title="The “length” property"><span class="type">"length"</span></a> property</p>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-http-seek-get-total-length"></a><h3>rygel_http_seek_get_total_length ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gint64"><span class="returnvalue">gint64</span></a>
+rygel_http_seek_get_total_length (<em class="parameter"><code><a class="link" href="RygelHTTPSeek.html" title="RygelHTTPSeek"><span class="type">RygelHTTPSeek</span></a> *self</code></em>);</pre>
+<p>Get and return the current value of the <a class="link" href="RygelHTTPSeek.html#RygelHTTPSeek--total-length" title="The “total-length” property"><span class="type">"total-length"</span></a> property.</p>
+<p>The length of the media file as a number of bytes (classic) or as microseconds (DLNA-specific). See seek_type.</p>
+<div class="refsect3">
+<a name="id-1.6.4.8.11.6"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelHTTPSeek.html" title="RygelHTTPSeek"><span class="type">RygelHTTPSeek</span></a> instance to query</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.6.4.8.11.7"></a><h4>Returns</h4>
+<p> the value of the <a class="link" href="RygelHTTPSeek.html#RygelHTTPSeek--total-length" title="The “total-length” property"><span class="type">"total-length"</span></a> property</p>
+<p></p>
+</div>
+</div>
+</div>
+<div class="refsect1">
+<a name="RygelHTTPSeek.other_details"></a><h2>Types and Values</h2>
+<div class="refsect2">
+<a name="RygelHTTPSeek-struct"></a><h3>struct RygelHTTPSeek</h3>
+<pre class="programlisting">struct RygelHTTPSeek;</pre>
+<p>HTTPSeek is an abstract representation of a ranged HTTP request.</p>
+<p>It can be one of:</p>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: none; "><li class="listitem" style="list-style-type: none">
+<p>- The classic Range request (seek_type == HTTPSeekType.BYTE), with start and stop in bytes. </p>
+<p>- The DLNA-Specific "TimeSeekRange.dlna.org" request (seek_type == HTTPSeekType.TIME) with start and stop in microseconds.</p>
+</li></ul></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelHTTPSeekClass"></a><h3>struct RygelHTTPSeekClass</h3>
+<pre class="programlisting">struct RygelHTTPSeekClass {
+	GObjectClass parent_class;
+	void (*add_response_headers) (RygelHTTPSeek* self);
+};
+</pre>
+<p>The class structure for <a class="link" href="RygelHTTPSeek.html#RYGEL-TYPE-HTTP-SEEK:CAPS" title="RYGEL_TYPE_HTTP_SEEK"><code class="literal">RYGEL_TYPE_HTTP_SEEK</code></a>. All the fields in this structure are private and should never be accessed directly.</p>
+<div class="refsect3">
+<a name="id-1.6.4.9.3.5"></a><h4>Members</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="300px" class="struct_members_name">
+<col class="struct_members_description">
+<col width="200px" class="struct_members_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="struct_member_name"><p><a href="../gobject/gobject-The-Base-Object-Type.html#GObjectClass"><span class="type">GObjectClass</span></a> <em class="structfield"><code><a name="RygelHTTPSeekClass.parent-class"></a>parent_class</code></em>;</p></td>
+<td class="struct_member_description"><p>the parent class structure</p></td>
+<td class="struct_member_annotations"> </td>
+</tr>
+<tr>
+<td class="struct_member_name"><p><em class="structfield"><code><a name="RygelHTTPSeekClass.add-response-headers"></a>add_response_headers</code></em> ()</p></td>
+<td class="struct_member_description"><p>virtual method called by <a class="link" href="RygelHTTPSeek.html#rygel-http-seek-add-response-headers" title="rygel_http_seek_add_response_headers ()"><code class="function">rygel_http_seek_add_response_headers()</code></a></p></td>
+<td class="struct_member_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelHTTPSeekType"></a><h3>enum RygelHTTPSeekType</h3>
+<div class="refsect3">
+<a name="id-1.6.4.9.4.3"></a><h4>Members</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="300px" class="enum_members_name">
+<col class="enum_members_description">
+<col width="200px" class="enum_members_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="enum_member_name"><p><a name="RYGEL-HTTP-SEEK-TYPE-BYTE:CAPS"></a>RYGEL_HTTP_SEEK_TYPE_BYTE</p></td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="RYGEL-HTTP-SEEK-TYPE-TIME:CAPS"></a>RYGEL_HTTP_SEEK_TYPE_TIME</p></td>
+<td> </td>
+<td> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelHTTPSeekError"></a><h3>enum RygelHTTPSeekError</h3>
+<div class="refsect3">
+<a name="id-1.6.4.9.5.3"></a><h4>Members</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="300px" class="enum_members_name">
+<col class="enum_members_description">
+<col width="200px" class="enum_members_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="enum_member_name"><p><a name="RYGEL-HTTP-SEEK-ERROR-INVALID-RANGE:CAPS"></a>RYGEL_HTTP_SEEK_ERROR_INVALID_RANGE</p></td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="RYGEL-HTTP-SEEK-ERROR-OUT-OF-RANGE:CAPS"></a>RYGEL_HTTP_SEEK_ERROR_OUT_OF_RANGE</p></td>
+<td> </td>
+<td> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="refsect1">
+<a name="RygelHTTPSeek.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="RygelHTTPSeek--length"></a><h3>The <code class="literal">“length”</code> property</h3>
+<pre class="programlisting">  “length”                   <a href="../glib/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a></pre>
+<p>The length of the range as a number of bytes (classic) or as microseconds (DLNA-specific). See seek_type.</p>
+<p>Flags: Read</p>
+<p>Default value: 0</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelHTTPSeek--msg"></a><h3>The <code class="literal">“msg”</code> property</h3>
+<pre class="programlisting">  “msg”                      <a href="../libsoup-2.4/SoupMessage.html"><span class="type">SoupMessage</span></a> *</pre>
+<p>msg.</p>
+<p>Flags: Read</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelHTTPSeek--seek-type"></a><h3>The <code class="literal">“seek-type”</code> property</h3>
+<pre class="programlisting">  “seek-type”                <a class="link" href="RygelHTTPSeek.html#RygelHTTPSeekType" title="enum RygelHTTPSeekType"><span class="type">RygelHTTPSeekType</span></a></pre>
+<p>Identifies whether this is a class Range request or a DLNA-specific "TimeSeekRange.dlna.org" request.</p>
+<p>Flags: Read / Write</p>
+<p>Default value: RYGEL_HTTP_SEEK_TYPE_BYTE</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelHTTPSeek--start"></a><h3>The <code class="literal">“start”</code> property</h3>
+<pre class="programlisting">  “start”                    <a href="../glib/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a></pre>
+<p>The start of the range as a number of bytes (classic) or as microseconds (DLNA-specific). See seek_type.</p>
+<p>Flags: Read</p>
+<p>Default value: 0</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelHTTPSeek--step"></a><h3>The <code class="literal">“step”</code> property</h3>
+<pre class="programlisting">  “step”                     <a href="../glib/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a></pre>
+<p>Either 1 byte (classic) or as 1000 G_TIME_SPAN_MILLISECOND microseconds (DLNA-specific). See seek_type.</p>
+<p>Flags: Read</p>
+<p>Default value: 0</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelHTTPSeek--stop"></a><h3>The <code class="literal">“stop”</code> property</h3>
+<pre class="programlisting">  “stop”                     <a href="../glib/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a></pre>
+<p>The end of the range as a number of bytes (classic) or as microseconds (DLNA-specific). See seek_type.</p>
+<p>Flags: Read</p>
+<p>Default value: 0</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelHTTPSeek--total-length"></a><h3>The <code class="literal">“total-length”</code> property</h3>
+<pre class="programlisting">  “total-length”             <a href="../glib/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a></pre>
+<p>The length of the media file as a number of bytes (classic) or as microseconds (DLNA-specific). See seek_type.</p>
+<p>Flags: Read</p>
+<p>Default value: 0</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.20.1</div>
+</body>
+</html>

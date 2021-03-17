@@ -1,0 +1,33 @@
+From 2f5a96007c9916753c6a5372b3bb276dc5c4a137 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Fri, 11 Apr 2014 07:26:47 +0200
+Subject: [PATCH] sue:s800: Remove enable_caches function
+
+Already defined and used so we get conflict with multiple defined functions
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ board/streamunlimited/stream800/board.c | 7 -------
+ 1 file changed, 7 deletions(-)
+
+diff --git a/board/streamunlimited/stream800/board.c b/board/streamunlimited/stream800/board.c
+index 9116974..884d8b8 100755
+--- a/board/streamunlimited/stream800/board.c
++++ b/board/streamunlimited/stream800/board.c
+@@ -81,13 +81,6 @@ struct StreamBoardInterface *board_interface = NULL;
+ 
+ static void init_si5351x(void);
+ 
+-void enable_caches(void)
+-{
+-	puts("Enabling caches ...\n");
+-	icache_enable();
+-	dcache_enable();
+-}
+-
+ Stream800ModuleVersion get_module_version(void)
+ {
+ 	return board.moduleVersion;
+-- 
+2.7.4
+

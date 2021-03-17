@@ -1,0 +1,92 @@
+<!-- ##### SECTION Title ##### -->
+gmime-gpg-context
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GMimeGpgContext ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION g_mime_gpg_context_new ##### -->
+<para>
+
+</para>
+
+@request_passwd: 
+@path: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_gpg_context_get_always_trust ##### -->
+<para>
+
+</para>
+
+@ctx: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_gpg_context_set_always_trust ##### -->
+<para>
+
+</para>
+
+@ctx: 
+@always_trust: 
+
+
+<!-- ##### FUNCTION g_mime_gpg_context_get_auto_key_retrieve ##### -->
+<para>
+
+</para>
+
+@ctx: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_gpg_context_set_auto_key_retrieve ##### -->
+<para>
+
+</para>
+
+@ctx: 
+@auto_key_retrieve: 
+
+
+<!-- ##### FUNCTION g_mime_gpg_context_get_use_agent ##### -->
+<para>
+
+</para>
+
+@ctx: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_gpg_context_set_use_agent ##### -->
+<para>
+
+</para>
+
+@ctx: 
+@use_agent: 
+
+

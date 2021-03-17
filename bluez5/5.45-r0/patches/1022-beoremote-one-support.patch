@@ -1,0 +1,237 @@
+From 2eaba20f0992eaa3093a4ee417c65e7787b80968 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Tue, 13 Jun 2017 12:49:48 +0200
+Subject: [PATCH] beoremote one support
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ src/adapter.c       |  5 ++++-
+ src/attrib-server.c | 62 +++++++++++++++++++++++++++++++++++++++++++++++------
+ src/device.c        | 30 ++++++++++++++++++++++++--
+ 3 files changed, 88 insertions(+), 9 deletions(-)
+
+diff --git a/src/adapter.c b/src/adapter.c
+index 3dfd68c..ab6c8d5 100644
+--- a/src/adapter.c
++++ b/src/adapter.c
+@@ -5432,6 +5432,7 @@ static void adapter_remove(struct btd_adapter *adapter)
+ 	adapter->devices = NULL;
+ 
+ 	unload_drivers(adapter);
++	btd_adapter_gatt_server_stop(adapter);
+ 
+ 	db = btd_gatt_database_get_db(adapter->database);
+ 	gatt_db_unregister(db, adapter->db_id);
+@@ -5687,7 +5688,7 @@ static void update_found_devices(struct btd_adapter *adapter,
+ 		device_update_last_seen(dev, BDADDR_BREDR);
+ 	}
+ 
+-	if (eir_data.name != NULL && eir_data.name_complete)
++	if (eir_data.name != NULL)
+ 		device_store_cached_name(dev, eir_data.name);
+ 
+ 	/*
+@@ -7655,6 +7656,8 @@ static int adapter_register(struct btd_adapter *adapter)
+ 							services_modified,
+ 							adapter, NULL);
+ 
++	btd_adapter_gatt_server_start(adapter);
++
+ 	load_config(adapter);
+ 	fix_storage(adapter);
+ 	load_drivers(adapter);
+diff --git a/src/attrib-server.c b/src/attrib-server.c
+index 639a107..0df6f06 100644
+--- a/src/attrib-server.c
++++ b/src/attrib-server.c
+@@ -794,6 +794,48 @@ static int read_device_ccc(struct btd_device *device, uint16_t handle,
+ 	return err;
+ }
+ 
++int write_device_ccc(struct btd_device *device, uint16_t handle, uint16_t cccval)
++{
++	char *filename;
++	GKeyFile *key_file;
++	char group[6], value[5];
++	char *data;
++	gsize length = 0;
++	int err = 0;
++
++	filename = btd_device_get_storage_path(device, "ccc");
++	if (!filename) {
++		warn("Unable to get ccc storage path for device");
++		return errno;
++	}
++
++	key_file = g_key_file_new();
++	g_key_file_load_from_file(key_file, filename, 0, NULL);
++
++	sprintf(group, "%hu", handle);
++	sprintf(value, "%hX", cccval);
++	g_key_file_set_string(key_file, group, "Value", value);
++
++	data = g_key_file_to_data(key_file, &length, NULL);
++	if (length > 0) {
++		err = create_file(filename, S_IRUSR | S_IWUSR);
++		if (err != 0) {
++			warn("Failed to create file: %s", filename);
++		} else {
++			if (!g_file_set_contents(filename, data, length, NULL)) {
++				error("Failed to write content to file %s", filename);
++				err = -EINVAL;
++			}
++		}
++	}
++
++	g_free(data);
++	g_free(filename);
++	g_key_file_free(key_file);
++
++	return err;
++}
++
+ static uint16_t read_value(struct gatt_channel *channel, uint16_t handle,
+ 						uint8_t *pdu, size_t len)
+ {
+@@ -997,7 +1039,7 @@ static void channel_handler(const uint8_t *ipdu, uint16_t len,
+ 	size_t vlen;
+ 	uint8_t *value = g_attrib_get_buffer(channel->attrib, &vlen);
+ 
+-	DBG("op 0x%02x", ipdu[0]);
++	//DBG("op 0x%02x", ipdu[0]);
+ 
+ 	if (len > vlen) {
+ 		error("Too much data on ATT socket");
+@@ -1360,7 +1402,7 @@ int btd_adapter_gatt_server_start(struct btd_adapter *adapter)
+ 
+ 	addr = btd_adapter_get_address(server->adapter);
+ 
+-	/* BR/EDR socket */
++	/* Don't use BR/EDR socket
+ 	server->l2cap_io = bt_io_listen(connect_event, NULL, NULL, NULL, &gerr,
+ 					BT_IO_OPT_SOURCE_BDADDR, addr,
+ 					BT_IO_OPT_PSM, ATT_PSM,
+@@ -1373,6 +1415,7 @@ int btd_adapter_gatt_server_start(struct btd_adapter *adapter)
+ 		gatt_server_free(server);
+ 		return -1;
+ 	}
++	*/
+ 
+ 	if (!register_core_services(server)) {
+ 		gatt_server_free(server);
+@@ -1570,7 +1613,7 @@ int attrib_db_update(struct btd_adapter *adapter, uint16_t handle,
+ 
+ 	server = l->data;
+ 
+-	DBG("handle=0x%04x", handle);
++	//~DBG("handle=0x%04x", handle);
+ 
+ 	dl = g_list_find_custom(server->database, GUINT_TO_POINTER(h),
+ 								handle_cmp);
+@@ -1662,9 +1705,9 @@ int attrib_notify(struct btd_device *device, uint16_t handle, uint16_t ccc_handl
+ 	struct gatt_channel *channel;
+ 	GSList *l;
+ 	size_t pdu_len, max_pdu_len, pdu_i, payload_len;
+-	int header_size, pdu_count;
++	int read_device_ccc_ret, ccc_write_ret, header_size, pdu_count;
+ 	bdaddr_t adapter_address;
+-	uint16_t cccval;
++	uint16_t cccval, tmp_cccval;
+ 	uint8_t *pdu;
+ 
+ 	g_assert(device);
+@@ -1693,7 +1736,14 @@ int attrib_notify(struct btd_device *device, uint16_t handle, uint16_t ccc_handl
+ 		return -ENOENT;
+ 	}
+ 
+-	if (read_device_ccc(channel->device, ccc_handle, &cccval) == 0) {
++	read_device_ccc_ret = read_device_ccc(channel->device, ccc_handle, &cccval);
++	if (read_device_ccc_ret != 0) {
++		tmp_cccval = GATT_CLIENT_CHARAC_CFG_NOTIF_BIT | GATT_CLIENT_CHARAC_CFG_IND_BIT;
++		ccc_write_ret = write_device_ccc(channel->device, ccc_handle, tmp_cccval);
++		DBG("write_device_ccc: %d", ccc_write_ret);
++		read_device_ccc_ret = read_device_ccc(channel->device, ccc_handle, &cccval);
++	}
++	if (read_device_ccc_ret == 0) {
+ 		// read ccc ok
+ 		if (!(cccval & (GATT_CLIENT_CHARAC_CFG_NOTIF_BIT | GATT_CLIENT_CHARAC_CFG_IND_BIT))) {
+ 			error("Notifications not allowed for device - didn't notify");
+diff --git a/src/device.c b/src/device.c
+index aef00ee..fd3c55e 100644
+--- a/src/device.c
++++ b/src/device.c
+@@ -218,6 +218,7 @@ struct btd_device {
+ 	struct bt_att *att;			/* The new ATT transport */
+ 	uint16_t att_mtu;			/* The ATT MTU */
+ 	unsigned int att_disconn_id;
++	guint		attachid;		/* Attrib server attach */
+ 
+ 	/*
+ 	 * TODO: For now, device creates and owns the client-role gatt_db, but
+@@ -580,6 +581,14 @@ static void attio_cleanup(struct btd_device *device)
+ 		GAttrib *attrib = device->attrib;
+ 
+ 		device->attrib = NULL;
++
++		if (device->attachid) {
++			guint attachid = device->attachid;
++
++			device->attachid = 0;
++			attrib_channel_detach(attrib, attachid);
++		}
++
+ 		g_attrib_cancel_all(attrib);
+ 		g_attrib_unref(attrib);
+ 	}
+@@ -4852,6 +4861,12 @@ bool device_attach_att(struct btd_device *dev, GIOChannel *io)
+ 	struct btd_gatt_database *database;
+ 	const bdaddr_t *src, *dst;
+ 	char srcaddr[18], dstaddr[18];
++	bool legacy_gatt_api = FALSE;
++
++	if (strncmp(dev->name, "BEORC", 5) == 0) {
++		DBG("Using legacy GATT api!");
++		legacy_gatt_api = TRUE;
++	}
+ 
+ 	bt_io_get(io, &gerr, BT_IO_OPT_SEC_LEVEL, &sec_level,
+ 						BT_IO_OPT_IMTU, &mtu,
+@@ -4884,6 +4899,15 @@ bool device_attach_att(struct btd_device *dev, GIOChannel *io)
+ 		return false;
+ 	}
+ 
++	if (legacy_gatt_api) {
++		dev->attachid = attrib_channel_attach(attrib);
++		if (dev->attachid == 0) {
++			g_attrib_unref(attrib);
++			error("Attribute server attach failure!");
++			return false;
++		}
++	}
++
+ 	dev->attrib = attrib;
+ 	dev->att = g_attrib_get_att(attrib);
+ 
+@@ -4901,7 +4925,8 @@ bool device_attach_att(struct btd_device *dev, GIOChannel *io)
+ 		bt_att_set_remote_key(dev->att, dev->remote_csrk->key,
+ 							remote_counter, dev);
+ 
+-	database = btd_adapter_get_database(dev->adapter);
++	if (!legacy_gatt_api)
++		database = btd_adapter_get_database(dev->adapter);
+ 
+ 	src = btd_adapter_get_address(dev->adapter);
+ 	ba2str(src, srcaddr);
+@@ -4913,7 +4938,8 @@ bool device_attach_att(struct btd_device *dev, GIOChannel *io)
+ 		load_gatt_db(dev, srcaddr, dstaddr);
+ 
+ 	gatt_client_init(dev);
+-	gatt_server_init(dev, btd_gatt_database_get_db(database));
++	if (!legacy_gatt_api)
++		gatt_server_init(dev, btd_gatt_database_get_db(database));
+ 
+ 	/*
+ 	 * Remove the device from the connect_list and give the passive
+-- 
+2.7.4
+

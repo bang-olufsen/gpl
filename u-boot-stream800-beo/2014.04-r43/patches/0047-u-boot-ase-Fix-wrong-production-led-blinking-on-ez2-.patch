@@ -1,0 +1,82 @@
+From bf37b04fa56a2155ba8ef03bf6b2dee4b26295ea Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Fri, 6 Mar 2015 12:16:17 +0100
+Subject: [PATCH] u-boot: ase: Fix wrong production led blinking on ez2 (state
+ booting)
+
+When we are in update we use bstate dontunplug. When fwupdate is finished we use
+bstate booting. There was an issue with ez2mk2 that Prod_green was not enabled.
+Enable in it this way. This code must be refactored and be product dependent!
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ board/streamunlimited/stream800/ase_fep.c             | 9 +++++++--
+ board/streamunlimited/stream800/ase_fep.h             | 3 ++-
+ board/streamunlimited/stream800/board-beo_ase_board.c | 2 +-
+ 3 files changed, 10 insertions(+), 4 deletions(-)
+
+diff --git a/board/streamunlimited/stream800/ase_fep.c b/board/streamunlimited/stream800/ase_fep.c
+index 1c5cf1f..abc6db4 100644
+--- a/board/streamunlimited/stream800/ase_fep.c
++++ b/board/streamunlimited/stream800/ase_fep.c
+@@ -169,16 +169,21 @@ static void disable_prod_leds(struct ase_fep *fep)
+ 	}
+ }
+ 
+-void set_boot_state_ase_fep(struct ase_fep *fep)
++void set_boot_state_ase_fep(struct ase_fep *fep, const struct Stream800Board *board)
+ {
+ 	// Prod_white and Net_white, slow blink (600/200ms)
+-	const u8 bootingStateLedCmd[] = { 0x20,0x80,0x18,0x00,0x04,0x00,0x00,0x00,0x04,0x00,0x01,0x0,0x26,0x0,0x0,0x0,0x00,0x00,0x01,0x0,0x26,0x0,0x0,0x0 };
++	u8 bootingStateLedCmd[] = { 0x20,0x80,0x18,0x00,0x04,0x00,0x00,0x00,0x04,0x00,0x01,0x0,0x26,0x0,0x0,0x0,0x00,0x00,0x01,0x0,0x26,0x0,0x0,0x0 };
+ 	u8 bootStateReplay[28];
+ 
+ 	/* disable all leds */
+ 	disable_net_leds(fep);
+ 	disable_prod_leds(fep);
+ 
++	// for ez2mk2 we blink with Prod_Green instead of Prod_white
++	if (board->carrierBoardType == CBT_BeoASE_EZ2MK2) {
++		bootingStateLedCmd[8] = 0x07;
++	}
++
+ 	send_ase_fep(fep, bootingStateLedCmd, 24);
+ 	receive_ase_fep(fep, bootStateReplay, 28);
+ }
+diff --git a/board/streamunlimited/stream800/ase_fep.h b/board/streamunlimited/stream800/ase_fep.h
+index aa616d6..ec04784 100644
+--- a/board/streamunlimited/stream800/ase_fep.h
++++ b/board/streamunlimited/stream800/ase_fep.h
+@@ -18,6 +18,7 @@
+ #define __ASE_FEP_H
+ 
+ #include <common.h>
++#include "board.h"
+ 
+ struct ase_fep_version {
+ 	u16 rsp;
+@@ -49,7 +50,7 @@ struct ase_fep_version version_ase_fep(struct ase_fep *fep);
+ 
+ bool is_pressed_update_button(struct ase_fep *fep);
+ 
+-void set_boot_state_ase_fep(struct ase_fep *fep);
++void set_boot_state_ase_fep(struct ase_fep *fep, const struct Stream800Board *board);
+ 
+ void set_error_state_ase_fep(struct ase_fep *fep);
+ 
+diff --git a/board/streamunlimited/stream800/board-beo_ase_board.c b/board/streamunlimited/stream800/board-beo_ase_board.c
+index 2db1bf3..54887b2 100644
+--- a/board/streamunlimited/stream800/board-beo_ase_board.c
++++ b/board/streamunlimited/stream800/board-beo_ase_board.c
+@@ -126,7 +126,7 @@ void beo_ase__on_board_state_changed(const struct Stream800Board *board, BoardSt
+ 	case BS_BootingKernel:
+ 		/* We power on the led only at boot withouth firmware update */
+ 		if (bootcount_load() <= 1) {
+-			set_boot_state_ase_fep(fep_mcu);
++			set_boot_state_ase_fep(fep_mcu, board);
+ 		}
+ 		break;
+ 	case BS_HardFailure:
+-- 
+2.7.4
+

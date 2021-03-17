@@ -1,0 +1,104 @@
+From 27275a8dd5306e0a6bdd46d2460c52894a27bca3 Mon Sep 17 00:00:00 2001
+From: Andrii Markhaichuk <andrii.markhaichuk@streamunlimited.com>
+Date: Mon, 2 Feb 2015 14:53:14 +0100
+Subject: [PATCH] QPlay2.0: add strict argument checking for setPlayMode()
+
+supports only NORMAL/REPEAT_TRACK/REPEAT_ALL, otherwise returns an
+error code
+
+Signed-off-by: Andrii Markhaichuk <andrii.markhaichuk@streamunlimited.com>
+---
+ src/librygel-renderer/rygel-av-transport.c    | 44 ++++++++++++++++++++++-----
+ src/librygel-renderer/rygel-av-transport.vala | 13 ++++++--
+ 2 files changed, 47 insertions(+), 10 deletions(-)
+
+diff --git a/src/librygel-renderer/rygel-av-transport.c b/src/librygel-renderer/rygel-av-transport.c
+index 650c29d..1b7ce15 100644
+--- a/src/librygel-renderer/rygel-av-transport.c
++++ b/src/librygel-renderer/rygel-av-transport.c
+@@ -2983,9 +2983,13 @@ static void rygel_av_transport_set_play_mode_cb (RygelAVTransport* self, GUPnPSe
+ 	GUPnPServiceAction* _tmp0_ = NULL;
+ 	gboolean _tmp1_ = FALSE;
+ 	const gchar* _tmp2_ = NULL;
+-	RygelPlayerControllerInterface* _tmp6_ = NULL;
++	const gchar* _tmp6_ = NULL;
+ 	const gchar* _tmp7_ = NULL;
+-	GUPnPServiceAction* _tmp8_ = NULL;
++	GQuark _tmp9_ = 0U;
++	static GQuark _tmp8_label0 = 0;
++	static GQuark _tmp8_label1 = 0;
++	static GQuark _tmp8_label2 = 0;
++	GUPnPServiceAction* _tmp14_ = NULL;
+ 	g_return_if_fail (self != NULL);
+ 	g_return_if_fail (registrar != NULL);
+ 	g_return_if_fail (action != NULL);
+@@ -3008,11 +3012,37 @@ static void rygel_av_transport_set_play_mode_cb (RygelAVTransport* self, GUPnPSe
+ 		_g_free0 (_play_mode);
+ 		return;
+ 	}
+-	_tmp6_ = self->priv->controller;
+-	_tmp7_ = _play_mode;
+-	rygel_player_controller_interface_set_play_mode (_tmp6_, _tmp7_);
+-	_tmp8_ = action;
+-	gupnp_service_action_return (_tmp8_);
++	_tmp6_ = _play_mode;
++	_tmp7_ = _tmp6_;
++	_tmp9_ = (NULL == _tmp7_) ? 0 : g_quark_from_string (_tmp7_);
++	if (((_tmp9_ == ((0 != _tmp8_label0) ? _tmp8_label0 : (_tmp8_label0 = g_quark_from_static_string ("NORMAL")))) || (_tmp9_ == ((0 != _tmp8_label1) ? _tmp8_label1 : (_tmp8_label1 = g_quark_from_static_string ("REPEAT_TRACK"))))) || (_tmp9_ == ((0 != _tmp8_label2) ? _tmp8_label2 : (_tmp8_label2 = g_quark_from_static_string ("REPEAT_ALL"))))) {
++		switch (0) {
++			default:
++			{
++				RygelPlayerControllerInterface* _tmp10_ = NULL;
++				const gchar* _tmp11_ = NULL;
++				_tmp10_ = self->priv->controller;
++				_tmp11_ = _play_mode;
++				rygel_player_controller_interface_set_play_mode (_tmp10_, _tmp11_);
++				break;
++			}
++		}
++	} else {
++		switch (0) {
++			default:
++			{
++				GUPnPServiceAction* _tmp12_ = NULL;
++				const gchar* _tmp13_ = NULL;
++				_tmp12_ = action;
++				_tmp13_ = _ ("Invocation Error");
++				gupnp_service_action_return_error (_tmp12_, (guint) 600, _tmp13_);
++				_g_free0 (_play_mode);
++				return;
++			}
++		}
++	}
++	_tmp14_ = action;
++	gupnp_service_action_return (_tmp14_);
+ 	_g_free0 (_play_mode);
+ }
+ 
+diff --git a/src/librygel-renderer/rygel-av-transport.vala b/src/librygel-renderer/rygel-av-transport.vala
+index faa9693..b204a11 100644
+--- a/src/librygel-renderer/rygel-av-transport.vala
++++ b/src/librygel-renderer/rygel-av-transport.vala
+@@ -863,9 +863,16 @@ internal class Rygel.AVTransport : Service {
+             action.return_error (600, _("Invocation Error"));
+             return;
+         }
+-
+-        this.controller.set_play_mode (_play_mode);
+-
++        switch (_play_mode) {
++        case "NORMAL" :
++        case "REPEAT_TRACK" :
++        case "REPEAT_ALL"   :
++            this.controller.set_play_mode(_play_mode);
++            break;
++        default:
++            action.return_error (600, _("Invocation Error"));
++            return;
++        }
+         action.return ();
+      }
+ }
+-- 
+1.9.1
+

@@ -1,0 +1,49 @@
+From 701d96e66cc1521cb7e8ba0c5cbae8c1f78ec94c Mon Sep 17 00:00:00 2001
+From: Fionn Cleary <fionn.cleary@streamunlimited.com>
+Date: Tue, 9 Dec 2014 17:33:34 +0100
+Subject: [PATCH] stream800: Update adc documentation comments
+
+Fix a number of unused macros which were incorrectly set.
+
+Signed-off-by: Fionn Cleary <fionn.cleary@streamunlimited.com>
+---
+ board/streamunlimited/stream800/adc.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/board/streamunlimited/stream800/adc.c b/board/streamunlimited/stream800/adc.c
+index 5b80c21..233ffba 100644
+--- a/board/streamunlimited/stream800/adc.c
++++ b/board/streamunlimited/stream800/adc.c
+@@ -28,7 +28,8 @@
+ 
+ #define TSC_ADC_SS_REG_BASE		0x44E0D000
+ 
+-// TSC_ADC_SS Registers
++// TSC_ADC_SS Registers — Described in TI AM335x Sitara Processes Technical
++// Reference Manual, pg 1745.
+ #define REG_REVISION			(0x00)
+ #define REG_SYSCONFIG			(0x10)
+ #define REG_IRQSTATUS_RAW		(0x24)
+@@ -56,13 +57,12 @@
+ #define REG_STEPCONFIG_SEL_INM_SWC_3_0(X)	(X << 15)
+ #define REG_STEPCONFIG_SEL_RFP_SWC_2_0(X)	(X << 12)
+ #define REG_STEPCONFIG_WPNSW_SWC		(1 << 11)
+-#define REG_STEPCONFIG_YPNSW_SWC		(1 << 11)
+-#define REG_STEPCONFIG_XNPSW_SWC		(1 << 11)
+-#define REG_STEPCONFIG_YPNSW_SWC		(1 << 11)
+-#define REG_STEPCONFIG_YNNSW_SWC		(1 << 11)
+-#define REG_STEPCONFIG_YPPSW_SWC		(1 << 11)
+-#define REG_STEPCONFIG_XNNSW_SWC		(1 << 11)
+-#define REG_STEPCONFIG_XPPSW_SWC		(1 << 11)
++#define REG_STEPCONFIG_YPNSW_SWC		(1 << 10)
++#define REG_STEPCONFIG_XNPSW_SWC		(1 << 9)
++#define REG_STEPCONFIG_YNNSW_SWC		(1 << 8)
++#define REG_STEPCONFIG_YPPSW_SWC		(1 << 7)
++#define REG_STEPCONFIG_XNNSW_SWC		(1 << 6)
++#define REG_STEPCONFIG_XPPSW_SWC		(1 << 5)
+ #define REG_STEPCONFIG_AVG_0			(0 << 2)
+ #define REG_STEPCONFIG_AVG_2			(1 << 2)
+ #define REG_STEPCONFIG_AVG_4			(2 << 2)
+-- 
+2.7.4
+

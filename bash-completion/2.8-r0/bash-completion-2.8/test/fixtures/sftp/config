@@ -1,0 +1,8 @@
+UserKnownHostsFile  known_hosts
+
+    # Unindented
+Host gee
+    # Indented, multiple hosts
+    HostName hus ike
+
+Host hut

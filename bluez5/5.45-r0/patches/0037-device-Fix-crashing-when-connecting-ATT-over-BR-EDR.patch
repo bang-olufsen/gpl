@@ -1,0 +1,102 @@
+From 84a43eb08fe1ff8e7b90157ea46cff771f366ca0 Mon Sep 17 00:00:00 2001
+From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Date: Fri, 7 Jul 2017 10:35:11 +0300
+Subject: [PATCH] device: Fix crashing when connecting ATT over BR/EDR
+
+When remote connects ATT over BR/EDR the code will attempt to resolve
+its attributes, but in the meantime a SDP session may be active to
+resolve the services exposed over SDP which can cause a crash since ATT
+may end up freeing the request causing the following trace:
+
+bluetoothd[31069]: attrib/gattrib.c:g_attrib_unref() 0x73aae0: g_attrib_unref=0
+bluetoothd[31069]: src/device.c:connect_profiles()
+/org/bluez/hci0/dev_F4_5F_69_01_3D_69 (all), client :1.868
+bluetoothd[31069]: src/device.c:connect_profiles() Resolving services for
+/org/bluez/hci0/dev_F4_5F_69_01_3D_69
+bluetoothd[31069]: src/adapter.c:connected_callback() hci0 device
+F4:5F:69:01:3D:69 connected eir_len 13
+bluetoothd[31069]: src/gatt-database.c:connect_cb() New incoming BR/EDR ATT
+connection
+bluetoothd[31069]: attrib/gattrib.c:g_attrib_ref() 0x73d280: g_attrib_ref=1
+bluetoothd[31069]: src/device.c:load_gatt_db() Restoring F4:5F:69:01:3D:69 gatt
+database from file
+bluetoothd[31069]: No cache for F4:5F:69:01:3D:69
+bluetoothd[31069]: src/gatt-client.c:btd_gatt_client_connected() Device
+connected.
+bluetoothd[31069]: src/device.c:gatt_debug() Primary service discovery failed.
+ATT ECODE: 0x0a
+bluetoothd[31069]: src/device.c:gatt_client_ready_cb() status: success, error:
+0
+bluetoothd[31069]: src/gatt-client.c:btd_gatt_client_ready() GATT client ready
+bluetoothd[31069]: src/gatt-client.c:create_services() Exporting objects for
+GATT services: F4:5F:69:01:3D:69
+bluetoothd[31069]: src/device.c:device_svc_resolved()
+/org/bluez/hci0/dev_F4_5F_69_01_3D_69 err 0
+bluetoothd[31069]: src/device.c:connect_profiles()
+/org/bluez/hci0/dev_F4_5F_69_01_3D_69 (all), client :1.868
+
+Program received signal SIGSEGV, Segmentation fault.
+0x000000000048eb8d in browse_cb ()
+---
+ src/device.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/src/device.c b/src/device.c
+index 69e87b3..37d6809 100644
+--- a/src/device.c
++++ b/src/device.c
+@@ -141,6 +141,7 @@ struct authentication_req {
+ struct browse_req {
+ 	DBusMessage *msg;
+ 	struct btd_device *device;
++	uint8_t bdaddr_type;
+ 	GSList *match_uuids;
+ 	GSList *profiles_added;
+ 	sdp_list_t *records;
+@@ -2280,6 +2281,9 @@ static void browse_request_complete(struct browse_req *req, uint8_t bdaddr_type,
+ 	struct btd_device *dev = req->device;
+ 	DBusMessage *reply = NULL;
+ 
++	if (req->bdaddr_type != bdaddr_type)
++		return;
++
+ 	if (!req->msg)
+ 		goto done;
+ 
+@@ -5213,6 +5217,7 @@ int device_connect_le(struct btd_device *dev)
+ }
+ 
+ static struct browse_req *browse_request_new(struct btd_device *device,
++							uint8_t bdaddr_type,
+ 							DBusMessage *msg)
+ {
+ 	struct browse_req *req;
+@@ -5222,6 +5227,7 @@ static struct browse_req *browse_request_new(struct btd_device *device,
+ 
+ 	req = g_new0(struct browse_req, 1);
+ 	req->device = device;
++	req->bdaddr_type = bdaddr_type;
+ 
+ 	device->browse = req;
+ 
+@@ -5247,7 +5253,7 @@ static int device_browse_gatt(struct btd_device *device, DBusMessage *msg)
+ 	struct btd_adapter *adapter = device->adapter;
+ 	struct browse_req *req;
+ 
+-	req = browse_request_new(device, msg);
++	req = browse_request_new(device, device->bdaddr_type, msg);
+ 	if (!req)
+ 		return -EBUSY;
+ 
+@@ -5319,7 +5325,7 @@ static int device_browse_sdp(struct btd_device *device, DBusMessage *msg)
+ 	uuid_t uuid;
+ 	int err;
+ 
+-	req = browse_request_new(device, msg);
++	req = browse_request_new(device, BDADDR_BREDR, msg);
+ 	if (!req)
+ 		return -EBUSY;
+ 
+-- 
+2.7.4
+

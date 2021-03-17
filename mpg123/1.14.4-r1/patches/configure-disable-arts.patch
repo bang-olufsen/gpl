@@ -1,0 +1,27 @@
+--- a/configure.ac	2012-07-26 15:40:21.000000000 +0200
++++ b/configure.ac	2013-04-10 10:31:53.000000000 +0200
+@@ -1439,16 +1439,16 @@
+ 		;;
+ 		arts)
+ 			AC_MSG_CHECKING([for artsc])
+-			if artsc-config; then
+-				AC_MSG_RESULT([yes])
+-				output_modules="$output_modules arts"
+-				HAVE_ARTS=yes
+-				ARTS_LIBS=`artsc-config --libs`
+-				ARTS_CFLAGS=`artsc-config --cflags`
+-			else
++#			if artsc-config; then
++#				AC_MSG_RESULT([yes])
++#				output_modules="$output_modules arts"
++#				HAVE_ARTS=yes
++#				ARTS_LIBS=`artsc-config --libs`
++#				ARTS_CFLAGS=`artsc-config --cflags`
++#			else
+ 				AC_MSG_RESULT([no])
+ 				check_failed=yes
+-			fi
++#			fi
+ 		;;
+ 		openal)
+ 			AC_CHECK_HEADERS([OpenAL/al.h OpenAL/alc.h AL/al.h AL/alc.h al.h alc.h])

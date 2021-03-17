@@ -1,0 +1,28 @@
+From 5498a31926d64e6480878d70376024323a0338a6 Mon Sep 17 00:00:00 2001
+From: Bernhard Miller <bernhard.miller@streamunlimited.com>
+Date: Thu, 16 Mar 2017 15:10:22 +0100
+Subject: [PATCH] avdtp: accept delay reports also in open state.
+ SIG/SYN/BV-05-C
+
+Signed-off-by: Bernhard Miller <bernhard.miller@streamunlimited.com>
+---
+ profiles/audio/avdtp.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/profiles/audio/avdtp.c b/profiles/audio/avdtp.c
+index 6b85b07..1faa240 100644
+--- a/profiles/audio/avdtp.c
++++ b/profiles/audio/avdtp.c
+@@ -1927,7 +1927,8 @@ static gboolean avdtp_delayreport_cmd(struct avdtp *session,
+ 	stream = sep->stream;
+ 
+ 	if (sep->state != AVDTP_STATE_CONFIGURED &&
+-					sep->state != AVDTP_STATE_STREAMING) {
++					sep->state != AVDTP_STATE_STREAMING &&
++					sep->state != AVDTP_STATE_OPEN) {
+ 		err = AVDTP_BAD_STATE;
+ 		goto failed;
+ 	}
+-- 
+2.7.4
+

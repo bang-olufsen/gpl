@@ -1,0 +1,255 @@
+From dd8a288396e5617e1b19548aaeec6b1ce07ccea2 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Mon, 4 Feb 2019 10:21:57 +0100
+Subject: [PATCH] If one SEID is in use report it for all SEIDs
+
+This will ensure that only one device is connected to transport
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ doc/media-api.txt      |  5 +++++
+ profiles/audio/a2dp.c  |  3 +++
+ profiles/audio/avdtp.c | 43 ++++++++++++++++++++++++++++++++++++++++++-
+ profiles/audio/avdtp.h |  1 +
+ profiles/audio/media.c | 44 +++++++++++++++++++++++++++++++++++++++++++-
+ profiles/audio/media.h |  2 ++
+ 6 files changed, 96 insertions(+), 2 deletions(-)
+
+diff --git a/doc/media-api.txt b/doc/media-api.txt
+index b5ad2db..10dfd1c 100644
+--- a/doc/media-api.txt
++++ b/doc/media-api.txt
+@@ -66,6 +66,11 @@ Methods		void RegisterEndpoint(object endpoint, dict properties)
+ 
+ 			Unregister sender media player.
+ 
++Properties	bool SingleConnection [readwrite]
++
++			If this option is enabled Media will prevent to connect
++			multiple endpoints by setting them "inuse" when one
++			is connected.
+ 
+ Media Control hierarchy
+ =======================
+diff --git a/profiles/audio/a2dp.c b/profiles/audio/a2dp.c
+index 3a3d239..f9fe703 100644
+--- a/profiles/audio/a2dp.c
++++ b/profiles/audio/a2dp.c
+@@ -1896,6 +1896,9 @@ unsigned int a2dp_select_capabilities(struct avdtp *session,
+ 	struct avdtp_media_codec_capability *codec;
+ 	int err;
+ 
++	if (avdtp_is_seps_inuse(session))
++		return 0;
++
+ 	sep = a2dp_select_sep(session, type, sender);
+ 	if (!sep) {
+ 		error("Unable to select SEP");
+diff --git a/profiles/audio/avdtp.c b/profiles/audio/avdtp.c
+index 7ab085b..ba39973 100644
+--- a/profiles/audio/avdtp.c
++++ b/profiles/audio/avdtp.c
+@@ -48,6 +48,7 @@
+ #include "src/adapter.h"
+ #include "src/device.h"
+ 
++#include "media.h"
+ #include "avdtp.h"
+ #include "sink.h"
+ #include "source.h"
+@@ -1121,6 +1122,15 @@ static void connection_lost(struct avdtp *session, int err)
+ 	avdtp_unref(session);
+ }
+ 
++static void is_inuse_seps(void *data, void *user_data)
++{
++	struct avdtp_local_sep *sep = data;
++	bool *inuse = user_data;
++
++	if (*inuse == FALSE)
++		*inuse = sep->info.inuse;
++}
++
+ static gboolean disconnect_timeout(gpointer user_data)
+ {
+ 	struct avdtp *session = user_data;
+@@ -1132,6 +1142,9 @@ static gboolean disconnect_timeout(gpointer user_data)
+ 	stream_setup = session->stream_setup;
+ 	session->stream_setup = FALSE;
+ 
++	if (avdtp_is_seps_inuse(session))
++		stream_setup = FALSE;
++
+ 	service = btd_device_get_service(session->device, A2DP_SINK_UUID);
+ 	if (service && stream_setup) {
+ 		sink_setup_stream(service, session);
+@@ -1307,6 +1320,18 @@ static void copy_seps(void *data, void *user_data)
+ 	*p = *p + 1;
+ }
+ 
++static void copy_seps_inuse(void *data, void *user_data)
++{
++	struct avdtp_local_sep *sep = data;
++	struct seid_info **p = user_data;
++
++	struct seid_info info = sep->info;
++	info.inuse = 1;
++
++	memcpy(*p, &info, sizeof(struct seid_info));
++	*p = *p + 1;
++}
++
+ static gboolean avdtp_discover_cmd(struct avdtp *session, uint8_t transaction,
+ 							void *buf, int size)
+ {
+@@ -1327,7 +1352,10 @@ static gboolean avdtp_discover_cmd(struct avdtp *session, uint8_t transaction,
+ 	seps = g_new0(struct seid_info, sep_count);
+ 	p = seps;
+ 
+-	queue_foreach(session->lseps, copy_seps, &p);
++	if (avdtp_is_seps_inuse(session))
++		queue_foreach(session->lseps, copy_seps_inuse, &p);
++	else
++		queue_foreach(session->lseps, copy_seps, &p);
+ 
+ 	ret = avdtp_send(session, transaction, AVDTP_MSG_TYPE_ACCEPT,
+ 				AVDTP_DISCOVER, seps, rsp_size);
+@@ -1442,6 +1470,11 @@ static gboolean avdtp_setconf_cmd(struct avdtp *session, uint8_t transaction,
+ 		goto failed;
+ 	}
+ 
++	if (avdtp_is_seps_inuse(session)) {
++		err = AVDTP_SEP_IN_USE;
++		goto failed;
++	}
++
+ 	switch (sep->info.type) {
+ 	case AVDTP_SEP_TYPE_SOURCE:
+ 		service = btd_device_get_service(session->device,
+@@ -3654,6 +3687,14 @@ avdtp_state_t avdtp_sep_get_state(struct avdtp_local_sep *sep)
+ 	return sep->state;
+ }
+ 
++gboolean avdtp_is_seps_inuse(struct avdtp *session)
++{
++	gboolean inuse = FALSE;
++	if (media_single_connection_enabled(session->device))
++		queue_foreach(session->lseps, is_inuse_seps, &inuse);
++	return inuse;
++}
++
+ struct btd_adapter *avdtp_get_adapter(struct avdtp *session)
+ {
+ 	return device_get_adapter(session->device);
+diff --git a/profiles/audio/avdtp.h b/profiles/audio/avdtp.h
+index cf2a968..2d17492 100644
+--- a/profiles/audio/avdtp.h
++++ b/profiles/audio/avdtp.h
+@@ -289,6 +289,7 @@ struct avdtp_remote_sep *avdtp_find_remote_sep(struct avdtp *session,
+ int avdtp_unregister_sep(struct queue *lseps, struct avdtp_local_sep *sep);
+ 
+ avdtp_state_t avdtp_sep_get_state(struct avdtp_local_sep *sep);
++gboolean avdtp_is_seps_inuse(struct avdtp *session);
+ 
+ void avdtp_error_init(struct avdtp_error *err, uint8_t type, int id);
+ const char *avdtp_strerror(struct avdtp_error *err);
+diff --git a/profiles/audio/media.c b/profiles/audio/media.c
+index 23d1561..e232266 100644
+--- a/profiles/audio/media.c
++++ b/profiles/audio/media.c
+@@ -65,6 +65,7 @@ struct media_adapter {
+ 	struct btd_adapter	*btd_adapter;
+ 	GSList			*endpoints;	/* Endpoints list */
+ 	GSList			*players;	/* Players list */
++	bool			single_connection;
+ };
+ 
+ struct endpoint_request {
+@@ -1860,6 +1861,31 @@ static DBusMessage *unregister_player(DBusConnection *conn, DBusMessage *msg,
+ 	return g_dbus_create_reply(msg, DBUS_TYPE_INVALID);
+ }
+ 
++static gboolean property_get_single_connection(const GDBusPropertyTable *property,
++					DBusMessageIter *iter, void *user_data)
++{
++	struct media_adapter *media = user_data;
++
++	dbus_bool_t enable = media->single_connection;
++
++	dbus_message_iter_append_basic(iter, DBUS_TYPE_BOOLEAN, &enable);
++
++	return TRUE;
++}
++
++static void property_set_single_connection(const GDBusPropertyTable *property,
++				DBusMessageIter *iter,
++				GDBusPendingPropertySet id, void *user_data)
++{
++	struct media_adapter *media = user_data;
++
++	dbus_bool_t enable;
++	dbus_message_iter_get_basic(iter, &enable);
++
++	media->single_connection = enable;
++	g_dbus_pending_property_success(id);
++}
++
+ static const GDBusMethodTable media_methods[] = {
+ 	{ GDBUS_METHOD("RegisterEndpoint",
+ 		GDBUS_ARGS({ "endpoint", "o" }, { "properties", "a{sv}" }),
+@@ -1874,6 +1900,11 @@ static const GDBusMethodTable media_methods[] = {
+ 	{ },
+ };
+ 
++static const GDBusPropertyTable media_properties[] = {
++	{ "SingleConnection", "b", property_get_single_connection, property_set_single_connection },
++	{ }
++};
++
+ static void path_free(void *data)
+ {
+ 	struct media_adapter *adapter = data;
+@@ -1900,7 +1931,8 @@ int media_register(struct btd_adapter *btd_adapter)
+ 	if (!g_dbus_register_interface(btd_get_dbus_connection(),
+ 					adapter_get_path(btd_adapter),
+ 					MEDIA_INTERFACE,
+-					media_methods, NULL, NULL,
++					media_methods, NULL,
++					media_properties,
+ 					adapter, path_free)) {
+ 		error("D-Bus failed to register %s path",
+ 						adapter_get_path(btd_adapter));
+@@ -1943,3 +1975,13 @@ uint8_t media_endpoint_get_codec(struct media_endpoint *endpoint)
+ {
+ 	return endpoint->codec;
+ }
++
++bool media_single_connection_enabled(struct btd_device *device)
++{
++	if (!device)
++		return false;
++	struct media_adapter *media = find_adapter(device);
++	if (media)
++		return media->single_connection;
++	return false;
++}
+diff --git a/profiles/audio/media.h b/profiles/audio/media.h
+index dd630d4..1940810 100644
+--- a/profiles/audio/media.h
++++ b/profiles/audio/media.h
+@@ -23,6 +23,7 @@
+  */
+ 
+ struct media_endpoint;
++struct btd_device;
+ 
+ typedef void (*media_endpoint_cb_t) (struct media_endpoint *endpoint,
+ 					void *ret, int size, void *user_data);
+@@ -33,3 +34,4 @@ void media_unregister(struct btd_adapter *btd_adapter);
+ struct a2dp_sep *media_endpoint_get_sep(struct media_endpoint *endpoint);
+ const char *media_endpoint_get_uuid(struct media_endpoint *endpoint);
+ uint8_t media_endpoint_get_codec(struct media_endpoint *endpoint);
++bool media_single_connection_enabled(struct btd_device *device);
+-- 
+2.7.4
+

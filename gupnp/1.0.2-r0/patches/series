@@ -1,0 +1,4 @@
+0001-Fix-applying-agents-when-multiple-same-host_data-pat.patch -p1
+0001-gupnp-implemented-no-request-socket-property-To-be-a.patch -p1
+gupnp-get-the-proper-girdir-path-from-gobject-introspectio.patch -p1
+0002-gupnp-Don-t-define-custom-log-domain.patch -p1

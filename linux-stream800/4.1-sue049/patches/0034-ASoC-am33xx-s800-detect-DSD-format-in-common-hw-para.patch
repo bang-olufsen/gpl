@@ -1,0 +1,111 @@
+From 4849481b81d1e272a1cf4e3d0d9289c2997af9f8 Mon Sep 17 00:00:00 2001
+From: Lee Page <lee.page@streamunlimited.com>
+Date: Fri, 13 Mar 2015 11:27:26 +0100
+Subject: [PATCH] ASoC: am33xx-s800: detect DSD format in common hw params and
+ set dividers
+
+Signed-off-by: Lee Page <lee.page@streamunlimited.com>
+---
+ sound/soc/davinci/am33xx-s800.c | 64 +++++++++++++++++++++++++++++------------
+ 1 file changed, 46 insertions(+), 18 deletions(-)
+
+diff --git a/sound/soc/davinci/am33xx-s800.c b/sound/soc/davinci/am33xx-s800.c
+index 74e7612..689e7d8 100644
+--- a/sound/soc/davinci/am33xx-s800.c
++++ b/sound/soc/davinci/am33xx-s800.c
+@@ -231,7 +231,7 @@ static int am33xx_s800_common_hw_params(struct snd_pcm_substream *substream,
+ 	struct snd_soc_dai *cpu_dai = rtd->cpu_dai;
+ 	struct snd_soc_card *card = codec_dai->component->card;
+ 	struct snd_soc_am33xx_s800 *priv = snd_soc_card_get_drvdata(card);
+-	unsigned int mclk, rate;
++	unsigned int mclk, rate, bclk;
+ 	unsigned int bclk_div = is_spdif ? 4 : 2;
+ 	int ret;
+ 	int clk_id, div_mclk, div_bclk, div_lrclk;
+@@ -259,38 +259,66 @@ static int am33xx_s800_common_hw_params(struct snd_pcm_substream *substream,
+ 	/* if the codec is MCLK master then do not configure our MCLK source */
+ 	if ((rtd->dai_link->dai_fmt & SND_SOC_DAIFMT_CMM) == 0) {
+ 		ret = am33xx_s800_set_mclk(priv, substream->stream);
+-		if (ret < 0)
++		if (ret < 0) {
++			dev_warn(card->dev, "Unsupported MCLK source : %d\n", ret);
+ 			return ret;
++		}
+ 	}
+ 
+-	ret = am33xx_s800_set_mclk(priv, substream->stream);
+-	if (ret < 0)
++	/* Reconfigure McASP serializers */
++	ret = am33xx_s800_setup_mcasp(substream, params_format(params));
++	if (ret < 0) {
++		dev_warn(card->dev, "Unsupported mcasp serial config : %d\n", ret);
+ 		return ret;
++	}
+ 
+-	/* propagate the clock rate */
++	/* CPU MLCK */
+ 	ret = snd_soc_dai_set_sysclk(cpu_dai, clk_id, mclk, SND_SOC_CLOCK_IN);
+-	if (ret < 0)
++	if (ret < 0) {
++		dev_warn(card->dev, "Unsupported cpu dai MCLK : %d\n", ret);
+ 		return ret;
++	}
+ 
+-	/* intentionally ignore errors - the codec driver may not care */
+-	snd_soc_dai_set_sysclk(codec_dai, 0, mclk, SND_SOC_CLOCK_IN);
++	/* Codec MCLK */
++	ret = snd_soc_dai_set_sysclk(codec_dai, 0, mclk, SND_SOC_CLOCK_IN);
++	if (ret < 0) {
++		dev_warn(card->dev, "Unsupported codec dai MLCK : %d\n", ret);
++		/* intentionally ignore errors - the codec driver may not care, at least give a warning */
++	}
+ 
+-	/* MCLK divider */
++	/* CPU MCLK divider */
+ 	ret = snd_soc_dai_set_clkdiv(cpu_dai, div_mclk, 1);
+-	if (ret < 0)
++	if (ret < 0) {
++		dev_warn(card->dev, "Unsupported cpu dai MCLK divider : %d\n", ret);
+ 		return ret;
++	}
+ 
++	/* CPU BCLK-to-LRCLK divider */
++	if (params_format(params) == SNDRV_PCM_FORMAT_DSD_U8) {
++		/* Clock rate for DSD matches bitrate */
++		ret = snd_soc_dai_set_clkdiv(cpu_dai, div_lrclk, 0);
++		bclk = rate * 8;
++	} else {
++		ret = snd_soc_dai_set_clkdiv(cpu_dai, div_lrclk, 2 * DATA_WORD_WIDTH);
++		bclk = rate * 2 * DATA_WORD_WIDTH;
++	}
++	if (ret < 0) {
++		dev_warn(card->dev, "Unsupported cpu dai BCLK/LRCLK divider : %d\n", ret);
++ 		return ret;
++	}
+ 
+-	/* BCLK divider */
+-	ret = snd_soc_dai_set_clkdiv(cpu_dai, div_bclk, mclk / (rate * bclk_div * DATA_WORD_WIDTH));
+-	if (ret < 0)
++	/* CPU BCLK divider */
++	if (params_format(params) == SNDRV_PCM_FORMAT_DSD_U8) {
++		ret = snd_soc_dai_set_clkdiv(cpu_dai, div_bclk, mclk / bclk);
++	} else {
++		ret = snd_soc_dai_set_clkdiv(cpu_dai, div_bclk, mclk / (rate * bclk_div * DATA_WORD_WIDTH));
++	}
++	if (ret < 0) {
++		dev_warn(card->dev, "Unsupported cpu dai BCLK divider : %d\n", ret);
+ 		return ret;
++	}
+ 
+-
+-	/* BCLK-to-LRCLK divider */
+-	ret = snd_soc_dai_set_clkdiv(cpu_dai, div_lrclk, 2 * DATA_WORD_WIDTH);
+-	if (ret < 0)
+-		return ret;
++	dev_info(card->dev, "Configured common HW params, RATE %d, MCLK %d, BCLK %d", rate, mclk, bclk);
+ 
+ 	return 0;
+ }
+-- 
+1.9.1
+

@@ -1,0 +1,346 @@
+From 1b5d755fbe717953bc7e3b17fdcf466d0da0c674 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Thu, 10 Apr 2014 14:50:18 +0200
+Subject: [PATCH] fat: add fatfind command support
+
+Signed-off-by: Matus Ujhelyi <matus.ujhelyi@streamunlimited.com>
+---
+ common/cmd_fat.c |  48 +++++++++++++++++++++++
+ fs/fat/fat.c     | 117 ++++++++++++++++++++++++++++++++++++++-----------------
+ fs/fat/file.c    |   2 +-
+ include/fat.h    |   7 ++++
+ 4 files changed, 137 insertions(+), 37 deletions(-)
+
+diff --git a/common/cmd_fat.c b/common/cmd_fat.c
+index a12d8fa..4b24042 100644
+--- a/common/cmd_fat.c
++++ b/common/cmd_fat.c
+@@ -131,3 +131,51 @@ U_BOOT_CMD(
+ 	"      to 'dev' on 'interface'"
+ );
+ #endif
++
++int do_fat_find (cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
++{
++	int ret=0;
++	int dev=0;
++	int part=1;
++	char *ep;
++	block_dev_desc_t *dev_desc=NULL;
++
++	if (argc < 4) {
++		printf("usage: fatfind <interface> <dev[:part]> <directory> <findfn>\n");
++		return 1;
++	}
++	dev = (int)simple_strtoul(argv[2], &ep, 16);
++	dev_desc = get_dev(argv[1],dev);
++	if (dev_desc == NULL) {
++		puts("\n** Invalid boot device **\n");
++		return 1;
++	}
++	if (*ep) {
++		if (*ep != ':') {
++			puts("\n** Invalid boot device, use `dev[:part]' **\n");
++			return 1;
++		}
++		part = (int)simple_strtoul(++ep, NULL, 16);
++	}
++	if (fat_register_device(dev_desc,part)!=0) {
++		printf("\n** Unable to use %s %d:%d for fatfind **\n",
++			argv[1], dev, part);
++		return 1;
++	}
++    ret = file_fat_find(argv[3], argv[4]);
++	if(ret!=0) {
++		printf("\n** Unable to find \"%s\" on %s %d:%d **\n",
++			argv[4], argv[1], dev, part);
++	} else {
++		printf("\n** Found \"%s\" on %s %d:%d **\n",
++			argv[4], argv[1], dev, part);
++    }
++	return ret;
++}
++
++U_BOOT_CMD(
++	fatfind,	5,	1,	do_fat_find,
++	"find file in a directory",
++	"<interface> <dev[:part]> <directory> <findfn>\n"
++	"    - find findfn from 'dev' on 'interface' in a 'directory'"
++);
+diff --git a/fs/fat/fat.c b/fs/fat/fat.c
+index 54f42ea..b68da8d 100644
+--- a/fs/fat/fat.c
++++ b/fs/fat/fat.c
+@@ -36,6 +36,7 @@ static void downcase(char *str)
+ 	}
+ }
+ 
++static volatile int s_FatFileNotFound = 1;
+ static block_dev_desc_t *cur_dev;
+ static disk_partition_t cur_part_info;
+ 
+@@ -576,7 +577,7 @@ __u8 get_dentfromdir_block[MAX_CLUSTSIZE]
+ 
+ static dir_entry *get_dentfromdir(fsdata *mydata, int startsect,
+ 				  char *filename, dir_entry *retdent,
+-				  int dols)
++				  int dols, int dofind, const char *findfn)
+ {
+ 	__u16 prevcksum = 0xffff;
+ 	__u32 curclust = START(retdent);
+@@ -633,14 +634,22 @@ static dir_entry *get_dentfromdir(fsdata *mydata, int startsect,
+ 						}
+ 						if (doit) {
+ 							if (dirc == ' ') {
+-								printf(" %8ld   %s%c\n",
+-									(long)FAT2CPU32(dentptr->size),
+-									l_name,
+-									dirc);
++								if (dofind) {
++									if (0 == strcmp(findfn, l_name)) {
++										s_FatFileNotFound = 0;
++									}
++								} else {
++									printf(" %8ld   %s%c\n",
++										(long)FAT2CPU32(dentptr->size),
++										l_name,
++										dirc);
++								}
+ 							} else {
+-								printf("            %s%c\n",
+-									l_name,
+-									dirc);
++								if (!dofind) {
++									printf("            %s%c\n",
++										l_name,
++										dirc);
++								}
+ 							}
+ 						}
+ 						dentptr++;
+@@ -655,8 +664,10 @@ static dir_entry *get_dentfromdir(fsdata *mydata, int startsect,
+ 			}
+ 			if (dentptr->name[0] == 0) {
+ 				if (dols) {
+-					printf("\n%d file(s), %d dir(s)\n\n",
+-						files, dirs);
++					if (!dofind) {
++						printf("\n%d file(s), %d dir(s)\n\n",
++							files, dirs);
++					}
+ 				}
+ 				debug("Dentname == NULL - %d\n", i);
+ 				return NULL;
+@@ -690,12 +701,20 @@ static dir_entry *get_dentfromdir(fsdata *mydata, int startsect,
+ 
+ 				if (doit) {
+ 					if (dirc == ' ') {
+-						printf(" %8ld   %s%c\n",
+-							(long)FAT2CPU32(dentptr->size),
+-							s_name, dirc);
++						if (dofind) {
++							if (0 == strcmp(findfn, s_name)) {
++								s_FatFileNotFound = 0;
++							}
++						} else {
++							printf(" %8ld   %s%c\n",
++								(long)FAT2CPU32(dentptr->size),
++								s_name, dirc);
++						}
+ 					} else {
+-						printf("            %s%c\n",
+-							s_name, dirc);
++						if (!dofind) {
++							printf("            %s%c\n",
++								s_name, dirc);
++						}
+ 					}
+ 				}
+ 
+@@ -808,7 +827,7 @@ __u8 do_fat_read_at_block[MAX_CLUSTSIZE]
+ 
+ long
+ do_fat_read_at(const char *filename, unsigned long pos, void *buffer,
+-	       unsigned long maxsize, int dols, int dogetsize)
++	       unsigned long maxsize, int dols, int dogetsize, int dofind, const char *findfn)
+ {
+ 	char fnamecopy[2048];
+ 	boot_sector bs;
+@@ -974,14 +993,22 @@ do_fat_read_at(const char *filename, unsigned long pos, void *buffer,
+ 						}
+ 						if (doit) {
+ 							if (dirc == ' ') {
+-								printf(" %8ld   %s%c\n",
+-									(long)FAT2CPU32(dentptr->size),
+-									l_name,
+-									dirc);
++								if (dofind) {
++									if (0 == strcmp(findfn, l_name)) {
++										s_FatFileNotFound = 0;
++									}
++								} else {
++									printf(" %8ld   %s%c\n",
++										(long)FAT2CPU32(dentptr->size),
++										l_name,
++										dirc);
++								}
+ 							} else {
+-								printf("            %s%c\n",
+-									l_name,
+-									dirc);
++								if (!dofind) {
++									printf("            %s%c\n",
++										l_name,
++										dirc);
++								}
+ 							}
+ 						}
+ 						dentptr++;
+@@ -997,8 +1024,10 @@ do_fat_read_at(const char *filename, unsigned long pos, void *buffer,
+ 			} else if (dentptr->name[0] == 0) {
+ 				debug("RootDentname == NULL - %d\n", i);
+ 				if (dols == LS_ROOT) {
+-					printf("\n%d file(s), %d dir(s)\n\n",
+-						files, dirs);
++					if (!dofind) {
++						printf("\n%d file(s), %d dir(s)\n\n",
++							files, dirs);
++					}
+ 					ret = 0;
+ 				}
+ 				goto exit;
+@@ -1032,12 +1061,20 @@ do_fat_read_at(const char *filename, unsigned long pos, void *buffer,
+ 				}
+ 				if (doit) {
+ 					if (dirc == ' ') {
+-						printf(" %8ld   %s%c\n",
+-							(long)FAT2CPU32(dentptr->size),
+-							s_name, dirc);
++						if (dofind) {
++							if (0 == strcmp(findfn, s_name)) {
++								s_FatFileNotFound = 0;
++							}
++						} else {
++							printf(" %8ld   %s%c\n",
++								(long)FAT2CPU32(dentptr->size),
++								s_name, dirc);
++						}
+ 					} else {
+-						printf("            %s%c\n",
+-							s_name, dirc);
++						if (!dofind) {
++							printf("            %s%c\n",
++								s_name, dirc);
++						}
+ 					}
+ 				}
+ 				dentptr++;
+@@ -1139,7 +1176,7 @@ rootdir_done:
+ 		}
+ 
+ 		if (get_dentfromdir(mydata, startsect, subname, dentptr,
+-				     isdir ? 0 : dols) == NULL) {
++				     isdir ? 0 : dols, dofind, findfn) == NULL) {
+ 			if (dols && !isdir)
+ 				ret = 0;
+ 			goto exit;
+@@ -1164,9 +1201,9 @@ exit:
+ }
+ 
+ long
+-do_fat_read(const char *filename, void *buffer, unsigned long maxsize, int dols)
++do_fat_read(const char *filename, void *buffer, unsigned long maxsize, int dols, int dofind, const char *findfn)
+ {
+-	return do_fat_read_at(filename, 0, buffer, maxsize, dols, 0);
++	return do_fat_read_at(filename, 0, buffer, maxsize, dols, 0, dofind, findfn);
+ }
+ 
+ int file_fat_detectfs(void)
+@@ -1233,13 +1270,13 @@ int file_fat_detectfs(void)
+ 
+ int file_fat_ls(const char *dir)
+ {
+-	return do_fat_read(dir, NULL, 0, LS_YES);
++	return do_fat_read(dir, NULL, 0, LS_YES, FIND_NO, NULL);
+ }
+ 
+ int fat_exists(const char *filename)
+ {
+ 	int sz;
+-	sz = do_fat_read_at(filename, 0, NULL, 0, LS_NO, 1);
++	sz = do_fat_read_at(filename, 0, NULL, 0, LS_NO, 1, FIND_NO, NULL);
+ 	return sz >= 0;
+ }
+ 
+@@ -1247,7 +1284,7 @@ long file_fat_read_at(const char *filename, unsigned long pos, void *buffer,
+ 		      unsigned long maxsize)
+ {
+ 	printf("reading %s\n", filename);
+-	return do_fat_read_at(filename, pos, buffer, maxsize, LS_NO, 0);
++	return do_fat_read_at(filename, pos, buffer, maxsize, LS_NO, 0, FIND_NO, NULL);
+ }
+ 
+ long file_fat_read(const char *filename, void *buffer, unsigned long maxsize)
+@@ -1271,3 +1308,11 @@ int fat_read_file(const char *filename, void *buf, int offset, int len)
+ void fat_close(void)
+ {
+ }
++
++int file_fat_find (const char *dir, const char *findfn)
++{
++	s_FatFileNotFound = 1;
++	downcase((char *)findfn);
++	(void)do_fat_read_at(dir, 0, NULL, 0, LS_YES, 1, FIND_YES, findfn);
++	return s_FatFileNotFound;
++}
+diff --git a/fs/fat/file.c b/fs/fat/file.c
+index d910c46..eb95623 100644
+--- a/fs/fat/file.c
++++ b/fs/fat/file.c
+@@ -18,7 +18,7 @@
+ 
+ /* Supported filesystems */
+ static const struct filesystem filesystems[] = {
+-	{ file_fat_detectfs,  file_fat_ls,  file_fat_read,  "FAT" },
++	{ file_fat_detectfs,  file_fat_ls,  file_fat_read,  file_fat_find,  "FAT" },
+ };
+ #define NUM_FILESYS	(sizeof(filesystems)/sizeof(struct filesystem))
+ 
+diff --git a/include/fat.h b/include/fat.h
+index c8eb7cc..07526db 100644
+--- a/include/fat.h
++++ b/include/fat.h
+@@ -61,6 +61,10 @@
+ #define LS_DIR		1
+ #define LS_ROOT		2
+ 
++/* Flags telling whether we should find a file in a directory */
++#define FIND_NO		0
++#define FIND_YES	1
++
+ #define ISDIRDELIM(c)	((c) == '/' || (c) == '\\')
+ 
+ #define FSTYPE_NONE	(-1)
+@@ -171,11 +175,13 @@ typedef int	(file_detectfs_func)(void);
+ typedef int	(file_ls_func)(const char *dir);
+ typedef long	(file_read_func)(const char *filename, void *buffer,
+ 				 unsigned long maxsize);
++typedef int (file_find_func)(const char *dir, const char *findfn);
+ 
+ struct filesystem {
+ 	file_detectfs_func	*detect;
+ 	file_ls_func		*ls;
+ 	file_read_func		*read;
++	file_find_func		*find;
+ 	const char		name[12];
+ };
+ 
+@@ -199,4 +205,5 @@ int fat_register_device(block_dev_desc_t *dev_desc, int part_no);
+ int file_fat_write(const char *filename, void *buffer, unsigned long maxsize);
+ int fat_read_file(const char *filename, void *buf, int offset, int len);
+ void fat_close(void);
++int file_fat_find(const char *dir, const char *findfn);
+ #endif /* _FAT_H_ */
+-- 
+2.7.4
+

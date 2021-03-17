@@ -1,0 +1,40 @@
+From bd61b046e48d70200ec625fb85c698a5ae98fd17 Mon Sep 17 00:00:00 2001
+From: Johan Hedberg <johan.hedberg@intel.com>
+Date: Thu, 11 Jun 2015 13:52:30 +0300
+Subject: [PATCH] Bluetooth: Use actual encryption key size for SMP over BR/EDR
+
+When pairing over SMP over BR/EDR the generated LTK has by default the
+same key size as the BR/EDR Link Key. Make sure we don't set our
+Pairing Request/Response max value to anything higher than that.
+
+Signed-off-by: Johan Hedberg <johan.hedberg@intel.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+---
+ net/bluetooth/smp.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/net/bluetooth/smp.c b/net/bluetooth/smp.c
+index 69ad509..80b9b87 100644
+--- a/net/bluetooth/smp.c
++++ b/net/bluetooth/smp.c
+@@ -1688,7 +1688,7 @@ static void build_bredr_pairing_cmd(struct smp_chan *smp,
+ 
+ 		req->init_key_dist   = local_dist;
+ 		req->resp_key_dist   = remote_dist;
+-		req->max_key_size    = SMP_MAX_ENC_KEY_SIZE;
++		req->max_key_size    = conn->hcon->enc_key_size;
+ 
+ 		smp->remote_key_dist = remote_dist;
+ 
+@@ -1697,7 +1697,7 @@ static void build_bredr_pairing_cmd(struct smp_chan *smp,
+ 
+ 	memset(rsp, 0, sizeof(*rsp));
+ 
+-	rsp->max_key_size    = SMP_MAX_ENC_KEY_SIZE;
++	rsp->max_key_size    = conn->hcon->enc_key_size;
+ 	rsp->init_key_dist   = req->init_key_dist & remote_dist;
+ 	rsp->resp_key_dist   = req->resp_key_dist & local_dist;
+ 
+-- 
+2.7.4
+

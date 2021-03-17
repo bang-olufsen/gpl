@@ -1,0 +1,57 @@
+From 4cd19efb838f01abf638efbb7ba7f60fd92d995a Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Fri, 6 Nov 2020 10:14:44 +0100
+Subject: [PATCH] configure.ac
+
+---
+ configure.ac | 11 +++--------
+ 1 file changed, 3 insertions(+), 8 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index faa5a8b..14f4e84 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -8,12 +8,13 @@ AC_INIT([totem-pl-parser],
+         [totem_version_major.totem_version_minor.totem_version_micro],
+         [http://bugzilla.gnome.org/enter_bug.cgi?product=totem-pl-parser&component=General])
+ 
++AM_INIT_AUTOMAKE([1.9 dist-bzip2 no-dist-gzip check-news subdir-objects])
++
+ AC_CONFIG_SRCDIR([plparse/totem-pl-parser.c])
+ AC_CONFIG_HEADERS([config.h])
+ AC_CONFIG_MACRO_DIR([m4])
+ AC_USE_SYSTEM_EXTENSIONS
+ 
+-AM_INIT_AUTOMAKE([1.9 dist-bzip2 no-dist-gzip check-news subdir-objects])
+ AM_MAINTAINER_MODE([enable])
+ 
+ # Enable silent build when available (Automake 1.11)
+@@ -65,7 +66,7 @@ AC_SUBST(TOTEM_PL_PARSER_VERSION_MAJOR)
+ AC_SUBST(TOTEM_PL_PARSER_VERSION_MINOR)
+ AC_SUBST(TOTEM_PL_PARSER_VERSION_MICRO)
+ 
+-pkg_modules="glib-2.0 >= $GLIB_REQS libxml-2.0 gthread-2.0 gio-2.0 >= $GIO_REQS libsoup-gnome-2.4"
++pkg_modules="glib-2.0 >= $GLIB_REQS libxml-2.0 gthread-2.0 gio-2.0 >= $GIO_REQS libsoup-2.4"
+ 
+ ##################################
+ # Checking libgmime dependency
+@@ -180,11 +181,6 @@ AC_SUBST(TOTEM_PLPARSER_LIBS)
+ 
+ PKG_CHECK_MODULES([TOTEM_PLPARSER_MINI], [gio-2.0 $QUVI])
+ 
+-GNOME_DEBUG_CHECK
+-GNOME_COMPILE_WARNINGS([maximum])
+-GNOME_CXX_WARNINGS
+-GNOME_MAINTAINER_MODE_DEFINES
+-
+ if test "$GCC" = "yes" ; then
+ 	CFLAGS="\
+ 	-Wall \
+@@ -202,7 +198,6 @@ AC_SUBST([AM_LDFLAGS])
+ 
+ GTK_DOC_CHECK([1.14],[--flavour no-tmpl])
+ GOBJECT_INTROSPECTION_CHECK([0.9.5])
+-GNOME_CODE_COVERAGE
+ 
+ AC_CONFIG_FILES([
+ Makefile

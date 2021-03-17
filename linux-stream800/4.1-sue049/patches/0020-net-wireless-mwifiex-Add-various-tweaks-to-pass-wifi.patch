@@ -1,0 +1,77 @@
+From ef3ce62aa9f855af96c00c7faa50712d35a2907c Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Tue, 14 Jun 2016 14:43:43 +0200
+Subject: [PATCH] net: wireless: mwifiex: Add various tweaks to pass wifi
+ certification
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ drivers/net/wireless/mwifiex/11n.c      |  3 +--
+ drivers/net/wireless/mwifiex/cfg80211.c |  5 +++--
+ drivers/net/wireless/mwifiex/join.c     | 11 +++++++++--
+ 3 files changed, 13 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/net/wireless/mwifiex/11n.c b/drivers/net/wireless/mwifiex/11n.c
+index e9a1443..cd4af95 100644
+--- a/drivers/net/wireless/mwifiex/11n.c
++++ b/drivers/net/wireless/mwifiex/11n.c
+@@ -55,8 +55,7 @@ int mwifiex_fill_cap_info(struct mwifiex_private *priv, u8 radio_type,
+ 
+ 	memcpy((u8 *)&ht_cap->mcs, &sband->ht_cap.mcs,
+ 	       sizeof(sband->ht_cap.mcs));
+-
+-	if (priv->bss_mode == NL80211_IFTYPE_STATION ||
++	if ((priv->bss_mode == NL80211_IFTYPE_STATION && (sband->ht_cap.cap & IEEE80211_HT_CAP_SUP_WIDTH_20_40)) ||
+ 	    (sband->ht_cap.cap & IEEE80211_HT_CAP_SUP_WIDTH_20_40 &&
+ 	     (priv->adapter->sec_chan_offset !=
+ 					IEEE80211_HT_PARAM_CHA_SEC_NONE)))
+diff --git a/drivers/net/wireless/mwifiex/cfg80211.c b/drivers/net/wireless/mwifiex/cfg80211.c
+index 24fd7d8..50aec24 100644
+--- a/drivers/net/wireless/mwifiex/cfg80211.c
++++ b/drivers/net/wireless/mwifiex/cfg80211.c
+@@ -2387,7 +2387,7 @@ mwifiex_setup_ht_caps(struct ieee80211_sta_ht_cap *ht_info,
+ 		ht_info->cap &= ~IEEE80211_HT_CAP_SGI_40;
+ 
+ 	if (adapter->user_dev_mcs_support == HT_STREAM_2X2)
+-		ht_info->cap |= 3 << IEEE80211_HT_CAP_RX_STBC_SHIFT;
++		ht_info->cap |= 1 << IEEE80211_HT_CAP_RX_STBC_SHIFT;
+ 	else
+ 		ht_info->cap |= 1 << IEEE80211_HT_CAP_RX_STBC_SHIFT;
+ 
+@@ -2420,7 +2420,8 @@ mwifiex_setup_ht_caps(struct ieee80211_sta_ht_cap *ht_info,
+ 	/* Clear all the other values */
+ 	memset(&mcs[rx_mcs_supp], 0,
+ 	       sizeof(struct ieee80211_mcs_info) - rx_mcs_supp);
+-	if (priv->bss_mode == NL80211_IFTYPE_STATION ||
++	if ((priv->bss_mode == NL80211_IFTYPE_STATION &&
++		(priv->wdev.wiphy->bands[IEEE80211_BAND_2GHZ]->ht_cap.cap & IEEE80211_HT_CAP_SUP_WIDTH_20_40)) ||
+ 	    ISSUPP_CHANWIDTH40(adapter->hw_dot_11n_dev_cap))
+ 		/* Set MCS32 for infra mode or ad-hoc mode with 40MHz support */
+ 		SETHT_MCS32(mcs_set.rx_mask);
+diff --git a/drivers/net/wireless/mwifiex/join.c b/drivers/net/wireless/mwifiex/join.c
+index 8a81d11..5f0a174 100644
+--- a/drivers/net/wireless/mwifiex/join.c
++++ b/drivers/net/wireless/mwifiex/join.c
+@@ -403,10 +403,17 @@ int mwifiex_cmd_802_11_associate(struct mwifiex_private *priv,
+ 
+ 
+ 	/* Enable/Disable 40MHz for 2.4G band based on module param */
+-	if (disable_40mhz_24ghz)
++	if (disable_40mhz_24ghz) {
+ 		priv->wdev.wiphy->bands[IEEE80211_BAND_2GHZ]->ht_cap.cap &= ~IEEE80211_HT_CAP_SUP_WIDTH_20_40;
+-	else
++		priv->wdev.wiphy->bands[IEEE80211_BAND_2GHZ]->ht_cap.mcs.rx_mask[4] = 0;
++		priv->wdev.wiphy->bands[IEEE80211_BAND_2GHZ]->ht_cap.cap &= ~IEEE80211_HT_CAP_SGI_40;
++	} else {
+ 		priv->wdev.wiphy->bands[IEEE80211_BAND_2GHZ]->ht_cap.cap |= IEEE80211_HT_CAP_SUP_WIDTH_20_40;
++		if (ISSUPP_CHANWIDTH40(priv->adapter->hw_dot_11n_dev_cap)) {
++			priv->wdev.wiphy->bands[IEEE80211_BAND_2GHZ]->ht_cap.mcs.rx_mask[4] = 1;
++		}
++		priv->wdev.wiphy->bands[IEEE80211_BAND_2GHZ]->ht_cap.cap |= IEEE80211_HT_CAP_SGI_40;
++	}
+ 
+ 	pos = (u8 *) assoc;
+ 
+-- 
+1.9.1
+

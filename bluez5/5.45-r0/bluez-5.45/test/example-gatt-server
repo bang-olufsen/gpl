@@ -1,0 +1,783 @@
+#!/usr/bin/env python3
+
+import dbus
+import dbus.exceptions
+import dbus.mainloop.glib
+import dbus.service
+
+import array
+try:
+  from gi.repository import GObject
+except ImportError:
+  import gobject as GObject
+import sys
+
+from random import randint
+
+mainloop = None
+
+BLUEZ_SERVICE_NAME = 'org.bluez'
+GATT_MANAGER_IFACE = 'org.bluez.GattManager1'
+DBUS_OM_IFACE =      'org.freedesktop.DBus.ObjectManager'
+DBUS_PROP_IFACE =    'org.freedesktop.DBus.Properties'
+
+GATT_SERVICE_IFACE = 'org.bluez.GattService1'
+GATT_CHRC_IFACE =    'org.bluez.GattCharacteristic1'
+GATT_DESC_IFACE =    'org.bluez.GattDescriptor1'
+
+class InvalidArgsException(dbus.exceptions.DBusException):
+    _dbus_error_name = 'org.freedesktop.DBus.Error.InvalidArgs'
+
+class NotSupportedException(dbus.exceptions.DBusException):
+    _dbus_error_name = 'org.bluez.Error.NotSupported'
+
+class NotPermittedException(dbus.exceptions.DBusException):
+    _dbus_error_name = 'org.bluez.Error.NotPermitted'
+
+class InvalidValueLengthException(dbus.exceptions.DBusException):
+    _dbus_error_name = 'org.bluez.Error.InvalidValueLength'
+
+class FailedException(dbus.exceptions.DBusException):
+    _dbus_error_name = 'org.bluez.Error.Failed'
+    
+class InvalidOffsetException(dbus.exceptions.DBusException):
+    _dbus_error_name = 'org.bluez.Error.InvalidOffset'
+
+
+class Application(dbus.service.Object):
+    """
+    org.bluez.GattApplication1 interface implementation
+    """
+    def __init__(self, bus):
+        self.path = '/'
+        self.services = []
+        dbus.service.Object.__init__(self, bus, self.path)
+        self.add_service(BatteryService(bus, 1))
+        self.add_service(TestService(bus, 2))
+        self.add_service(DeviceInformationService(bus, 3))
+        self.add_service(HidOverGattService(bus, 4))
+
+    def get_path(self):
+        return dbus.ObjectPath(self.path)
+
+    def add_service(self, service):
+        self.services.append(service)
+
+    @dbus.service.method(DBUS_OM_IFACE, out_signature='a{oa{sa{sv}}}')
+    def GetManagedObjects(self):
+        response = {}
+        print('GetManagedObjects')
+
+        for service in self.services:
+            response[service.get_path()] = service.get_properties()
+            chrcs = service.get_characteristics()
+            for chrc in chrcs:
+                response[chrc.get_path()] = chrc.get_properties()
+                descs = chrc.get_descriptors()
+                for desc in descs:
+                    response[desc.get_path()] = desc.get_properties()
+
+        return response
+
+
+class Service(dbus.service.Object):
+    """
+    org.bluez.GattService1 interface implementation
+    """
+    PATH_BASE = '/org/bluez/example/service'
+
+    def __init__(self, bus, index, uuid, primary):
+        self.path = self.PATH_BASE + str(index)
+        self.bus = bus
+        self.uuid = uuid
+        self.primary = primary
+        self.characteristics = []
+        dbus.service.Object.__init__(self, bus, self.path)
+
+    def get_properties(self):
+        return {
+                GATT_SERVICE_IFACE: {
+                        'UUID': self.uuid,
+                        'Primary': self.primary,
+                        'Characteristics': dbus.Array(
+                                self.get_characteristic_paths(),
+                                signature='o')
+                }
+        }
+
+    def get_path(self):
+        return dbus.ObjectPath(self.path)
+
+    def add_characteristic(self, characteristic):
+        self.characteristics.append(characteristic)
+
+    def get_characteristic_paths(self):
+        result = []
+        for chrc in self.characteristics:
+            result.append(chrc.get_path())
+        return result
+
+    def get_characteristics(self):
+        return self.characteristics
+
+    @dbus.service.method(DBUS_PROP_IFACE,
+                         in_signature='s',
+                         out_signature='a{sv}')
+    def GetAll(self, interface):
+        if interface != GATT_SERVICE_IFACE:
+            raise InvalidArgsException()
+
+        return self.get_properties()[GATT_SERVICE_IFACE]
+
+
+class Characteristic(dbus.service.Object):
+    """
+    org.bluez.GattCharacteristic1 interface implementation
+    """
+    def __init__(self, bus, index, uuid, flags, service):
+        self.path = service.path + '/char' + str(index)
+        self.bus = bus
+        self.uuid = uuid
+        self.service = service
+        self.flags = flags
+        self.descriptors = []
+        dbus.service.Object.__init__(self, bus, self.path)
+
+    def get_properties(self):
+        return {
+                GATT_CHRC_IFACE: {
+                        'Service': self.service.get_path(),
+                        'UUID': self.uuid,
+                        'Flags': self.flags,
+                        'Descriptors': dbus.Array(
+                                self.get_descriptor_paths(),
+                                signature='o')
+                }
+        }
+
+    def get_path(self):
+        return dbus.ObjectPath(self.path)
+
+    def add_descriptor(self, descriptor):
+        self.descriptors.append(descriptor)
+
+    def get_descriptor_paths(self):
+        result = []
+        for desc in self.descriptors:
+            result.append(desc.get_path())
+        return result
+
+    def get_descriptors(self):
+        return self.descriptors
+
+    @dbus.service.method(DBUS_PROP_IFACE,
+                         in_signature='s',
+                         out_signature='a{sv}')
+    def GetAll(self, interface):
+        if interface != GATT_CHRC_IFACE:
+            raise InvalidArgsException()
+
+        return self.get_properties()[GATT_CHRC_IFACE]
+
+    @dbus.service.method(GATT_CHRC_IFACE,
+                        in_signature='a{sv}',
+                        out_signature='ay')
+    def ReadValue(self, options):
+        print('Default ReadValue called, returning error')
+        raise NotSupportedException()
+
+    @dbus.service.method(GATT_CHRC_IFACE, in_signature='aya{sv}')
+    def WriteValue(self, value, options):
+        print('Default WriteValue called, returning error')
+        raise NotSupportedException()
+
+    @dbus.service.method(GATT_CHRC_IFACE)
+    def StartNotify(self):
+        print('Default StartNotify called, returning error')
+        raise NotSupportedException()
+
+    @dbus.service.method(GATT_CHRC_IFACE)
+    def StopNotify(self):
+        print('Default StopNotify called, returning error')
+        raise NotSupportedException()
+
+    @dbus.service.signal(DBUS_PROP_IFACE,
+                         signature='sa{sv}as')
+    def PropertiesChanged(self, interface, changed, invalidated):
+        pass
+
+
+class Descriptor(dbus.service.Object):
+    """
+    org.bluez.GattDescriptor1 interface implementation
+    """
+    def __init__(self, bus, index, uuid, flags, characteristic):
+        self.path = characteristic.path + '/desc' + str(index)
+        self.bus = bus
+        self.uuid = uuid
+        self.flags = flags
+        self.chrc = characteristic
+        dbus.service.Object.__init__(self, bus, self.path)
+
+    def get_properties(self):
+        return {
+                GATT_DESC_IFACE: {
+                        'Characteristic': self.chrc.get_path(),
+                        'UUID': self.uuid,
+                        'Flags': self.flags,
+                }
+        }
+
+    def get_path(self):
+        return dbus.ObjectPath(self.path)
+
+    @dbus.service.method(DBUS_PROP_IFACE,
+                         in_signature='s',
+                         out_signature='a{sv}')
+    def GetAll(self, interface):
+        if interface != GATT_DESC_IFACE:
+            raise InvalidArgsException()
+
+        return self.get_properties()[GATT_DESC_IFACE]
+
+    @dbus.service.method(GATT_DESC_IFACE,
+                        in_signature='a{sv}',
+                        out_signature='ay')
+    def ReadValue(self, options):
+        print ('Default ReadValue called, returning error')
+        raise NotSupportedException()
+
+    @dbus.service.method(GATT_DESC_IFACE, in_signature='aya{sv}')
+    def WriteValue(self, value, options):
+        print('Default WriteValue called, returning error')
+        raise NotSupportedException()
+
+
+
+class BatteryService(Service):
+    """
+    Fake Battery service that emulates a draining battery.
+
+    """
+    BATTERY_UUID = '180f'
+
+    def __init__(self, bus, index):
+        Service.__init__(self, bus, index, self.BATTERY_UUID, True)
+        self.add_characteristic(BatteryLevelCharacteristic(bus, 0, self))
+
+
+class BatteryLevelCharacteristic(Characteristic):
+    """
+    Fake Battery Level characteristic. The battery level is drained by 2 points
+    every 5 seconds.
+
+    """
+    BATTERY_LVL_UUID = '2a19'
+
+    def __init__(self, bus, index, service):
+        Characteristic.__init__(
+                self, bus, index,
+                self.BATTERY_LVL_UUID,
+                ['read', 'notify'],
+                service)
+        self.notifying = False
+        self.battery_lvl = 100
+        GObject.timeout_add(5000, self.drain_battery)
+
+    def notify_battery_level(self):
+        if not self.notifying:
+            return
+        self.PropertiesChanged(
+                GATT_CHRC_IFACE,
+                { 'Value': [dbus.Byte(self.battery_lvl)] }, [])
+
+    def drain_battery(self):
+        if self.battery_lvl > 0:
+            self.battery_lvl -= 2
+            if self.battery_lvl < 0:
+                self.battery_lvl = 0
+#        print('Battery Level drained: ' + repr(self.battery_lvl))
+        self.notify_battery_level()
+        return True
+
+    def ReadValue(self, options):
+        print('Battery Level read: ' + repr(self.battery_lvl))
+        return [dbus.Byte(self.battery_lvl)]
+
+    def StartNotify(self):
+        if self.notifying:
+            print('Already notifying, nothing to do')
+            return
+
+        self.notifying = True
+        self.notify_battery_level()
+
+    def StopNotify(self):
+        if not self.notifying:
+            print('Not notifying, nothing to do')
+            return
+
+        self.notifying = False
+
+
+class TestService(Service):
+    """
+    Dummy test service that provides characteristics and descriptors that
+    for PTS test cases.
+    Uses some UUIDs for various other profiles.
+
+    """
+    TEST_SVC_UUID = '0000180d-0000-1000-8000-00805f9b34fb'
+
+    def __init__(self, bus, index):
+        Service.__init__(self, bus, index, self.TEST_SVC_UUID, True)
+        self.add_characteristic(TestCharacteristic(bus, 0, self))
+        self.add_characteristic(TestEncryptCharacteristic(bus, 1, self))
+        self.add_characteristic(TestSecureCharacteristic(bus, 2, self))
+        self.add_characteristic(TestNotPermittedCharacteristic(bus, 3, self))
+        self.add_characteristic(TestLongCharacteristic(bus, 4, self))
+        self.add_characteristic(TestApplicationErrorCharacteristic(bus, 5, self))
+        self.add_characteristic(TestAuthenticationCharacteristic(bus, 6, self))
+
+class TestCharacteristic(Characteristic):
+    """
+    Dummy test characteristic. Allows writing arbitrary bytes to its value, and
+    contains "extended properties", as well as a test descriptor.
+
+    """
+    TEST_CHRC_UUID = '00002a38-0000-1000-8000-00805f9b34fb'
+
+    def __init__(self, bus, index, service):
+        Characteristic.__init__(
+                self, bus, index,
+                self.TEST_CHRC_UUID,
+                ['read', 'write', 'writable-auxiliaries', 'reliable-write'],
+                service)
+        self.value = "a"
+        self.add_descriptor(TestDescriptor(bus, 0, self))
+        self.add_descriptor(
+                CharacteristicUserDescriptionDescriptor(bus, 1, self))
+
+    def ReadValue(self, options):
+        offset = 0
+        if "offset" in options:
+            offset = options["offset"]
+			
+        print('TestCharacteristic Read: %s offset=%i' % (repr(self.value), offset))
+        
+        if offset > len(self.value):
+            raise InvalidOffsetException()
+        return self.value[offset:]
+
+    def WriteValue(self, value, options):
+        offset = 0
+        if "offset" in options:
+            offset = options["offset"]
+            
+        print('TestCharacteristic Write: %s offset=%i' % (repr(value), offset))
+        
+        if offset > len(self.value):
+            print("Invalid offset")
+            raise InvalidOffsetException()
+            
+        if len(value) > len(self.value):
+            print("Invalid length")
+            raise InvalidValueLengthException()
+            
+        if offset > 0:
+            if offset + len(value) > len(self.value):
+                self.value = self.value[:offset] + value
+            else:
+                self.value = self.value[:offset] + value + self.value[(offset + len(value)):]
+        else:
+            self.value = value
+        
+class TestLongCharacteristic(Characteristic):
+    """
+    Dummy test long characteristic.
+
+    """
+    TEST_CHRC_UUID = '00002a39-0000-1000-8000-00805f9b34fb'
+
+    def __init__(self, bus, index, service):
+        Characteristic.__init__(
+                self, bus, index,
+                self.TEST_CHRC_UUID,
+                ['read', 'write', 'writable-auxiliaries', 
+                # comment for GATT/SR/GAW/BI-33-C and GATT/SR/GAW/BI-09-C
+                #'write-without-response', 
+                'reliable-write'],
+                service)
+        self.value = []
+        for i in range(0, 54):
+            self.value.append(dbus.Byte('b'))
+        self.add_descriptor(TestDescriptor(bus, 0, self))
+        self.add_descriptor(
+                CharacteristicUserDescriptionDescriptor(bus, 1, self))
+
+    def ReadValue(self, options):
+        offset = 0
+        if "offset" in options:
+            offset = options["offset"]
+			
+        print('TestLongCharacteristic Read: %s offset=%i' % (repr(self.value), offset))
+        
+        if offset > len(self.value):
+            raise InvalidOffsetException()
+            
+        return self.value[offset:]
+
+    def WriteValue(self, value, options):
+        # uncomment for GATT/SR/GAW/BI-33-C
+        # raise InvalidValueLengthException()
+        
+        # uncomment for GATT/SR/GAW/BI-09-C
+        raise InvalidOffsetException()
+        
+        offset = 0
+        if "offset" in options:
+            offset = options["offset"]
+            
+        print('TestLongCharacteristic Write BMI: %s offset=%i' % (repr(value), offset))
+        
+        if offset > len(self.value):
+            print("Offset exception")
+            raise InvalidOffsetException()
+            
+        newvalue = []
+        if offset > 0:
+            newvalue = newvalue + self.value[:offset]
+        
+        newvalue = newvalue + value
+        
+        endoffset = offset + len(value)
+        if endoffset < len(self.value):
+            newvalue = newvalue + self.value[endoffset:]
+            
+        self.value = newvalue
+        print('post Write: %s' % (repr(self.value)))
+            
+class TestAuthenticationCharacteristic(Characteristic):
+    """
+    Dummy test characteristic. 
+
+    """
+    TEST_CHRC_UUID = '00002a40-0000-1000-8000-00805f9b34fb'
+
+    def __init__(self, bus, index, service):
+        Characteristic.__init__(
+                self, bus, index,
+                self.TEST_CHRC_UUID,
+                ['read', 'authenticated-signed-writes'],
+                service)
+        self.value = 42
+
+    def ReadValue(self, options):
+        print('TestAuthenticationCharacteristic Read: %s' % (repr(self.value)))
+        
+        ret = [ self.value ]
+        
+        # PTS auth write test is increasing the value by one after the first read
+        # fake this here, as something goes wrong with bluez and PTS when communicating
+        # signatures.
+        # uncomment this line for GATT/SR/GAW/BI-01-C
+        # self.value += 1
+        return ret
+
+    def WriteValue(self, value, options):
+        print('TestAuthenticationCharacteristic Write: ' + repr(value))
+        self.value = value
+
+class TestNotPermittedCharacteristic(Characteristic):
+    """
+    Dummy test characteristic to raise not permitted errors.
+
+    """
+    TEST_CHRC_NPERM_UUID = '0000180d-0000-1000-8000-00805f9b34fb'
+
+    def __init__(self, bus, index, service):
+        Characteristic.__init__(
+                self, bus, index,
+                self.TEST_CHRC_NPERM_UUID,
+                ['read'],
+                service)
+
+    def ReadValue(self, options):
+        print('TestNotPermittedCharacteristic Read')
+        raise NotPermittedException()
+
+    def WriteValue(self, value, options):
+        print('TestNotPermittedCharacteristic Write')
+        raise NotPermittedException()
+
+class TestApplicationErrorCharacteristic(Characteristic):
+    """
+    Dummy test characteristic to raise application errors.
+
+    """
+    TEST_CHRC_NPERM_UUID = '00001820-0000-1000-8000-00805f9b34fb'
+
+    def __init__(self, bus, index, service):
+        Characteristic.__init__(
+                self, bus, index,
+                self.TEST_CHRC_NPERM_UUID,
+                ['read', 'write'],
+                service)
+
+    def ReadValue(self, options):
+        print('TestApplicationErrorCharacteristic Read')
+        raise FailedException()
+
+    def WriteValue(self, value, options):
+        print('TestApplicationErrorCharacteristic Write')
+        raise FailedException()
+
+class TestDescriptor(Descriptor):
+    """
+    Dummy test descriptor. Returns a static value.
+
+    """
+    TEST_DESC_UUID = '0000180e-0000-1000-8000-00805f9b34fb'
+
+    def __init__(self, bus, index, characteristic):
+        Descriptor.__init__(
+                self, bus, index,
+                self.TEST_DESC_UUID,
+                ['read', 'write'],
+                characteristic)
+
+    def ReadValue(self, options):
+        return [
+                dbus.Byte('T'), dbus.Byte('e'), dbus.Byte('s'), dbus.Byte('t')
+        ]
+
+
+class CharacteristicUserDescriptionDescriptor(Descriptor):
+    """
+    Writable CUD descriptor.
+
+    """
+    CUD_UUID = '2901'
+
+    def __init__(self, bus, index, characteristic):
+        self.writable = 'writable-auxiliaries' in characteristic.flags
+        self.value = array.array('B', b'This is a characteristic for testing')
+        self.value = self.value.tolist()
+        Descriptor.__init__(
+                self, bus, index,
+                self.CUD_UUID,
+                ['read', 'write'],
+                characteristic)
+
+    def ReadValue(self, options):
+        offset = 0
+        if "offset" in options:
+            offset = options["offset"]
+			
+        print('CharacteristicUserDescriptionDescriptor Read: %s offset=%i' % (repr(self.value), offset))
+        
+        if offset > len(self.value):
+            raise InvalidOffsetException()
+        return self.value[offset:]
+
+    def WriteValue(self, value, options):
+        # uncomment for GATT/SR/GAW/BI-35-C
+        # raise InvalidValueLengthException()
+        
+        # uncomment for GATT/SR/GAW/BI-26-C
+        # raise InvalidOffsetException()
+        
+        if not self.writable:
+            raise NotPermittedException()
+        self.value = value
+
+class TestEncryptCharacteristic(Characteristic):
+    """
+    Dummy test characteristic requiring encryption.
+
+    """
+    TEST_CHRC_UUID = '0000180f-0000-1000-8000-00805f9b34fb'
+
+    def __init__(self, bus, index, service):
+        Characteristic.__init__(
+                self, bus, index,
+                self.TEST_CHRC_UUID,
+                ['encrypt-read', 'encrypt-write', 'encrypt-authenticated-read', 'encrypt-authenticated-write'],
+                service)
+        self.value = []
+        self.add_descriptor(TestEncryptDescriptor(bus, 2, self))
+        self.add_descriptor(
+                CharacteristicUserDescriptionDescriptor(bus, 3, self))
+
+    def ReadValue(self, options):
+        print('TestEncryptCharacteristic Read: ' + repr(self.value))
+        return self.value
+
+    def WriteValue(self, value, options):
+        print('TestEncryptCharacteristic Write: ' + repr(value))
+        self.value = value
+
+class TestEncryptDescriptor(Descriptor):
+    """
+    Dummy test descriptor requiring encryption. Returns a static value.
+
+    """
+    TEST_DESC_UUID = '00001811-0000-1000-8000-00805f9b34fb'
+
+    def __init__(self, bus, index, characteristic):
+        Descriptor.__init__(
+                self, bus, index,
+                self.TEST_DESC_UUID,
+                ['encrypt-read', 'encrypt-write'],
+                characteristic)
+
+    def ReadValue(self, options):
+        return [
+                dbus.Byte('T'), dbus.Byte('e'), dbus.Byte('s'), dbus.Byte('t')
+        ]
+
+
+class TestSecureCharacteristic(Characteristic):
+    """
+    Dummy test characteristic requiring secure connection.
+
+    """
+    TEST_CHRC_UUID = '00001812-0000-1000-8000-00805f9b34fb'
+
+    def __init__(self, bus, index, service):
+        Characteristic.__init__(
+                self, bus, index,
+                self.TEST_CHRC_UUID,
+                ['secure-read', 'secure-write'],
+                service)
+        self.value = []
+        self.add_descriptor(TestSecureDescriptor(bus, 2, self))
+        self.add_descriptor(
+                CharacteristicUserDescriptionDescriptor(bus, 3, self))
+
+    def ReadValue(self, options):
+        print('TestSecureCharacteristic Read: ' + repr(self.value))
+        return self.value
+
+    def WriteValue(self, value, options):
+        print('TestSecureCharacteristic Write: ' + repr(value))
+        self.value = value
+
+
+class TestSecureDescriptor(Descriptor):
+    """
+    Dummy test descriptor requiring secure connection. Returns a static value.
+
+    """
+    TEST_DESC_UUID = '00001813-0000-1000-8000-00805f9b34fb'
+
+    def __init__(self, bus, index, characteristic):
+        Descriptor.__init__(
+                self, bus, index,
+                self.TEST_DESC_UUID,
+                ['secure-read', 'secure-write'],
+                characteristic)
+
+    def ReadValue(self, options):
+        return [
+                dbus.Byte('T'), dbus.Byte('e'), dbus.Byte('s'), dbus.Byte('t')
+        ]
+
+
+class DeviceInformationService(Service):
+    """
+    Fake Device Information service
+
+    """
+    DIS_UUID = '180a'
+
+    def __init__(self, bus, index):
+        Service.__init__(self, bus, index, self.DIS_UUID, True)
+        self.add_characteristic(DeviceInformationCharacteristic(bus, 2, self, '2a24', 'Model Number', 'Dummy Model Number'))
+        self.add_characteristic(DeviceInformationCharacteristic(bus, 3, self, '2a25', 'Serial Number', 'Dummy Serial Number'))
+        self.add_characteristic(DeviceInformationCharacteristic(bus, 4, self, '2a26', 'Firmware Rev', 'Dummy Firmware Rev'))
+        self.add_characteristic(DeviceInformationCharacteristic(bus, 5, self, '2a27', 'Hardware Rev', 'Dummy Hardware Rev'))
+        self.add_characteristic(DeviceInformationCharacteristic(bus, 6, self, '2a28', 'Software Rev', 'Dummy Software Rev'))
+        self.add_characteristic(DeviceInformationCharacteristic(bus, 7, self, '2a29', 'Manufacturer', 'Dummy Manufacturer'))
+
+
+class DeviceInformationCharacteristic(Characteristic):
+    """
+    Characteristic of the DIS. Create with UUID and value
+
+    """
+
+    def __init__(self, bus, index, service, uuid, name, value):
+        Characteristic.__init__(
+                self, bus, index, uuid,
+                ['read'],
+                service)
+        self.name = name
+        self.value = value
+
+    def ReadValue(self, options):
+        print('Characteristic read %s: %s' % (self.name, repr(self.value)))
+        return self.value
+
+
+class HidOverGattService(Service):
+    """
+    Fake HoG service for PTS tests
+
+    """
+    HOG_UUID = '1812'
+
+    def __init__(self, bus, index):
+        Service.__init__(self, bus, index, self.HOG_UUID, True)
+
+
+def register_app_cb():
+    print('GATT application registered')
+
+
+def register_app_error_cb(error):
+    print('Failed to register application: ' + str(error))
+    mainloop.quit()
+
+
+def find_adapter(bus):
+    remote_om = dbus.Interface(bus.get_object(BLUEZ_SERVICE_NAME, '/'),
+                               DBUS_OM_IFACE)
+    objects = remote_om.GetManagedObjects()
+
+    for o, props in objects.items():
+        if GATT_MANAGER_IFACE in props.keys():
+            return o
+
+    return None
+
+def main():
+    global mainloop
+
+    dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
+
+    bus = dbus.SystemBus()
+
+    adapter = find_adapter(bus)
+    if not adapter:
+        print('GattManager1 interface not found')
+        return
+
+    service_manager = dbus.Interface(
+            bus.get_object(BLUEZ_SERVICE_NAME, adapter),
+            GATT_MANAGER_IFACE)
+
+    app = Application(bus)
+
+    mainloop = GObject.MainLoop()
+
+    print('Registering GATT application...')
+
+    service_manager.RegisterApplication(app.get_path(), {},
+                                    reply_handler=register_app_cb,
+                                    error_handler=register_app_error_cb)
+
+    mainloop.run()
+
+if __name__ == '__main__':
+    main()

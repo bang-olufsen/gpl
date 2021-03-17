@@ -1,0 +1,33 @@
+From 259fb91ff026b9fda599762204bd519ec255af55 Mon Sep 17 00:00:00 2001
+From: Matus Ujhelyi <matus.ujhelyi@streamunlimited.com>
+Date: Thu, 18 Apr 2013 09:18:44 +0200
+Subject: [PATCH] stream800: edit CONFIG_ENV_SIZE and CONFIG_CONSTANTS_SIZE to
+ be same as partition size
+
+Signed-off-by: Matus Ujhelyi <matus.ujhelyi@streamunlimited.com>
+---
+ include/configs/stream800.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/include/configs/stream800.h b/include/configs/stream800.h
+index 8215824..f575376 100644
+--- a/include/configs/stream800.h
++++ b/include/configs/stream800.h
+@@ -26,11 +26,11 @@
+ #define CONFIG_DMA_COHERENT
+ #define CONFIG_DMA_COHERENT_SIZE	(1 << 20)
+ 
+-#define CONFIG_ENV_SIZE			(128 << 10)	/* 128 KiB */
++#define CONFIG_ENV_SIZE			(512 << 10) /* 512 KiB */
+ #define CONFIG_CONST_ENV_COMMON
+-#define CONFIG_CONSTANTS_SIZE   (128 << 10) /*  128 KiB */
++#define CONFIG_CONSTANTS_SIZE   (512 << 10) /* 512 KiB */
+ 
+-#define CONFIG_SYS_MALLOC_LEN       (CONFIG_ENV_SIZE + (128 << 10) + \
++#define CONFIG_SYS_MALLOC_LEN       (CONFIG_ENV_SIZE + (512 << 10) + \
+ 		CONFIG_CONSTANTS_SIZE + (1024 << 10) + (10 << 10))
+ 
+ 
+-- 
+2.7.4
+

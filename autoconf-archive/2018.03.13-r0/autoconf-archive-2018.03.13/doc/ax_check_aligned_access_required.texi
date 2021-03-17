@@ -1,0 +1,66 @@
+@node ax_check_aligned_access_required
+@unnumberedsec ax_check_aligned_access_required
+
+@majorheading Synopsis
+
+@smallexample
+AX_CHECK_ALIGNED_ACCESS_REQUIRED
+@end smallexample
+
+@majorheading Description
+
+While the x86 CPUs allow access to memory objects to be unaligned it
+happens that most of the modern designs require objects to be aligned -
+or they will fail with a buserror. That mode is quite known by
+big-endian machines (sparc, etc) however the alpha cpu is little-
+endian.
+
+The following function will test for aligned access to be required and
+set a config.h define HAVE_ALIGNED_ACCESS_REQUIRED (name derived by
+standard usage). Structures loaded from a file (or mmapped to memory)
+should be accessed per-byte in that case to avoid segfault type errors.
+
+The function checks if unaligned access would ignore the lowest bit of
+the address. If that happens or if the test binary crashes, aligned
+access is required.
+
+If cross-compiling, assume that aligned access is needed to be safe. Set
+ax_cv_have_aligned_access_required=no to override that assumption.
+
+@majorheading Source Code
+
+Download the
+@uref{http://git.savannah.gnu.org/gitweb/?p=autoconf-archive.git;a=blob_plain;f=m4/ax_check_aligned_access_required.m4,latest
+version of @file{ax_check_aligned_access_required.m4}} or browse
+@uref{http://git.savannah.gnu.org/gitweb/?p=autoconf-archive.git;a=history;f=m4/ax_check_aligned_access_required.m4,the
+macro's revision history}.
+
+@majorheading License
+
+@w{Copyright @copyright{} 2008 Guido U. Draheim @email{guidod@@gmx.de}}
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the
+Free Software Foundation; either version 3 of the License, or (at your
+option) any later version.
+
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+Public License for more details.
+
+You should have received a copy of the GNU General Public License along
+with this program. If not, see <https://www.gnu.org/licenses/>.
+
+As a special exception, the respective Autoconf Macro's copyright owner
+gives unlimited permission to copy, distribute and modify the configure
+scripts that are the output of Autoconf when processing the Macro. You
+need not follow the terms of the GNU General Public License when using
+or distributing such scripts, even though portions of the text of the
+Macro appear in them. The GNU General Public License (GPL) does govern
+all other use of the material that constitutes the Autoconf Macro.
+
+This special exception to the GPL applies to versions of the Autoconf
+Macro released by the Autoconf Archive. When you make and distribute a
+modified version of the Autoconf Macro, you may extend this special
+exception to the GPL to apply to your modified version as well.

@@ -1,0 +1,6 @@
+.depend
+*.o
+ppsctl
+ppstest
+ppswatch
+ppsldisc

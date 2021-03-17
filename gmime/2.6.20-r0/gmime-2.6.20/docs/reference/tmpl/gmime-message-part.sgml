@@ -1,0 +1,65 @@
+<!-- ##### SECTION Title ##### -->
+gmime-message-part
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GMimeMessagePart ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION g_mime_message_part_new ##### -->
+<para>
+
+</para>
+
+@subtype: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_message_part_new_with_message ##### -->
+<para>
+
+</para>
+
+@subtype: 
+@message: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_message_part_get_message ##### -->
+<para>
+
+</para>
+
+@part: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_message_part_set_message ##### -->
+<para>
+
+</para>
+
+@part: 
+@message: 
+
+

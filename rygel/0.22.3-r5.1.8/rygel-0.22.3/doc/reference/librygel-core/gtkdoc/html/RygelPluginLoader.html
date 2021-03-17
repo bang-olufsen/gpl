@@ -1,0 +1,344 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>librygel-core Reference Manual: RygelPluginLoader</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="index.html" title="librygel-core Reference Manual">
+<link rel="up" href="api-main-list-c.html" title="librygel-core API Reference">
+<link rel="prev" href="RygelDescriptionFile.html" title="RygelDescriptionFile">
+<link rel="next" href="RygelPluginInformation.html" title="RygelPluginInformation">
+<meta name="generator" content="GTK-Doc V1.20.1 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#RygelPluginLoader.description" class="shortcut">Description</a></span><span id="nav_hierarchy">  <span class="dim">|</span> 
+                  <a href="#RygelPluginLoader.object-hierarchy" class="shortcut">Object Hierarchy</a></span><span id="nav_signals">  <span class="dim">|</span> 
+                  <a href="#RygelPluginLoader.signals" class="shortcut">Signals</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="api-main-list-c.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="RygelDescriptionFile.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="RygelPluginInformation.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry">
+<a name="RygelPluginLoader"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="RygelPluginLoader.top_of_page"></a>RygelPluginLoader</span></h2>
+<p>RygelPluginLoader — This class is responsible for plugin loading.</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1">
+<a name="RygelPluginLoader.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="functions_return">
+<col class="functions_name">
+</colgroup>
+<tbody>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a class="link" href="RygelPluginLoader.html#RYGEL-TYPE-PLUGIN-LOADER:CAPS" title="RYGEL_TYPE_PLUGIN_LOADER">RYGEL_TYPE_PLUGIN_LOADER</a></td>
+</tr>
+<tr>
+<td class="function_type">
+<a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>
+</td>
+<td class="function_name">
+<a class="link" href="RygelPluginLoader.html#rygel-plugin-loader-plugin-disabled" title="rygel_plugin_loader_plugin_disabled ()">rygel_plugin_loader_plugin_disabled</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="RygelPluginLoader.html#rygel-plugin-loader-add-plugin" title="rygel_plugin_loader_add_plugin ()">rygel_plugin_loader_add_plugin</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="RygelPlugin.html" title="RygelPlugin"><span class="returnvalue">RygelPlugin</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="RygelPluginLoader.html#rygel-plugin-loader-get-plugin-by-name" title="rygel_plugin_loader_get_plugin_by_name ()">rygel_plugin_loader_get_plugin_by_name</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">GeeCollection</span> *
+</td>
+<td class="function_name">
+<a class="link" href="RygelPluginLoader.html#rygel-plugin-loader-list-plugins" title="rygel_plugin_loader_list_plugins ()">rygel_plugin_loader_list_plugins</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="RygelPluginLoader.html" title="RygelPluginLoader"><span class="returnvalue">RygelPluginLoader</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="RygelPluginLoader.html#rygel-plugin-loader-new" title="rygel_plugin_loader_new ()">rygel_plugin_loader_new</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="RygelPluginLoader.signals"></a><h2>Signals</h2>
+<div class="informaltable"><table border="0">
+<colgroup>
+<col width="150px" class="signals_return">
+<col width="300px" class="signals_name">
+<col width="200px" class="signals_flags">
+</colgroup>
+<tbody><tr>
+<td class="signal_type"><span class="returnvalue">void</span></td>
+<td class="signal_name"><a class="link" href="RygelPluginLoader.html#RygelPluginLoader-plugin-available" title="The “plugin-available” signal">plugin-available</a></td>
+<td class="signal_flags">Run Last</td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="RygelPluginLoader.other"></a><h2>Types and Values</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="name">
+<col class="description">
+</colgroup>
+<tbody>
+<tr>
+<td class="datatype_keyword">struct</td>
+<td class="function_name"><a class="link" href="RygelPluginLoader.html#RygelPluginLoader-struct" title="struct RygelPluginLoader">RygelPluginLoader</a></td>
+</tr>
+<tr>
+<td class="datatype_keyword">struct</td>
+<td class="function_name"><a class="link" href="RygelPluginLoader.html#RygelPluginLoaderClass" title="struct RygelPluginLoaderClass">RygelPluginLoaderClass</a></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="RygelPluginLoader.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="screen">    <a href="../gobject/gobject-The-Base-Object-Type.html#GObject">GObject</a>
+    <span class="lineart">╰──</span> <a class="link" href="RygelRecursiveModuleLoader.html" title="RygelRecursiveModuleLoader">RygelRecursiveModuleLoader</a>
+        <span class="lineart">╰──</span> RygelPluginLoader
+</pre>
+</div>
+<div class="refsect1">
+<a name="RygelPluginLoader.description"></a><h2>Description</h2>
+<p>It probes for shared library files in a specific directory, tries to find a <code class="function">module_init()</code> function with this signature: <code class="code">void module_init (RygelPluginLoader* loader);</code></p>
+<p>It then calls that function, passing a pointer to itself. The loaded module can then add plugins to Rygel by calling the <a class="link" href="RygelPluginLoader.html#rygel-plugin-loader-add-plugin" title="rygel_plugin_loader_add_plugin ()"><code class="function">rygel_plugin_loader_add_plugin()</code></a> function.</p>
+</div>
+<div class="refsect1">
+<a name="RygelPluginLoader.functions_details"></a><h2>Functions</h2>
+<div class="refsect2">
+<a name="RYGEL-TYPE-PLUGIN-LOADER:CAPS"></a><h3>RYGEL_TYPE_PLUGIN_LOADER</h3>
+<pre class="programlisting">#define RYGEL_TYPE_PLUGIN_LOADER (rygel_plugin_loader_get_type ())
+</pre>
+<p>The type for <a class="link" href="RygelPluginLoader.html" title="RygelPluginLoader"><span class="type">RygelPluginLoader</span></a>.</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-plugin-loader-plugin-disabled"></a><h3>rygel_plugin_loader_plugin_disabled ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>
+rygel_plugin_loader_plugin_disabled (<em class="parameter"><code><a class="link" href="RygelPluginLoader.html" title="RygelPluginLoader"><span class="type">RygelPluginLoader</span></a> *self</code></em>,
+                                     <em class="parameter"><code>const <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *name</code></em>);</pre>
+<p>Checks if a plugin is disabled by the user</p>
+<div class="refsect3">
+<a name="id-1.3.8.8.3.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelPluginLoader.html" title="RygelPluginLoader"><span class="type">RygelPluginLoader</span></a> instance</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>name</p></td>
+<td class="parameter_description"><p>  .  the name of plugin to check for. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Parameter for input. Default is transfer none."><span class="acronym">in</span></acronym>]</span></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.3.8.8.3.6"></a><h4>Returns</h4>
+<p> true if plugin is disabled, false if not. </p>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-plugin-loader-add-plugin"></a><h3>rygel_plugin_loader_add_plugin ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+rygel_plugin_loader_add_plugin (<em class="parameter"><code><a class="link" href="RygelPluginLoader.html" title="RygelPluginLoader"><span class="type">RygelPluginLoader</span></a> *self</code></em>,
+                                <em class="parameter"><code><a class="link" href="RygelPlugin.html" title="RygelPlugin"><span class="type">RygelPlugin</span></a> *plugin</code></em>);</pre>
+<div class="refsect3">
+<a name="id-1.3.8.8.4.4"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelPluginLoader.html" title="RygelPluginLoader"><span class="type">RygelPluginLoader</span></a> instance</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>plugin</p></td>
+<td class="parameter_description"><p> </p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-plugin-loader-get-plugin-by-name"></a><h3>rygel_plugin_loader_get_plugin_by_name ()</h3>
+<pre class="programlisting"><a class="link" href="RygelPlugin.html" title="RygelPlugin"><span class="returnvalue">RygelPlugin</span></a> *
+rygel_plugin_loader_get_plugin_by_name
+                               (<em class="parameter"><code><a class="link" href="RygelPluginLoader.html" title="RygelPluginLoader"><span class="type">RygelPluginLoader</span></a> *self</code></em>,
+                                <em class="parameter"><code>const <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *name</code></em>);</pre>
+<div class="refsect3">
+<a name="id-1.3.8.8.5.4"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelPluginLoader.html" title="RygelPluginLoader"><span class="type">RygelPluginLoader</span></a> instance</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>name</p></td>
+<td class="parameter_description"><p> </p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-plugin-loader-list-plugins"></a><h3>rygel_plugin_loader_list_plugins ()</h3>
+<pre class="programlisting"><span class="returnvalue">GeeCollection</span> *
+rygel_plugin_loader_list_plugins (<em class="parameter"><code><a class="link" href="RygelPluginLoader.html" title="RygelPluginLoader"><span class="type">RygelPluginLoader</span></a> *self</code></em>);</pre>
+<div class="refsect3">
+<a name="id-1.3.8.8.6.4"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelPluginLoader.html" title="RygelPluginLoader"><span class="type">RygelPluginLoader</span></a> instance</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-plugin-loader-new"></a><h3>rygel_plugin_loader_new ()</h3>
+<pre class="programlisting"><a class="link" href="RygelPluginLoader.html" title="RygelPluginLoader"><span class="returnvalue">RygelPluginLoader</span></a> *
+rygel_plugin_loader_new (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+</div>
+</div>
+<div class="refsect1">
+<a name="RygelPluginLoader.other_details"></a><h2>Types and Values</h2>
+<div class="refsect2">
+<a name="RygelPluginLoader-struct"></a><h3>struct RygelPluginLoader</h3>
+<pre class="programlisting">struct RygelPluginLoader;</pre>
+<p>This class is responsible for plugin loading.</p>
+<p>It probes for shared library files in a specific directory, tries to find a <code class="function">module_init()</code> function with this signature: <code class="code">void module_init (RygelPluginLoader* loader);</code></p>
+<p>It then calls that function, passing a pointer to itself. The loaded module can then add plugins to Rygel by calling the <a class="link" href="RygelPluginLoader.html#rygel-plugin-loader-add-plugin" title="rygel_plugin_loader_add_plugin ()"><code class="function">rygel_plugin_loader_add_plugin()</code></a> function.</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelPluginLoaderClass"></a><h3>struct RygelPluginLoaderClass</h3>
+<pre class="programlisting">struct RygelPluginLoaderClass {
+	RygelRecursiveModuleLoaderClass parent_class;
+};
+</pre>
+<p>The class structure for <a class="link" href="RygelPluginLoader.html#RYGEL-TYPE-PLUGIN-LOADER:CAPS" title="RYGEL_TYPE_PLUGIN_LOADER"><code class="literal">RYGEL_TYPE_PLUGIN_LOADER</code></a>. All the fields in this structure are private and should never be accessed directly.</p>
+<div class="refsect3">
+<a name="id-1.3.8.9.3.5"></a><h4>Members</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="300px" class="struct_members_name">
+<col class="struct_members_description">
+<col width="200px" class="struct_members_annotations">
+</colgroup>
+<tbody><tr>
+<td class="struct_member_name"><p><a class="link" href="RygelRecursiveModuleLoader.html#RygelRecursiveModuleLoaderClass" title="struct RygelRecursiveModuleLoaderClass"><span class="type">RygelRecursiveModuleLoaderClass</span></a> <em class="structfield"><code><a name="RygelPluginLoaderClass.parent-class"></a>parent_class</code></em>;</p></td>
+<td class="struct_member_description"><p>the parent class structure</p></td>
+<td class="struct_member_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="refsect1">
+<a name="RygelPluginLoader.signal-details"></a><h2>Signal Details</h2>
+<div class="refsect2">
+<a name="RygelPluginLoader-plugin-available"></a><h3>The <code class="literal">“plugin-available”</code> signal</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+user_function (<a class="link" href="RygelPluginLoader.html" title="RygelPluginLoader"><span class="type">RygelPluginLoader</span></a> *plugin_loader,
+               <a class="link" href="RygelPlugin.html" title="RygelPlugin"><span class="type">RygelPlugin</span></a>       *plugin,
+               <a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a>           user_data)</pre>
+<div class="refsect3">
+<a name="id-1.3.8.10.2.4"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>plugin_loader</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelPluginLoader.html" title="RygelPluginLoader"><span class="type">RygelPluginLoader</span></a> instance that received the signal</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>plugin</p></td>
+<td class="parameter_description"><p> </p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>user_data</p></td>
+<td class="parameter_description"><p>user data set when the signal handler was connected.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p>Flags: Run Last</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.20.1</div>
+</body>
+</html>

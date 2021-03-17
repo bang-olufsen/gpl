@@ -1,0 +1,119 @@
+# Indonesian translation for podebconf ca-certificates template.
+# Copyright (C) 2016 THE ca-certificates COPYRIGHT HOLDER
+# This file is distributed under the same license as the ca-certificates package.
+# Translator:
+# Izharul Haq <atoz.chevara@yahoo.com>, 2016.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: ca-certificates 20160104\n"
+"Report-Msgid-Bugs-To: ca-certificates@packages.debian.org\n"
+"POT-Creation-Date: 2011-10-22 14:41+0200\n"
+"PO-Revision-Date: 2016-08-22 18:31+0700\n"
+"Last-Translator: Izharul Haq <atoz.chevara@yahoo.com>\n"
+"Language-Team: L10N Debian Indonesian <debian-l10n-indonesian@lists.debian."
+"org>\n"
+"Language: id\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.6.10\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. Type: title
+#. Description
+#: ../templates:2001
+msgid "ca-certificates configuration"
+msgstr "pengaturan ca-certificates"
+
+#. Type: select
+#. Choices
+#: ../templates:3001
+msgid "yes"
+msgstr "ya"
+
+#. Type: select
+#. Choices
+#: ../templates:3001
+msgid "no"
+msgstr "tidak"
+
+#. Type: select
+#. Choices
+#: ../templates:3001
+msgid "ask"
+msgstr "tanyakan"
+
+#. Type: select
+#. Description
+#: ../templates:3002
+msgid "Trust new certificates from certificate authorities?"
+msgstr "Mempercayai sertifikat baru dari otoritas sertifikat?"
+
+#. Type: select
+#. Description
+#: ../templates:3002
+msgid ""
+"This package may install new CA (Certificate Authority) certificates when "
+"upgrading. You may want to check such new CA certificates and select only "
+"certificates that you trust."
+msgstr ""
+"Paket ini dapat memasang sertifikat CA baru (Otoritas Sertifikat) ketika "
+"melakukan pembaharuan. Anda mungkin ingin memeriksa sertifikat CA baru "
+"tersebut dan memilih hanya sertifikat yang anda percaya."
+
+#. Type: select
+#. Description
+#: ../templates:3002
+msgid ""
+" - yes: new CA certificates will be trusted and installed;\n"
+" - no : new CA certificates will not be installed by default;\n"
+" - ask: prompt for each new CA certificate."
+msgstr ""
+" - ya: setiap sertifikat CA baru selalu dipercaya dan dipasangkan;\n"
+" - tidak : setiap sertifikat CA baru tidak akan dipasang sebagai standar;\n"
+" - tanyakan: konfirmasikan untuk setiap sertifikat CA baru."
+
+#. Type: multiselect
+#. Description
+#: ../templates:4001
+msgid "New certificates to activate:"
+msgstr "Sertifikat baru untuk diaktifkan:"
+
+#. Type: multiselect
+#. Description
+#: ../templates:4001
+msgid ""
+"During upgrades, new certificates will be added. Please choose those you "
+"trust."
+msgstr ""
+"Selama pembaharuan, sertifikat baru akan ditambahkan. Silakan memilih yang "
+"anda percaya."
+
+#. Type: multiselect
+#. Description
+#: ../templates:5001
+msgid "Certificates to activate:"
+msgstr "Sertifikat untuk diaktifkan:"
+
+#. Type: multiselect
+#. Description
+#: ../templates:5001
+msgid ""
+"This package installs common CA (Certificate Authority) certificates in /usr/"
+"share/ca-certificates."
+msgstr ""
+"Paket ini umumnya memasang sertifikat CA (Otoritas Sertifikat) di /usr/share/"
+"ca-certificates."
+
+#. Type: multiselect
+#. Description
+#: ../templates:5001
+msgid ""
+"Please select the certificate authorities you trust so that their "
+"certificates are installed into /etc/ssl/certs. They will be compiled into a "
+"single /etc/ssl/certs/ca-certificates.crt file."
+msgstr ""
+"Silahkan pilih otoritas sertifikat yang anda percaya sehingga sertifikat "
+"akan dipasang ke dalam /etc/ssl/certs. Mereka akan dikompilasi menjadi satu "
+"berkas /etc/ssl/certs/ca-certificates.crt."

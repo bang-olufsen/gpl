@@ -1,0 +1,39 @@
+From 72056271bcbb45cbffc7e334d588d78dd82f5701 Mon Sep 17 00:00:00 2001
+From: Matus Ujhelyi <matus.ujhelyi@streamunlimited.com>
+Date: Fri, 22 Mar 2013 11:42:48 +0100
+Subject: [PATCH] stream800: add delay between ADC measures, change STEPDELAY
+ register to 0x68 as is in datasheet
+
+This commit fixes strange behaviour with board detection of L2 with AIN6.
+
+Signed-off-by: Matus Ujhelyi <matus.ujhelyi@streamunlimited.com>
+---
+ board/streamunlimited/stream800/adc.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/board/streamunlimited/stream800/adc.c b/board/streamunlimited/stream800/adc.c
+index bf9d31c..db940cc 100644
+--- a/board/streamunlimited/stream800/adc.c
++++ b/board/streamunlimited/stream800/adc.c
+@@ -72,7 +72,7 @@
+ #define REG_STEPCONFIG_MODE_HW_ONESHOT	(2)
+ #define REG_STEPCONFIG_MODE_HW_CONT		(3)
+ 
+-#define REG_STEPDELAY(X)		(0x86	+ ((X) * 8))
++#define REG_STEPDELAY(X)		(0x68	+ ((X) * 8))
+ #define REG_FIFOCOUNT(X)		(0xe4 	+ ((X) * 0xc))
+ #define REG_FIFOTHRESHOLD(X)	(0xe8	+ ((X) * 0xc))
+ #define REG_DMAREQ(X)			(0xec	+ ((X) * 0xc))
+@@ -121,6 +121,9 @@ int read_adc_channel(int channel)
+ 	/* enable charge and step1 */
+ 	adc_writel(1 << 1, REG_STEPENABLE);
+ 
++	/* set delay time between 16 measurements */
++	adc_writel((32 << 24) + 32 , REG_STEPDELAY(0));
++
+ 	/* GO! */
+ 	adc_writel(1 << 0, REG_CTRL);
+ 
+-- 
+2.7.4
+

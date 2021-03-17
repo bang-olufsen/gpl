@@ -1,0 +1,52 @@
+From 1054313918d6e1c8e5be5334a7642231c24057af Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Fri, 6 Nov 2020 13:30:24 +0100
+Subject: [PATCH] GstFlacParse: Fix flac seeking to 0 position
+
+---
+ gst/audioparsers/gstflacparse.c | 17 ++++++++++-------
+ 1 file changed, 10 insertions(+), 7 deletions(-)
+
+diff --git a/gst/audioparsers/gstflacparse.c b/gst/audioparsers/gstflacparse.c
+index 2758d4c..4a55486 100644
+--- a/gst/audioparsers/gstflacparse.c
++++ b/gst/audioparsers/gstflacparse.c
+@@ -1175,7 +1175,8 @@ static void
+ gst_flac_parse_process_seektable (GstFlacParse * flacparse, gint64 boffset)
+ {
+   GstByteReader br;
+-  gint64 offset = 0, samples = 0;
++  gint64 offset = 0, sample_num = 0;
++  gint16 samples = 0;
+   GstMapInfo map;
+ 
+   GST_DEBUG_OBJECT (flacparse,
+@@ -1193,20 +1194,22 @@ gst_flac_parse_process_seektable (GstFlacParse * flacparse, gint64 boffset)
+ 
+   /* seekpoints */
+   while (gst_byte_reader_get_remaining (&br)) {
+-    if (!gst_byte_reader_get_int64_be (&br, &samples))
++    if (!gst_byte_reader_get_int64_be (&br, &sample_num))
+       break;
+     if (!gst_byte_reader_get_int64_be (&br, &offset))
+       break;
+-    if (!gst_byte_reader_skip (&br, 2))
++    if (!gst_byte_reader_get_int16_be (&br, &samples))
+       break;
+ 
+-    GST_LOG_OBJECT (flacparse, "samples %" G_GINT64_FORMAT " -> offset %"
+-        G_GINT64_FORMAT, samples, offset);
++    GST_LOG_OBJECT (flacparse, "sample num %" G_GINT64_FORMAT " -> offset %"
++        G_GINT64_FORMAT, sample_num, offset);
+ 
+     /* sanity check */
+-    if (G_LIKELY (offset > 0 && samples > 0)) {
++    /* Note that is legal for both sample_num and offset to be 0, e.g. 
++       first seek point in the seektable */
++    if (G_LIKELY (samples > 0)) {
+       gst_base_parse_add_index_entry (GST_BASE_PARSE (flacparse),
+-          boffset + offset, gst_util_uint64_scale (samples, GST_SECOND,
++          boffset + offset, gst_util_uint64_scale (sample_num, GST_SECOND,
+               flacparse->samplerate), TRUE, FALSE);
+     }
+   }

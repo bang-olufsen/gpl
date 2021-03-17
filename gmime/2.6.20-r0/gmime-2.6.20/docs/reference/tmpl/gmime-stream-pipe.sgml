@@ -1,0 +1,55 @@
+<!-- ##### SECTION Title ##### -->
+gmime-stream-pipe
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GMimeStreamPipe ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION g_mime_stream_pipe_new ##### -->
+<para>
+
+</para>
+
+@fd: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_stream_pipe_get_owner ##### -->
+<para>
+
+</para>
+
+@stream: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_stream_pipe_set_owner ##### -->
+<para>
+
+</para>
+
+@stream: 
+@owner: 
+
+

@@ -1,0 +1,28 @@
+From 37703f4053963589b9c9a072bade23b52e4b89a1 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Wed, 2 Jul 2014 11:50:52 +0200
+Subject: [PATCH] sound: am33xx_s800: Increase drift range to +-5000ppm
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ sound/soc/davinci/am33xx-s800.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/sound/soc/davinci/am33xx-s800.c b/sound/soc/davinci/am33xx-s800.c
+index 60139f1..1f16ece 100644
+--- a/sound/soc/davinci/am33xx-s800.c
++++ b/sound/soc/davinci/am33xx-s800.c
+@@ -378,8 +378,8 @@ static int am33xx_s800_drift_info(struct snd_kcontrol *kcontrol,
+ 				      struct snd_ctl_elem_info *uinfo)
+ {
+ 	uinfo->type = SNDRV_CTL_ELEM_TYPE_INTEGER;
+-	uinfo->value.integer.min = -500;	/* +/- 500ppm */
+-	uinfo->value.integer.max = 500;
++	uinfo->value.integer.min = -5000;	/* +/- 5000ppm */
++	uinfo->value.integer.max = 5000;
+ 	uinfo->count = 1;
+ 
+ 	return 0;
+-- 
+1.9.1
+

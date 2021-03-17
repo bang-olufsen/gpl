@@ -1,0 +1,6 @@
+remove.ldconfig.call.patch -p1
+ptest.patch -p1
+Revert-mke2fs-enable-the-metadata_csum-and-64bit-fea.patch -p1
+mkdir_p.patch -p1
+0001-misc-create_inode.c-set-dir-s-mode-correctly.patch -p1
+0001-create_inode-fix-copying-large-files.patch -p1

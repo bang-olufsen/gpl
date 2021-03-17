@@ -1,0 +1,56 @@
+<!-- ##### SECTION Title ##### -->
+gmime-stream-filter
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GMimeStreamFilter ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION g_mime_stream_filter_new ##### -->
+<para>
+
+</para>
+
+@stream: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_stream_filter_add ##### -->
+<para>
+
+</para>
+
+@stream: 
+@filter: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_stream_filter_remove ##### -->
+<para>
+
+</para>
+
+@stream: 
+@id: 
+
+

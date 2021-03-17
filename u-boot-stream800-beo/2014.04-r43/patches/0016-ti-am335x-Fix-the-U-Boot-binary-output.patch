@@ -1,0 +1,37 @@
+From 48f2b4c15fb9fa76af0866e30cfefb558b0ab784 Mon Sep 17 00:00:00 2001
+From: Simon Glass <sjg@chromium.org>
+Date: Wed, 16 Apr 2014 08:41:35 -0600
+Subject: [PATCH] ti: am335x: Fix the U-Boot binary output
+
+This should include the hash so that image_binary_size is really at the
+end of the image, and not some 300 bytes earlier.
+
+Signed-off-by: Simon Glass <sjg@chromium.org>
+---
+ board/ti/am335x/u-boot.lds | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/board/ti/am335x/u-boot.lds b/board/ti/am335x/u-boot.lds
+index a9e3d34..a2dda92 100644
+--- a/board/ti/am335x/u-boot.lds
++++ b/board/ti/am335x/u-boot.lds
+@@ -77,6 +77,8 @@ SECTIONS
+ 		*(.__rel_dyn_end)
+ 	}
+ 
++	.hash : { *(.hash*) }
++
+ 	.end :
+ 	{
+ 		*(.__end)
+@@ -117,7 +119,6 @@ SECTIONS
+ 	.dynbss : { *(.dynbss) }
+ 	.dynstr : { *(.dynstr*) }
+ 	.dynamic : { *(.dynamic*) }
+-	.hash : { *(.hash*) }
+ 	.gnu.hash : { *(.gnu.hash) }
+ 	.plt : { *(.plt*) }
+ 	.interp : { *(.interp*) }
+-- 
+2.7.4
+

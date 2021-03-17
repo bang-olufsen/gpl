@@ -1,0 +1,33 @@
+From f9f64ecebc3a4a830a4aac4e1d1f77ce00c0f915 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Wed, 10 Jan 2018 09:33:56 +0100
+Subject: [PATCH] gupnp: Don't define custom log domain
+
+When defined we can see all debug messages about network interface change like:
+
+20171218 14:34:01.173 [1176.1176] GUPnP-ContextManager-Linux-DEBUG: Received RTM_NEWLINK
+20171218 14:34:01.173 [1176.1176] GUPnP-ContextManager-Linux-DEBUG: Received RTM_NEWLINK
+20171218 14:34:01.173 [1176.1176] GUPnP-ContextManager-Linux-DEBUG: Received RTM_NEWLINK
+20171218 14:34:02.069 [1176.1176] GUPnP-ContextManager-Linux-DEBUG: Received RTM_NEWADDR
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ libgupnp/gupnp-linux-context-manager.c | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/libgupnp/gupnp-linux-context-manager.c b/libgupnp/gupnp-linux-context-manager.c
+index cdf2ae3..94bbdb8 100644
+--- a/libgupnp/gupnp-linux-context-manager.c
++++ b/libgupnp/gupnp-linux-context-manager.c
+@@ -38,8 +38,6 @@
+  * accordingly.
+  */
+ 
+-#define G_LOG_DOMAIN "GUPnP-ContextManager-Linux"
+-
+ #include <config.h>
+ 
+ #include <arpa/inet.h>
+-- 
+2.7.4
+

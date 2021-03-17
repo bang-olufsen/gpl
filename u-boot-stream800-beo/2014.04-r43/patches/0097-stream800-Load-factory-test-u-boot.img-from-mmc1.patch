@@ -1,0 +1,71 @@
+From 7deb5d1bb092cc237297a74992b9a8118b173bc3 Mon Sep 17 00:00:00 2001
+From: Fionn Cleary <fionn.cleary@streamunlimited.com>
+Date: Tue, 12 Aug 2014 17:46:48 +0200
+Subject: [PATCH] stream800: Load factory test u-boot.img from mmc1
+
+If the board is started from UART and the carrier board is a factory
+test carrier board then load the second stage u-boot.img from the mmc
+card.  Note that BOTH of these conditions must be true before the device
+tries to load from mmc1.
+
+Signed-off-by: Fionn Cleary <fionn.cleary@streamunlimited.com>
+---
+ board/streamunlimited/stream800/Makefile    |  2 +-
+ board/streamunlimited/stream800/board-spl.c | 21 ++++++++++++++++++++-
+ 2 files changed, 21 insertions(+), 2 deletions(-)
+
+diff --git a/board/streamunlimited/stream800/Makefile b/board/streamunlimited/stream800/Makefile
+index 315fcac..ee87702 100644
+--- a/board/streamunlimited/stream800/Makefile
++++ b/board/streamunlimited/stream800/Makefile
+@@ -15,7 +15,7 @@
+ #
+ 
+ ifdef CONFIG_SPL_BUILD
+-obj-y += mux.o board-spl.o
++obj-y += mux.o board-spl.o adc.o board_defines.o
+ else
+ obj-y += board.o mux.o adc.o board-sue_demo_client_board.o board-sue_first_carrier_board.o board-sue_factory_test_board.o fwupdate.o sfu_parser.o omap_wdt.o tftp_update.o board_defines.o
+ endif
+diff --git a/board/streamunlimited/stream800/board-spl.c b/board/streamunlimited/stream800/board-spl.c
+index 79901e7..e91ed0e 100644
+--- a/board/streamunlimited/stream800/board-spl.c
++++ b/board/streamunlimited/stream800/board-spl.c
+@@ -31,6 +31,8 @@
+ #include <asm/emif.h>
+ #include <asm/gpio.h>
+ #include <i2c.h>
++#include "adc.h"
++#include "board_defines.h"
+ #include "spl.h"
+ #include "mux.h"
+ 
+@@ -124,7 +126,24 @@ void set_uart_mux_conf(void)
+ void sdram_init(void)
+ {
+ 	config_ddr(266, &ioregs, &ddr2_data,
+-		   &ddr2_cmd_ctrl_data, &ddr2_emif_reg_data, 0);
++			   &ddr2_cmd_ctrl_data, &ddr2_emif_reg_data, 0);
++
++	// If we booted from UART, then check carrier type.
++	if (spl_boot_device() == BOOT_DEVICE_UART) {
++		// Check for factory test carrier; if so, load from mmc1
++		struct Stream800Board board;
++		init_adc();
++		board_detect(&board);
++
++		if (board.carrierBoardType == CBT_SueFactoryTestBoard) {
++			printf("Running on factory test carrier and booted via UART, loading u-boot.img from mmc1\n");
++			// mmc1 must be enabled before it initialised.
++			enable_mmc1_pin_mux();
++			// Force mmc1 as boot device and set mode to FAT.
++			gd->arch.omap_boot_params.omap_bootdevice = BOOT_DEVICE_MMC2;
++			gd->arch.omap_boot_params.omap_bootmode = MMCSD_MODE_FAT;
++		}
++	}
+ }
+ 
+ #define OSC	(V_OSCK/1000000)
+-- 
+2.7.4
+

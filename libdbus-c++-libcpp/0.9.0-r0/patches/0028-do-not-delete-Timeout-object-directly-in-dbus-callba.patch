@@ -1,0 +1,160 @@
+From 3198db50acae3344de959bd691124c56298cb630 Mon Sep 17 00:00:00 2001
+From: Martin Geier <martin.geier@streamunlimited.com>
+Date: Thu, 28 Nov 2019 14:40:16 +0100
+Subject: [PATCH] do not delete Timeout object directly in dbus callback
+
+When the timeout expires, dbus_timeout_handle method is called. As the
+result of dbus_timeout_handle, rem_timeout can be called which call
+delete timeout.
+Due to eventloop implementation, expires method is called with locked
+mutex and the same mutex needs to be locked, when timeout is deleted.
+This cause a deadlock. To solve this deadlock, new method "deleteLater"
+was introduced, to delete Timeout object when the event loop is not busy.
+
+Signed-off-by: Martin Geier <martin.geier@streamunlimited.com>
+---
+ include/dbus-c++/dispatcher.h            |  5 +++++
+ include/dbus-c++/eventloop-integration.h |  2 ++
+ include/dbus-c++/eventloop.h             |  6 ++++++
+ src/dispatcher.cpp                       |  5 +++++
+ src/eventloop-integration.cpp            |  8 +++++++-
+ src/eventloop.cpp                        | 15 +++++++++++++++
+ 6 files changed, 40 insertions(+), 1 deletion(-)
+
+diff --git a/include/dbus-c++/dispatcher.h b/include/dbus-c++/dispatcher.h
+index a871f7f..f945e1b 100755
+--- a/include/dbus-c++/dispatcher.h
++++ b/include/dbus-c++/dispatcher.h
+@@ -76,6 +76,11 @@ public:
+ 
+   virtual void toggle() = 0;
+ 
++  /*!
++   * \brief request Timeout object to delete it self
++   */
++  virtual void deleteLater();
++
+ private:
+ 
+   DXXAPILOCAL Timeout(const Timeout &);
+diff --git a/include/dbus-c++/eventloop-integration.h b/include/dbus-c++/eventloop-integration.h
+index e35d427..fbc86d3 100755
+--- a/include/dbus-c++/eventloop-integration.h
++++ b/include/dbus-c++/eventloop-integration.h
+@@ -48,6 +48,8 @@ class DXXAPI BusTimeout : public Timeout, public DefaultTimeout
+ 
+   void toggle();
+ 
++  void deleteLater() override;
++
+   friend class BusDispatcher;
+ };
+ 
+diff --git a/include/dbus-c++/eventloop.h b/include/dbus-c++/eventloop.h
+index 53f90a7..e87746d 100644
+--- a/include/dbus-c++/eventloop.h
++++ b/include/dbus-c++/eventloop.h
+@@ -27,6 +27,7 @@
+ 
+ #include <pthread.h>
+ #include <list>
++#include <set>
+ 
+ #include "api.h"
+ #include "util.h"
+@@ -51,6 +52,8 @@ public:
+ 
+   virtual ~DefaultTimeout();
+ 
++  void deleteLater();
++
+   bool enabled()
+   {
+     return _enabled;
+@@ -216,6 +219,9 @@ private:
+   DefaultMutex _mutex_w;
+   DefaultWatches _watches;
+ 
++  DefaultMutex _delete_mutex;
++  std::set< DefaultTimeout *> _deleted_timeouts;
++
+   friend class DefaultTimeout;
+   friend class DefaultWatch;
+ };
+diff --git a/src/dispatcher.cpp b/src/dispatcher.cpp
+index 7eecee9..470382e 100644
+--- a/src/dispatcher.cpp
++++ b/src/dispatcher.cpp
+@@ -58,6 +58,11 @@ bool Timeout::handle()
+   return dbus_timeout_handle((DBusTimeout *)_int);
+ }
+ 
++void Timeout::deleteLater()
++{
++  delete this;
++}
++
+ /*
+ */
+ 
+diff --git a/src/eventloop-integration.cpp b/src/eventloop-integration.cpp
+index 8190758..c80013d 100755
+--- a/src/eventloop-integration.cpp
++++ b/src/eventloop-integration.cpp
+@@ -55,6 +55,12 @@ void BusTimeout::toggle()
+   DefaultTimeout::enabled(Timeout::enabled());
+ }
+ 
++void BusTimeout::deleteLater()
++{
++  DefaultTimeout::enabled(false);
++  DefaultTimeout::deleteLater();
++}
++
+ BusWatch::BusWatch(Watch::Internal *wi, BusDispatcher *bd)
+   : Watch(wi), DefaultWatch(Watch::descriptor(), 0, bd)
+ {
+@@ -188,7 +194,7 @@ void BusDispatcher::rem_timeout(Timeout *t)
+ {
+   debug_log("removed timeout %p", t);
+ 
+-  delete t;
++  t->deleteLater();
+ }
+ 
+ Watch *BusDispatcher::add_watch(Watch::Internal *wi)
+diff --git a/src/eventloop.cpp b/src/eventloop.cpp
+index 9b22182..92b5cb0 100644
+--- a/src/eventloop.cpp
++++ b/src/eventloop.cpp
+@@ -61,6 +61,13 @@ DefaultTimeout::~DefaultTimeout()
+   _disp->_mutex_t.unlock();
+ }
+ 
++void DefaultTimeout::deleteLater()
++{
++  _disp->_delete_mutex.lock();
++  _disp->_deleted_timeouts.insert(this);
++  _disp->_delete_mutex.unlock();
++}
++
+ DefaultWatch::DefaultWatch(int fd, int flags, DefaultMainLoop *ed)
+   : _enabled(true), _fd(fd), _flags(flags), _state(0), _data(0), _disp(ed)
+ {
+@@ -262,5 +269,13 @@ void DefaultMainLoop::dispatch()
+     }
+   }
+   _mutex_w.unlock();
++
++  _delete_mutex.lock();
++  std::set< DefaultTimeout *> timeouts = _deleted_timeouts;
++  _deleted_timeouts.clear();
++  _delete_mutex.unlock();
++
++  for (std::set< DefaultTimeout *>::iterator it = timeouts.begin(); it != timeouts.end(); ++it)
++    delete *it;
+ }
+ 
+-- 
+2.7.4
+

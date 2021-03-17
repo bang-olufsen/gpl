@@ -1,0 +1,102 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GMimeStreamNull</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="GMime 2.6 Reference Manual">
+<link rel="up" href="Streams.html" title="Streams">
+<link rel="prev" href="GMimeStreamMmap.html" title="GMimeStreamMmap">
+<link rel="next" href="GMimeStreamFilter.html" title="GMimeStreamFilter">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="GMimeStreamMmap.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="Streams.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">GMime 2.6 Reference Manual</th>
+<td><a accesskey="n" href="GMimeStreamFilter.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#GMimeStreamNull.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#GMimeStreamNull.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#GMimeStreamNull.object-hierarchy" class="shortcut">Object Hierarchy</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="GMimeStreamNull"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="GMimeStreamNull.top_of_page"></a>GMimeStreamNull</span></h2>
+<p>GMimeStreamNull — A null stream</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="GMimeStreamNull.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">struct              <a class="link" href="GMimeStreamNull.html#GMimeStreamNull-struct" title="struct GMimeStreamNull">GMimeStreamNull</a>;
+<a class="link" href="GMimeStream.html" title="GMimeStream"><span class="returnvalue">GMimeStream</span></a> *       <a class="link" href="GMimeStreamNull.html#g-mime-stream-null-new" title="g_mime_stream_null_new ()">g_mime_stream_null_new</a>              (<em class="parameter"><code><span class="type">void</span></code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="GMimeStreamNull.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  GObject
+   +----<a class="link" href="GMimeStream.html" title="GMimeStream">GMimeStream</a>
+         +----GMimeStreamNull
+</pre>
+</div>
+<div class="refsect1">
+<a name="GMimeStreamNull.description"></a><h2>Description</h2>
+<p>
+A <a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a> which has no real backing storage at all. This
+stream is useful for dry-runs and can also be useful for
+determining statistics on source data which can be written to
+streams but cannot be read as a stream itself (e.g. a <a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a>
+via <a class="link" href="GMimeObject.html#g-mime-object-write-to-stream" title="g_mime_object_write_to_stream ()"><code class="function">g_mime_object_write_to_stream()</code></a>).
+</p>
+</div>
+<div class="refsect1">
+<a name="GMimeStreamNull.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="GMimeStreamNull-struct"></a><h3>struct GMimeStreamNull</h3>
+<pre class="programlisting">struct GMimeStreamNull;</pre>
+<p>
+A <a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a> which has no backing store.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-stream-null-new"></a><h3>g_mime_stream_null_new ()</h3>
+<pre class="programlisting"><a class="link" href="GMimeStream.html" title="GMimeStream"><span class="returnvalue">GMimeStream</span></a> *       g_mime_stream_null_new              (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>
+Creates a new <a class="link" href="GMimeStreamNull.html" title="GMimeStreamNull"><span class="type">GMimeStreamNull</span></a> object.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new null stream (similar to /dev/null on Unix).</td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+<div class="refsect1">
+<a name="GMimeStreamNull.see-also"></a><h2>See Also</h2>
+<a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

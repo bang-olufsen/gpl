@@ -1,0 +1,204 @@
+<!-- ##### SECTION Title ##### -->
+gmime-parser
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GMimeParser ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### USER_FUNCTION GMimeParserHeaderRegexFunc ##### -->
+<para>
+
+</para>
+
+@parser: 
+@header: 
+@value: 
+@offset: 
+@user_data: 
+
+
+<!-- ##### FUNCTION g_mime_parser_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_parser_new_with_stream ##### -->
+<para>
+
+</para>
+
+@stream: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_parser_init_with_stream ##### -->
+<para>
+
+</para>
+
+@parser: 
+@stream: 
+
+
+<!-- ##### FUNCTION g_mime_parser_get_persist_stream ##### -->
+<para>
+
+</para>
+
+@parser: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_parser_set_persist_stream ##### -->
+<para>
+
+</para>
+
+@parser: 
+@persist: 
+
+
+<!-- ##### FUNCTION g_mime_parser_get_scan_from ##### -->
+<para>
+
+</para>
+
+@parser: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_parser_set_scan_from ##### -->
+<para>
+
+</para>
+
+@parser: 
+@scan_from: 
+
+
+<!-- ##### FUNCTION g_mime_parser_get_respect_content_length ##### -->
+<para>
+
+</para>
+
+@parser: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_parser_set_respect_content_length ##### -->
+<para>
+
+</para>
+
+@parser: 
+@respect_content_length: 
+
+
+<!-- ##### FUNCTION g_mime_parser_set_header_regex ##### -->
+<para>
+
+</para>
+
+@parser: 
+@regex: 
+@header_cb: 
+@user_data: 
+
+
+<!-- ##### FUNCTION g_mime_parser_tell ##### -->
+<para>
+
+</para>
+
+@parser: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_parser_eos ##### -->
+<para>
+
+</para>
+
+@parser: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_parser_construct_part ##### -->
+<para>
+
+</para>
+
+@parser: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_parser_construct_message ##### -->
+<para>
+
+</para>
+
+@parser: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_parser_get_from ##### -->
+<para>
+
+</para>
+
+@parser: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_parser_get_from_offset ##### -->
+<para>
+
+</para>
+
+@parser: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_parser_get_headers_begin ##### -->
+<para>
+
+</para>
+
+@parser: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_parser_get_headers_end ##### -->
+<para>
+
+</para>
+
+@parser: 
+@Returns: 
+
+

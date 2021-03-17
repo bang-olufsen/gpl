@@ -1,0 +1,116 @@
+<!-- ##### SECTION Title ##### -->
+gmime-param
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GMimeParam ##### -->
+<para>
+
+</para>
+
+@next: 
+@name: 
+@value: 
+
+<!-- ##### FUNCTION g_mime_param_new ##### -->
+<para>
+
+</para>
+
+@name: 
+@value: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_param_new_from_string ##### -->
+<para>
+
+</para>
+
+@str: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_param_destroy ##### -->
+<para>
+
+</para>
+
+@param: 
+
+
+<!-- ##### FUNCTION g_mime_param_next ##### -->
+<para>
+
+</para>
+
+@param: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_param_get_name ##### -->
+<para>
+
+</para>
+
+@param: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_param_get_value ##### -->
+<para>
+
+</para>
+
+@param: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_param_append ##### -->
+<para>
+
+</para>
+
+@params: 
+@name: 
+@value: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_param_append_param ##### -->
+<para>
+
+</para>
+
+@params: 
+@param: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_param_write_to_string ##### -->
+<para>
+
+</para>
+
+@param: 
+@fold: 
+@str: 
+
+

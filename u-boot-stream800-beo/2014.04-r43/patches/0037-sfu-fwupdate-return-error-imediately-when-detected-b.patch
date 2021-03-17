@@ -1,0 +1,43 @@
+From c25820f640b92421366de189b3b82c1af32dd385 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@gmail.com>
+Date: Wed, 11 Jun 2014 09:46:06 +0200
+Subject: [PATCH] sfu:fwupdate: return error imediately when detected by FIT
+ verification
+
+Signed-off-by: Marek Belisko <marek.belisko@gmail.com>
+---
+ board/streamunlimited/stream800/fwupdate.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/board/streamunlimited/stream800/fwupdate.c b/board/streamunlimited/stream800/fwupdate.c
+index 3849514..74dd02f 100644
+--- a/board/streamunlimited/stream800/fwupdate.c
++++ b/board/streamunlimited/stream800/fwupdate.c
+@@ -397,7 +397,7 @@ static int do_sfu(cmd_tbl_t * cmdtp, int flag, int argc, char * const argv[])
+ 	char            hexchar[3];
+ 	int             status = 0;
+ 	uint32_t sfu_addr;
+-	int verify = 0;
++	int verify = 0, ret;
+ 
+ 	if (argc == 2) {
+ 		/*
+@@ -459,9 +459,14 @@ static int do_sfu(cmd_tbl_t * cmdtp, int flag, int argc, char * const argv[])
+ 		status = set_hush_var_with_str_value("SFU_TOTAL_LEN", strbuf);
+ 		return 0;
+ 	}
++
+ 	/* skip FIT bytes to get correct sfu address */
+-	if (check_sfu_signature(addr, &sfu_addr, verify) == 0)
++	ret = check_sfu_signature(addr, &sfu_addr, verify);
++	if (ret) {
++		return ret;
++	} else {
+ 		addr = sfu_addr;
++	}
+ 
+ 	/*
+ 	 * Syntax is:
+-- 
+2.7.4
+

@@ -1,0 +1,35 @@
+From fad0b42069704d14fc182ebaaaa07285284aa676 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Tue, 23 May 2017 15:08:27 +0200
+Subject: [PATCH] audio/transport: Workaround for gstreamer bug
+
+Gstreamer only uses omtu size regardles if it is sending or receiving
+audio packets.
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ profiles/audio/transport.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/profiles/audio/transport.c b/profiles/audio/transport.c
+index 3985bd7..43847b6 100644
+--- a/profiles/audio/transport.c
++++ b/profiles/audio/transport.c
+@@ -310,6 +310,14 @@ static void a2dp_resume_complete(struct avdtp *session, int err,
+ 
+ 	media_transport_set_fd(transport, fd, imtu, omtu);
+ 
++	/* HACK ALERT:
++	 * Due to gstreamer bug imtu size cannot be higher than omtu.
++	 * Gstreamer only uses omtu size regardles if it is sending or
++	 * receiving audio packets.
++	 */
++	if (omtu < imtu)
++		omtu = imtu;
++
+ 	ret = g_dbus_send_reply(btd_get_dbus_connection(), req->msg,
+ 						DBUS_TYPE_UNIX_FD, &fd,
+ 						DBUS_TYPE_UINT16, &imtu,
+-- 
+2.7.4
+

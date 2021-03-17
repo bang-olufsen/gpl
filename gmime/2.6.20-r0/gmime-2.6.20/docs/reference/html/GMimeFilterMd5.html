@@ -1,0 +1,122 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GMimeFilterMd5</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="GMime 2.6 Reference Manual">
+<link rel="up" href="Filters.html" title="Stream Filters">
+<link rel="prev" href="GMimeFilterHTML.html" title="GMimeFilterHTML">
+<link rel="next" href="GMimeFilterStrip.html" title="GMimeFilterStrip">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="GMimeFilterHTML.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="Filters.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">GMime 2.6 Reference Manual</th>
+<td><a accesskey="n" href="GMimeFilterStrip.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#GMimeFilterMd5.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#GMimeFilterMd5.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#GMimeFilterMd5.object-hierarchy" class="shortcut">Object Hierarchy</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="GMimeFilterMd5"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="GMimeFilterMd5.top_of_page"></a>GMimeFilterMd5</span></h2>
+<p>GMimeFilterMd5 — Calculate an md5sum</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="GMimeFilterMd5.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">struct              <a class="link" href="GMimeFilterMd5.html#GMimeFilterMd5-struct" title="struct GMimeFilterMd5">GMimeFilterMd5</a>;
+<a class="link" href="GMimeFilter.html" title="GMimeFilter"><span class="returnvalue">GMimeFilter</span></a> *       <a class="link" href="GMimeFilterMd5.html#g-mime-filter-md5-new" title="g_mime_filter_md5_new ()">g_mime_filter_md5_new</a>               (<em class="parameter"><code><span class="type">void</span></code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimeFilterMd5.html#g-mime-filter-md5-get-digest" title="g_mime_filter_md5_get_digest ()">g_mime_filter_md5_get_digest</a>        (<em class="parameter"><code><a class="link" href="GMimeFilterMd5.html" title="GMimeFilterMd5"><span class="type">GMimeFilterMd5</span></a> *md5</code></em>,
+                                                         <em class="parameter"><code>unsigned <span class="type">char</span> digest[16]</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="GMimeFilterMd5.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  GObject
+   +----<a class="link" href="GMimeFilter.html" title="GMimeFilter">GMimeFilter</a>
+         +----GMimeFilterMd5
+</pre>
+</div>
+<div class="refsect1">
+<a name="GMimeFilterMd5.description"></a><h2>Description</h2>
+<p>
+Calculate an md5sum for a stream.
+</p>
+</div>
+<div class="refsect1">
+<a name="GMimeFilterMd5.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="GMimeFilterMd5-struct"></a><h3>struct GMimeFilterMd5</h3>
+<pre class="programlisting">struct GMimeFilterMd5;</pre>
+<p>
+A filter for calculating the MD5 checksum of a stream.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-filter-md5-new"></a><h3>g_mime_filter_md5_new ()</h3>
+<pre class="programlisting"><a class="link" href="GMimeFilter.html" title="GMimeFilter"><span class="returnvalue">GMimeFilter</span></a> *       g_mime_filter_md5_new               (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>
+Creates a new Md5 filter.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new Md5 filter.</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-filter-md5-get-digest"></a><h3>g_mime_filter_md5_get_digest ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_filter_md5_get_digest        (<em class="parameter"><code><a class="link" href="GMimeFilterMd5.html" title="GMimeFilterMd5"><span class="type">GMimeFilterMd5</span></a> *md5</code></em>,
+                                                         <em class="parameter"><code>unsigned <span class="type">char</span> digest[16]</code></em>);</pre>
+<p>
+Outputs the md5 digest into <em class="parameter"><code>digest</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>md5</code></em> :</span></p></td>
+<td>md5 filter object</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>digest</code></em> :</span></p></td>
+<td>output buffer of at least 16 bytes</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<div class="refsect1">
+<a name="GMimeFilterMd5.see-also"></a><h2>See Also</h2>
+<a class="link" href="GMimeFilter.html" title="GMimeFilter"><span class="type">GMimeFilter</span></a>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

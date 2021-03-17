@@ -1,0 +1,26 @@
+From 63b8f367df28079e4774d930442cecc0e2eee981 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Thu, 28 Nov 2013 14:42:39 +0100
+Subject: [PATCH] Enable CONFIG_BOOTP_MAY_FAIL to avoid looping in dhcp when
+ there are no responses.
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ include/configs/stream800.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/include/configs/stream800.h b/include/configs/stream800.h
+index fe6ecd0..5756f08 100644
+--- a/include/configs/stream800.h
++++ b/include/configs/stream800.h
+@@ -1161,6 +1161,7 @@
+ #define CONFIG_BOOTP_SUBNETMASK
+ #define CONFIG_BOOTP_BOOTPATH
+ #define CONFIG_BOOTP_SERVER_IP
++#define CONFIG_BOOTP_MAY_FAIL
+ #define CONFIG_NET_RETRY_COUNT         10
+ #define CONFIG_NET_MULTI
+ #define CONFIG_PHY_GIGE
+-- 
+2.7.4
+

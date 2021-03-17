@@ -1,0 +1,27 @@
+From 18e7e207346befb9d7c345d20e5f24857a2ca930 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Fri, 7 Feb 2020 13:07:49 +0100
+Subject: [PATCH] libfdt: descend from lib/ to lib/libfdt/
+
+This is upstream commit 77d267502295ffc4d83e80fa175583f8b6460615
+
+Signed-off-by: Masahiro Yamada <yamada.m@jp.panasonic.com>
+---
+ Makefile | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/Makefile b/Makefile
+index a5d60fa..2bc9c94 100644
+--- a/Makefile
++++ b/Makefile
+@@ -615,7 +615,6 @@ libs-y += drivers/usb/musb-new/
+ libs-y += drivers/usb/phy/
+ libs-y += drivers/usb/ulpi/
+ libs-y += common/
+-libs-y += lib/libfdt/
+ libs-$(CONFIG_API) += api/
+ libs-$(CONFIG_HAS_POST) += post/
+ libs-y += test/
+-- 
+2.7.4
+

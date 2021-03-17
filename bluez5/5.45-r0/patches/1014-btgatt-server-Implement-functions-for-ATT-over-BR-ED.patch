@@ -1,0 +1,137 @@
+From 3afa951d1421eebcadd1acf1978054be18570d62 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Mon, 29 May 2017 13:31:59 +0200
+Subject: [PATCH] btgatt-server: Implement functions for ATT over BR/EDR test
+ cases
+
+This was needed for PTS test cases:
+GATT/SR/GAR/BI-34-C
+GATT/SR/GAR/BI-35-C
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ tools/btgatt-server.c | 64 +++++++++++++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 60 insertions(+), 4 deletions(-)
+
+diff --git a/tools/btgatt-server.c b/tools/btgatt-server.c
+index fadaff2..b06861e 100644
+--- a/tools/btgatt-server.c
++++ b/tools/btgatt-server.c
+@@ -51,6 +51,7 @@
+ #define UUID_HEART_RATE_CTRL		0x2a39
+ 
+ #define ATT_CID 4
++#define ATT_PSM 31
+ 
+ #define PRLOG(...) \
+ 	do { \
+@@ -480,6 +481,42 @@ static void populate_gatt_service(struct server *server)
+ 	gatt_db_service_set_active(service, true);
+ }
+ 
++static void hr_manuf_name_read_cb(struct gatt_db_attribute *attrib,
++					unsigned int id, uint16_t offset,
++					uint8_t opcode, struct bt_att *att,
++					void *user_data)
++{
++	printf("Read manuf name\n");
++	const char *value = "ACME Heart Rate sensor";
++	uint8_t error = 0;
++
++	if (bt_att_get_link_type(att) != BT_ATT_LINK_BREDR) {
++		error = 0x80; // Application error
++		value = "Internal application error: I/O";
++	}
++
++	gatt_db_attribute_read_result(attrib, id, error, (void *) value,
++								strlen(value));
++}
++
++static void hr_serial_num_read_cb(struct gatt_db_attribute *attrib,
++					unsigned int id, uint16_t offset,
++					uint8_t opcode, struct bt_att *att,
++					void *user_data)
++{
++	printf("Read serial num\n");
++	const char *value = "237495-3282-A";
++	uint8_t error = 0;
++
++	if (bt_att_get_link_type(att) != BT_ATT_LINK_LE) {
++		error = 0x80; // Application error
++		value = "Internal application error: I/O";
++	}
++
++	gatt_db_attribute_read_result(attrib, id, error, (void *) value,
++								strlen(value));
++}
++
+ static void populate_hr_service(struct server *server)
+ {
+ 	bt_uuid_t uuid;
+@@ -488,7 +525,7 @@ static void populate_hr_service(struct server *server)
+ 
+ 	/* Add Heart Rate Service */
+ 	bt_uuid16_create(&uuid, UUID_HEART_RATE);
+-	service = gatt_db_add_service(server->db, &uuid, true, 8);
++	service = gatt_db_add_service(server->db, &uuid, true, 12);
+ 	server->hr_handle = gatt_db_attribute_get_handle(service);
+ 
+ 	/* HR Measurement Characteristic */
+@@ -527,6 +564,20 @@ static void populate_hr_service(struct server *server)
+ 						NULL, hr_control_point_write_cb,
+ 						server);
+ 
++	/* Manufacturer Name characteristic */
++	bt_uuid16_create(&uuid, GATT_CHARAC_MANUFACTURER_NAME_STRING);
++	gatt_db_service_add_characteristic(service, &uuid,
++					BT_ATT_PERM_READ,
++					BT_GATT_CHRC_PROP_READ,
++					hr_manuf_name_read_cb, NULL, NULL);
++
++	/* Manufacturer Serial characteristic */
++	bt_uuid16_create(&uuid, GATT_CHARAC_SERIAL_NUMBER_STRING);
++	gatt_db_service_add_characteristic(service, &uuid,
++					BT_ATT_PERM_READ,
++					BT_GATT_CHRC_PROP_READ,
++					hr_serial_num_read_cb, NULL, NULL);
++
+ 	if (server->hr_visible)
+ 		gatt_db_service_set_active(service, true);
+ }
+@@ -631,7 +682,7 @@ static void usage(void)
+ 		"\t-m, --mtu <mtu>\t\t\tThe ATT MTU to use\n"
+ 		"\t-s, --security-level <sec>\tSet security level (low|"
+ 								"medium|high)\n"
+-		"\t-t, --type [random|public] \t The source address type\n"
++		"\t-t, --type [random|public|bredr] \t The source address type\n"
+ 		"\t-v, --verbose\t\t\tEnable extra logging\n"
+ 		"\t-r, --heart-rate\t\tEnable Heart Rate service\n"
+ 		"\t-h, --help\t\t\tDisplay help\n");
+@@ -666,7 +717,10 @@ static int l2cap_le_att_listen_and_accept(bdaddr_t *src, int sec,
+ 	/* Set up source address */
+ 	memset(&srcaddr, 0, sizeof(srcaddr));
+ 	srcaddr.l2_family = AF_BLUETOOTH;
+-	srcaddr.l2_cid = htobs(ATT_CID);
++	if (src_type == BDADDR_BREDR)
++		srcaddr.l2_psm = htobs(ATT_PSM);
++	else
++		srcaddr.l2_cid = htobs(ATT_CID);
+ 	srcaddr.l2_bdaddr_type = src_type;
+ 	bacpy(&srcaddr.l2_bdaddr, src);
+ 
+@@ -1172,9 +1226,11 @@ int main(int argc, char *argv[])
+ 				src_type = BDADDR_LE_RANDOM;
+ 			else if (strcmp(optarg, "public") == 0)
+ 				src_type = BDADDR_LE_PUBLIC;
++			else if (strcmp(optarg, "bredr") == 0)
++				src_type = BDADDR_BREDR;
+ 			else {
+ 				fprintf(stderr,
+-					"Allowed types: random, public\n");
++					"Allowed types: random, public, bredr\n");
+ 				return EXIT_FAILURE;
+ 			}
+ 			break;
+-- 
+2.7.4
+

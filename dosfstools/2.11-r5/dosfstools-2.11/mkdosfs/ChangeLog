@@ -1,0 +1,29 @@
+19th June 2003			Sam Bingner (sam@bingner.com)
+
+	Added option to read in bootcode from a file so that if you have
+	for example Windows 2000 boot code, you can have it write that
+	as the bootcode.  This is a dump of the behinning of a partition
+	generally 512 bytes, but can be up to reserved sectors*512 bytes.
+        Also writes 0x80 as the	BIOS drive number if we are formatting a
+	hard drive, and sets the number of hidden sectors to be the
+	number of sectors in one track. These were required so that DOS
+	could boot using the bootcode.
+
+28th January 1995		H. Peter Anvin (hpa@yggdrasil.com)
+
+	Better algorithm to select cluster sizes on large filesystems.
+	Added bogus boot sector code that on attempts to boot prints a
+	message (which can be chosen at mkdosfs time) and lets the user
+	press any key and try again.  Corrected support for 1.2 Mb
+	floppies.  mkdosfs now generates the extended bootsector
+	(superblock) format of DOS 3.3+, with support for volume ID's and
+	volume labels (volume labels are also written to the root
+	directory, as they should).
+	
+18th February 1994		Dave Hudson (dave@humbug.demon.co.uk)
+
+	Released version 0.2 - clears a bug in the FAT sizing code.
+
+1st September 1993		Dave Hudson (dave@humbug.demon.co.uk)
+
+	Released version 0.1 - ALPHA release of mkdosfs

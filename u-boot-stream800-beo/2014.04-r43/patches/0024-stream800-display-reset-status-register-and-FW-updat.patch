@@ -1,0 +1,88 @@
+From 6ce337968142bde62e197b2fecf3a3c2590d4526 Mon Sep 17 00:00:00 2001
+From: Matus Ujhelyi <matus.ujhelyi@streamunlimited.com>
+Date: Fri, 8 Mar 2013 08:14:09 +0100
+Subject: [PATCH] stream800: display reset status register and FW update flags
+ at the start-up
+
+Signed-off-by: Martin Flaska <martin.flaska@streamunlimited.com>
+Signed-off-by: Matus Ujhelyi <matus.ujhelyi@streamunlimited.com>
+---
+ board/streamunlimited/stream800/board.c    | 18 +++++++-----------
+ board/streamunlimited/stream800/fwupdate.c | 12 ++++++++++++
+ include/configs/stream800.h                |  1 +
+ 3 files changed, 20 insertions(+), 11 deletions(-)
+
+diff --git a/board/streamunlimited/stream800/board.c b/board/streamunlimited/stream800/board.c
+index 600232c..4a3d09f 100644
+--- a/board/streamunlimited/stream800/board.c
++++ b/board/streamunlimited/stream800/board.c
+@@ -119,6 +119,13 @@ int board_init(void)
+ 	i2c_init(CONFIG_SYS_I2C_SPEED, CONFIG_SYS_I2C_SLAVE);
+ 	init_si5351x();
+ 
++	/* This is temporarily (after reset during FW update we sometime detect unwanted external warm reset) */
++	{
++		uint32_t rstst = readl(PRM_RSTST);
++		uint32_t rstctrl = readl(PRM_RSTCTRL);
++		printf("rstst: 0x%X, rstctrl: 0x%X\n", rstst, rstctrl);
++	}
++
+ 	switch (get_carrier_board_type()) {
+ 		case CBT_LanDockBoard:
+ 			lan_dock__init(&board);
+@@ -140,17 +147,6 @@ int board_init(void)
+ 
+ 	set_board_state(BS_Normal);
+ 
+-#ifdef DEBUG
+-	{
+-		uint32_t rstst = readl(PRM_RSTST);
+-		debug("rstst: 0x%X\n", rstst);
+-	}
+-	{
+-		uint32_t rstctrl = readl(PRM_RSTCTRL);
+-		debug("rstctrl: 0x%X\n", rstctrl);
+-	}
+-#endif /* DEBUG */
+-
+ 	gd->bd->bi_boot_params = PHYS_DRAM_1 + 0x100;
+ 	gd->bd->bi_arch_number = MACH_TYPE_TIAM335EVM;
+ 
+diff --git a/board/streamunlimited/stream800/fwupdate.c b/board/streamunlimited/stream800/fwupdate.c
+index 0468e7e..26d7ac8 100644
+--- a/board/streamunlimited/stream800/fwupdate.c
++++ b/board/streamunlimited/stream800/fwupdate.c
+@@ -201,6 +201,18 @@ static int do_fwup(cmd_tbl_t * cmdtp, int flag, int argc, char * const argv[])
+ 		return 0;
+ 	}
+ 
++	if (strcmp(cmd, "flags") == 0) {
++		uint8_t failFlag = 0;
++		uint8_t updateFlag = 0;
++
++		fwupdate_getFailFlag(&failFlag);
++		fwupdate_getUpdateFlag(&updateFlag);
++
++		printf("INFO: Update flags: FAIL: %d, UPDATE: %d\n",
++		       failFlag, updateFlag);
++		return 0;
++	}
++
+ 	/*
+ 	 * Syntax is:
+ 	 *   0    1   2
+diff --git a/include/configs/stream800.h b/include/configs/stream800.h
+index 75c8654..5bd569d 100644
+--- a/include/configs/stream800.h
++++ b/include/configs/stream800.h
+@@ -844,6 +844,7 @@
+ 	"echo \"INFO: U-boot version: ${uboot_vers}\"; " \
+ 	"echo \"INFO: UImage version: ${kernel_vers}\"; " \
+ 	"echo \"INFO: Rootfs version: ${rootfs_vers}\"; " \
++	"fwup flags; "\
+ 	"run sfu_boot;" \
+ 
+ #define CONFIG_ALTBOOTCOMMAND \
+-- 
+2.7.4
+

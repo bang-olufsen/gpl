@@ -1,0 +1,28 @@
+From 0394aabd7d2136fd8649e67093ba5d7718c288ec Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Mon, 23 Feb 2015 11:36:32 +0100
+Subject: [PATCH] Fixed indent of set_play_mode_cb function
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ src/librygel-renderer/rygel-av-transport.vala | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/librygel-renderer/rygel-av-transport.vala b/src/librygel-renderer/rygel-av-transport.vala
+index c380520..c74bbf4 100644
+--- a/src/librygel-renderer/rygel-av-transport.vala
++++ b/src/librygel-renderer/rygel-av-transport.vala
+@@ -889,8 +889,8 @@ internal class Rygel.AVTransport : Service {
+             action.return ();
+     }
+ 
+-     private void set_play_mode_cb (Service       registrar,
+-                                    ServiceAction action) {
++    private void set_play_mode_cb (Service       registrar,
++                                   ServiceAction action) {
+         if (!this.check_instance_id (action)) {
+             return;
+         }
+-- 
+1.9.1
+

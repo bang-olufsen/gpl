@@ -1,0 +1,2 @@
+rsync-2.6.9-fname-obo.patch -p1
+0001-Make-it-build-with-compile-time-hardening-enabled.patch -p1

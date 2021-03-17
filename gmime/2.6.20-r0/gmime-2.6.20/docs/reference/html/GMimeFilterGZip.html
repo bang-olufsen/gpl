@@ -1,0 +1,139 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GMimeFilterGZip</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="GMime 2.6 Reference Manual">
+<link rel="up" href="Filters.html" title="Stream Filters">
+<link rel="prev" href="GMimeFilterFrom.html" title="GMimeFilterFrom">
+<link rel="next" href="GMimeFilterHTML.html" title="GMimeFilterHTML">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="GMimeFilterFrom.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="Filters.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">GMime 2.6 Reference Manual</th>
+<td><a accesskey="n" href="GMimeFilterHTML.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#GMimeFilterGZip.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#GMimeFilterGZip.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#GMimeFilterGZip.object-hierarchy" class="shortcut">Object Hierarchy</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="GMimeFilterGZip"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="GMimeFilterGZip.top_of_page"></a>GMimeFilterGZip</span></h2>
+<p>GMimeFilterGZip — GNU Zip compression/decompression</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="GMimeFilterGZip.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">struct              <a class="link" href="GMimeFilterGZip.html#GMimeFilterGZip-struct" title="struct GMimeFilterGZip">GMimeFilterGZip</a>;
+enum                <a class="link" href="GMimeFilterGZip.html#GMimeFilterGZipMode" title="enum GMimeFilterGZipMode">GMimeFilterGZipMode</a>;
+<a class="link" href="GMimeFilter.html" title="GMimeFilter"><span class="returnvalue">GMimeFilter</span></a> *       <a class="link" href="GMimeFilterGZip.html#g-mime-filter-gzip-new" title="g_mime_filter_gzip_new ()">g_mime_filter_gzip_new</a>              (<em class="parameter"><code><a class="link" href="GMimeFilterGZip.html#GMimeFilterGZipMode" title="enum GMimeFilterGZipMode"><span class="type">GMimeFilterGZipMode</span></a> mode</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> level</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="GMimeFilterGZip.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  GObject
+   +----<a class="link" href="GMimeFilter.html" title="GMimeFilter">GMimeFilter</a>
+         +----GMimeFilterGZip
+</pre>
+</div>
+<div class="refsect1">
+<a name="GMimeFilterGZip.description"></a><h2>Description</h2>
+<p>
+A <a class="link" href="GMimeFilter.html" title="GMimeFilter"><span class="type">GMimeFilter</span></a> used for compressing or decompressing a stream using
+GNU Zip.
+</p>
+</div>
+<div class="refsect1">
+<a name="GMimeFilterGZip.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="GMimeFilterGZip-struct"></a><h3>struct GMimeFilterGZip</h3>
+<pre class="programlisting">struct GMimeFilterGZip;</pre>
+<p>
+A filter for compresing or decompressing a gzip stream.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GMimeFilterGZipMode"></a><h3>enum GMimeFilterGZipMode</h3>
+<pre class="programlisting">typedef enum {
+	GMIME_FILTER_GZIP_MODE_ZIP,
+	GMIME_FILTER_GZIP_MODE_UNZIP
+} GMimeFilterGZipMode;
+</pre>
+<p>
+The mode for the <a class="link" href="GMimeFilterGZip.html" title="GMimeFilterGZip"><span class="type">GMimeFilterGZip</span></a> filter.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><a name="GMIME-FILTER-GZIP-MODE-ZIP:CAPS"></a><span class="term"><code class="literal">GMIME_FILTER_GZIP_MODE_ZIP</code></span></p></td>
+<td>Compress (zip) mode.
+</td>
+</tr>
+<tr>
+<td><p><a name="GMIME-FILTER-GZIP-MODE-UNZIP:CAPS"></a><span class="term"><code class="literal">GMIME_FILTER_GZIP_MODE_UNZIP</code></span></p></td>
+<td>Uncompress (unzip) mode.
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-filter-gzip-new"></a><h3>g_mime_filter_gzip_new ()</h3>
+<pre class="programlisting"><a class="link" href="GMimeFilter.html" title="GMimeFilter"><span class="returnvalue">GMimeFilter</span></a> *       g_mime_filter_gzip_new              (<em class="parameter"><code><a class="link" href="GMimeFilterGZip.html#GMimeFilterGZipMode" title="enum GMimeFilterGZipMode"><span class="type">GMimeFilterGZipMode</span></a> mode</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> level</code></em>);</pre>
+<p>
+Creates a new gzip (or gunzip) filter.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>mode</code></em> :</span></p></td>
+<td>zip or unzip</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>level</code></em> :</span></p></td>
+<td>compression level</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new gzip (or gunzip) filter.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<div class="refsect1">
+<a name="GMimeFilterGZip.see-also"></a><h2>See Also</h2>
+<a class="link" href="GMimeFilter.html" title="GMimeFilter"><span class="type">GMimeFilter</span></a>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

@@ -1,0 +1,96 @@
+From 6adb1efa1010fd492173b17e6a176517a16fcca8 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Tue, 13 Jun 2017 12:53:42 +0200
+Subject: [PATCH] hog disconnect key release
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ profiles/input/hog-lib.c | 32 +++++++++++++++++++++++++++++++-
+ 1 file changed, 31 insertions(+), 1 deletion(-)
+
+diff --git a/profiles/input/hog-lib.c b/profiles/input/hog-lib.c
+index 464aaae..e145240 100644
+--- a/profiles/input/hog-lib.c
++++ b/profiles/input/hog-lib.c
+@@ -114,6 +114,7 @@ struct bt_hog {
+ 	struct queue		*gatt_op;
+ 	int				streamsdk_fd;
+ 	unsigned int	streamsdk_att;
++	gboolean		pending_key_release;
+ };
+ 
+ struct report {
+@@ -135,6 +136,8 @@ struct gatt_request {
+ 	void *user_data;
+ };
+ 
++static const uint8_t KEY_RELEASE_REPORT[] = {0, 0};
++
+ static void disconnect_streamsdk_socket(struct bt_hog *hog)
+ {
+ 	if (hog->streamsdk_fd >= 0) {
+@@ -142,6 +145,7 @@ static void disconnect_streamsdk_socket(struct bt_hog *hog)
+ 		close(hog->streamsdk_fd);
+ 	}
+ 	hog->streamsdk_fd = -1;
++	hog->pending_key_release = FALSE;
+ }
+ 
+ static gboolean connect_streamsdk_socket(struct bt_hog *hog)
+@@ -185,12 +189,35 @@ static void notif_streamsdk_cb(const guint8 *pdu, guint16 len, gpointer user_dat
+ 	if (!streamsdk_connected)
+ 		streamsdk_connected = connect_streamsdk_socket(hog);
+ 
+-	if (streamsdk_connected && write(hog->streamsdk_fd, &pdu[0], len) < 0) {
++	if (streamsdk_connected && write(hog->streamsdk_fd, &pdu[0], len) >= 0) {
++		DBG("Report from HoG device %s forwarded to StreamSDK, report=%02x %02x", hog->name, pdu[0], pdu[1]);
++		hog->pending_key_release = memcmp(&pdu[0], KEY_RELEASE_REPORT, sizeof(KEY_RELEASE_REPORT)) == 0 ? FALSE : TRUE;
++	} else {
+ 		error("StreamSDK HoG report forward failed: %s (%d)", strerror(errno), errno);
+ 		disconnect_streamsdk_socket(hog);
+ 	}
+ }
+ 
++static void notify_pending_key_release(struct bt_hog *hog)
++{
++	DBG("Enter");
++	if (hog->pending_key_release) {
++		DBG("Send pending key release: socket(%p)", hog->streamsdk_fd);
++		gboolean streamsdk_connected = hog->streamsdk_fd >= 0;
++		if (streamsdk_connected) {
++			if (write(hog->streamsdk_fd, KEY_RELEASE_REPORT, sizeof(KEY_RELEASE_REPORT)) < 0) {
++				error("StreamSDK key release report forward failed: %s (%d)", strerror(errno), errno);
++				disconnect_streamsdk_socket(hog);
++				// No need to retry anything here; we'll let the bluetooth SUE module also handle a key release
++				// in case of socket disconnect.
++			} else {
++				DBG("Write pending key release report to socket succeeded");
++				hog->pending_key_release = FALSE;
++			}
++		}
++	}
++}
++
+ static struct gatt_request *create_request(struct bt_hog *hog,
+ 							void *user_data)
+ {
+@@ -1405,6 +1432,7 @@ static struct bt_hog *hog_new(int fd, const char *name, uint16_t vendor,
+ 	hog->version = version;
+ 	hog->attr = attr;
+ 	hog->streamsdk_fd = -1;
++	hog->pending_key_release = FALSE;
+ 
+ 	return hog;
+ }
+@@ -1692,6 +1720,8 @@ void bt_hog_detach(struct bt_hog *hog)
+ 	if (!hog->attrib)
+ 		return;
+ 
++	notify_pending_key_release(hog);
++
+ 	g_attrib_unregister(hog->attrib, hog->streamsdk_att);
+ 
+ 	queue_foreach(hog->bas, (void *) bt_bas_detach, NULL);
+-- 
+2.7.4
+

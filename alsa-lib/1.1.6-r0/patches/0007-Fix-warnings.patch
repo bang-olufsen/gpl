@@ -1,0 +1,81 @@
+From d1b63c515c3f4c07e3aaacab7b6bc887c2559348 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Thu, 28 Jul 2016 16:02:34 +0200
+Subject: [PATCH] Fix warnings
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+
+%% original patch: 0007-Fix-warnings.patch
+---
+ src/pcm/pcm_switch.c | 15 +++++++--------
+ 1 file changed, 7 insertions(+), 8 deletions(-)
+
+diff --git a/src/pcm/pcm_switch.c b/src/pcm/pcm_switch.c
+index bd779b4..7ba20cc 100644
+--- a/src/pcm/pcm_switch.c
++++ b/src/pcm/pcm_switch.c
+@@ -98,7 +98,7 @@ static void update_switch_value(snd_pcm_switch_t *swtch)
+ 	if (snd_ctl_elem_read(swtch->ctl, &swtch->elem) < 0)
+ 		return;
+ 
+-	swtch->cur_switch = swtch->elem.value.integer.value[0];
++	swtch->cur_switch = swtch->elem.value.integer.value[0] ? 1 : 0;
+ }
+ 
+ static void check_switch_value(snd_pcm_t *pcm)
+@@ -268,7 +268,7 @@ static int snd_pcm_switch_hw_free(snd_pcm_t *pcm)
+ 	swtch->has_hw_params = 0;
+ 
+ 	if (swtch->gen.slave) {
+-		snd_pcm_generic_hw_free(pcm);
++		return snd_pcm_generic_hw_free(pcm);
+ 	}
+ 	else {
+ 		return 0;
+@@ -301,13 +301,13 @@ static int snd_pcm_switch_sw_params(snd_pcm_t *pcm, snd_pcm_sw_params_t * params
+ 	}
+ }
+ 
+-static int snd_pcm_switch_nonblock(snd_pcm_t *pcm ATTRIBUTE_UNUSED, int nonblock ATTRIBUTE_UNUSED)
++static int snd_pcm_switch_nonblock(snd_pcm_t *pcm, int nonblock)
+ {
+ 	DEBUG("");
+ 	snd_pcm_switch_t *swtch = pcm->private_data;
+ 
+ 	if (swtch->gen.slave) {
+-		snd_pcm_generic_nonblock(pcm, nonblock);
++		return snd_pcm_generic_nonblock(pcm, nonblock);
+ 	}
+ 	else {
+ 		return 0;
+@@ -422,8 +422,7 @@ static int snd_pcm_switch_status(snd_pcm_t *pcm, snd_pcm_status_t * status)
+ 
+ 	if (swtch->gen.slave) {
+ 		TRACE("copy");
+-		snd_pcm_sframes_t err;
+-
++		int err;
+ 		/* sync with the latest hw and appl ptrs */
+ 		snd_pcm_switch_avail_update(pcm);
+ 
+@@ -876,7 +875,7 @@ static snd_pcm_sframes_t snd_pcm_switch_writen(snd_pcm_t *pcm, void **bufs, snd_
+ 	return snd_pcm_write_areas(pcm, areas, 0, size, snd_pcm_switch_xfer_write_areas);
+ }
+ 
+-static snd_pcm_sframes_t snd_pcm_switch_mmap_commit(snd_pcm_t *pcm, snd_pcm_uframes_t offset, snd_pcm_uframes_t size)
++static snd_pcm_sframes_t snd_pcm_switch_mmap_commit(snd_pcm_t *pcm, snd_pcm_uframes_t offset ATTRIBUTE_UNUSED, snd_pcm_uframes_t size)
+ {
+ 	TRACE("");
+ 	snd_pcm_switch_t *swtch = pcm->private_data;
+@@ -1285,7 +1284,7 @@ static const snd_pcm_fast_ops_t snd_pcm_switch_fast_ops = {
+  *          changed in future.
+  */
+ int snd_pcm_switch_open(snd_pcm_t **pcmp, const char *name,
+-                        snd_pcm_stream_t stream, int mode,
++                        snd_pcm_stream_t stream, int mode ATTRIBUTE_UNUSED,
+                         int ctl_card, snd_ctl_elem_id_t *ctl_id,
+                         int cchannels,
+                         snd_pcm_t *slave, int close_slave)
+-- 
+2.7.4
+

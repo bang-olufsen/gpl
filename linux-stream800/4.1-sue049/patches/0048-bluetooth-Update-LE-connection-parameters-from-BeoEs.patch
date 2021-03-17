@@ -1,0 +1,44 @@
+From bb8d76e0f4ca5a92cb14c49ebcce6909c820d56c Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Mon, 3 Jul 2017 16:05:04 +0200
+Subject: [PATCH] bluetooth: Update LE connection parameters from BeoEssence
+ remote
+
+Scan interval: 10.000 msec (0x0010)
+Scan window: 2.500 msec (0x0004)
+Min connection interval: 10.00 msec (0x0008)
+Max connection interval: 10.00 msec (0x0008)
+Connection latency: 62.50 msec (0x0032)
+Supervision timeout: 1510 msec (0x0097)
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ net/bluetooth/hci_core.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
+index c4802f3..12c4a4b 100644
+--- a/net/bluetooth/hci_core.c
++++ b/net/bluetooth/hci_core.c
+@@ -3026,12 +3026,12 @@ struct hci_dev *hci_alloc_dev(void)
+ 	hdev->le_adv_channel_map = 0x07;
+ 	hdev->le_adv_min_interval = 0x0800;
+ 	hdev->le_adv_max_interval = 0x0800;
+-	hdev->le_scan_interval = 0x0060;
+-	hdev->le_scan_window = 0x0030;
+-	hdev->le_conn_min_interval = 0x0028;
+-	hdev->le_conn_max_interval = 0x0038;
+-	hdev->le_conn_latency = 0x0000;
+-	hdev->le_supv_timeout = 0x002a;
++	hdev->le_scan_interval = 0x0010;
++	hdev->le_scan_window = 0x0004;
++	hdev->le_conn_min_interval = 0x0008;
++	hdev->le_conn_max_interval = 0x0008;
++	hdev->le_conn_latency = 0x0032;
++	hdev->le_supv_timeout = 0x0097;
+ 	hdev->le_def_tx_len = 0x001b;
+ 	hdev->le_def_tx_time = 0x0148;
+ 	hdev->le_max_tx_len = 0x001b;
+-- 
+2.7.4
+

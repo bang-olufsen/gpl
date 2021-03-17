@@ -1,0 +1,118 @@
+From 6d7dca3f16dcced0b83aa37ea4dd7871b710425a Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Mon, 4 May 2015 13:02:42 +0200
+Subject: [PATCH] Fixed double escaping for metadata in notify events
+
+This fixes 7.3.174 DLNA test case
+
+Metadata were escaping twice for notify events:
+ * in private notify functions in rygel-av-transport.vala
+ * in rygel-changelog.vala log function
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ src/librygel-renderer/rygel-av-transport.c    | 21 +++------------------
+ src/librygel-renderer/rygel-av-transport.vala |  6 +++---
+ 2 files changed, 6 insertions(+), 21 deletions(-)
+
+diff --git a/src/librygel-renderer/rygel-av-transport.c b/src/librygel-renderer/rygel-av-transport.c
+index 7e66606..24252dc 100644
+--- a/src/librygel-renderer/rygel-av-transport.c
++++ b/src/librygel-renderer/rygel-av-transport.c
+@@ -2158,8 +2158,6 @@ static void rygel_av_transport_notify_meta_data_cb (RygelAVTransport* self, GObj
+ 	RygelPlayerControllerInterface* _tmp1_ = NULL;
+ 	const gchar* _tmp2_ = NULL;
+ 	const gchar* _tmp3_ = NULL;
+-	gchar* _tmp4_ = NULL;
+-	gchar* _tmp5_ = NULL;
+ 	g_return_if_fail (self != NULL);
+ 	g_return_if_fail (player != NULL);
+ 	g_return_if_fail (p != NULL);
+@@ -2167,10 +2165,7 @@ static void rygel_av_transport_notify_meta_data_cb (RygelAVTransport* self, GObj
+ 	_tmp1_ = self->priv->controller;
+ 	_tmp2_ = rygel_player_controller_interface_get_metadata (_tmp1_);
+ 	_tmp3_ = _tmp2_;
+-	_tmp4_ = g_markup_escape_text (_tmp3_, (gssize) (-1));
+-	_tmp5_ = _tmp4_;
+-	rygel_change_log_log (_tmp0_, "AVTransportURIMetaData", _tmp5_);
+-	_g_free0 (_tmp5_);
++	rygel_change_log_log (_tmp0_, "AVTransportURIMetaData", _tmp3_);
+ }
+ 
+ 
+@@ -2199,8 +2194,6 @@ static void rygel_av_transport_notify_track_meta_data_cb (RygelAVTransport* self
+ 	gchar* _tmp2_ = NULL;
+ 	gchar* _tmp3_ = NULL;
+ 	gchar* _tmp4_ = NULL;
+-	gchar* _tmp5_ = NULL;
+-	gchar* _tmp6_ = NULL;
+ 	g_return_if_fail (self != NULL);
+ 	g_return_if_fail (player != NULL);
+ 	g_return_if_fail (p != NULL);
+@@ -2209,10 +2202,7 @@ static void rygel_av_transport_notify_track_meta_data_cb (RygelAVTransport* self
+ 	_tmp2_ = rygel_player_controller_interface_get_track_metadata (_tmp1_);
+ 	_tmp3_ = _tmp2_;
+ 	_tmp4_ = _tmp3_;
+-	_tmp5_ = g_markup_escape_text (_tmp4_, (gssize) (-1));
+-	_tmp6_ = _tmp5_;
+-	rygel_change_log_log (_tmp0_, "CurrentTrackMetaData", _tmp6_);
+-	_g_free0 (_tmp6_);
++	rygel_change_log_log (_tmp0_, "CurrentTrackMetaData", _tmp4_);
+ 	_g_free0 (_tmp4_);
+ }
+ 
+@@ -2238,8 +2228,6 @@ static void rygel_av_transport_notify_next_meta_data_cb (RygelAVTransport* self,
+ 	RygelPlayerControllerInterface* _tmp1_ = NULL;
+ 	const gchar* _tmp2_ = NULL;
+ 	const gchar* _tmp3_ = NULL;
+-	gchar* _tmp4_ = NULL;
+-	gchar* _tmp5_ = NULL;
+ 	g_return_if_fail (self != NULL);
+ 	g_return_if_fail (player != NULL);
+ 	g_return_if_fail (p != NULL);
+@@ -2247,10 +2235,7 @@ static void rygel_av_transport_notify_next_meta_data_cb (RygelAVTransport* self,
+ 	_tmp1_ = self->priv->controller;
+ 	_tmp2_ = rygel_player_controller_interface_get_next_metadata (_tmp1_);
+ 	_tmp3_ = _tmp2_;
+-	_tmp4_ = g_markup_escape_text (_tmp3_, (gssize) (-1));
+-	_tmp5_ = _tmp4_;
+-	rygel_change_log_log (_tmp0_, "NextAVTransportURIMetaData", _tmp5_);
+-	_g_free0 (_tmp5_);
++	rygel_change_log_log (_tmp0_, "NextAVTransportURIMetaData", _tmp3_);
+ }
+ 
+ 
+diff --git a/src/librygel-renderer/rygel-av-transport.vala b/src/librygel-renderer/rygel-av-transport.vala
+index 1be52e6..8001397 100644
+--- a/src/librygel-renderer/rygel-av-transport.vala
++++ b/src/librygel-renderer/rygel-av-transport.vala
+@@ -666,7 +666,7 @@ internal class Rygel.AVTransport : Service {
+ 
+     private void notify_meta_data_cb (Object player, ParamSpec p) {
+         this.changelog.log ("AVTransportURIMetaData",
+-                            Markup.escape_text (this.controller.metadata));
++                            this.controller.metadata);
+     }
+ 
+     private void notify_track_uri_cb (Object player, ParamSpec p) {
+@@ -675,7 +675,7 @@ internal class Rygel.AVTransport : Service {
+ 
+     private void notify_track_meta_data_cb (Object player, ParamSpec p) {
+         this.changelog.log ("CurrentTrackMetaData",
+-                            Markup.escape_text (this.controller.track_metadata));
++                            this.controller.track_metadata);
+     }
+ 
+     private void notify_next_uri_cb (Object controller, ParamSpec p) {
+@@ -684,7 +684,7 @@ internal class Rygel.AVTransport : Service {
+ 
+     private void notify_next_meta_data_cb (Object player, ParamSpec p) {
+         this.changelog.log ("NextAVTransportURIMetaData",
+-                            Markup.escape_text (this.controller.next_metadata));
++                            this.controller.next_metadata);
+     }
+ 
+     private async void handle_playlist (ServiceAction action,
+-- 
+1.9.1
+

@@ -1,0 +1,32 @@
+From b99222c91d99d03be55c73b418f97d08a60fabf0 Mon Sep 17 00:00:00 2001
+From: Fionn Cleary <fionn.cleary@streamunlimited.com>
+Date: Thu, 28 May 2015 15:55:29 +0200
+Subject: [PATCH] Stream800: Small formatting change in board_defines
+
+Signed-off-by: Fionn Cleary <fionn.cleary@streamunlimited.com>
+---
+ board/streamunlimited/stream800/board_defines.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/board/streamunlimited/stream800/board_defines.c b/board/streamunlimited/stream800/board_defines.c
+index b1dc259..57faa54 100644
+--- a/board/streamunlimited/stream800/board_defines.c
++++ b/board/streamunlimited/stream800/board_defines.c
+@@ -40,11 +40,11 @@ static struct SupportedModules {
+ 	{MV_L2,		0xCCC,	0xD54,	0x111,	0x199},
+ 	{MV_L2,		0xCCC,	0xD54,	0x199,	0x222},
+ 	/* L2 - Stream800/2E7 (no wifi/bt module) */
+-	{MV_L2,		0xCCC,	0xD54,	0x2aa,	0x333},
++	{MV_L2,		0xCCC,	0xD54,	0x2AA,	0x333},
+ 	/* L2 - Stream800/1E7 (no wifi/bt module) */
+-	{MV_L2,		0xCCC,	0xD54,	0x5dd,	0x666},
++	{MV_L2,		0xCCC,	0xD54,	0x5DD,	0x666},
+ 	/* L2 - Stream800/2E7-4 (no wifi/bt module, 4G flash) */
+-	{MV_L2,		0xCCC,	0xD54,	0x6ee,	0x777},
++	{MV_L2,		0xCCC,	0xD54,	0x6EE,	0x777},
+ 	/* L2 - Stream800/2E8-4 (no wifi/bt module, 800Mhz, 4G flash) */
+ 	{MV_L2,		0xCCC,	0xD54,	0x777,	0x7ff},
+ 	/* L0 - Stream800/2WE8-D3 Teufel */
+-- 
+2.7.4
+

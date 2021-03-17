@@ -1,0 +1,138 @@
+<!-- ##### SECTION Title ##### -->
+gmime
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### MACRO GMIME_MAJOR_VERSION ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO GMIME_MICRO_VERSION ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO GMIME_MINOR_VERSION ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO GMIME_BINARY_AGE ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO GMIME_INTERFACE_AGE ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO GMIME_CHECK_VERSION ##### -->
+<para>
+
+</para>
+
+@major: 
+@minor: 
+@micro: 
+
+
+<!-- ##### MACRO GMIME_ENABLE_RFC2047_WORKAROUNDS ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO GMIME_ENABLE_USE_ONLY_USER_CHARSETS ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### FUNCTION g_mime_init ##### -->
+<para>
+
+</para>
+
+@flags: 
+
+
+<!-- ##### FUNCTION g_mime_shutdown ##### -->
+<para>
+
+</para>
+
+@void: 
+
+
+<!-- ##### VARIABLE gmime_major_version ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### VARIABLE gmime_minor_version ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### VARIABLE gmime_micro_version ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### VARIABLE gmime_binary_age ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### VARIABLE gmime_interface_age ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION g_mime_check_version ##### -->
+<para>
+
+</para>
+
+@major: 
+@minor: 
+@micro: 
+@Returns: 
+
+

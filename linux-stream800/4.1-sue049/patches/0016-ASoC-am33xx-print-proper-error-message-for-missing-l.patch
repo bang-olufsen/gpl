@@ -1,0 +1,40 @@
+From 607aa737268c8a1638c42c5b768f75f707094dc8 Mon Sep 17 00:00:00 2001
+From: Radek Dostal <radek.dostal@streamunlimited.com>
+Date: Tue, 18 Nov 2014 14:42:16 +0100
+Subject: [PATCH] ASoC: am33xx: print proper error message for missing links in
+ DT
+
+Signed-off-by: Radek Dostal <radek.dostal@streamunlimited.com>
+---
+ sound/soc/davinci/am33xx-s800.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/sound/soc/davinci/am33xx-s800.c b/sound/soc/davinci/am33xx-s800.c
+index 74727f5..cb6205e 100644
+--- a/sound/soc/davinci/am33xx-s800.c
++++ b/sound/soc/davinci/am33xx-s800.c
+@@ -458,8 +458,10 @@ static int snd_soc_am33xx_s800_probe(struct platform_device *pdev)
+ 
+ 		/* iterate over child nodes */
+ 		priv->card.num_links = of_get_child_count(node);
+-		if (priv->card.num_links == 0)
++		if (priv->card.num_links == 0) {
++			dev_err(dev, "Faild to find any links in device tree\n");
+ 			return -EINVAL;
++		}
+ 
+ 		priv->card.dai_link =
+ 			devm_kzalloc(dev, priv->card.num_links * sizeof(*link),
+@@ -501,6 +503,9 @@ static int snd_soc_am33xx_s800_probe(struct platform_device *pdev)
+ 			link->dai_fmt = dai_fmt | dai_fmt_link;
+ 			link++;
+ 		}
++	} else {
++		dev_err(dev, "Faild to find links node in device tree\n");
++		return -EINVAL;
+ 	}
+ 
+ 	platform_set_drvdata(pdev, &priv->card);
+-- 
+1.9.1
+

@@ -1,0 +1,28 @@
+From f53d3d8a1a2135b0810661f7d8dd79ebcf6b56be Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Fri, 6 Nov 2020 13:03:50 +0100
+Subject: [PATCH] Take out the monotonically increasing requirement for PTP
+
+---
+ gst/gstclock.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/gst/gstclock.c b/gst/gstclock.c
+index 279b1f8..58fcd15 100644
+--- a/gst/gstclock.c
++++ b/gst/gstclock.c
+@@ -971,7 +971,14 @@ gst_clock_adjust_unlocked (GstClock * clock, GstClockTime internal)
+       cnum, cdenom);
+ 
+   /* make sure the time is increasing */
++/* Take out the monotonically increasing requirement for PTP */
++#if 0
++  /* make sure the time is increasing */
+   priv->last_time = MAX (ret, priv->last_time);
++  GST_ERROR ("Who touched my clock");
++#else
++  priv->last_time = ret;
++#endif
+ 
+   return priv->last_time;
+ }

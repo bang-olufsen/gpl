@@ -1,0 +1,119 @@
+From f6a3e5dc577b3eec43a5a145e5f5a5a18a4322c5 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Thu, 6 Feb 2020 13:32:00 +0100
+Subject: [PATCH] rsa: Fix build with OpenSSL 1.1.x [STREAMEIGHT-3041](thud)
+
+commit c3b4328166b03d6749b86eb0fbb21a10e4395cfd upstream.
+
+The rsa_st struct has been made opaque in 1.1.x, add forward compatible
+code to access the n, e, d members of rsa_struct.
+
+EVP_MD_CTX_cleanup has been removed in 1.1.x and EVP_MD_CTX_reset should be
+called to reinitialise an already created structure.
+
+Author: Jelle van der Waa <jelle@vdwaa.nl>  2017-05-08 21:31:19
+Committer: Tom Rini <trini@konsulko.com>  2017-05-12 14:37:19
+[backport to v2015.04]
+Signed-off-by: Andriy Danylovskyy <andriy.danylovskyy@streamunlimited.com>
+[polished commit message]
+Signed-off-by: Radek Dostal <radek.dostal@streamunlimited.com>
+---
+ lib/rsa/rsa-sign.c | 31 +++++++++++++++++++++++++++++--
+ 1 file changed, 29 insertions(+), 2 deletions(-)
+
+diff --git a/lib/rsa/rsa-sign.c b/lib/rsa/rsa-sign.c
+index 549130e..6941471 100644
+--- a/lib/rsa/rsa-sign.c
++++ b/lib/rsa/rsa-sign.c
+@@ -19,6 +19,19 @@
+ #define HAVE_ERR_REMOVE_THREAD_STATE
+ #endif
+ 
++#if OPENSSL_VERSION_NUMBER < 0x10100000L
++static void RSA_get0_key(const RSA *r,
++                 const BIGNUM **n, const BIGNUM **e, const BIGNUM **d)
++{
++   if (n != NULL)
++       *n = r->n;
++   if (e != NULL)
++       *e = r->e;
++   if (d != NULL)
++       *d = r->d;
++}
++#endif
++
+ static int rsa_err(const char *msg)
+ {
+ 	unsigned long sslErr = ERR_get_error();
+@@ -133,22 +146,29 @@ static int rsa_init(void)
+ {
+ 	int ret;
+ 
++#if OPENSSL_VERSION_NUMBER < 0x10100000L
+ 	ret = SSL_library_init();
++#else
++	ret = OPENSSL_init_ssl(0, NULL);
++#endif
+ 	if (!ret) {
+ 		fprintf(stderr, "Failure to init SSL library\n");
+ 		return -1;
+ 	}
++#if OPENSSL_VERSION_NUMBER < 0x10100000L
+ 	SSL_load_error_strings();
+ 
+ 	OpenSSL_add_all_algorithms();
+ 	OpenSSL_add_all_digests();
+ 	OpenSSL_add_all_ciphers();
++#endif
+ 
+ 	return 0;
+ }
+ 
+ static void rsa_remove(void)
+ {
++#if OPENSSL_VERSION_NUMBER < 0x10100000L
+ 	CRYPTO_cleanup_all_ex_data();
+ 	ERR_free_strings();
+ #ifdef HAVE_ERR_REMOVE_THREAD_STATE
+@@ -157,6 +177,7 @@ static void rsa_remove(void)
+ 	ERR_remove_state(0);
+ #endif
+ 	EVP_cleanup();
++#endif
+ }
+ 
+ static int rsa_sign_with_key(RSA *rsa, const struct image_region region[],
+@@ -208,7 +229,11 @@ static int rsa_sign_with_key(RSA *rsa, const struct image_region region[],
+ 		ret = rsa_err("Could not obtain signature");
+ 		goto err_sign;
+ 	}
+-	EVP_MD_CTX_cleanup(context);
++	#if OPENSSL_VERSION_NUMBER < 0x10100000L
++		EVP_MD_CTX_cleanup(context);
++	#else
++		EVP_MD_CTX_reset(context);
++	#endif
+ 	EVP_MD_CTX_destroy(context);
+ 	EVP_PKEY_free(key);
+ 
+@@ -266,6 +291,7 @@ int rsa_get_params(RSA *key, uint32_t *n0_invp, BIGNUM **modulusp,
+ {
+ 	BIGNUM *big1, *big2, *big32, *big2_32;
+ 	BIGNUM *n, *r, *r_squared, *tmp;
++	const BIGNUM *key_n;
+ 	BN_CTX *bn_ctx = BN_CTX_new();
+ 	int ret = 0;
+ 
+@@ -284,7 +310,8 @@ int rsa_get_params(RSA *key, uint32_t *n0_invp, BIGNUM **modulusp,
+ 		return -ENOMEM;
+ 	}
+ 
+-	if (!BN_copy(n, key->n) || !BN_set_word(big1, 1L) ||
++	RSA_get0_key(key, &key_n, NULL, NULL);
++	if (!BN_copy(n, key_n) || !BN_set_word(big1, 1L) ||
+ 	    !BN_set_word(big2, 2L) || !BN_set_word(big32, 32L))
+ 		ret = -1;
+ 
+-- 
+2.7.4
+

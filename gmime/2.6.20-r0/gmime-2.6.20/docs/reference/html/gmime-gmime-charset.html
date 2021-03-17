@@ -1,0 +1,467 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>gmime-charset</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="GMime 2.6 Reference Manual">
+<link rel="up" href="core.html" title="Part III. GMime Core Reference">
+<link rel="prev" href="gmime-gmime.html" title="gmime">
+<link rel="next" href="gmime-gmime-iconv.html" title="gmime-iconv">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="gmime-gmime.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="core.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">GMime 2.6 Reference Manual</th>
+<td><a accesskey="n" href="gmime-gmime-iconv.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#gmime-gmime-charset.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#gmime-gmime-charset.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="gmime-gmime-charset"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="gmime-gmime-charset.top_of_page"></a>gmime-charset</span></h2>
+<p>gmime-charset — Charset helper functions</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="gmime-gmime-charset.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">struct              <a class="link" href="gmime-gmime-charset.html#GMimeCharset" title="struct GMimeCharset">GMimeCharset</a>;
+<span class="returnvalue">void</span>                <a class="link" href="gmime-gmime-charset.html#g-mime-charset-map-init" title="g_mime_charset_map_init ()">g_mime_charset_map_init</a>             (<em class="parameter"><code><span class="type">void</span></code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="gmime-gmime-charset.html#g-mime-charset-map-shutdown" title="g_mime_charset_map_shutdown ()">g_mime_charset_map_shutdown</a>         (<em class="parameter"><code><span class="type">void</span></code></em>);
+const <span class="returnvalue">char</span> *        <a class="link" href="gmime-gmime-charset.html#g-mime-locale-charset" title="g_mime_locale_charset ()">g_mime_locale_charset</a>               (<em class="parameter"><code><span class="type">void</span></code></em>);
+const <span class="returnvalue">char</span> *        <a class="link" href="gmime-gmime-charset.html#g-mime-locale-language" title="g_mime_locale_language ()">g_mime_locale_language</a>              (<em class="parameter"><code><span class="type">void</span></code></em>);
+const <span class="returnvalue">char</span> *        <a class="link" href="gmime-gmime-charset.html#g-mime-charset-language" title="g_mime_charset_language ()">g_mime_charset_language</a>             (<em class="parameter"><code>const <span class="type">char</span> *charset</code></em>);
+const <span class="returnvalue">char</span> *        <a class="link" href="gmime-gmime-charset.html#g-mime-charset-canon-name" title="g_mime_charset_canon_name ()">g_mime_charset_canon_name</a>           (<em class="parameter"><code>const <span class="type">char</span> *charset</code></em>);
+const <span class="returnvalue">char</span> *        <a class="link" href="gmime-gmime-charset.html#g-mime-charset-iconv-name" title="g_mime_charset_iconv_name ()">g_mime_charset_iconv_name</a>           (<em class="parameter"><code>const <span class="type">char</span> *charset</code></em>);
+const <span class="returnvalue">char</span> *        <a class="link" href="gmime-gmime-charset.html#g-mime-charset-name" title="g_mime_charset_name ()">g_mime_charset_name</a>                 (<em class="parameter"><code>const <span class="type">char</span> *charset</code></em>);
+const <span class="returnvalue">char</span> *        <a class="link" href="gmime-gmime-charset.html#g-mime-charset-locale-name" title="g_mime_charset_locale_name ()">g_mime_charset_locale_name</a>          (<em class="parameter"><code><span class="type">void</span></code></em>);
+const <span class="returnvalue">char</span> *        <a class="link" href="gmime-gmime-charset.html#g-mime-charset-iso-to-windows" title="g_mime_charset_iso_to_windows ()">g_mime_charset_iso_to_windows</a>       (<em class="parameter"><code>const <span class="type">char</span> *isocharset</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="gmime-gmime-charset.html#g-mime-charset-init" title="g_mime_charset_init ()">g_mime_charset_init</a>                 (<em class="parameter"><code><a class="link" href="gmime-gmime-charset.html#GMimeCharset" title="struct GMimeCharset"><span class="type">GMimeCharset</span></a> *charset</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="gmime-gmime-charset.html#g-mime-charset-step" title="g_mime_charset_step ()">g_mime_charset_step</a>                 (<em class="parameter"><code><a class="link" href="gmime-gmime-charset.html#GMimeCharset" title="struct GMimeCharset"><span class="type">GMimeCharset</span></a> *charset</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *inbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> inlen</code></em>);
+const <span class="returnvalue">char</span> *        <a class="link" href="gmime-gmime-charset.html#g-mime-charset-best-name" title="g_mime_charset_best_name ()">g_mime_charset_best_name</a>            (<em class="parameter"><code><a class="link" href="gmime-gmime-charset.html#GMimeCharset" title="struct GMimeCharset"><span class="type">GMimeCharset</span></a> *charset</code></em>);
+const <span class="returnvalue">char</span> *        <a class="link" href="gmime-gmime-charset.html#g-mime-charset-best" title="g_mime_charset_best ()">g_mime_charset_best</a>                 (<em class="parameter"><code>const <span class="type">char</span> *inbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> inlen</code></em>);
+<span class="returnvalue">gboolean</span>            <a class="link" href="gmime-gmime-charset.html#g-mime-charset-can-encode" title="g_mime_charset_can_encode ()">g_mime_charset_can_encode</a>           (<em class="parameter"><code><a class="link" href="gmime-gmime-charset.html#GMimeCharset" title="struct GMimeCharset"><span class="type">GMimeCharset</span></a> *mask</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *charset</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *text</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> len</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="gmime-gmime-charset.html#g-mime-set-user-charsets" title="g_mime_set_user_charsets ()">g_mime_set_user_charsets</a>            (<em class="parameter"><code>const <span class="type">char</span> **charsets</code></em>);
+const <span class="returnvalue">char</span> **       <a class="link" href="gmime-gmime-charset.html#g-mime-user-charsets" title="g_mime_user_charsets ()">g_mime_user_charsets</a>                (<em class="parameter"><code><span class="type">void</span></code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="gmime-gmime-charset.description"></a><h2>Description</h2>
+<p>
+Charset utility functions.
+</p>
+</div>
+<div class="refsect1">
+<a name="gmime-gmime-charset.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="GMimeCharset"></a><h3>struct GMimeCharset</h3>
+<pre class="programlisting">struct GMimeCharset {
+	unsigned int mask;
+	unsigned int level;
+};
+</pre>
+<p>
+State used by <a class="link" href="gmime-gmime-charset.html#g-mime-charset-best" title="g_mime_charset_best ()"><code class="function">g_mime_charset_best()</code></a> and <a class="link" href="gmime-gmime-charset.html#g-mime-charset-best-name" title="g_mime_charset_best_name ()"><code class="function">g_mime_charset_best_name()</code></a>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term">unsigned <span class="type">int</span> <em class="structfield"><code><a name="GMimeCharset.mask"></a>mask</code></em>;</span></p></td>
+<td>charset mask</td>
+</tr>
+<tr>
+<td><p><span class="term">unsigned <span class="type">int</span> <em class="structfield"><code><a name="GMimeCharset.level"></a>level</code></em>;</span></p></td>
+<td>charset level</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-charset-map-init"></a><h3>g_mime_charset_map_init ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_charset_map_init             (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>
+Initializes character set maps.
+</p>
+<p>
+Note: <a class="link" href="gmime-gmime.html#g-mime-init" title="g_mime_init ()"><code class="function">g_mime_init()</code></a> calls this routine for you.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-charset-map-shutdown"></a><h3>g_mime_charset_map_shutdown ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_charset_map_shutdown         (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>
+Frees internal lookup tables created in <a class="link" href="gmime-gmime-charset.html#g-mime-charset-map-init" title="g_mime_charset_map_init ()"><code class="function">g_mime_charset_map_init()</code></a>.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-locale-charset"></a><h3>g_mime_locale_charset ()</h3>
+<pre class="programlisting">const <span class="returnvalue">char</span> *        g_mime_locale_charset               (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>
+Gets the user's locale charset (or iso-8859-1 by default).
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the user's locale charset (or iso-8859-1 by default).</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-locale-language"></a><h3>g_mime_locale_language ()</h3>
+<pre class="programlisting">const <span class="returnvalue">char</span> *        g_mime_locale_language              (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>
+Gets the user's locale language code (or <code class="literal">NULL</code> by default).
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the user's locale language code (or <code class="literal">NULL</code> by default).</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-charset-language"></a><h3>g_mime_charset_language ()</h3>
+<pre class="programlisting">const <span class="returnvalue">char</span> *        g_mime_charset_language             (<em class="parameter"><code>const <span class="type">char</span> *charset</code></em>);</pre>
+<p>
+Attempts to find a specific language code that is specific to
+<em class="parameter"><code>charset</code></em>. Currently only handles CJK and Russian/Ukranian
+charset-&gt;lang mapping. Everything else will return <code class="literal">NULL</code>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>charset</code></em> :</span></p></td>
+<td>charset name</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a language code that is specific to <em class="parameter"><code>charset</code></em>, or <code class="literal">NULL</code> on
+fail.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-charset-canon-name"></a><h3>g_mime_charset_canon_name ()</h3>
+<pre class="programlisting">const <span class="returnvalue">char</span> *        g_mime_charset_canon_name           (<em class="parameter"><code>const <span class="type">char</span> *charset</code></em>);</pre>
+<p>
+Attempts to find a canonical charset name for <em class="parameter"><code>charset</code></em>.
+</p>
+<p>
+Note: Will normally return the same value as
+<a class="link" href="gmime-gmime-charset.html#g-mime-charset-iconv-name" title="g_mime_charset_iconv_name ()"><code class="function">g_mime_charset_iconv_name()</code></a> unless the system iconv does not use
+the canonical ISO charset names (such as using ISO8859-1 rather
+than the canonical form ISO-8859-1).
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>charset</code></em> :</span></p></td>
+<td>charset name</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a canonical charset name for <em class="parameter"><code>charset</code></em>.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-charset-iconv-name"></a><h3>g_mime_charset_iconv_name ()</h3>
+<pre class="programlisting">const <span class="returnvalue">char</span> *        g_mime_charset_iconv_name           (<em class="parameter"><code>const <span class="type">char</span> *charset</code></em>);</pre>
+<p>
+Attempts to find an iconv-friendly charset name for <em class="parameter"><code>charset</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>charset</code></em> :</span></p></td>
+<td>charset name</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>an iconv-friendly charset name for <em class="parameter"><code>charset</code></em>.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-charset-name"></a><h3>g_mime_charset_name ()</h3>
+<pre class="programlisting">const <span class="returnvalue">char</span> *        g_mime_charset_name                 (<em class="parameter"><code>const <span class="type">char</span> *charset</code></em>);</pre>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>
+<p><code class="literal">g_mime_charset_name</code> is deprecated and should not be used in newly-written code.</p>
+</div>
+<p>
+Attempts to find an iconv-friendly charset name for <em class="parameter"><code>charset</code></em>.
+</p>
+<p>
+Note: This function is deprecated. Use <a class="link" href="gmime-gmime-charset.html#g-mime-charset-iconv-name" title="g_mime_charset_iconv_name ()"><code class="function">g_mime_charset_iconv_name()</code></a>
+instead.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>charset</code></em> :</span></p></td>
+<td>charset name</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>an iconv-friendly charset name for <em class="parameter"><code>charset</code></em>.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-charset-locale-name"></a><h3>g_mime_charset_locale_name ()</h3>
+<pre class="programlisting">const <span class="returnvalue">char</span> *        g_mime_charset_locale_name          (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>
+<p><code class="literal">g_mime_charset_locale_name</code> is deprecated and should not be used in newly-written code.</p>
+</div>
+<p>
+Gets the user's locale charset (or iso-8859-1 by default).
+</p>
+<p>
+Note: This function is deprecated. Use <a class="link" href="gmime-gmime-charset.html#g-mime-locale-charset" title="g_mime_locale_charset ()"><code class="function">g_mime_locale_charset()</code></a>
+instead.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the user's locale charset (or iso-8859-1 by default).</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-charset-iso-to-windows"></a><h3>g_mime_charset_iso_to_windows ()</h3>
+<pre class="programlisting">const <span class="returnvalue">char</span> *        g_mime_charset_iso_to_windows       (<em class="parameter"><code>const <span class="type">char</span> *isocharset</code></em>);</pre>
+<p>
+Maps the ISO-8859-# charset to the equivalent Windows-CP125#
+charset.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>isocharset</code></em> :</span></p></td>
+<td>ISO-8859-# charset</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>equivalent Windows charset.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-charset-init"></a><h3>g_mime_charset_init ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_charset_init                 (<em class="parameter"><code><a class="link" href="gmime-gmime-charset.html#GMimeCharset" title="struct GMimeCharset"><span class="type">GMimeCharset</span></a> *charset</code></em>);</pre>
+<p>
+Initializes a charset mask structure.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><em class="parameter"><code>charset</code></em> :</span></p></td>
+<td>charset mask</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-charset-step"></a><h3>g_mime_charset_step ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_charset_step                 (<em class="parameter"><code><a class="link" href="gmime-gmime-charset.html#GMimeCharset" title="struct GMimeCharset"><span class="type">GMimeCharset</span></a> *charset</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *inbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> inlen</code></em>);</pre>
+<p>
+Steps through the input buffer 1 unicode character (glyph) at a
+time (ie, not necessarily 1 byte at a time). Bitwise 'and' our
+<em class="parameter"><code>charset-&gt;mask</code></em> with the mask for each glyph. This has the effect of
+limiting what charsets our <em class="parameter"><code>charset-&gt;mask</code></em> can match.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>charset</code></em> :</span></p></td>
+<td>charset structure</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>inbuf</code></em> :</span></p></td>
+<td>input text buffer (must be in UTF-8)</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>inlen</code></em> :</span></p></td>
+<td>input buffer length</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-charset-best-name"></a><h3>g_mime_charset_best_name ()</h3>
+<pre class="programlisting">const <span class="returnvalue">char</span> *        g_mime_charset_best_name            (<em class="parameter"><code><a class="link" href="gmime-gmime-charset.html#GMimeCharset" title="struct GMimeCharset"><span class="type">GMimeCharset</span></a> *charset</code></em>);</pre>
+<p>
+Gets the best charset name based on the charset mask <em class="parameter"><code>charset</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>charset</code></em> :</span></p></td>
+<td>charset mask</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a pointer to a string containing the best charset name that
+can represent the charset mask <em class="parameter"><code>charset</code></em>.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-charset-best"></a><h3>g_mime_charset_best ()</h3>
+<pre class="programlisting">const <span class="returnvalue">char</span> *        g_mime_charset_best                 (<em class="parameter"><code>const <span class="type">char</span> *inbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> inlen</code></em>);</pre>
+<p>
+Computes the best charset to use to encode this text buffer.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>inbuf</code></em> :</span></p></td>
+<td>a UTF-8 text buffer</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>inlen</code></em> :</span></p></td>
+<td>input buffer length</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the charset name best suited for the input text or <code class="literal">NULL</code> if
+it is US-ASCII safe.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-charset-can-encode"></a><h3>g_mime_charset_can_encode ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>            g_mime_charset_can_encode           (<em class="parameter"><code><a class="link" href="gmime-gmime-charset.html#GMimeCharset" title="struct GMimeCharset"><span class="type">GMimeCharset</span></a> *mask</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *charset</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *text</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> len</code></em>);</pre>
+<p>
+Check to see if the UTF-8 <em class="parameter"><code>text</code></em> will fit safely within <em class="parameter"><code>charset</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>mask</code></em> :</span></p></td>
+<td>a <a class="link" href="gmime-gmime-charset.html#GMimeCharset" title="struct GMimeCharset"><span class="type">GMimeCharset</span></a> mask</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>charset</code></em> :</span></p></td>
+<td>a charset</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>text</code></em> :</span></p></td>
+<td>utf-8 text to check</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>len</code></em> :</span></p></td>
+<td>length of <em class="parameter"><code>text</code></em>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>
+<code class="literal">TRUE</code> if it is safe to encode <em class="parameter"><code>text</code></em> into <em class="parameter"><code>charset</code></em> or <code class="literal">FALSE</code>
+otherwise.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-set-user-charsets"></a><h3>g_mime_set_user_charsets ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_set_user_charsets            (<em class="parameter"><code>const <span class="type">char</span> **charsets</code></em>);</pre>
+<p>
+Set a list of charsets for GMime to use as a hint for encoding and
+decoding headers. The charset list should be in order of preference
+(e.g. most preferred first, least preferred last).
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><em class="parameter"><code>charsets</code></em> :</span></p></td>
+<td>an array of user-preferred charsets</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-user-charsets"></a><h3>g_mime_user_charsets ()</h3>
+<pre class="programlisting">const <span class="returnvalue">char</span> **       g_mime_user_charsets                (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>
+Get the list of user-preferred charsets set with
+<a class="link" href="gmime-gmime-charset.html#g-mime-set-user-charsets" title="g_mime_set_user_charsets ()"><code class="function">g_mime_set_user_charsets()</code></a>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>an array of
+user-set charsets or <code class="literal">NULL</code> if none set. <span class="annotation">[<a href="http://foldoc.org/array"><span class="acronym">array</span></a> zero-terminated=1][<a href="http://foldoc.org/transfer%20none"><span class="acronym">transfer none</span></a>]</span>
+</td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

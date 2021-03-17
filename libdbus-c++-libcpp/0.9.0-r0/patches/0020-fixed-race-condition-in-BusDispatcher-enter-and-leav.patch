@@ -1,0 +1,89 @@
+From c4972de133ab85b396651408fa792c42544b99d9 Mon Sep 17 00:00:00 2001
+From: Stanislav Ruzani <stanislav.ruzani@streamunlimited.com>
+Date: Thu, 27 Jul 2017 10:14:00 +0200
+Subject: [PATCH 2/2] - fixed race condition in BusDispatcher enter() and
+ leave() which could cause hangups during shut down of the dispatcher thread
+
+Signed-off-by: Stanislav Ruzani <stanislav.ruzani@streamunlimited.com>
+---
+ include/dbus-c++/eventloop-integration.h |  2 ++
+ src/eventloop-integration.cpp            | 18 ++++++++++++++++--
+ 2 files changed, 18 insertions(+), 2 deletions(-)
+ mode change 100644 => 100755 include/dbus-c++/eventloop-integration.h
+ mode change 100644 => 100755 src/eventloop-integration.cpp
+
+diff --git a/include/dbus-c++/eventloop-integration.h b/include/dbus-c++/eventloop-integration.h
+old mode 100644
+new mode 100755
+index 3aabae9..e35d427
+--- a/include/dbus-c++/eventloop-integration.h
++++ b/include/dbus-c++/eventloop-integration.h
+@@ -90,7 +90,9 @@ public:
+   void timeout_expired(DefaultTimeout &);
+ 
+ private:
++  DefaultMutex _mutex_p;
+   bool _running;
++  bool _terminated;
+   int _pipe[2];
+   std::list <Pipe *> pipe_list;
+ };
+diff --git a/src/eventloop-integration.cpp b/src/eventloop-integration.cpp
+old mode 100644
+new mode 100755
+index fc7240d..360bf52
+--- a/src/eventloop-integration.cpp
++++ b/src/eventloop-integration.cpp
+@@ -77,7 +77,8 @@ void BusWatch::toggle()
+ }
+ 
+ BusDispatcher::BusDispatcher() :
+-  _running(false)
++  _running(false),
++  _terminated(false)
+ {
+   // pipe to create a new fd used to unlock a dispatcher at any
+   // moment (used by leave function)
+@@ -92,7 +93,14 @@ void BusDispatcher::enter()
+ {
+   debug_log("entering dispatcher %p", this);
+ 
+-  _running = true;
++  // atomically check the _terminated flag and set set the _running flag
++  _mutex_p.lock();
++
++  // if we haven't been terminated in the meantime, set the _running flag:
++  if (!_terminated)
++	_running = true;
++
++  _mutex_p.unlock();
+ 
+   while (_running)
+   {
+@@ -119,9 +127,13 @@ void BusDispatcher::enter()
+ 
+ bool BusDispatcher::leave()
+ {
+-  _running = false;
+   bool res = true;
+ 
++  // atomically stop the dispatcher thread by sending the 'exit' message and setting terminated/running flags
++  _mutex_p.lock();
++  _running = false;
++  _terminated = true;
++
+   int ret = write(_fdunlock[1], "exit", strlen("exit"));
+   if (ret == -1)
+   {
+@@ -131,6 +143,8 @@ bool BusDispatcher::leave()
+ 
+   close(_fdunlock[1]);
+   close(_fdunlock[0]);
++  _mutex_p.unlock();
++
+   return res;
+ }
+ 
+-- 
+2.13.0
+

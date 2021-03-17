@@ -1,0 +1,337 @@
+<!-- ##### SECTION Title ##### -->
+gmime-header
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GMimeHeaderIter ##### -->
+<para>
+
+</para>
+
+@hdrlist: 
+@cursor: 
+@version: 
+
+<!-- ##### STRUCT GMimeHeaderList ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### USER_FUNCTION GMimeHeaderWriter ##### -->
+<para>
+
+</para>
+
+@stream: 
+@name: 
+@value: 
+@Returns: 
+
+
+<!-- ##### USER_FUNCTION GMimeHeaderForeachFunc ##### -->
+<para>
+
+</para>
+
+@name: 
+@value: 
+@user_data: 
+
+
+<!-- ##### FUNCTION g_mime_header_iter_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_header_iter_free ##### -->
+<para>
+
+</para>
+
+@iter: 
+
+
+<!-- ##### FUNCTION g_mime_header_iter_copy ##### -->
+<para>
+
+</para>
+
+@iter: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_header_iter_copy_to ##### -->
+<para>
+
+</para>
+
+@src: 
+@dest: 
+
+
+<!-- ##### FUNCTION g_mime_header_iter_equal ##### -->
+<para>
+
+</para>
+
+@iter1: 
+@iter2: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_header_iter_first ##### -->
+<para>
+
+</para>
+
+@iter: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_header_iter_last ##### -->
+<para>
+
+</para>
+
+@iter: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_header_iter_next ##### -->
+<para>
+
+</para>
+
+@iter: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_header_iter_prev ##### -->
+<para>
+
+</para>
+
+@iter: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_header_iter_is_valid ##### -->
+<para>
+
+</para>
+
+@iter: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_header_iter_get_name ##### -->
+<para>
+
+</para>
+
+@iter: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_header_iter_get_value ##### -->
+<para>
+
+</para>
+
+@iter: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_header_iter_set_value ##### -->
+<para>
+
+</para>
+
+@iter: 
+@value: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_header_iter_remove ##### -->
+<para>
+
+</para>
+
+@iter: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_header_list_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_header_list_destroy ##### -->
+<para>
+
+</para>
+
+@headers: 
+
+
+<!-- ##### FUNCTION g_mime_header_list_clear ##### -->
+<para>
+
+</para>
+
+@headers: 
+
+
+<!-- ##### FUNCTION g_mime_header_list_contains ##### -->
+<para>
+
+</para>
+
+@headers: 
+@name: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_header_list_prepend ##### -->
+<para>
+
+</para>
+
+@headers: 
+@name: 
+@value: 
+
+
+<!-- ##### FUNCTION g_mime_header_list_append ##### -->
+<para>
+
+</para>
+
+@headers: 
+@name: 
+@value: 
+
+
+<!-- ##### FUNCTION g_mime_header_list_remove ##### -->
+<para>
+
+</para>
+
+@headers: 
+@name: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_header_list_set ##### -->
+<para>
+
+</para>
+
+@headers: 
+@name: 
+@value: 
+
+
+<!-- ##### FUNCTION g_mime_header_list_get ##### -->
+<para>
+
+</para>
+
+@headers: 
+@name: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_header_list_get_iter ##### -->
+<para>
+
+</para>
+
+@headers: 
+@iter: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_header_list_foreach ##### -->
+<para>
+
+</para>
+
+@headers: 
+@func: 
+@user_data: 
+
+
+<!-- ##### FUNCTION g_mime_header_list_register_writer ##### -->
+<para>
+
+</para>
+
+@headers: 
+@name: 
+@writer: 
+
+
+<!-- ##### FUNCTION g_mime_header_list_write_to_stream ##### -->
+<para>
+
+</para>
+
+@headers: 
+@stream: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_header_list_to_string ##### -->
+<para>
+
+</para>
+
+@headers: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_header_list_get_stream ##### -->
+<para>
+
+</para>
+
+@headers: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_header_list_set_stream ##### -->
+<para>
+
+</para>
+
+@headers: 
+@stream: 
+
+

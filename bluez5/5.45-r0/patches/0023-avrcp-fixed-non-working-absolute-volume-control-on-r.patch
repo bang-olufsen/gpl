@@ -1,0 +1,51 @@
+From febd7700d4783abb61d87a9d4139677f5cafcabb Mon Sep 17 00:00:00 2001
+From: Stanislav Ruzani <stanislav.ruzani@streamunlimited.com>
+Date: Wed, 6 Sep 2017 06:50:30 +0200
+Subject: [PATCH] avrcp: fixed non working absolute volume control on recent
+ version of Android
+
+Signed-off-by: Stanislav Ruzani <stanislav.ruzani@streamunlimited.com>
+---
+ profiles/audio/avrcp.c | 17 ++++++++++++++---
+ 1 file changed, 14 insertions(+), 3 deletions(-)
+
+diff --git a/profiles/audio/avrcp.c b/profiles/audio/avrcp.c
+index c402621..9d217f8 100644
+--- a/profiles/audio/avrcp.c
++++ b/profiles/audio/avrcp.c
+@@ -4066,8 +4066,17 @@ static void target_init(struct avrcp *session)
+ 				(1 << AVRCP_EVENT_TRACK_REACHED_END) |
+ 				(1 << AVRCP_EVENT_SETTINGS_CHANGED);
+ 
+-	if (target->version < 0x0104)
++	if (target->version < 0x0104) {
++		
++		// we will accept even AVRCP 1.3 for volume control, to be able to support
++		// recent Android phones (such as Nexus 6p)
++		if (target->version == 0x0103) {
++			session->supported_events |= (1 << AVRCP_EVENT_VOLUME_CHANGED);
++		}
++		
+ 		return;
++	}
++	
+ 
+ 	session->supported_events |=
+ 				(1 << AVRCP_EVENT_ADDRESSED_PLAYER_CHANGED) |
+@@ -4474,9 +4483,11 @@ int avrcp_set_volume(struct btd_device *dev, uint8_t volume, bool notify)
+ 								&volume);
+ 	}
+ 
+-	if (!session->controller || session->controller->version < 0x0104)
++	// we will accept even AVRCP 1.3 for volume control, to be able to support
++	// recent Android phones (such as Nexus 6p)
++	if (!session->controller || session->controller->version < 0x0103)
+ 		return -ENOTSUP;
+-
++	
+ 	memset(buf, 0, sizeof(buf));
+ 
+ 	set_company_id(pdu->company_id, IEEEID_BTSIG);
+-- 
+2.13.0
+

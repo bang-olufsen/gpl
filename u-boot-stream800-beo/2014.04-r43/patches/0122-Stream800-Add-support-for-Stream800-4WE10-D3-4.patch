@@ -1,0 +1,78 @@
+From 741ca55bbd91ff37d73f6a31d931c55de1eb31ff Mon Sep 17 00:00:00 2001
+From: Fionn Cleary <fionn.cleary@streamunlimited.com>
+Date: Thu, 28 May 2015 15:30:04 +0200
+Subject: [PATCH] Stream800: Add support for Stream800/4WE10-D3-4
+
+Signed-off-by: Fionn Cleary <fionn.cleary@streamunlimited.com>
+---
+ board/streamunlimited/stream800/board-spl.c     | 1 +
+ board/streamunlimited/stream800/board.c         | 5 +++--
+ board/streamunlimited/stream800/board_defines.c | 3 +++
+ board/streamunlimited/stream800/board_defines.h | 1 +
+ 4 files changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/board/streamunlimited/stream800/board-spl.c b/board/streamunlimited/stream800/board-spl.c
+index bad9fa8..015bb51 100644
+--- a/board/streamunlimited/stream800/board-spl.c
++++ b/board/streamunlimited/stream800/board-spl.c
+@@ -207,6 +207,7 @@ void sdram_init(void)
+ 	board_printf_info(&board);
+ 
+ 	switch (board.moduleVersion) {
++	case MV_L1_DDR3_HE:
+ 	case MV_L0_DDR3:
+ 		config_ddr(303, &ioregs_ddr3, &ddr3_data,
+ 			   &ddr3_cmd_ctrl_data, &ddr3_emif_reg_data, 0);
+diff --git a/board/streamunlimited/stream800/board.c b/board/streamunlimited/stream800/board.c
+index 090cd29..c529448 100755
+--- a/board/streamunlimited/stream800/board.c
++++ b/board/streamunlimited/stream800/board.c
+@@ -362,9 +362,10 @@ int board_late_init(void)
+ 		case MV_L0: setenv("board_rev", "l0"); break;
+ 		case MV_L1: setenv("board_rev", "l1"); break;
+ 		case MV_L2: setenv("board_rev", "l2");break;
+-		/* The L0 DDR3 module is effectively a L2 module with DDR3 from
+-		 * a device tree POV. */
++		/* The DDR3 modules are effectively L2 modules with DDR3 from a
++		 * device tree POV. */
+ 		case MV_L0_DDR3: setenv("board_rev", "l2"); break;
++		case MV_L1_DDR3_HE: setenv("board_rev", "l2"); break;
+ 		case MV_unknown:
+ 		default:
+ 			setenv("board_rev", "unknown");
+diff --git a/board/streamunlimited/stream800/board_defines.c b/board/streamunlimited/stream800/board_defines.c
+index 0eff4ab..b1dc259 100644
+--- a/board/streamunlimited/stream800/board_defines.c
++++ b/board/streamunlimited/stream800/board_defines.c
+@@ -7,6 +7,7 @@ const char *stream800ModuleVersionStrings[] = {
+ 	[MV_L1]		= "stream800 rev.L1",
+ 	[MV_L2]		= "stream800 rev.L2",
+ 	[MV_L0_DDR3]	= "stream800 rev.L0 w/ddr3",
++	[MV_L1_DDR3_HE]	= "stream800 rev.L1 w/ddr3 High-End"
+ };
+ 
+ const char *stream800CarrierBoardTypeStrings[] = {
+@@ -50,6 +51,8 @@ static struct SupportedModules {
+ 	{MV_L0_DDR3,	0x2AA,	0x333,	0x111,	0x199},
+ 	/* L0 - Stream800/1WEB8-D3 */
+ 	{MV_L0_DDR3,	0x2AA,	0x333,	0x199,	0x222},
++	/* L1 - Stream800/4WE10-D3-4 */
++	{MV_L1_DDR3_HE,	0x2AA,	0x333,	0x6EE,	0x777},
+ };
+ 
+ static struct SupportedCarrierBoards {
+diff --git a/board/streamunlimited/stream800/board_defines.h b/board/streamunlimited/stream800/board_defines.h
+index 39c8f69..0f7ac33 100644
+--- a/board/streamunlimited/stream800/board_defines.h
++++ b/board/streamunlimited/stream800/board_defines.h
+@@ -12,6 +12,7 @@ typedef enum {
+ 	MV_L1,
+ 	MV_L2,
+ 	MV_L0_DDR3,
++	MV_L1_DDR3_HE,
+ } Stream800ModuleVersion;
+ 
+ extern const char *stream800ModuleVersionStrings[];
+-- 
+2.7.4
+

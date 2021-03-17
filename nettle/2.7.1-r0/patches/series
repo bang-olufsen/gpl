@@ -1,0 +1,4 @@
+Add-target-to-only-build-tests-not-run-them.patch -p1
+CVE-2015-8803_8805.patch -p1
+CVE-2015-8804.patch -p1
+check-header-files-of-openssl-only-if-enable_.patch -p1

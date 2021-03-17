@@ -1,0 +1,69 @@
+From cc8aad66a732bbda2f6324d042c2749be8db91ef Mon Sep 17 00:00:00 2001
+From: Bernhard Miller <bernhard.miller@streamunlimited.com>
+Date: Tue, 21 Feb 2017 06:17:34 +0100
+Subject: [PATCH] test: implement DIS in example-gatt-server for PTS tests
+
+Signed-off-by: Bernhard Miller <bernhard.miller@streamunlimited.com>
+---
+ test/example-gatt-server | 38 ++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 38 insertions(+)
+
+diff --git a/test/example-gatt-server b/test/example-gatt-server
+index 24aaff9..2b47d80 100755
+--- a/test/example-gatt-server
++++ b/test/example-gatt-server
+@@ -52,6 +52,7 @@ class Application(dbus.service.Object):
+         self.add_service(HeartRateService(bus, 0))
+         self.add_service(BatteryService(bus, 1))
+         self.add_service(TestService(bus, 2))
++        self.add_service(DeviceInformationService(bus, 3))
+ 
+     def get_path(self):
+         return dbus.ObjectPath(self.path)
+@@ -608,6 +609,43 @@ class TestSecureDescriptor(Descriptor):
+                 dbus.Byte('T'), dbus.Byte('e'), dbus.Byte('s'), dbus.Byte('t')
+         ]
+ 
++
++class DeviceInformationService(Service):
++    """
++    Fake Device Information service
++
++    """
++    DIS_UUID = '180a'
++
++    def __init__(self, bus, index):
++        Service.__init__(self, bus, index, self.DIS_UUID, True)
++        self.add_characteristic(DeviceInformationCharacteristic(bus, 2, self, '2a24', 'Model Number', 'Dummy Model Number'))
++        self.add_characteristic(DeviceInformationCharacteristic(bus, 3, self, '2a25', 'Serial Number', 'Dummy Serial Number'))
++        self.add_characteristic(DeviceInformationCharacteristic(bus, 4, self, '2a26', 'Firmware Rev', 'Dummy Firmware Rev'))
++        self.add_characteristic(DeviceInformationCharacteristic(bus, 5, self, '2a27', 'Hardware Rev', 'Dummy Hardware Rev'))
++        self.add_characteristic(DeviceInformationCharacteristic(bus, 6, self, '2a28', 'Software Rev', 'Dummy Software Rev'))
++        self.add_characteristic(DeviceInformationCharacteristic(bus, 7, self, '2a29', 'Manufacturer', 'Dummy Manufacturer'))
++
++
++class DeviceInformationCharacteristic(Characteristic):
++    """
++    Characteristic of the DIS. Create with UUID and value
++
++    """
++
++    def __init__(self, bus, index, service, uuid, name, value):
++        Characteristic.__init__(
++                self, bus, index, uuid,
++                ['read'],
++                service)
++        self.name = name
++        self.value = value
++
++    def ReadValue(self, options):
++        print('Characteristic read %s: %s' % (self.name, repr(self.value)))
++        return self.value
++
++
+ def register_app_cb():
+     print('GATT application registered')
+ 
+-- 
+2.7.4
+

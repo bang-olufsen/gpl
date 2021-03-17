@@ -1,0 +1,40 @@
+From c6884376817599e74f8a6c7be6ab352a320cf715 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Thu, 11 Aug 2016 09:04:58 +0200
+Subject: [PATCH] Handle error on when we try to open slave pcm on switch
+ change
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+
+%% original patch: 0011-Handle-error-on-when-we-try-to-open-slave-pcm-on-swi.patch
+---
+ src/pcm/pcm_switch.c | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
+
+diff --git a/src/pcm/pcm_switch.c b/src/pcm/pcm_switch.c
+index 2866c0d..b58d8ff 100644
+--- a/src/pcm/pcm_switch.c
++++ b/src/pcm/pcm_switch.c
+@@ -754,9 +754,16 @@ static void apply_switch_value(snd_pcm_t *pcm)
+ 	if (swtch->cur_switch == SWITCH_CTL_ON)	{
+ 		DEBUG("~~~ OPEN SLAVE");
+ 
+-		snd_pcm_open_slave(&slave, swtch->root,
+-		                   swtch->sconf, swtch->stream,
+-		                   swtch->stream_mode, swtch->conf);
++		err = snd_pcm_open_slave(&slave, swtch->root,
++		                         swtch->sconf, swtch->stream,
++		                         swtch->stream_mode, swtch->conf);
++		if (err) {
++			DEBUG("Failed to open slave %d", err);
++			swtch->needs_update = 1;
++			swtch->active_switch = !swtch->active_switch;
++			return;
++		}
++
+ 		swtch->gen.slave = slave;
+ 
+ 		if (swtch->has_hw_params)
+-- 
+2.7.4
+

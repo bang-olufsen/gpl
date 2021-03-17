@@ -1,0 +1,166 @@
+From b2f2640f11145b84ab065fbfa843d7d3102aeef4 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Mon, 6 Aug 2018 16:15:49 +0200
+Subject: [PATCH] Implement underrun handling
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+
+%% original patch: 0018-Implement-underrun-handling.patch
+---
+ src/pcm/pcm_switch.c | 50 ++++++++++++++++++++++++++++++++------------------
+ 1 file changed, 32 insertions(+), 18 deletions(-)
+
+diff --git a/src/pcm/pcm_switch.c b/src/pcm/pcm_switch.c
+index 3cff816..ce652c8 100644
+--- a/src/pcm/pcm_switch.c
++++ b/src/pcm/pcm_switch.c
+@@ -81,16 +81,16 @@ typedef struct {
+ } snd_pcm_switch_t;
+ #endif
+ 
+-static int update_softvare_clock(snd_pcm_t *pcm, int forward_hw_ptr)
++static int update_softvare_clock(snd_pcm_t *pcm)
+ {
+ 	TRACE("");
+-	int forward = 0;
++	snd_pcm_uframes_t forward = 0;
+ 	snd_pcm_switch_t *swtch = pcm->private_data;
+ 
+ 	struct timespec clock;
+ 	gettimestamp(&clock, pcm->tstamp_type);
+ 
+-	if ((!swtch->gen.slave || !forward_hw_ptr) && swtch->clock.tv_sec > 0) {
++	if (swtch->clock.tv_sec > 0) {
+ 		u_int64_t forward_usec, diff_nsec;
+ 		signed long long comp = 0, drift;
+ 
+@@ -107,9 +107,19 @@ static int update_softvare_clock(snd_pcm_t *pcm, int forward_hw_ptr)
+ 		forward_usec = (((pcm->rate + comp) * diff_nsec) / 1000ULL) + swtch->clock_diff_usec;
+ 		forward = forward_usec / 1000000ULL;
+ 		swtch->clock_diff_usec = forward_usec % 1000000ULL;
++	}
++
++	if (!swtch->gen.slave && swtch->state == SND_PCM_STATE_RUNNING) {
++		snd_pcm_uframes_t hw_avail = snd_pcm_mmap_playback_hw_avail(pcm);
++		if (forward > hw_avail) {
++			DEBUG("UNDERRUN %lu frames!", (forward - hw_avail));
++			swtch->state = SND_PCM_STATE_XRUN;
++			swtch->trigger_tstamp = clock;
++			swtch->clock_diff_usec = 0;
++			forward = hw_avail;
++		}
+ 
+-		if (forward_hw_ptr)
+-			snd_pcm_mmap_hw_forward(pcm, forward);
++		snd_pcm_mmap_hw_forward(pcm, forward);
+ 	}
+ 
+ 	swtch->clock = clock;
+@@ -476,7 +486,7 @@ static snd_pcm_sframes_t snd_pcm_switch_avail_update(snd_pcm_t *pcm)
+ 	snd_pcm_sframes_t avail;
+ 
+ 	check_switch_value(pcm);
+-	update_softvare_clock(pcm, 1);
++	update_softvare_clock(pcm);
+ 
+ 	if (swtch->gen.slave) {
+ 		avail = snd_pcm_avail_update(swtch->gen.slave);
+@@ -486,6 +496,11 @@ static snd_pcm_sframes_t snd_pcm_switch_avail_update(snd_pcm_t *pcm)
+ 		return avail;
+ 	}
+ 	else {
++		if (swtch->state == SND_PCM_STATE_XRUN) {
++			TRACE("null XRUN");
++			return -EPIPE;
++		}
++
+ 		avail = snd_pcm_mmap_avail(pcm);
+ 		TRACE("null avail=%ld", avail);
+ 		return avail;
+@@ -668,7 +683,8 @@ static int snd_pcm_switch_start(snd_pcm_t *pcm)
+ 	else {
+ 		DEBUG("null");
+ 		swtch->state = SND_PCM_STATE_RUNNING;
+-		swtch->hw_ptr = *pcm->appl.ptr;
++		gettimestamp(&swtch->trigger_tstamp, pcm->tstamp_type);
++		swtch->clock = swtch->trigger_tstamp;
+ 		return 0;
+ 	}
+ }
+@@ -717,10 +733,13 @@ static int snd_pcm_switch_pause(snd_pcm_t *pcm, int enable)
+ 			if (swtch->state != SND_PCM_STATE_RUNNING)
+ 				return -EBADFD;
+ 			swtch->state = SND_PCM_STATE_PAUSED;
++			gettimestamp(&swtch->trigger_tstamp, pcm->tstamp_type);
+ 		} else {
+ 			if (swtch->state != SND_PCM_STATE_PAUSED)
+ 				return -EBADFD;
+ 			swtch->state = SND_PCM_STATE_RUNNING;
++			gettimestamp(&swtch->trigger_tstamp, pcm->tstamp_type);
++			swtch->clock = swtch->trigger_tstamp;
+ 		}
+ 		return 0;
+ 	}
+@@ -906,12 +925,12 @@ static void apply_switch_value(snd_pcm_t *pcm)
+ 
+ 		/* Don't drop audio when on switch value change */
+ 		if (swtch->cur_switch != SWITCH_CTL_ON) {
+-			snd_pcm_switch_start(pcm);
++			swtch->state = SND_PCM_STATE_RUNNING;
+ 			if (waiting_playback > 0)
+ 				snd_pcm_mmap_appl_forward(pcm, waiting_playback);
+ 		} else {
+ 			/* Forward frames that were processed when we were opening hw pcm */
+-			waiting_playback -= update_softvare_clock(pcm, 0);
++			waiting_playback -= update_softvare_clock(pcm);
+ 
+ 			if (waiting_playback > 0) {
+ 				void *buffer = calloc(waiting_playback, pcm->frame_bits / 8);
+@@ -980,16 +999,10 @@ static snd_pcm_sframes_t snd_pcm_switch_xfer_write_areas(snd_pcm_t *pcm,
+ 
+ static snd_pcm_sframes_t snd_pcm_switch_writei(snd_pcm_t *pcm, const void *buffer, snd_pcm_uframes_t size)
+ {
+-	snd_pcm_switch_t *swtch = pcm->private_data;
+ 	snd_pcm_sframes_t frames;
+ 	snd_pcm_channel_area_t areas[pcm->channels];
+ 	snd_pcm_areas_from_buf(pcm, areas, (void*)buffer);
+ 
+-	if (!swtch->gen.slave) {
+-		/* Force state to running when we recieve data */
+-		swtch->state = SND_PCM_STATE_RUNNING;
+-	}
+-
+ 	frames = snd_pcm_write_areas(pcm, areas, 0, size, snd_pcm_switch_xfer_write_areas);
+ 	TRACE("frames=%ld size=%ld", frames, size);
+ 
+@@ -1231,7 +1244,7 @@ static int snd_pcm_switch_poll_revents(snd_pcm_t *pcm, struct pollfd *pfds, unsi
+ 			return -EINVAL;
+ 
+ 		events = pfds[0].revents;
+-		update_softvare_clock(pcm, 1);
++		update_softvare_clock(pcm);
+ 		if (snd_pcm_mmap_avail(pcm) > pcm->avail_min)
+ 			events |= POLLOUT;
+ 		else {
+@@ -1240,7 +1253,7 @@ static int snd_pcm_switch_poll_revents(snd_pcm_t *pcm, struct pollfd *pfds, unsi
+ 			 */
+ 			usleep(((__useconds_t)(pcm->avail_min - snd_pcm_mmap_avail(pcm)) * (1000000 / pcm->rate)));
+ 
+-			update_softvare_clock(pcm, 1);
++			update_softvare_clock(pcm);
+ 			if (snd_pcm_mmap_avail(pcm) > pcm->avail_min)
+ 				events |= POLLOUT;
+ 			else
+@@ -1309,7 +1322,8 @@ static int switch_load_control(snd_pcm_t *pcm, snd_pcm_switch_t *swtch,
+ 	snd_ctl_elem_info_t *cinfo;
+ 	snd_ctl_elem_id_t *drift_ctl_id;
+ 	snd_ctl_elem_list_t *elem_list;
+-	int err, numid = -1, n;
++	int err, numid = -1;
++	unsigned n;
+ 
+ 	if (ctl_card < 0) {
+ 		snd_pcm_info_alloca(&info);
+-- 
+2.7.4
+

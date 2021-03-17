@@ -1,0 +1,101 @@
+From b89af0ac7ac302d747aaaf48b990a5d606d3188e Mon Sep 17 00:00:00 2001
+From: Bernhard Miller <bernhard.miller@streamunlimited.com>
+Date: Fri, 27 Jan 2017 11:01:04 +0100
+Subject: [PATCH] gatttool: add option to read blob in interactive mode
+
+Signed-off-by: Bernhard Miller <bernhard.miller@streamunlimited.com>
+---
+ attrib/interactive.c | 63 ++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 63 insertions(+)
+
+diff --git a/attrib/interactive.c b/attrib/interactive.c
+index 7d4786a..d8ad06f 100644
+--- a/attrib/interactive.c
++++ b/attrib/interactive.c
+@@ -333,6 +333,36 @@ static void char_read_cb(guint8 status, const guint8 *pdu, guint16 plen,
+ 	g_string_free(s, TRUE);
+ }
+ 
++static void char_read_blob_cb(guint8 status, const guint8 *pdu, guint16 plen,
++							gpointer user_data)
++{
++	uint8_t value[plen];
++	ssize_t vlen;
++	int i;
++	GString *s;
++
++	if (status != 0) {
++		printf("Characteristic value/descriptor blob read failed: %s\n",
++							att_ecode2str(status));
++		return;
++	}
++	
++	vlen = dec_read_resp(pdu, plen, value, sizeof(value));
++	if (vlen < 0) {
++		error("Protocol error\n");
++		return;
++	}
++
++	s = g_string_new("Characteristic value/descriptor: ");
++	for (i = 0; i < vlen; i++)
++		g_string_append_printf(s, "%02x ", value[i]);
++
++	rl_printf("%s\n", s->str);
++	g_string_free(s, TRUE);
++
++	rl_forced_update_display();
++}
++
+ static void char_read_by_uuid_cb(guint8 status, const guint8 *pdu,
+ 					guint16 plen, gpointer user_data)
+ {
+@@ -579,6 +609,37 @@ static void cmd_read_hnd(int argcp, char **argvp)
+ 	gatt_read_char(attrib, handle, char_read_cb, attrib);
+ }
+ 
++static void cmd_read_hnd_blob(int argcp, char **argvp)
++{
++	int handle;
++	int offset;
++
++	if (conn_state != STATE_CONNECTED) {
++		error("Command failed: disconnected\n");
++		return;
++	}
++
++	if (argcp < 2) {
++		error("Missing argument: handle\n");
++		return;
++	}
++	
++	if (argcp < 3) {
++		error("Missing argument: offset\n");
++		return;
++	}
++
++	handle = strtohandle(argvp[1]);
++	if (handle < 0) {
++		error("Invalid handle: %s\n", argvp[1]);
++		return;
++	}
++	
++	offset = strtol(argvp[2], NULL, 16);
++
++	gatt_read_blob(attrib, handle, offset, char_read_blob_cb, attrib);
++}
++
+ static void cmd_read_uuid(int argcp, char **argvp)
+ {
+ 	int start = 0x0001;
+@@ -798,6 +859,8 @@ static struct {
+ 		"Characteristics Descriptor Discovery" },
+ 	{ "char-read-hnd",	cmd_read_hnd,	"<handle>",
+ 		"Characteristics Value/Descriptor Read by handle" },
++	{ "char-read-blob",	cmd_read_hnd_blob,	"<handle> <offset>",
++		"Characteristics Value/Descriptor Read by handle" },
+ 	{ "char-read-uuid",	cmd_read_uuid,	"<UUID> [start hnd] [end hnd]",
+ 		"Characteristics Value/Descriptor Read by UUID" },
+ 	{ "char-write-req",	cmd_char_write,	"<handle> <new value>",
+-- 
+2.7.4
+

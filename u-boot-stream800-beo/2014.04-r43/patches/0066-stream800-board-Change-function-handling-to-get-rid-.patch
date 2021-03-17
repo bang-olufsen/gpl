@@ -1,0 +1,43 @@
+From 455ec56e2e37dc0e250a43aee164852078176c3e Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Mon, 9 Dec 2013 09:51:45 +0100
+Subject: [PATCH] stream800: board: Change function handling to get rid of
+ CONFIG_SETTINGS_SIZE/BASE defines.
+
+This function isn't actually called never by code.
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ board/streamunlimited/stream800/board.c | 14 +-------------
+ 1 file changed, 1 insertion(+), 13 deletions(-)
+
+diff --git a/board/streamunlimited/stream800/board.c b/board/streamunlimited/stream800/board.c
+index caf9d53..fab18ed 100755
+--- a/board/streamunlimited/stream800/board.c
++++ b/board/streamunlimited/stream800/board.c
+@@ -327,21 +327,9 @@ static void board_detect(struct Stream800Board *board)
+ 
+ static int erase_database(void)
+ {
+-	nand_erase_options_t nand_erase_options;
+-
+-	nand_erase_options.length = CONFIG_SETTINGS_SIZE;
+-	nand_erase_options.quiet = 0;
+-	nand_erase_options.jffs2 = 0;
+-	nand_erase_options.scrub = 0;
+-	nand_erase_options.offset = CONFIG_SETTINGS_BASE;
+-
+ 	puts("Erasing Nand Settings Partition...\n");
+-	if (nand_erase_opts(&nand_info[0], &nand_erase_options))
+-		return 1;
+ 
+-	puts("done\n");
+-
+-	return 0;
++	return run_command("nand erase.part settings", 0);
+ }
+ 
+ static void factory_reset(void) {
+-- 
+2.7.4
+

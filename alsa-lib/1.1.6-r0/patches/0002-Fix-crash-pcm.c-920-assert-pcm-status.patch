@@ -1,0 +1,64 @@
+From 7a00744e68c26d3e1b74d48e980d38d41b81af28 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Fri, 15 Jul 2016 10:16:52 +0200
+Subject: [PATCH] Fix crash: pcm.c:920: assert(pcm && status);
+
+In snd_pcm_switch_status we called avail_update function which can change
+switch value.
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+
+%% original patch: 0002-Fix-crash-pcm.c-920-assert-pcm-status.patch
+---
+ src/pcm/pcm_switch.c | 21 +++++++++++++++------
+ 1 file changed, 15 insertions(+), 6 deletions(-)
+
+diff --git a/src/pcm/pcm_switch.c b/src/pcm/pcm_switch.c
+index 38d3b7e..fadac79 100644
+--- a/src/pcm/pcm_switch.c
++++ b/src/pcm/pcm_switch.c
+@@ -100,6 +100,18 @@ static void update_switch_value(snd_pcm_switch_t *swtch)
+ 	swtch->cur_switch = swtch->elem.value.integer.value[0];
+ }
+ 
++static void check_switch_value(snd_pcm_t *pcm)
++{
++	snd_pcm_switch_t *swtch = pcm->private_data;
++
++	if (!swtch->updating && swtch->needs_update) {
++		if (!swtch->gen.slave || snd_pcm_state(swtch->gen.slave) == SND_PCM_STATE_RUNNING) {
++			swtch->updating = 1;
++			apply_switch_value(pcm);
++		}
++	}
++}
++
+ inline void switch_free(snd_pcm_switch_t *swtch)
+ {
+ 	DEBUG("");
+@@ -384,12 +396,7 @@ static snd_pcm_sframes_t snd_pcm_switch_avail_update(snd_pcm_t *pcm)
+ 	snd_pcm_sframes_t slave_size;
+ 	snd_pcm_uframes_t avail;
+ 
+-	if (!swtch->updating && swtch->needs_update) {
+-		if (!swtch->gen.slave || snd_pcm_state(swtch->gen.slave) == SND_PCM_STATE_RUNNING) {
+-			swtch->updating = 1;
+-			apply_switch_value(pcm);
+-		}
+-	}
++	check_switch_value(pcm);
+ 
+ 	if (swtch->gen.slave) {
+ 		snd_pcm_t *slave = swtch->gen.slave;
+@@ -413,6 +420,8 @@ static int snd_pcm_switch_status(snd_pcm_t *pcm, snd_pcm_status_t * status)
+ 	TRACE("");
+ 	snd_pcm_switch_t *swtch = pcm->private_data;
+ 
++	check_switch_value(pcm);
++
+ 	if (swtch->gen.slave) {
+ 		TRACE("copy");
+ 		snd_pcm_sframes_t err;
+-- 
+2.7.4
+

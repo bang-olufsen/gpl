@@ -1,0 +1,228 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GMimeMultipartEncrypted</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="GMime 2.6 Reference Manual">
+<link rel="up" href="MimeParts.html" title="MIME Messages and Parts">
+<link rel="prev" href="GMimeMultipart.html" title="GMimeMultipart">
+<link rel="next" href="GMimeMultipartSigned.html" title="GMimeMultipartSigned">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="GMimeMultipart.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="MimeParts.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">GMime 2.6 Reference Manual</th>
+<td><a accesskey="n" href="GMimeMultipartSigned.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#GMimeMultipartEncrypted.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#GMimeMultipartEncrypted.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#GMimeMultipartEncrypted.object-hierarchy" class="shortcut">Object Hierarchy</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="GMimeMultipartEncrypted"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="GMimeMultipartEncrypted.top_of_page"></a>GMimeMultipartEncrypted</span></h2>
+<p>GMimeMultipartEncrypted — Encrypted MIME multiparts</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="GMimeMultipartEncrypted.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">struct              <a class="link" href="GMimeMultipartEncrypted.html#GMimeMultipartEncrypted-struct" title="struct GMimeMultipartEncrypted">GMimeMultipartEncrypted</a>;
+<a class="link" href="GMimeMultipartEncrypted.html" title="GMimeMultipartEncrypted"><span class="returnvalue">GMimeMultipartEncrypted</span></a> * <a class="link" href="GMimeMultipartEncrypted.html#g-mime-multipart-encrypted-new" title="g_mime_multipart_encrypted_new ()">g_mime_multipart_encrypted_new</a>
+                                                        (<em class="parameter"><code><span class="type">void</span></code></em>);
+<span class="returnvalue">int</span>                 <a class="link" href="GMimeMultipartEncrypted.html#g-mime-multipart-encrypted-encrypt" title="g_mime_multipart_encrypted_encrypt ()">g_mime_multipart_encrypted_encrypt</a>  (<em class="parameter"><code><a class="link" href="GMimeMultipartEncrypted.html" title="GMimeMultipartEncrypted"><span class="type">GMimeMultipartEncrypted</span></a> *mpe</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> *content</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeCryptoContext.html" title="GMimeCryptoContext"><span class="type">GMimeCryptoContext</span></a> *ctx</code></em>,
+                                                         <em class="parameter"><code><span class="type">gboolean</span> sign</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *userid</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeCertificate.html#GMimeDigestAlgo" title="enum GMimeDigestAlgo"><span class="type">GMimeDigestAlgo</span></a> digest</code></em>,
+                                                         <em class="parameter"><code><span class="type">GPtrArray</span> *recipients</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
+<a class="link" href="GMimeObject.html" title="GMimeObject"><span class="returnvalue">GMimeObject</span></a> *       <a class="link" href="GMimeMultipartEncrypted.html#g-mime-multipart-encrypted-decrypt" title="g_mime_multipart_encrypted_decrypt ()">g_mime_multipart_encrypted_decrypt</a>  (<em class="parameter"><code><a class="link" href="GMimeMultipartEncrypted.html" title="GMimeMultipartEncrypted"><span class="type">GMimeMultipartEncrypted</span></a> *mpe</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeCryptoContext.html" title="GMimeCryptoContext"><span class="type">GMimeCryptoContext</span></a> *ctx</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeCryptoContext.html#GMimeDecryptResult" title="struct GMimeDecryptResult"><span class="type">GMimeDecryptResult</span></a> **result</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="GMimeMultipartEncrypted.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  GObject
+   +----<a class="link" href="GMimeObject.html" title="GMimeObject">GMimeObject</a>
+         +----<a class="link" href="GMimeMultipart.html" title="GMimeMultipart">GMimeMultipart</a>
+               +----GMimeMultipartEncrypted
+</pre>
+</div>
+<div class="refsect1">
+<a name="GMimeMultipartEncrypted.description"></a><h2>Description</h2>
+<p>
+A <a class="link" href="GMimeMultipartEncrypted.html" title="GMimeMultipartEncrypted"><span class="type">GMimeMultipartEncrypted</span></a> part is a special subclass of
+<a class="link" href="GMimeMultipart.html" title="GMimeMultipart"><span class="type">GMimeMultipart</span></a> to make it easier to manipulate the
+multipart/encrypted MIME type.
+</p>
+</div>
+<div class="refsect1">
+<a name="GMimeMultipartEncrypted.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="GMimeMultipartEncrypted-struct"></a><h3>struct GMimeMultipartEncrypted</h3>
+<pre class="programlisting">struct GMimeMultipartEncrypted;</pre>
+<p>
+A multipart/encrypted MIME part.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-multipart-encrypted-new"></a><h3>g_mime_multipart_encrypted_new ()</h3>
+<pre class="programlisting"><a class="link" href="GMimeMultipartEncrypted.html" title="GMimeMultipartEncrypted"><span class="returnvalue">GMimeMultipartEncrypted</span></a> * g_mime_multipart_encrypted_new
+                                                        (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>
+Creates a new MIME multipart/encrypted object.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>an empty MIME multipart/encrypted object.</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-multipart-encrypted-encrypt"></a><h3>g_mime_multipart_encrypted_encrypt ()</h3>
+<pre class="programlisting"><span class="returnvalue">int</span>                 g_mime_multipart_encrypted_encrypt  (<em class="parameter"><code><a class="link" href="GMimeMultipartEncrypted.html" title="GMimeMultipartEncrypted"><span class="type">GMimeMultipartEncrypted</span></a> *mpe</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> *content</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeCryptoContext.html" title="GMimeCryptoContext"><span class="type">GMimeCryptoContext</span></a> *ctx</code></em>,
+                                                         <em class="parameter"><code><span class="type">gboolean</span> sign</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *userid</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeCertificate.html#GMimeDigestAlgo" title="enum GMimeDigestAlgo"><span class="type">GMimeDigestAlgo</span></a> digest</code></em>,
+                                                         <em class="parameter"><code><span class="type">GPtrArray</span> *recipients</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>
+Attempts to encrypt (and conditionally sign) the <em class="parameter"><code>content</code></em> MIME part
+to the public keys of <em class="parameter"><code>recipients</code></em> using the <em class="parameter"><code>ctx</code></em> encryption
+context. If successful, the encrypted <a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> is set as the
+encrypted part of the multipart/encrypted object <em class="parameter"><code>mpe</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>mpe</code></em> :</span></p></td>
+<td>multipart/encrypted object</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>content</code></em> :</span></p></td>
+<td>MIME part to encrypt</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>ctx</code></em> :</span></p></td>
+<td>encryption context</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>sign</code></em> :</span></p></td>
+<td>
+<code class="literal">TRUE</code> if the content should also be signed or <code class="literal">FALSE</code> otherwise</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>userid</code></em> :</span></p></td>
+<td>user id to use for signing (only used if <em class="parameter"><code>sign</code></em> is <code class="literal">TRUE</code>)</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>digest</code></em> :</span></p></td>
+<td>digest algorithm to use when signing</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>recipients</code></em> :</span></p></td>
+<td>an array of recipients to encrypt to. <span class="annotation">[<a href="http://foldoc.org/element-type"><span class="acronym">element-type</span></a> utf8]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>err</code></em> :</span></p></td>
+<td>a <span class="type">GError</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>
+<code class="literal">0</code> on success or <code class="literal">-1</code> on fail. If the encryption fails, an
+exception will be set on <em class="parameter"><code>err</code></em> to provide information as to why the
+failure occured.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-multipart-encrypted-decrypt"></a><h3>g_mime_multipart_encrypted_decrypt ()</h3>
+<pre class="programlisting"><a class="link" href="GMimeObject.html" title="GMimeObject"><span class="returnvalue">GMimeObject</span></a> *       g_mime_multipart_encrypted_decrypt  (<em class="parameter"><code><a class="link" href="GMimeMultipartEncrypted.html" title="GMimeMultipartEncrypted"><span class="type">GMimeMultipartEncrypted</span></a> *mpe</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeCryptoContext.html" title="GMimeCryptoContext"><span class="type">GMimeCryptoContext</span></a> *ctx</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeCryptoContext.html#GMimeDecryptResult" title="struct GMimeDecryptResult"><span class="type">GMimeDecryptResult</span></a> **result</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>
+Attempts to decrypt the encrypted MIME part contained within the
+multipart/encrypted object <em class="parameter"><code>mpe</code></em> using the <em class="parameter"><code>ctx</code></em> decryption context.
+</p>
+<p>
+If <em class="parameter"><code>result</code></em> is non-<code class="literal">NULL</code>, then on a successful decrypt operation, it will be
+updated to point to a newly-allocated <a class="link" href="GMimeCryptoContext.html#GMimeDecryptResult" title="struct GMimeDecryptResult"><span class="type">GMimeDecryptResult</span></a> with signature
+status information as well as a list of recipients that the part was
+encrypted to.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>mpe</code></em> :</span></p></td>
+<td>multipart/encrypted object</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>ctx</code></em> :</span></p></td>
+<td>decryption context</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>result</code></em> :</span></p></td>
+<td>a <span class="type">GMimeDecryptionResult</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>err</code></em> :</span></p></td>
+<td>a <span class="type">GError</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the decrypted MIME part on success or
+<code class="literal">NULL</code> on fail. If the decryption fails, an exception will be set on
+<em class="parameter"><code>err</code></em> to provide information as to why the failure occured. <span class="annotation">[<a href="http://foldoc.org/transfer%20full"><span class="acronym">transfer full</span></a>]</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<div class="refsect1">
+<a name="GMimeMultipartEncrypted.see-also"></a><h2>See Also</h2>
+<a class="link" href="GMimeMultipart.html" title="GMimeMultipart"><span class="type">GMimeMultipart</span></a>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

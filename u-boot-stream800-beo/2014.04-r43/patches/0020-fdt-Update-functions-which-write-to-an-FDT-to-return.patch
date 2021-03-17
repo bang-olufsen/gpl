@@ -1,0 +1,101 @@
+From a330b0fc3792d866fce520cd64e2f18bb9230334 Mon Sep 17 00:00:00 2001
+From: Simon Glass <sjg@chromium.org>
+Date: Wed, 16 Apr 2014 08:41:39 -0600
+Subject: [PATCH] fdt: Update functions which write to an FDT to return -ENOSPC
+
+When writing values into an FDT it is possible that there will be
+insufficient space. If the caller gets a useful error in the then it can
+potentially deal with the situation.
+
+Adjust these functions to return -ENOSPC when the FDT is full.
+
+Signed-off-by: Simon Glass <sjg@chromium.org>
+---
+ common/image-fit.c |  4 ++--
+ include/rsa.h      |  3 ++-
+ lib/rsa/rsa-sign.c | 28 +++++++++++++++++++---------
+ 3 files changed, 23 insertions(+), 12 deletions(-)
+
+diff --git a/common/image-fit.c b/common/image-fit.c
+index b94a3fe..8ba73a6 100644
+--- a/common/image-fit.c
++++ b/common/image-fit.c
+@@ -832,7 +832,7 @@ static int fit_image_hash_get_ignore(const void *fit, int noffset, int *ignore)
+  *
+  * returns:
+  *     0, on success
+- *     -1, on property read failure
++ *     -ENOSPC if no space in device tree, -1 for other error
+  */
+ int fit_set_timestamp(void *fit, int noffset, time_t timestamp)
+ {
+@@ -846,7 +846,7 @@ int fit_set_timestamp(void *fit, int noffset, time_t timestamp)
+ 		printf("Can't set '%s' property for '%s' node (%s)\n",
+ 		       FIT_TIMESTAMP_PROP, fit_get_name(fit, noffset, NULL),
+ 		       fdt_strerror(ret));
+-		return -1;
++		return ret == -FDT_ERR_NOSPACE ? -ENOSPC : -1;
+ 	}
+ 
+ 	return 0;
+diff --git a/include/rsa.h b/include/rsa.h
+index add4c78..0db76cc 100644
+--- a/include/rsa.h
++++ b/include/rsa.h
+@@ -46,7 +46,8 @@ int rsa_sign(struct image_sign_info *info,
+  *
+  * @info:	Specifies key and FIT information
+  * @keydest:	Destination FDT blob for public key data
+- * @return: 0, on success, -ve on error
++ * @return: 0, on success, -ENOSPC if the keydest FDT blob ran out of space,
++		other -ve value on error
+ */
+ int rsa_add_verify_data(struct image_sign_info *info, void *keydest);
+ #else
+diff --git a/lib/rsa/rsa-sign.c b/lib/rsa/rsa-sign.c
+index 6941471..69f1408 100644
+--- a/lib/rsa/rsa-sign.c
++++ b/lib/rsa/rsa-sign.c
+@@ -454,20 +454,30 @@ int rsa_add_verify_data(struct image_sign_info *info, void *keydest)
+ 
+ 	ret = fdt_setprop_string(keydest, node, "key-name-hint",
+ 				 info->keyname);
+-	ret |= fdt_setprop_u32(keydest, node, "rsa,num-bits", bits);
+-	ret |= fdt_setprop_u32(keydest, node, "rsa,n0-inverse", n0_inv);
+-	ret |= fdt_add_bignum(keydest, node, "rsa,modulus", modulus, bits);
+-	ret |= fdt_add_bignum(keydest, node, "rsa,r-squared", r_squared, bits);
+-	ret |= fdt_setprop_string(keydest, node, FIT_ALGO_PROP,
+-				  info->algo->name);
++	if (!ret)
++		ret = fdt_setprop_u32(keydest, node, "rsa,num-bits", bits);
++	if (!ret)
++		ret = fdt_setprop_u32(keydest, node, "rsa,n0-inverse", n0_inv);
++	if (!ret) {
++		ret = fdt_add_bignum(keydest, node, "rsa,modulus", modulus,
++				     bits);
++	}
++	if (!ret) {
++		ret = fdt_add_bignum(keydest, node, "rsa,r-squared", r_squared,
++				     bits);
++	}
++	if (!ret) {
++		ret = fdt_setprop_string(keydest, node, FIT_ALGO_PROP,
++					 info->algo->name);
++	}
+ 	if (info->require_keys) {
+-		fdt_setprop_string(keydest, node, "required",
+-				   info->require_keys);
++		ret = fdt_setprop_string(keydest, node, "required",
++					 info->require_keys);
+ 	}
+ 	BN_free(modulus);
+ 	BN_free(r_squared);
+ 	if (ret)
+-		return -EIO;
++		return ret == FDT_ERR_NOSPACE ? -ENOSPC : -EIO;
+ 
+ 	return 0;
+ }
+-- 
+2.7.4
+

@@ -1,0 +1,41 @@
+From 102995831e1f9f021b448c95b07e4ffaf3b2ef9b Mon Sep 17 00:00:00 2001
+From: Martin Geier <martin.geier@streamunlimited.com>
+Date: Wed, 12 Jul 2017 12:34:18 +0200
+Subject: [PATCH] install headers and .pc file in cmake
+
+Signed-off-by: Martin Geier <martin.geier@streamunlimited.com>
+---
+ CMakeLists.txt   | 8 ++++++++
+ dbus-c++-1.pc.in | 2 +-
+ 2 files changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index b291828..fb03389 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -42,4 +42,12 @@ target_link_libraries(dbus-c++-1
+ 
+ set_target_properties(dbus-c++-1 PROPERTIES VERSION "0.9.0" SOVERSION 0)
+ 
++set (prefix ${CMAKE_INSTALL_PREFIX})
++set (libdir ${CMAKE_INSTALL_PREFIX}/lib)
++set (includedir ${CMAKE_INSTALL_PREFIX}/include/)
++
++configure_file("dbus-c++-1.pc.in" "dbus-c++-1.pc" @ONLY)
++
+ install(TARGETS dbus-c++-1 DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
++install(DIRECTORY ${CMAKE_SOURCE_DIR}/include/ DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
++install(FILES ${CMAKE_BINARY_DIR}/dbus-c++-1.pc DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/pkgconfig)
+diff --git a/dbus-c++-1.pc.in b/dbus-c++-1.pc.in
+index 661aee7..b012663 100644
+--- a/dbus-c++-1.pc.in
++++ b/dbus-c++-1.pc.in
+@@ -8,4 +8,4 @@ Description: Native C++ bindings for D-Bus
+ Requires: dbus-1
+ Version: @VERSION@
+ Libs: -L${libdir} -ldbus-c++-1
+-Cflags: -I${includedir}/dbus-c++-1 -DDBUS_API_SUBJECT_TO_CHANGE
++Cflags: -I${includedir}/dbus-c++
+-- 
+2.7.4
+

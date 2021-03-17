@@ -1,0 +1,38 @@
+<!-- ##### SECTION Title ##### -->
+gmime-filter-basic
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GMimeFilterBasic ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION g_mime_filter_basic_new ##### -->
+<para>
+
+</para>
+
+@encoding: 
+@encode: 
+@Returns: 
+
+

@@ -1,0 +1,132 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Frequently Asked Questions</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="GMime 2.6 Reference Manual">
+<link rel="up" href="gmime.html" title="Part I. GMime Overview">
+<link rel="prev" href="gmime-resources.html" title="Mailing lists and bug reports">
+<link rel="next" href="fundamentals.html" title="Part II. GMime Fundamentals">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2"><tr valign="middle">
+<td><a accesskey="p" href="gmime-resources.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="gmime.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">GMime 2.6 Reference Manual</th>
+<td><a accesskey="n" href="fundamentals.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry">
+<a name="gmime-question-index"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle">Frequently Asked Questions</span></h2>
+<p>Frequently Asked Questions — 
+Find answers to common questions in the GMime manual
+</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1">
+<a name="idp5607280"></a><h2>Questions and Answers</h2>
+<p>This is an "index" of the reference manual
+    organized by common "How do I..." questions. If you
+    aren't sure which documentation to read for the question you have,
+    this list is a good place to start.
+    </p>
+<div class="qandaset">
+<a name="idp5584960"></a><table border="0" width="100%" summary="Q and A Set">
+<col align="left" width="1%">
+<col>
+<tbody>
+<tr class="qandadiv"><td align="left" valign="top" colspan="2"><h5 class="title">
+<a name="idp5585216"></a>1. General</h5></td></tr>
+<tr class="question">
+<td align="left" valign="top">
+<a name="idp5585888"></a><a name="idp5586144"></a><p><b>1.1.</b></p>
+</td>
+<td align="left" valign="top"><p>Where can I get help with GMime, submit a bug report, or make a feature request?</p></td>
+</tr>
+<tr class="answer">
+<td align="left" valign="top"></td>
+<td align="left" valign="top"><p>See the <a class="link" href="gmime-resources.html" title="Mailing lists and bug reports">documentation on this
+            topic</a>.</p></td>
+</tr>
+<tr class="question">
+<td align="left" valign="top">
+<a name="idp5588592"></a><a name="idp5639200"></a><p><b>1.2.</b></p>
+</td>
+<td align="left" valign="top"><p>How do I port from one GMime version to another?</p></td>
+</tr>
+<tr class="answer">
+<td align="left" valign="top"></td>
+<td align="left" valign="top"><p>See the <a class="link" href="gmime-changes-2-6.html" title="Changes from 2.4 to 2.6">list of
+            incompatible changes from 2.4 to 2.6</a>.</p></td>
+</tr>
+<tr class="question">
+<td align="left" valign="top">
+<a name="idp5641232"></a><a name="idp5641488"></a><p><b>1.3.</b></p>
+</td>
+<td align="left" valign="top"><p>How does memory management work in GMime? Should I free data returned from functions?</p></td>
+</tr>
+<tr class="answer">
+<td align="left" valign="top"></td>
+<td align="left" valign="top">
+<p>Most accessor functions return a pointer to internal
+	    members. When these internal members are objects
+	    themselves (e.g. subclasses
+	    of <a class="ulink" href="http://developer.gnome.org/doc/API/2.0/gobject/gobject-The-Base-Object-Type.html" target="_top">GObject</a>),
+	    there is no need to unref them unless otherwise stated in
+	    the documentation for that particular function.</p>
+<p>For accessor functions that return strings, they will be
+            declared "const" if they should not be freed. Non-const
+            strings should be freed with <a class="ulink" href="http://developer.gnome.org/doc/API/2.0/glib/glib-Memory-Allocation.html#g-free" target="_top">g_free()</a>.</p>
+</td>
+</tr>
+<tr class="question">
+<td align="left" valign="top">
+<a name="idp5645280"></a><a name="idp5645536"></a><p><b>1.4.</b></p>
+</td>
+<td align="left" valign="top"><p>How do I use GMime with threads?</p></td>
+</tr>
+<tr class="answer">
+<td align="left" valign="top"></td>
+<td align="left" valign="top">
+<p>First, read the <a class="ulink" href="http://developer.gnome.org/doc/API/2.0/glib/glib-Threads.html" target="_top">GThread</a> documentation for
+            portable threading primitives.</p>
+<p>Secondly, all functions
+            in gmime-charset, gmime-iconv
+            and gmime-utils should
+            be thread-safe. Objects subclassing 
+            <a class="ulink" href="http://developer.gnome.org/doc/API/2.0/gobject/gobject-The-Base-Object-Type.html" target="_top">GObject</a>
+            are not. This means that you'll have to do your own mutex
+            locking if you want to access the same GObjects from
+            multiple threads.
+            </p>
+</td>
+</tr>
+<tr class="question">
+<td align="left" valign="top">
+<a name="idp5650976"></a><a name="idp5651232"></a><p><b>1.5.</b></p>
+</td>
+<td align="left" valign="top"><p>How do I use GMime with C++?</p></td>
+</tr>
+<tr class="answer">
+<td align="left" valign="top"></td>
+<td align="left" valign="top"><p>The GMime header files use the subset of C that's
+            also valid C++, so you can simply use the normal GMime API
+            in a C++ program.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

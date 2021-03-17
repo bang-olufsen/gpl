@@ -1,0 +1,2 @@
+add-exclusion-to-mkfs-jffs2-git-2.patch -p1
+0001-Revert-Return-correct-error-number-in-ubi_get_vol_in.patch -p1

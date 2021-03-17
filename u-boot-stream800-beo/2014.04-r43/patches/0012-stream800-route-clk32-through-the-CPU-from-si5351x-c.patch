@@ -1,0 +1,38 @@
+From 1037c2fa5d4866c916c4981de6f5830ffb551cd0 Mon Sep 17 00:00:00 2001
+From: Matus Ujhelyi <matus.ujhelyi@streamunlimited.com>
+Date: Thu, 17 Jan 2013 14:42:19 +0100
+Subject: [PATCH] stream800: route clk32 through the CPU from si5351x clocking
+ chip
+
+Signed-off-by: Matus Ujhelyi <matus.ujhelyi@streamunlimited.com>
+---
+ board/streamunlimited/stream800/mux.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/board/streamunlimited/stream800/mux.c b/board/streamunlimited/stream800/mux.c
+index 79b1207..cb2fdea 100644
+--- a/board/streamunlimited/stream800/mux.c
++++ b/board/streamunlimited/stream800/mux.c
+@@ -189,6 +189,11 @@ static struct module_pin_mux suos_asc_phy_reset_pin_mux[] = {
+ 	{-1},
+ };
+ 
++static struct module_pin_mux clk2_pll_pin_mux[] = {
++	{OFFSET(xdma_event_intr1), MODE(3) | PULLUP_EN},	/* GPIO1_14 - pull up should be sufficient to keep phy out of reset! */
++	{-1},
++};
++
+ static struct module_pin_mux nand_pin_mux[] = {
+ 	{OFFSET(gpmc_ad0), (MODE(0) | PULLUP_EN | RXACTIVE)},	/* NAND AD0 */
+ 	{OFFSET(gpmc_ad1), (MODE(0) | PULLUP_EN | RXACTIVE)},	/* NAND AD1 */
+@@ -247,6 +252,7 @@ void enable_board_pin_mux(struct Stream800Board *board)
+ {
+ 	configure_module_pin_mux(i2c0_pin_mux);
+ 	configure_module_pin_mux(i2c1_pin_mux);
++	configure_module_pin_mux(clk2_pll_pin_mux);
+ 	configure_module_pin_mux(nand_pin_mux);
+ 
+ 	switch (get_carrier_board_type()) {
+-- 
+2.7.4
+

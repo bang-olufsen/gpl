@@ -1,0 +1,86 @@
+From eb01eebff7658fce4d435ec24ad81ad8f7a34a06 Mon Sep 17 00:00:00 2001
+From: Lee Page <lee.page@streamunlimited.com>
+Date: Fri, 13 Mar 2015 12:45:45 +0100
+Subject: [PATCH] ASoC: McASP: dynamically reconfigure serialize pins based on
+ sample format
+
+Signed-off-by: Miroslav Rudisin <miero@seznam.cz>
+Signed-off-by: Lee Page <lee.page@streamunlimited.com>
+---
+ sound/soc/davinci/davinci-mcasp.c | 53 +++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 53 insertions(+)
+
+diff --git a/sound/soc/davinci/davinci-mcasp.c b/sound/soc/davinci/davinci-mcasp.c
+index 0c813d5..8c2af6a 100644
+--- a/sound/soc/davinci/davinci-mcasp.c
++++ b/sound/soc/davinci/davinci-mcasp.c
+@@ -1365,6 +1365,58 @@ static void davinci_mcasp_shutdown(struct snd_pcm_substream *substream,
+ 		mcasp->channels = 0;
+ }
+ 
++static int davinci_mcasp_set_channel_map(struct snd_soc_dai *cpu_dai,
++		unsigned int tx_num, unsigned int *tx_slot,
++		unsigned int rx_num, unsigned int *rx_slot)
++{
++	struct davinci_mcasp *mcasp = snd_soc_dai_get_drvdata(cpu_dai);
++	unsigned int chan;
++	unsigned int slot;
++
++	/*
++	 * Notice: This sets serializer map.
++	 *         There might be multiple channels on each serializer.
++	 */
++
++	/* check for validity */
++
++	for (chan = 0; chan < tx_num; chan++) {
++		slot = tx_slot[chan];
++		if (slot >= mcasp->num_serializer) {
++			return -EINVAL;
++		}
++	}
++
++	for (chan = 0; chan < rx_num; chan++) {
++		slot = rx_slot[chan];
++		if (slot >= mcasp->num_serializer) {
++			return -EINVAL;
++		}
++	}
++
++	/* update configuration of serializers */
++
++	for (slot = 0; slot < mcasp->num_serializer; slot++) {
++		mcasp->serial_dir[slot] = INACTIVE_MODE;
++	}
++
++	for (chan = 0; chan < tx_num; chan++) {
++		slot = tx_slot[chan];
++		if (slot < mcasp->num_serializer) {
++			mcasp->serial_dir[slot] = TX_MODE;
++		}
++	}
++
++	for (chan = 0; chan < rx_num; chan++) {
++		slot = rx_slot[chan];
++		if (slot < mcasp->num_serializer) {
++			mcasp->serial_dir[slot] = RX_MODE;
++		}
++	}
++
++	return 0;
++}
++
+ static const struct snd_soc_dai_ops davinci_mcasp_dai_ops = {
+ 	.startup	= davinci_mcasp_startup,
+ 	.shutdown	= davinci_mcasp_shutdown,
+@@ -1373,6 +1425,7 @@ static const struct snd_soc_dai_ops davinci_mcasp_dai_ops = {
+ 	.set_fmt	= davinci_mcasp_set_dai_fmt,
+ 	.set_clkdiv	= davinci_mcasp_set_clkdiv,
+ 	.set_sysclk	= davinci_mcasp_set_sysclk,
++	.set_channel_map = davinci_mcasp_set_channel_map,
+ };
+ 
+ static int davinci_mcasp_dai_probe(struct snd_soc_dai *dai)
+-- 
+1.9.1
+

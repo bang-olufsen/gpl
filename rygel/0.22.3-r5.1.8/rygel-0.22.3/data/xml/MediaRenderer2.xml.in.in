@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<root xmlns="urn:schemas-upnp-org:device-1-0" xmlns:dlna="urn:schemas-dlna-org:device-1-0" xmlns:qq="http://www.tencent.com">
+  <specVersion>
+    <major>1</major>
+    <minor>0</minor>
+  </specVersion>
+  <device>
+    <qq:X_QPlay_SoftwareCapability>QPlay:2</qq:X_QPlay_SoftwareCapability>
+    <deviceType>urn:schemas-upnp-org:device:MediaRenderer:2</deviceType>
+    <friendlyName></friendlyName>
+    <manufacturer>Bang &amp;amp; Olufsen</manufacturer>
+    <manufacturerURL>www.bang-olufsen.dk</manufacturerURL>
+    <modelDescription></modelDescription>
+    <modelName>Beo_ASE</modelName>
+    <modelNumber>1</modelNumber>
+    <modelURL>www.bang-olufsen.dk</modelURL>
+    <UDN></UDN>
+    <serviceList>
+    </serviceList>
+    <dlna:X_DLNADOC>DMR-1.51</dlna:X_DLNADOC>
+  </device>
+</root>

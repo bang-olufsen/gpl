@@ -1,0 +1,43 @@
+From 571dc8e4f544ff854b57180618d5330133efefd3 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Mon, 19 Aug 2019 15:06:57 +0200
+Subject: [PATCH] Leave connection security handling to remote device.
+
+By elevating security we will cause that our device sends "SMP: Security
+Request" to remote device. BlueZ does that because it believes that pairing
+between devices is done and all we need to do is to start encryption of
+link. But this is not always true because LTK can be removed on remote
+device.
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ src/device.c | 13 -------------
+ 1 file changed, 13 deletions(-)
+
+diff --git a/src/device.c b/src/device.c
+index 9b91b37..560c461 100644
+--- a/src/device.c
++++ b/src/device.c
+@@ -5008,19 +5008,6 @@ bool device_attach_att(struct btd_device *dev, GIOChannel *io)
+ 		return false;
+ 	}
+ 
+-	if (sec_level == BT_IO_SEC_LOW && dev->le_state.paired) {
+-		DBG("Elevating security level since LTK is available");
+-
+-		sec_level = BT_IO_SEC_MEDIUM;
+-		bt_io_set(io, &gerr, BT_IO_OPT_SEC_LEVEL, sec_level,
+-							BT_IO_OPT_INVALID);
+-		if (gerr) {
+-			error("bt_io_set: %s", gerr->message);
+-			g_error_free(gerr);
+-			return false;
+-		}
+-	}
+-
+ 	dev->att_mtu = MIN(mtu, BT_ATT_MAX_LE_MTU);
+ 	attrib = g_attrib_new(io, BT_ATT_DEFAULT_LE_MTU, false);
+ 	if (!attrib) {
+-- 
+2.7.4
+

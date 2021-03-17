@@ -1,0 +1,33 @@
+From 2aba4d1f3c4a28ff1939a8368fdb69cc2373289a Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Fri, 15 Jul 2016 10:18:40 +0200
+Subject: [PATCH] Report errors from writei when they happen
+
+fps and googlecast don't have problem with this. They will handle errors
+correctly.
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+
+%% original patch: 0003-Report-errors-from-writei-when-they-happen.patch
+---
+ src/pcm/pcm_switch.c | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/src/pcm/pcm_switch.c b/src/pcm/pcm_switch.c
+index fadac79..3b089a6 100644
+--- a/src/pcm/pcm_switch.c
++++ b/src/pcm/pcm_switch.c
+@@ -862,10 +862,6 @@ static snd_pcm_sframes_t snd_pcm_switch_writei(snd_pcm_t *pcm, const void *buffe
+ 	if (frames > 0)
+ 		swtch->updating = 0;
+ 
+-	/* Don't report errors when updating switch value */
+-	if (swtch->updating && frames <= 0)
+-		return size;
+-
+ 	return frames;
+ }
+ 
+-- 
+2.7.4
+

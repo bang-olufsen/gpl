@@ -1,0 +1,878 @@
+# Thai translation for rygel.
+# Copyright (C) 2010-2013 Free Software Foundation, Inc.
+# This file is distributed under the same license as the rygel package.
+# Akom Chotiphantawanon <knight2000@gmail.com>, 2010-2013.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: rygel master\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
+"product=Rygel&keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2013-03-23 05:53+0000\n"
+"PO-Revision-Date: 2013-03-24 14:08+0700\n"
+"Last-Translator: Akom Chotiphantawanon <knight2000@gmail.com>\n"
+"Language-Team: Thai <thai-l10n@googlegroups.com>\n"
+"Language: th\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: ../data/rygel-preferences.ui.h:1
+#: ../data/rygel-preferences.desktop.in.in.h:1
+msgid "Rygel Preferences"
+msgstr "ปรับแต่ง Rygel"
+
+#: ../data/rygel-preferences.ui.h:2
+msgid "_Share media through DLNA"
+msgstr "แ_บ่งปันสื่อผ่านทาง DLNA"
+
+#: ../data/rygel-preferences.ui.h:3
+msgid "Enable sharing of media, such as photos, videos and music, with DLNA"
+msgstr "เปิดใช้การแบ่งปันสื่อ เช่น ภาพถ่าย วีดิทัศน์ และเพลง ด้วย DLNA"
+
+#: ../data/rygel-preferences.ui.h:4
+msgid "Add a directory to the list of shared directories"
+msgstr "เพิ่มไดเรกทอรีเข้าในรายชื่อไดเรกทอรีใช้ร่วม"
+
+#: ../data/rygel-preferences.ui.h:5
+msgid "Add shared directory"
+msgstr "เพิ่มไดเรกทอรีใช้ร่วม"
+
+#: ../data/rygel-preferences.ui.h:6
+msgid "Remove a directory from the list of shared directories"
+msgstr "ลบไดเรกทอรีออกจากรายชื่อไดเรกทอรีใช้ร่วม"
+
+#: ../data/rygel-preferences.ui.h:7
+msgid "Remove shared directory"
+msgstr "ลบไดเรกทอรีใช้ร่วม"
+
+#. Network Interface
+#: ../data/rygel-preferences.ui.h:9
+msgid "_Network:"
+msgstr "เ_ครือข่าย:"
+
+#: ../data/rygel-preferences.ui.h:10
+msgid ""
+"Select the network interface that DLNA media will be shared on, or share "
+"media on all interfaces"
+msgstr "เลือกอินเทอร์เฟซเครือข่ายที่จะใช้เปิดสื่อ DLNA ให้ใช้ร่วม หรือจะแบ่งปันสื่อบนทุกอินเทอร์เฟซ"
+
+#: ../data/rygel-preferences.ui.h:11
+msgid "Any"
+msgstr "ใดๆ"
+
+#: ../data/rygel-preferences.ui.h:12
+msgid "Select folders"
+msgstr "เลือกโฟลเดอร์"
+
+#: ../data/rygel-preferences.desktop.in.in.h:2
+msgid "UPnP/DLNA Preferences"
+msgstr "ปรับแต่ง UPnP/DLNA"
+
+#: ../data/rygel.desktop.in.in.h:1
+msgid "Rygel"
+msgstr "Rygel"
+
+#: ../data/rygel.desktop.in.in.h:2
+msgid "UPnP/DLNA Services"
+msgstr "บริการ UPnP/DLNA"
+
+#: ../data/rygel.desktop.in.in.h:3
+msgid "mediaserver;mediarenderer;share;audio;video;pictures;"
+msgstr "บริการสื่อ;เล่นสื่อ;แบ่งปัน;เสียง;วีดิทัศน์;รูปภาพ;"
+
+#: ../src/plugins/external/rygel-external-plugin-factory.vala:42
+#: ../src/plugins/mpris/rygel-mpris-plugin-factory.vala:42
+#, c-format
+msgid "Module '%s' could not connect to D-Bus session bus. "
+msgstr "มอดูล '%s' ไม่สามารถเชื่อมต่อกับบัสวาระของ D-Bus"
+
+#: ../src/plugins/media-export/rygel-media-export-database.vala:210
+#, c-format
+msgid "Failed to roll back transaction: %s"
+msgstr "ย้อนคืนรายการเปลี่ยนแปลงไม่สำเร็จ: %s"
+
+#: ../src/plugins/media-export/rygel-media-export-metadata-extractor.vala:138
+#: ../src/librygel-core/rygel-recursive-module-loader.vala:210
+#, c-format
+msgid "Failed to query content type for '%s'"
+msgstr "สอบถามชนิดของเนื้อหาของ '%s' ไม่สำเร็จ"
+
+#: ../src/plugins/media-export/rygel-media-export-media-cache.vala:122
+#, c-format
+msgid "Failed to add item with ID %s: %s"
+msgstr "เพิ่มรายการที่มี ID %s ไม่สำเร็จ: %s"
+
+#: ../src/plugins/media-export/rygel-media-export-harvester.vala:124
+#, c-format
+msgid "'%s' harvested"
+msgstr "เก็บข้อมูล '%s' แล้ว"
+
+#: ../src/plugins/media-export/rygel-media-export-harvester.vala:187
+#, c-format
+msgid "Error fetching object '%s' from database: %s"
+msgstr "ข้อผิดพลาดขณะดึงออบเจกต์ '%s' จากฐานข้อมูล :%s"
+
+#: ../src/plugins/media-export/rygel-media-export-harvester.vala:195
+#, c-format
+msgid "Failed to query info of a file %s: %s"
+msgstr "สอบถามข้อมูลของแฟ้ม %s ไม่สำเร็จ: %s"
+
+#: ../src/plugins/media-export/rygel-media-export-harvester.vala:235
+#, c-format
+msgid "Error removing object from database: %s"
+msgstr "ข้อผิดพลาดขณะลบออบเจกต์ออกจากฐานข้อมูล :%s"
+
+#: ../src/plugins/media-export/rygel-media-export-recursive-file-monitor.vala:36
+msgid "Will not monitor file changes"
+msgstr "จะไม่เฝ้าสังเกตการเปลี่ยนแปลงของแฟ้ม"
+
+#: ../src/plugins/media-export/rygel-media-export-recursive-file-monitor.vala:95
+#, c-format
+msgid "Failed to get file info for %s"
+msgstr "อ่านข้อมูลแฟ้มสำหรับ %s ไม่สำเร็จ"
+
+#: ../src/plugins/media-export/rygel-media-export-root-container.vala:32
+#: ../src/plugins/tracker/rygel-tracker-years.vala:33
+msgid "Year"
+msgstr "ปี"
+
+#: ../src/plugins/media-export/rygel-media-export-root-container.vala:33
+msgid "All"
+msgstr "ทั้งหมด"
+
+#: ../src/plugins/media-export/rygel-media-export-root-container.vala:39
+msgid "Artist"
+msgstr "ศิลปิน"
+
+#: ../src/plugins/media-export/rygel-media-export-root-container.vala:40
+msgid "Album"
+msgstr "อัลบั้ม"
+
+#: ../src/plugins/media-export/rygel-media-export-root-container.vala:41
+#: ../src/plugins/tracker/rygel-tracker-genre.vala:31
+msgid "Genre"
+msgstr "แนวเพลง"
+
+#: ../src/plugins/media-export/rygel-media-export-root-container.vala:56
+msgid "Files & Folders"
+msgstr "แฟ้ม & โฟลเดอร์"
+
+#: ../src/plugins/media-export/rygel-media-export-root-container.vala:344
+#: ../src/plugins/tracker/rygel-tracker-plugin.vala:34
+msgid "@REALNAME@'s media"
+msgstr "สื่อของ @REALNAME@"
+
+#: ../src/plugins/media-export/rygel-media-export-root-container.vala:433
+#: ../src/plugins/media-export/rygel-media-export-root-container.vala:492
+#, c-format
+msgid "Failed to remove entry: %s"
+msgstr "ลบรายการไม่สำเร็จ: %s"
+
+#: ../src/plugins/media-export/rygel-media-export-root-container.vala:571
+msgid "Music"
+msgstr "เพลง"
+
+#: ../src/plugins/media-export/rygel-media-export-root-container.vala:574
+msgid "Pictures"
+msgstr "รูปภาพ"
+
+#: ../src/plugins/media-export/rygel-media-export-root-container.vala:576
+msgid "Videos"
+msgstr "วีดิทัศน์"
+
+#: ../src/plugins/media-export/rygel-media-export-root-container.vala:578
+msgid "Playlists"
+msgstr "รายการการเล่น"
+
+#: ../src/plugins/playbin/rygel-playbin-plugin.vala:35
+msgid "GStreamer Player"
+msgstr "เครื่องเล่น GStreamer"
+
+#: ../src/plugins/tracker/rygel-tracker-category-all-container.vala:54
+#, c-format
+msgid "Failed to create a Tracker connection: %s"
+msgstr "สร้างการเชื่อมต่อ Tracker ไม่สำเร็จ: %s"
+
+#: ../src/plugins/tracker/rygel-tracker-category-all-container.vala:62
+#, c-format
+msgid "Failed to construct URI for folder '%s': %s"
+msgstr "สร้าง URI สำหรับโฟลเดอร์ '%s' ไม่สำเร็จ: %s"
+
+#: ../src/plugins/tracker/rygel-tracker-category-all-container.vala:77
+#, c-format
+msgid "Could not subscribe to tracker signals: %s"
+msgstr "ไม่สามารถบอกรับสัญญาณ tracker ได้: %s"
+
+#: ../src/plugins/tracker/rygel-tracker-plugin-factory.vala:42
+#, c-format
+msgid "Failed to start Tracker service: %s. Plugin disabled."
+msgstr "เปิดบริการ Tracker ไม่สำเร็จ: %s ปลั๊กอินจะถูกปิดใช้งาน"
+
+#: ../src/plugins/tracker/rygel-tracker-search-container.vala:104
+#, c-format
+msgid "Failed to get Tracker connection: %s"
+msgstr "นำการเชื่อมต่อ Tracker มาใช้ไม่สำเร็จ: %s"
+
+#: ../src/plugins/tracker/rygel-tracker-search-container.vala:228
+#, c-format
+msgid "Error getting item count under category '%s': %s"
+msgstr "เกิดข้อผิดพลาดขณะอ่านจำนวนรายการภายใต้หมวดหมู่ '%s': %s"
+
+#: ../src/plugins/tracker/rygel-tracker-albums.vala:31
+msgid "Albums"
+msgstr "อัลบั้ม"
+
+#: ../src/plugins/tracker/rygel-tracker-artists.vala:31
+msgid "Artists"
+msgstr "ศิลปิน"
+
+#: ../src/plugins/tracker/rygel-tracker-titles.vala:58
+msgid "Titles"
+msgstr "ชื่อ"
+
+#: ../src/librygel-core/rygel-base-configuration.vala:30
+#: ../src/librygel-core/rygel-base-configuration.vala:34
+#: ../src/librygel-core/rygel-base-configuration.vala:38
+#: ../src/librygel-core/rygel-base-configuration.vala:42
+#: ../src/librygel-core/rygel-base-configuration.vala:46
+#: ../src/librygel-core/rygel-base-configuration.vala:50
+#: ../src/librygel-core/rygel-base-configuration.vala:54
+#: ../src/librygel-core/rygel-base-configuration.vala:58
+#: ../src/librygel-core/rygel-base-configuration.vala:62
+#: ../src/librygel-core/rygel-base-configuration.vala:66
+#: ../src/librygel-core/rygel-base-configuration.vala:70
+#: ../src/librygel-core/rygel-base-configuration.vala:74
+#: ../src/librygel-core/rygel-base-configuration.vala:78
+#: ../src/librygel-core/rygel-base-configuration.vala:82
+#: ../src/librygel-core/rygel-base-configuration.vala:86
+#: ../src/librygel-core/rygel-base-configuration.vala:92
+#: ../src/librygel-core/rygel-base-configuration.vala:98
+#: ../src/librygel-core/rygel-base-configuration.vala:106
+#: ../src/librygel-core/rygel-base-configuration.vala:112
+#: ../src/librygel-core/rygel-base-configuration.vala:118
+msgid "Not implemented"
+msgstr "ยังไม่รองรับ"
+
+#: ../src/librygel-core/rygel-connection-manager.vala:91
+#: ../src/librygel-core/rygel-connection-manager.vala:105
+#: ../src/librygel-core/rygel-connection-manager.vala:127
+#: ../src/librygel-renderer/rygel-av-transport.vala:214
+#: ../src/librygel-renderer/rygel-rendering-control.vala:128
+#: ../src/librygel-server/rygel-content-directory.vala:264
+#: ../src/librygel-server/rygel-content-directory.vala:291
+#: ../src/librygel-server/rygel-content-directory.vala:310
+#: ../src/librygel-server/rygel-content-directory.vala:345
+#: ../src/librygel-server/rygel-content-directory.vala:370
+#: ../src/librygel-server/rygel-content-directory.vala:395
+#: ../src/librygel-server/rygel-media-receiver-registrar.vala:61
+msgid "Invalid argument"
+msgstr "อาร์กิวเมนต์ไม่ถูกต้อง"
+
+#: ../src/librygel-core/rygel-connection-manager.vala:121
+msgid "Invalid connection reference"
+msgstr "อ้างอิงการเชื่อมต่อไม่ถูกต้อง"
+
+#: ../src/librygel-core/rygel-log-handler.vala:68
+#, c-format
+msgid "Failed to get log level from configuration: %s"
+msgstr "อ่านระดับการบันทึกปูมจากค่าตั้งไม่สำเร็จ: %s"
+
+#: ../src/librygel-core/rygel-meta-config.vala:89
+#: ../src/librygel-core/rygel-meta-config.vala:108
+#: ../src/librygel-core/rygel-meta-config.vala:127
+#: ../src/librygel-core/rygel-meta-config.vala:146
+#: ../src/librygel-core/rygel-meta-config.vala:165
+#: ../src/librygel-core/rygel-meta-config.vala:184
+#: ../src/librygel-core/rygel-meta-config.vala:203
+#: ../src/rygel/rygel-cmdline-config.vala:141
+#: ../src/rygel/rygel-cmdline-config.vala:149
+#: ../src/rygel/rygel-cmdline-config.vala:157
+#: ../src/rygel/rygel-cmdline-config.vala:165
+#: ../src/rygel/rygel-cmdline-config.vala:173
+#: ../src/rygel/rygel-cmdline-config.vala:181
+#: ../src/rygel/rygel-cmdline-config.vala:189
+#: ../src/rygel/rygel-cmdline-config.vala:228
+#: ../src/rygel/rygel-cmdline-config.vala:247
+#: ../src/rygel/rygel-cmdline-config.vala:253
+#: ../src/rygel/rygel-cmdline-config.vala:260
+#: ../src/rygel/rygel-cmdline-config.vala:264
+#: ../src/rygel/rygel-cmdline-config.vala:268
+#: ../src/rygel/rygel-cmdline-config.vala:291
+#: ../src/rygel/rygel-cmdline-config.vala:317
+#: ../src/rygel/rygel-cmdline-config.vala:346
+#: ../src/rygel/rygel-cmdline-config.vala:372
+#: ../src/rygel/rygel-cmdline-config.vala:397
+#: ../src/rygel/rygel-environment-config.vala:100
+#: ../src/rygel/rygel-environment-config.vala:104
+#: ../src/rygel/rygel-environment-config.vala:108
+msgid "No value available"
+msgstr "ไม่มีค่าให้ใช้"
+
+#: ../src/librygel-core/rygel-meta-config.vala:324
+#, c-format
+msgid "No value set for '%s/enabled'"
+msgstr "ไม่มีค่าที่ตั้งไว้สำหรับ '%s/enabled'"
+
+#: ../src/librygel-core/rygel-meta-config.vala:343
+#, c-format
+msgid "No value set for '%s/title'"
+msgstr "ไม่มีค่าที่ตั้งไว้สำหรับ '%s/title'"
+
+#: ../src/librygel-core/rygel-meta-config.vala:363
+#: ../src/librygel-core/rygel-meta-config.vala:385
+#: ../src/librygel-core/rygel-meta-config.vala:411
+#: ../src/librygel-core/rygel-meta-config.vala:433
+#: ../src/librygel-core/rygel-meta-config.vala:457
+#, c-format
+msgid "No value available for '%s/%s'"
+msgstr "ไม่มีค่าสำหรับ '%s/%s'"
+
+#: ../src/librygel-core/rygel-plugin-loader.vala:86
+#, c-format
+msgid "New plugin '%s' available"
+msgstr "ปลั๊กอินใหม่ '%s' พร้อมใช้งาน"
+
+#: ../src/librygel-core/rygel-plugin-loader.vala:101
+#, c-format
+msgid "A module named %s is already loaded"
+msgstr "โหลดมอดูลชื่อ %s แล้ว"
+
+#: ../src/librygel-core/rygel-plugin-loader.vala:110
+#, c-format
+msgid "Failed to load module from path '%s': %s"
+msgstr "โหลดมอดูลจากพาธ '%s' ไม่สำเร็จ: %s"
+
+#: ../src/librygel-core/rygel-plugin-loader.vala:120
+#, c-format
+msgid "Failed to find entry point function '%s' in '%s': %s"
+msgstr "หาฟังก์ชันทางเข้า '%s' ใน '%s' ไม่สำเร็จ: %s"
+
+#: ../src/librygel-core/rygel-recursive-module-loader.vala:142
+#, c-format
+msgid "Error listing contents of folder '%s': %s"
+msgstr "เกิดข้อผิดพลาดขณะแสดงเนื้อหาของโฟลเดอร์ '%s': %s"
+
+#: ../src/librygel-core/rygel-root-device-factory.vala:113
+#: ../src/librygel-core/rygel-root-device-factory.vala:146
+#: ../src/librygel-core/rygel-root-device-factory.vala:168
+#: ../src/librygel-core/rygel-root-device-factory.vala:199
+#, c-format
+msgid "XML node '%s' not found."
+msgstr "ไม่พบโหนด XML '%s'"
+
+#: ../src/librygel-renderer/rygel-av-transport.vala:220
+#: ../src/librygel-renderer/rygel-rendering-control.vala:134
+msgid "Invalid InstanceID"
+msgstr "InstanceID ไม่ถูกต้อง"
+
+#. FIXME: Return a more sensible error here.
+#: ../src/librygel-renderer/rygel-av-transport.vala:255
+#: ../src/librygel-renderer/rygel-av-transport.vala:670
+#: ../src/librygel-renderer/rygel-av-transport.vala:680
+msgid "Resource not found"
+msgstr "ไม่พบทรัพยากร"
+
+#: ../src/librygel-renderer/rygel-av-transport.vala:266
+msgid "Illegal MIME-type"
+msgstr "ชนิด MIME ไม่ถูกต้อง"
+
+#: ../src/librygel-renderer/rygel-av-transport.vala:528
+msgid "Play speed not supported"
+msgstr "ไม่รองรับความเร็วการเล่นที่กำหนด"
+
+#: ../src/librygel-renderer/rygel-av-transport.vala:545
+msgid "Transition not available"
+msgstr "ไม่มีการเปลี่ยนผ่านให้ใช้"
+
+#: ../src/librygel-renderer/rygel-av-transport.vala:574
+#: ../src/librygel-renderer/rygel-av-transport.vala:598
+msgid "Seek mode not supported"
+msgstr "ไม่รองรับการเลื่อนตำแหน่งเล่น"
+
+#: ../src/librygel-renderer/rygel-av-transport.vala:587
+#: ../src/librygel-renderer/rygel-av-transport.vala:608
+#: ../src/librygel-renderer/rygel-av-transport.vala:616
+msgid "Illegal seek target"
+msgstr "เป้าหมายการเลื่อนตำแหน่งไม่ถูกต้อง"
+
+#: ../src/librygel-renderer/rygel-media-renderer.vala:27
+msgid "LibRygelRenderer"
+msgstr "LibRygelRenderer"
+
+#: ../src/librygel-renderer/rygel-rendering-control.vala:165
+msgid "Invalid Name"
+msgstr "ชื่อไม่ถูกต้อง"
+
+#: ../src/librygel-renderer/rygel-rendering-control.vala:179
+msgid "Invalid Channel"
+msgstr "ช่องสัญญาณไม่ถูกต้อง"
+
+#: ../src/librygel-renderer/rygel-rendering-control.vala:215
+#: ../src/librygel-renderer/rygel-rendering-control.vala:257
+#: ../src/librygel-renderer/rygel-rendering-control.vala:266
+msgid "Action Failed"
+msgstr "การกระทำล้มเหลว"
+
+#: ../src/librygel-server/rygel-browse.vala:63
+msgid "Invalid Arguments"
+msgstr "อาร์กิวเมนต์ไม่ถูกต้อง"
+
+#: ../src/librygel-server/rygel-browse.vala:94
+msgid "Cannot browse children on item"
+msgstr "ไม่สามารถเรียกดูรายการลูก"
+
+#: ../src/librygel-server/rygel-browse.vala:130
+#, c-format
+msgid "Failed to browse '%s': %s\n"
+msgstr "เรียกดู '%s' ไม่สำเร็จ: %s\n"
+
+#: ../src/librygel-server/rygel-content-directory.vala:283
+#: ../src/librygel-server/rygel-content-directory.vala:302
+msgid "No such file transfer"
+msgstr "ไม่มีการถ่ายโอนแฟ้มที่ว่า"
+
+#. Range header was present but invalid
+#: ../src/librygel-server/rygel-http-byte-seek.vala:49
+#: ../src/librygel-server/rygel-http-byte-seek.vala:54
+#: ../src/librygel-server/rygel-http-time-seek.vala:49
+#: ../src/librygel-server/rygel-http-time-seek.vala:61
+#: ../src/librygel-server/rygel-http-time-seek.vala:68
+#: ../src/librygel-server/rygel-http-time-seek.vala:83
+#, c-format
+msgid "Invalid Range '%s'"
+msgstr "ช่วง '%s' ไม่ถูกต้อง"
+
+#: ../src/librygel-server/rygel-http-get.vala:59
+msgid "Invalid Request"
+msgstr "การร้องขอไม่ถูกต้อง"
+
+#: ../src/librygel-server/rygel-http-identity-handler.vala:106
+#: ../src/librygel-server/rygel-http-transcode-handler.vala:58
+msgid "Not found"
+msgstr "ไม่พบ"
+
+#: ../src/librygel-server/rygel-http-item-uri.vala:134
+#, c-format
+msgid "Invalid URI '%s'"
+msgstr "URI '%s' ไม่ถูกต้อง"
+
+#: ../src/librygel-server/rygel-http-item-uri.vala:177
+msgid "Not Found"
+msgstr "ไม่พบ"
+
+#: ../src/librygel-server/rygel-http-post.vala:62
+#: ../src/librygel-server/rygel-import-resource.vala:189
+#, c-format
+msgid "Pushing data to non-empty item '%s' not allowed"
+msgstr "ไม่ได้รับอนุญาตให้ผลักข้อมูลไปยังรายการที่ไม่ว่างเปล่า '%s'"
+
+#: ../src/librygel-server/rygel-http-post.vala:71
+#, c-format
+msgid "No writable URI for %s available"
+msgstr "ไม่มี URI ที่เขียนได้สำหรับ %s"
+
+#. translators: Dotfile is the filename with prefix "."
+#: ../src/librygel-server/rygel-http-post.vala:186
+#, c-format
+msgid "Failed to move dotfile %s: %s"
+msgstr "ย้ายแฟ้มค่าตั้งซ่อน %s ไม่สำเร็จ: %s"
+
+#: ../src/librygel-server/rygel-http-request.vala:92
+#, c-format
+msgid "Requested item '%s' not found"
+msgstr "ไม่พบรายการ '%s' ที่ร้องขอ"
+
+#: ../src/librygel-server/rygel-http-seek.vala:95
+#, c-format
+msgid "Out Of Range Start '%ld'"
+msgstr "ตำแหน่งเริ่ม '%ld' ออกนอกช่วง"
+
+#: ../src/librygel-server/rygel-http-seek.vala:99
+#, c-format
+msgid "Out Of Range Stop '%ld'"
+msgstr "ตำแหน่งหยุด '%ld' ออกนอกช่วง"
+
+#: ../src/librygel-server/rygel-import-resource.vala:124
+#, c-format
+msgid "Failed to get original URI for '%s': %s"
+msgstr "อ่าน URI ต้นฉบับสำหรับ '%s' ไม่สำเร็จ: %s"
+
+#: ../src/librygel-server/rygel-import-resource.vala:186
+#, c-format
+msgid "URI '%s' invalid for importing contents to"
+msgstr "URI '%s' ไม่สามารถนำเข้าเนื้อหาได้"
+
+#: ../src/librygel-server/rygel-object-creator.vala:187
+msgid "'Elements' argument missing."
+msgstr "ขาดอาร์กิวเมนต์ 'องค์ประกอบ'"
+
+#: ../src/librygel-server/rygel-object-creator.vala:190
+msgid "Comments not allowed in XML"
+msgstr "ไม่อนุญาตให้ใช้หมายเหตุใน XML"
+
+#: ../src/librygel-server/rygel-object-creator.vala:196
+#: ../src/librygel-server/rygel-object-creator.vala:353
+#: ../src/librygel-server/rygel-item-destroyer.vala:53
+#: ../src/librygel-server/rygel-item-destroyer.vala:100
+#: ../src/librygel-server/rygel-item-updater.vala:70
+#: ../src/librygel-server/rygel-item-updater.vala:189
+#: ../src/librygel-server/rygel-media-query-action.vala:115
+#: ../src/librygel-server/rygel-media-query-action.vala:182
+msgid "No such object"
+msgstr "ไม่มีออบเจกต์ที่ว่า"
+
+#. FIXME: Change to object after string freeze
+#: ../src/librygel-server/rygel-object-creator.vala:221
+#, c-format
+msgid "No items in DIDL-Lite from client: '%s'"
+msgstr "ไม่มีรายการใน DIDL-Lite จากลูกข่าย: '%s'"
+
+#: ../src/librygel-server/rygel-object-creator.vala:357
+#: ../src/librygel-server/rygel-object-creator.vala:628
+#, c-format
+msgid "Object creation in %s not allowed"
+msgstr "ไม่ได้รับอนุญาตให้สร้างออบเจกต์ใน %s"
+
+#: ../src/librygel-server/rygel-object-creator.vala:385
+#, c-format
+msgid "Failed to create item under '%s': %s"
+msgstr "สร้างรายการภายใต้ '%s' ไม่สำเร็จ: %s"
+
+#: ../src/librygel-server/rygel-item-destroyer.vala:60
+#, c-format
+msgid "Successfully destroyed object '%s'"
+msgstr "ทำลายออบเจกต์ '%s' สำเร็จแล้ว"
+
+#: ../src/librygel-server/rygel-item-destroyer.vala:68
+#, c-format
+msgid "Failed to destroy object '%s': %s"
+msgstr "ทำลายออบเจกต์ '%s' ไม่สำเร็จ: %s"
+
+#: ../src/librygel-server/rygel-item-destroyer.vala:103
+#, c-format
+msgid "Removal of object %s not allowed"
+msgstr "ไม่ได้รับอนุญาตให้ลบออบเจกต์ %s"
+
+#: ../src/librygel-server/rygel-item-destroyer.vala:106
+#, c-format
+msgid "Object removal from %s not allowed"
+msgstr "ไม่ได้รับอนุญาตให้ลบออบเจกต์ออกจาก %s"
+
+#: ../src/librygel-server/rygel-item-updater.vala:77
+#, c-format
+msgid "Successfully updated object '%s'"
+msgstr "ปรับข้อมูลออบเจกต์ '%s' สำเร็จแล้ว"
+
+#: ../src/librygel-server/rygel-item-updater.vala:85
+#, c-format
+msgid "Failed to update object '%s': %s"
+msgstr "ปรับข้อมูลออบเจกต์ '%s' ไม่สำเร็จ: %s"
+
+#: ../src/librygel-server/rygel-item-updater.vala:162
+msgid "Bad current tag value."
+msgstr "ค่าของแท็กปัจจุบันไม่สามารถใช้ได้"
+
+#: ../src/librygel-server/rygel-item-updater.vala:166
+msgid "Bad new tag value."
+msgstr "ค่าของแท็กใหม่ไม่สามารถใช้ได้"
+
+#: ../src/librygel-server/rygel-item-updater.vala:169
+msgid "Tried to delete required tag."
+msgstr "พยายามลบแท็กที่จำเป็นต้องมีไว้"
+
+#: ../src/librygel-server/rygel-item-updater.vala:172
+msgid "Tried to change read-only property."
+msgstr "พยายามเปลี่ยนคุณสมบัติที่อ่านได้อย่างเดียว"
+
+#: ../src/librygel-server/rygel-item-updater.vala:175
+msgid "Parameter count mismatch."
+msgstr "จำนวนพารามิเตอร์ไม่ตรงกัน"
+
+#: ../src/librygel-server/rygel-item-updater.vala:178
+msgid "Unknown error."
+msgstr "ข้อผิดพลาดไม่ทราบสาเหตุ"
+
+#: ../src/librygel-server/rygel-item-updater.vala:191
+#, c-format
+msgid "Metadata modification of object %s not allowed"
+msgstr "ไม่อนุญาตให้แก้ไขข้อมูลกำกับของออบเจกต์ %s"
+
+#: ../src/librygel-server/rygel-item-updater.vala:196
+#, c-format
+msgid ""
+"Metadata modification of object %s being a child of restricted object %s not "
+"allowed"
+msgstr "ไม่อนุญาตให้แก้ไขข้อมูลกำกับของออบเจกต์ %s ซึ่งเป็นลูกของออบเจกต์ %s ที่ถูกจำกัดไว้"
+
+#: ../src/librygel-server/rygel-media-engine.vala:69
+msgid "No media engine found."
+msgstr "ไม่พบกลไกสำหรับเล่นสื่อ"
+
+#: ../src/librygel-server/rygel-media-engine.vala:80
+msgid "MediaEngine.init was not called. Cannot continue."
+msgstr "ไม่มีการเรียก MediaEngine.init มาก่อน ไม่สามารถดำเนินการต่อได้"
+
+#: ../src/librygel-server/rygel-media-item.vala:312
+#, c-format
+msgid "Bad URI: %s"
+msgstr "URI ไม่ถูกต้อง: %s"
+
+#. Assume the protocol to be the scheme of the URI
+#: ../src/librygel-server/rygel-media-item.vala:324
+#, c-format
+msgid "Failed to probe protocol for URI %s. Assuming '%s'"
+msgstr "ตรวจหาโพรโทคอลสำหรับ URI %s ไม่สำเร็จ จะถือว่าเป็น '%s'"
+
+#: ../src/librygel-server/rygel-media-query-action.vala:120
+msgid "Invalid range"
+msgstr "ช่วงไม่ถูกต้อง"
+
+#: ../src/librygel-server/rygel-media-server.vala:25
+msgid "LibRygelServer"
+msgstr "LibRygelServer"
+
+#: ../src/librygel-server/rygel-search.vala:93
+#, c-format
+msgid "Failed to search in '%s': %s"
+msgstr "ค้นหาใน '%s' ไม่สำเร็จ: %s"
+
+#: ../src/librygel-server/rygel-subtitle-manager.vala:85
+msgid "No subtitle available"
+msgstr "ไม่มีบทบรรยาย"
+
+#: ../src/librygel-server/rygel-thumbnailer.vala:61
+#, c-format
+msgid "No thumbnailer available: %s"
+msgstr "ไม่มีเครื่องมือสร้างภาพย่อ: %s"
+
+#: ../src/librygel-server/rygel-thumbnailer.vala:74
+msgid "Thumbnailing not supported"
+msgstr "ไม่รองรับการทำภาพย่อ"
+
+#: ../src/librygel-server/rygel-thumbnailer.vala:88
+#: ../src/librygel-server/rygel-thumbnailer.vala:97
+#: ../src/librygel-server/rygel-thumbnailer.vala:102
+#: ../src/librygel-server/rygel-thumbnailer.vala:113
+msgid "No thumbnail available"
+msgstr "ไม่มีภาพย่อที่ใช้ได้"
+
+#: ../src/librygel-server/rygel-thumbnailer.vala:132
+msgid "No D-Bus thumbnailer available"
+msgstr "ไม่มีเครื่องมือทำภาพย่อบน D-Bus ให้ใช้"
+
+#: ../src/librygel-server/rygel-transcode-manager.vala:79
+#, c-format
+msgid "No transcoder available for target format '%s'"
+msgstr "ไม่มีตัวแปลงรหัสสำหรับรูปแบบเป้าหมาย '%s'"
+
+#: ../src/media-engines/gstreamer/rygel-gst-data-source.vala:39
+#, c-format
+msgid "Could not create GstElement for URI %s"
+msgstr "ไม่สามารถสร้าง GstElement สำหรับ URI %s"
+
+#: ../src/media-engines/gstreamer/rygel-gst-data-source.vala:92
+msgid "Failed to create pipeline"
+msgstr "สร้างสายท่อไม่สำเร็จ"
+
+#: ../src/media-engines/gstreamer/rygel-gst-data-source.vala:103
+#: ../src/media-engines/gstreamer/rygel-gst-data-source.vala:124
+#, c-format
+msgid "Failed to link %s to %s"
+msgstr "เชื่อม %s เข้ากับ %s ไม่สำเร็จ"
+
+#: ../src/media-engines/gstreamer/rygel-gst-data-source.vala:138
+#, c-format
+msgid "Failed to link pad %s to %s"
+msgstr "เชื่อม pad %s เข้ากับ %s ไม่สำเร็จ"
+
+#: ../src/media-engines/gstreamer/rygel-gst-data-source.vala:193
+#, c-format
+msgid "Error from pipeline %s: %s"
+msgstr "ข้อผิดพลาดจากสายท่อ %s: %s"
+
+#: ../src/media-engines/gstreamer/rygel-gst-data-source.vala:200
+#, c-format
+msgid "Warning from pipeline %s: %s"
+msgstr "คำเตือนจากสายท่อ %s: %s"
+
+#: ../src/media-engines/gstreamer/rygel-gst-data-source.vala:251
+#, c-format
+msgid "Failed to seek to offsets %lld:%lld"
+msgstr "เลื่อนตำแหน่งไปยังออฟเซ็ต %lld:%lld ไม่สำเร็จ"
+
+#: ../src/media-engines/gstreamer/rygel-gst-data-source.vala:255
+msgid "Failed to seek"
+msgstr "เลื่อนตำแหน่งไม่สำเร็จ"
+
+#: ../src/media-engines/gstreamer/rygel-gst-utils.vala:39
+#, c-format
+msgid "Required element %s missing"
+msgstr "ขาดองค์ประกอบ %s ซึ่งจำเป็น"
+
+#: ../src/media-engines/simple/rygel-simple-data-source.vala:56
+msgid "Time-based seek not supported"
+msgstr "ไม่รองรับการเลื่อนตำแหน่งแบบระบุเวลา"
+
+#: ../src/rygel/rygel-main.vala:101
+#, c-format
+msgid "No plugins found in %d second; giving up.."
+msgid_plural "No plugins found in %d seconds; giving up.."
+msgstr[0] "ไม่พบปลั๊กอินใน %d วินาที ขอยกเลิก.."
+
+#: ../src/rygel/rygel-main.vala:162
+#, c-format
+msgid "Failed to create root device factory: %s"
+msgstr "สร้างโรงงานอุปกรณ์ระดับรากไม่สำเร็จ: %s"
+
+#: ../src/rygel/rygel-main.vala:220
+#, c-format
+msgid "Failed to create RootDevice for %s. Reason: %s"
+msgstr "สร้าง RootDevice สำหรับ %s ไม่สำเร็จ เหตุผล: %s"
+
+#: ../src/rygel/rygel-main.vala:257
+#, c-format
+msgid "Failed to load user configuration: %s"
+msgstr "โหลดค่าตั้งของผู้ใช้ไม่สำเร็จ: %s"
+
+#: ../src/rygel/rygel-user-config.vala:292
+#: ../src/ui/rygel-user-config.vala:292
+#, c-format
+msgid "No value available for '%s'"
+msgstr "ไม่มีค่าสำหรับ '%s'"
+
+#: ../src/rygel/rygel-user-config.vala:363
+#: ../src/ui/rygel-user-config.vala:363
+#, c-format
+msgid "Value of '%s' out of range"
+msgstr "ค่าของ '%s' ออกนอกช่วง"
+
+#: ../src/ui/rygel-preferences-dialog.vala:94
+#, c-format
+msgid "Failed to create preferences dialog: %s"
+msgstr "สร้างกล่องโต้ตอบปรับแต่งไม่สำเร็จ: %s"
+
+#: ../src/ui/rygel-writable-user-config.vala:108
+#, c-format
+msgid "Failed to save configuration data to file '%s': %s"
+msgstr "บันทึกข้อมูลค่าตั้งลงในแฟ้ม '%s' ไม่สำเร็จ: %s"
+
+#: ../src/ui/rygel-writable-user-config.vala:196
+#, c-format
+msgid "Failed to start Rygel service: %s"
+msgstr "เปิดบริการ Rygel ไม่สำเร็จ: %s"
+
+#: ../src/ui/rygel-writable-user-config.vala:198
+#, c-format
+msgid "Failed to stop Rygel service: %s"
+msgstr "ปิดบริการ Rygel ไม่สำเร็จ: %s"
+
+#~ msgid "Failed to attach to D-Bus session bus: %s"
+#~ msgstr "แนบกับบัสวาระของ D-Bus ไม่สำเร็จ: %s"
+
+#~ msgid "No metadata extractor available. Will not crawl."
+#~ msgstr "ไม่มีตัวแยกข้อมูลกำกับที่ใช้การได้ จะไม่รวบรวมข้อมูล"
+
+#~ msgid "Failed to access media cache: %s"
+#~ msgstr "เข้าถึงแคชของสื่อไม่สำเร็จ: %s"
+
+#~ msgid "Failed to remove URI: %s"
+#~ msgstr "ลบ URI ไม่สำเร็จ: %s"
+
+#~ msgid "Failed to create MediaExport D-Bus service: %s"
+#~ msgstr "สร้างบริการ MediaExport บน D-Bus ไม่สำเร็จ: %s"
+
+#~ msgid "Failed to create D-Bus proxies: %s"
+#~ msgstr "สร้างพร็อกซี D-Bus ไม่สำเร็จ: %s"
+
+#~ msgid "Error getting all values for '%s': %s"
+#~ msgstr "เกิดข้อผิดพลาดขณะอ่านค่าทั้งหมดของ '%s': %s"
+
+#~ msgid "Seek failed"
+#~ msgstr "เลื่อนตำแหน่งเล่นไม่สำเร็จ"
+
+#~ msgid "Failed to write modified description to %s"
+#~ msgstr "เขียนคำบรรยายที่ปรับเปลี่ยนแล้วลงใน %s ไม่สำเร็จ"
+
+#~ msgid "Failed to find thumbnails folder."
+#~ msgstr "หาโฟลเดอร์ภาพย่อไม่สำเร็จ"
+
+#~ msgid "Not Applicable"
+#~ msgstr "ไม่เกี่ยวข้อง"
+
+#~ msgid "Failed to write modified description to %s."
+#~ msgstr "เขียนคำบรรยายที่ปรับเปลี่ยนแล้วลงใน %s ไม่สำเร็จ"
+
+#~ msgid "Failed to open database: %d (%s)"
+#~ msgstr "เปิดฐานข้อมูลไม่สำเร็จ: %d (%s)"
+
+#~ msgid "Unsupported type %s"
+#~ msgstr "ไม่รองรับชนิด %s"
+
+#~ msgid "Object %s is not an item"
+#~ msgstr "ออบเจกต์ %s ไม่ใช่รายการ"
+
+#~ msgid "Item '%s' didn't provide a URI"
+#~ msgstr "รายการ '%s' ไม่ได้ให้ URI มา"
+
+#~ msgid "Plugin 'fakesink' missing"
+#~ msgstr "ขาดปลั๊กอิน 'fakesink'"
+
+#~ msgid "Failed to start D-Bus service: %s"
+#~ msgstr "เปิดบริการ D-Bus ไม่สำเร็จ: %s"
+
+#~ msgid "Failed to read from URI: %s: %s"
+#~ msgstr "ไม่สามารถอ่านจาก URI: %s: %s"
+
+#~ msgid "Failed to seek to %s-%s on URI %s: %s"
+#~ msgstr "เลื่อนตำแหน่งไปยัง %s-%s ใน URI %s ไม่สำเร็จ: %s"
+
+#~ msgid "Failed to read contents from URI: %s: %s"
+#~ msgstr "ไม่สามารถอ่านเนื้อหาจาก URI: %s: %s"
+
+#~ msgid "Failed to close stream to URI %s: %s"
+#~ msgstr "ไม่สามารถปิดสตรีมไปยัง URI: %s: %s"
+
+#~ msgid "General"
+#~ msgstr "ทั่วไป"
+
+#~ msgid "Plugins"
+#~ msgstr "ปลั๊กอิน"
+
+#~ msgid "Share M_usic"
+#~ msgstr "แบ่งปันเ_พลง"
+
+#~ msgid "Share _Pictures"
+#~ msgstr "แบ่งปันรูป_ภาพ"
+
+#~ msgid "Share _Videos"
+#~ msgstr "แบ่งปัน_วีดิทัศน์"
+
+#~ msgid "T_itle"
+#~ msgstr "ชื่อเ_รียก"
+
+#~ msgid "Ti_tle"
+#~ msgstr "_ชื่อเรียก"
+
+#~ msgid ""
+#~ "Write %u for username, %n for real name of the user and %h for host name"
+#~ msgstr "%u ใช้แทนชื่อผู้ใช้ %n ใช้แทนชื่อจริงของผู้ใช้ และ %h ใช้แทนชื่อโฮสต์"
+
+#~ msgid "_Enable UPnP/DLNA"
+#~ msgstr "เ_ปิดใช้งาน UPnP/DLNA"
+
+#~ msgid "_Interface"
+#~ msgstr "_อินเทอร์เฟซ"
+
+#~ msgid "_Media Export"
+#~ msgstr "ส่งออก_สื่อ"
+
+#~ msgid "_Port"
+#~ msgstr "_พอร์ต"
+
+#~ msgid "_Transcoding support"
+#~ msgstr "รองรับการแ_ปลงรหัส"
+
+#~ msgid "Failed to create instance of database"
+#~ msgstr "สร้างออบเจกต์ของฐานข้อมูลไม่สำเร็จ"

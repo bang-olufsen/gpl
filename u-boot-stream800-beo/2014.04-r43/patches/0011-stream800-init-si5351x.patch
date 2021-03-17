@@ -1,0 +1,138 @@
+From 18bb5f235d5b4078ec0cfbf35d8cca62dc80326d Mon Sep 17 00:00:00 2001
+From: Matus Ujhelyi <matus.ujhelyi@streamunlimited.com>
+Date: Thu, 17 Jan 2013 14:37:10 +0100
+Subject: [PATCH] stream800: init si5351x
+
+Signed-off-by: Matus Ujhelyi <matus.ujhelyi@streamunlimited.com>
+---
+ board/streamunlimited/stream800/board.c   | 18 ++++++++++-
+ board/streamunlimited/stream800/mux.c     |  1 +
+ board/streamunlimited/stream800/si5351x.h | 50 +++++++++++++++++++++++++++++++
+ 3 files changed, 68 insertions(+), 1 deletion(-)
+ create mode 100644 board/streamunlimited/stream800/si5351x.h
+
+diff --git a/board/streamunlimited/stream800/board.c b/board/streamunlimited/stream800/board.c
+index 8f85a8b..6f5f5db 100644
+--- a/board/streamunlimited/stream800/board.c
++++ b/board/streamunlimited/stream800/board.c
+@@ -42,6 +42,7 @@
+ #include "board-sue_first_carrier_board.h"
+ #include "adc.h"
+ #include "fwupdate.h"
++#include "si5351x.h"
+ 
+ #ifdef CONFIG_SPL_BUILD
+ #error This file should not be built for SPL
+@@ -68,6 +69,8 @@ static struct ctrl_dev *cdev = (struct ctrl_dev *)CTRL_DEVICE_BASE;
+ 
+ static struct Stream800Board __attribute__((section (".data"))) board = {moduleVersion : MV_unknown, carrierBoardType : CBT_unknown};
+ 
++static void init_si5351x(void);
++
+ 
+ Stream800ModuleVersion get_module_version(void)
+ {
+@@ -101,11 +104,12 @@ static void board_detect(struct Stream800Board *board);
+  */
+ int board_init(void)
+ {
+-	//i2c_init(CONFIG_SYS_I2C_SPEED, CONFIG_SYS_I2C_SLAVE);
+ 	init_adc();
+ 	board_detect(&board);
+ 	board_printf_info();
+ 	enable_board_pin_mux(&board);
++	i2c_init(CONFIG_SYS_I2C_SPEED, CONFIG_SYS_I2C_SLAVE);
++	init_si5351x();
+ 
+ #ifdef DEBUG
+ 	{
+@@ -173,6 +177,18 @@ ulong bootcount_load (void)
+ }
+ #endif /* CONFIG_BOOTCOUNT_LIMIT */
+ 
++static void init_si5351x(void)
++{
++	int i;
++	for (i = 0; i < Si5351x_NUMREGS; ++i) {
++		if (i2c_write(Si5351x_ADDRR, i, 1, &si5351x_default_clock_table[i], 1)){
++			printf("Si5351x cannot be initialized\n");
++			return;
++		}
++	}
++	printf("Si5351x correctly initialized\n");
++}
++
+ static void board_detect(struct Stream800Board *board)
+ {
+ 	if (!board) {
+diff --git a/board/streamunlimited/stream800/mux.c b/board/streamunlimited/stream800/mux.c
+index 3df3c9c..79b1207 100644
+--- a/board/streamunlimited/stream800/mux.c
++++ b/board/streamunlimited/stream800/mux.c
+@@ -245,6 +245,7 @@ void enable_i2c0_pin_mux(void)
+ 
+ void enable_board_pin_mux(struct Stream800Board *board)
+ {
++	configure_module_pin_mux(i2c0_pin_mux);
+ 	configure_module_pin_mux(i2c1_pin_mux);
+ 	configure_module_pin_mux(nand_pin_mux);
+ 
+diff --git a/board/streamunlimited/stream800/si5351x.h b/board/streamunlimited/stream800/si5351x.h
+new file mode 100644
+index 0000000..070d6ae
+--- /dev/null
++++ b/board/streamunlimited/stream800/si5351x.h
+@@ -0,0 +1,50 @@
++/*
++ * si5351x.h
++ *
++ * Copyright (C) 2011 StreamUnlimited - http://www.streamunlimited.com/
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation version 2.
++ *
++ * This program is distributed "as is" WITHOUT ANY WARRANTY of any
++ * kind, whether express or implied; without even the implied warranty
++ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
++ * GNU General Public License for more details.
++ */
++
++#ifndef __CONFIG_SI5351X_H
++#define __CONFIG_SI5351X_H
++
++#define Si5351x_ADDRR		0x60
++#define Si5351x_FIRSTREG	0
++#define Si5351x_LASTREG		183
++#define Si5351x_NUMREGS (Si5351x_LASTREG - Si5351x_FIRSTREG + 1)
++
++static const uchar si5351x_default_clock_table[Si5351x_NUMREGS] = {
++	0x00,0x00,0x18,0x00,0x00,0x00,0x00,0x00,
++	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
++	0x80,0x4C,0x80,0x80,0x80,0x80,0x80,0x80,
++	0x0A,0x00,0xF5,0xE1,0x00,0x0C,0x02,0x51,
++	0xC6,0x3E,0x00,0x00,0x00,0x00,0x00,0x00,
++	0x00,0x00,0x00,0x00,0x40,0x00,0x00,0x00,
++	0x00,0x00,0x00,0x01,0x42,0x9A,0x00,0x00,
++	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
++	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
++	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
++	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
++	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
++	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
++	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
++	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
++	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
++	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
++	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
++	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
++	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
++	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
++	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
++	0x00,0x00,0x00,0x00,0x00,0x30,0x00,0x12
++};
++
++#endif	/* ! __CONFIG_SI5351X_H */
+-- 
+2.7.4
+

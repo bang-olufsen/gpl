@@ -1,0 +1,247 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>librygel-core Reference Manual: RygelRootDevice</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="index.html" title="librygel-core Reference Manual">
+<link rel="up" href="api-main-list-c.html" title="librygel-core API Reference">
+<link rel="prev" href="RygelRecursiveModuleLoader.html" title="RygelRecursiveModuleLoader">
+<link rel="next" href="RygelPlugin.html" title="RygelPlugin">
+<meta name="generator" content="GTK-Doc V1.20.1 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#RygelRootDevice.description" class="shortcut">Description</a></span><span id="nav_hierarchy">  <span class="dim">|</span> 
+                  <a href="#RygelRootDevice.object-hierarchy" class="shortcut">Object Hierarchy</a></span><span id="nav_properties">  <span class="dim">|</span> 
+                  <a href="#RygelRootDevice.properties" class="shortcut">Properties</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="api-main-list-c.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="RygelRecursiveModuleLoader.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="RygelPlugin.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry">
+<a name="RygelRootDevice"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="RygelRootDevice.top_of_page"></a>RygelRootDevice</span></h2>
+<p>RygelRootDevice — This represents a UPnP root device.</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1">
+<a name="RygelRootDevice.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="functions_return">
+<col class="functions_name">
+</colgroup>
+<tbody>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a class="link" href="RygelRootDevice.html#RYGEL-TYPE-ROOT-DEVICE:CAPS" title="RYGEL_TYPE_ROOT_DEVICE">RYGEL_TYPE_ROOT_DEVICE</a></td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="RygelRootDevice.html" title="RygelRootDevice"><span class="returnvalue">RygelRootDevice</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="RygelRootDevice.html#rygel-root-device-new" title="rygel_root_device_new ()">rygel_root_device_new</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">GeeArrayList</span> *
+</td>
+<td class="function_name">
+<a class="link" href="RygelRootDevice.html#rygel-root-device-get-services" title="rygel_root_device_get_services ()">rygel_root_device_get_services</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="RygelRootDevice.properties"></a><h2>Properties</h2>
+<div class="informaltable"><table border="0">
+<colgroup>
+<col width="150px" class="properties_type">
+<col width="300px" class="properties_name">
+<col width="200px" class="properties_flags">
+</colgroup>
+<tbody><tr>
+<td class="property_type">
+<span class="type">GeeArrayList</span> *</td>
+<td class="property_name"><a class="link" href="RygelRootDevice.html#RygelRootDevice--services" title="The “services” property">services</a></td>
+<td class="property_flags">Read / Write</td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="RygelRootDevice.other"></a><h2>Types and Values</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="name">
+<col class="description">
+</colgroup>
+<tbody>
+<tr>
+<td class="datatype_keyword">struct</td>
+<td class="function_name"><a class="link" href="RygelRootDevice.html#RygelRootDevice-struct" title="struct RygelRootDevice">RygelRootDevice</a></td>
+</tr>
+<tr>
+<td class="datatype_keyword">struct</td>
+<td class="function_name"><a class="link" href="RygelRootDevice.html#RygelRootDeviceClass" title="struct RygelRootDeviceClass">RygelRootDeviceClass</a></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="RygelRootDevice.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="screen">    <a href="../gobject/gobject-The-Base-Object-Type.html#GObject">GObject</a>
+    <span class="lineart">╰──</span> <a href="../gupnp/GUPnPDeviceInfo.html">GUPnPDeviceInfo</a>
+        <span class="lineart">╰──</span> <a href="../gupnp/GUPnPDevice.html">GUPnPDevice</a>
+            <span class="lineart">╰──</span> <a href="../gupnp/GUPnPRootDevice.html">GUPnPRootDevice</a>
+                <span class="lineart">╰──</span> RygelRootDevice
+</pre>
+</div>
+<div class="refsect1">
+<a name="RygelRootDevice.description"></a><h2>Description</h2>
+<p>Each Rygel plugin corresponds to one UPnP root device, so each <a class="link" href="RygelPlugin.html" title="RygelPlugin"><span class="type">RygelPlugin</span></a> corresponds to one <a class="link" href="RygelRootDevice.html" title="RygelRootDevice"><span class="type">RygelRootDevice</span></a>.</p>
+<p>Rygel creates the <a class="link" href="RygelRootDevice.html" title="RygelRootDevice"><span class="type">RygelRootDevice</span></a> by calling <a class="link" href="RygelRootDeviceFactory.html#rygel-root-device-factory-create" title="rygel_root_device_factory_create ()"><code class="function">rygel_root_device_factory_create()</code></a> with the plugin, having first instantiated the <a class="link" href="RygelRootDeviceFactory.html" title="RygelRootDeviceFactory"><span class="type">RygelRootDeviceFactory</span></a> for a <a href="../gupnp/GUPnPContext.html"><span class="type">GUPnPContext</span></a>.</p>
+</div>
+<div class="refsect1">
+<a name="RygelRootDevice.functions_details"></a><h2>Functions</h2>
+<div class="refsect2">
+<a name="RYGEL-TYPE-ROOT-DEVICE:CAPS"></a><h3>RYGEL_TYPE_ROOT_DEVICE</h3>
+<pre class="programlisting">#define RYGEL_TYPE_ROOT_DEVICE (rygel_root_device_get_type ())
+</pre>
+<p>The type for <a class="link" href="RygelRootDevice.html" title="RygelRootDevice"><span class="type">RygelRootDevice</span></a>.</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-root-device-new"></a><h3>rygel_root_device_new ()</h3>
+<pre class="programlisting"><a class="link" href="RygelRootDevice.html" title="RygelRootDevice"><span class="returnvalue">RygelRootDevice</span></a> *
+rygel_root_device_new (<em class="parameter"><code><a href="../gupnp/GUPnPContext.html"><span class="type">GUPnPContext</span></a> *context</code></em>,
+                       <em class="parameter"><code><a class="link" href="RygelPlugin.html" title="RygelPlugin"><span class="type">RygelPlugin</span></a> *plugin</code></em>,
+                       <em class="parameter"><code><a href="../gupnp/GUPnPXMLDoc.html"><span class="type">GUPnPXMLDoc</span></a> *description_doc</code></em>,
+                       <em class="parameter"><code>const <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *description_path</code></em>,
+                       <em class="parameter"><code>const <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *description_dir</code></em>);</pre>
+<div class="refsect3">
+<a name="id-1.3.12.8.3.4"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>context</p></td>
+<td class="parameter_description"><p> </p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>plugin</p></td>
+<td class="parameter_description"><p> </p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>description_doc</p></td>
+<td class="parameter_description"><p> </p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>description_path</p></td>
+<td class="parameter_description"><p> </p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>description_dir</p></td>
+<td class="parameter_description"><p> </p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-root-device-get-services"></a><h3>rygel_root_device_get_services ()</h3>
+<pre class="programlisting"><span class="returnvalue">GeeArrayList</span> *
+rygel_root_device_get_services (<em class="parameter"><code><a class="link" href="RygelRootDevice.html" title="RygelRootDevice"><span class="type">RygelRootDevice</span></a> *self</code></em>);</pre>
+<p>Get and return the current value of the <a class="link" href="RygelRootDevice.html#RygelRootDevice--services" title="The “services” property"><span class="type">"services"</span></a> property.</p>
+<div class="refsect3">
+<a name="id-1.3.12.8.4.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelRootDevice.html" title="RygelRootDevice"><span class="type">RygelRootDevice</span></a> instance to query</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.3.12.8.4.6"></a><h4>Returns</h4>
+<p> the value of the <a class="link" href="RygelRootDevice.html#RygelRootDevice--services" title="The “services” property"><span class="type">"services"</span></a> property</p>
+<p></p>
+</div>
+</div>
+</div>
+<div class="refsect1">
+<a name="RygelRootDevice.other_details"></a><h2>Types and Values</h2>
+<div class="refsect2">
+<a name="RygelRootDevice-struct"></a><h3>struct RygelRootDevice</h3>
+<pre class="programlisting">struct RygelRootDevice;</pre>
+<p>This represents a UPnP root device.</p>
+<p>Each Rygel plugin corresponds to one UPnP root device, so each <a class="link" href="RygelPlugin.html" title="RygelPlugin"><span class="type">RygelPlugin</span></a> corresponds to one <a class="link" href="RygelRootDevice.html" title="RygelRootDevice"><span class="type">RygelRootDevice</span></a>.</p>
+<p>Rygel creates the <a class="link" href="RygelRootDevice.html" title="RygelRootDevice"><span class="type">RygelRootDevice</span></a> by calling <a class="link" href="RygelRootDeviceFactory.html#rygel-root-device-factory-create" title="rygel_root_device_factory_create ()"><code class="function">rygel_root_device_factory_create()</code></a> with the plugin, having first instantiated the <a class="link" href="RygelRootDeviceFactory.html" title="RygelRootDeviceFactory"><span class="type">RygelRootDeviceFactory</span></a> for a <a href="../gupnp/GUPnPContext.html"><span class="type">GUPnPContext</span></a>.</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelRootDeviceClass"></a><h3>struct RygelRootDeviceClass</h3>
+<pre class="programlisting">struct RygelRootDeviceClass {
+	GUPnPRootDeviceClass parent_class;
+};
+</pre>
+<p>The class structure for <a class="link" href="RygelRootDevice.html#RYGEL-TYPE-ROOT-DEVICE:CAPS" title="RYGEL_TYPE_ROOT_DEVICE"><code class="literal">RYGEL_TYPE_ROOT_DEVICE</code></a>. All the fields in this structure are private and should never be accessed directly.</p>
+<div class="refsect3">
+<a name="id-1.3.12.9.3.5"></a><h4>Members</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="300px" class="struct_members_name">
+<col class="struct_members_description">
+<col width="200px" class="struct_members_annotations">
+</colgroup>
+<tbody><tr>
+<td class="struct_member_name"><p><span class="type">GUPnPRootDeviceClass</span> <em class="structfield"><code><a name="RygelRootDeviceClass.parent-class"></a>parent_class</code></em>;</p></td>
+<td class="struct_member_description"><p>the parent class structure</p></td>
+<td class="struct_member_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="refsect1">
+<a name="RygelRootDevice.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="RygelRootDevice--services"></a><h3>The <code class="literal">“services”</code> property</h3>
+<pre class="programlisting">  “services”                 <span class="type">GeeArrayList</span> *</pre>
+<p>services.</p>
+<p>Flags: Read / Write</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.20.1</div>
+</body>
+</html>

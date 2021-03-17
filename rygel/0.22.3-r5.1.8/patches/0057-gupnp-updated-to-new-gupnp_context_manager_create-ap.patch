@@ -1,0 +1,54 @@
+From 79f6893e58dc90b73573ddc0a66992d25c8c6487 Mon Sep 17 00:00:00 2001
+From: Stanislav Ruzani <stanislav.ruzani@streamunlimited.com>
+Date: Fri, 18 Jan 2019 09:58:36 +0100
+Subject: [PATCH] gupnp: updated to new gupnp_context_manager_create() api
+
+Signed-off-by: Stanislav Ruzani <stanislav.ruzani@streamunlimited.com>
+---
+ src/librygel-core/rygel-media-device.c | 2 +-
+ src/rygel/rygel-main.c                 | 2 +-
+ src/ui/rygel-network-pref-section.c    | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/src/librygel-core/rygel-media-device.c b/src/librygel-core/rygel-media-device.c
+index f235041..3419823 100644
+--- a/src/librygel-core/rygel-media-device.c
++++ b/src/librygel-core/rygel-media-device.c
+@@ -526,7 +526,7 @@ static void rygel_media_device_real_constructed (GObject* base) {
+ 		return;
+ 	}
+ 	_tmp5_ = port;
+-	_tmp6_ = gupnp_context_manager_create ((guint) _tmp5_);
++	_tmp6_ = gupnp_context_manager_create ((guint) _tmp5_, FALSE);
+ 	_g_object_unref0 (self->priv->manager);
+ 	self->priv->manager = _tmp6_;
+ 	_tmp7_ = self->priv->manager;
+diff --git a/src/rygel/rygel-main.c b/src/rygel/rygel-main.c
+index abdbef7..5a3efa1 100644
+--- a/src/rygel/rygel-main.c
++++ b/src/rygel/rygel-main.c
+@@ -558,7 +558,7 @@ static GUPnPContextManager* rygel_main_create_context_manager (RygelMain* self)
+ 		return NULL;
+ 	}
+ 	_tmp3_ = port;
+-	_tmp4_ = gupnp_context_manager_create ((guint) _tmp3_);
++	_tmp4_ = gupnp_context_manager_create ((guint) _tmp3_, FALSE);
+ 	manager = _tmp4_;
+ 	g_signal_connect_object (manager, "context-available", (GCallback) _rygel_main_on_context_available_gupnp_context_manager_context_available, self, 0);
+ 	g_signal_connect_object (manager, "context-unavailable", (GCallback) _rygel_main_on_context_unavailable_gupnp_context_manager_context_unavailable, self, 0);
+diff --git a/src/ui/rygel-network-pref-section.c b/src/ui/rygel-network-pref-section.c
+index 9b93cc2..61b7dff 100644
+--- a/src/ui/rygel-network-pref-section.c
++++ b/src/ui/rygel-network-pref-section.c
+@@ -330,7 +330,7 @@ RygelNetworkPrefSection* rygel_network_pref_section_construct (GType object_type
+ 	_tmp27_ = _g_object_ref0 (G_TYPE_CHECK_INSTANCE_TYPE (_tmp26_, GTK_TYPE_GRID) ? ((GtkGrid*) _tmp26_) : NULL);
+ 	_g_object_unref0 (self->priv->grid);
+ 	self->priv->grid = _tmp27_;
+-	_tmp28_ = gupnp_context_manager_create ((guint) 0);
++	_tmp28_ = gupnp_context_manager_create ((guint) 0, FALSE);
+ 	_g_object_unref0 (self->priv->context_manager);
+ 	self->priv->context_manager = _tmp28_;
+ 	{
+-- 
+2.7.4
+

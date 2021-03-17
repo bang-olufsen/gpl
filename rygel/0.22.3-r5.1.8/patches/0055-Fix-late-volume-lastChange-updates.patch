@@ -1,0 +1,88 @@
+From 9be686113e8fbf72827b782238fcfc371cd82e0d Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Tue, 25 Jun 2019 14:37:30 +0200
+Subject: [PATCH] Fix late volume lastChange updates
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ src/librygel-renderer/rygel-changelog.c    | 34 +++++++++++++++---------------
+ src/librygel-renderer/rygel-changelog.vala |  8 +++++--
+ 2 files changed, 23 insertions(+), 19 deletions(-)
+
+diff --git a/src/librygel-renderer/rygel-changelog.c b/src/librygel-renderer/rygel-changelog.c
+index ce63524..97d5b36 100644
+--- a/src/librygel-renderer/rygel-changelog.c
++++ b/src/librygel-renderer/rygel-changelog.c
+@@ -157,25 +157,25 @@ static gboolean _rygel_change_log_timeout_gsource_func (gpointer self) {
+ 
+ 
+ static void rygel_change_log_ensure_timeout (RygelChangeLog* self) {
+-	gboolean _tmp0_ = FALSE;
++	GObject* _tmp0_ = NULL;
+ 	GObject* _tmp1_ = NULL;
+-	GObject* _tmp2_ = NULL;
+-	gboolean _tmp3_ = FALSE;
++	gboolean _tmp2_ = FALSE;
+ 	g_return_if_fail (self != NULL);
+-	_tmp1_ = g_weak_ref_get (&self->service);
+-	_tmp2_ = _tmp1_;
+-	_tmp3_ = _tmp2_ != NULL;
+-	_g_object_unref0 (_tmp2_);
+-	if (_tmp3_) {
+-		guint _tmp4_ = 0U;
+-		_tmp4_ = self->priv->timeout_id;
+-		_tmp0_ = _tmp4_ == ((guint) 0);
+-	} else {
+-		_tmp0_ = FALSE;
+-	}
+-	if (_tmp0_) {
++	_tmp0_ = g_weak_ref_get (&self->service);
++	_tmp1_ = _tmp0_;
++	_tmp2_ = _tmp1_ != NULL;
++	_g_object_unref0 (_tmp1_);
++	if (_tmp2_) {
++		guint _tmp3_ = 0U;
+ 		guint _tmp5_ = 0U;
+-		g_debug ("rygel-changelog.vala:73: Setting up timeout for LastChange");
++		_tmp3_ = self->priv->timeout_id;
++		if (_tmp3_ != ((guint) 0)) {
++			guint _tmp4_ = 0U;
++			_tmp4_ = self->priv->timeout_id;
++			g_source_remove (_tmp4_);
++		} else {
++			g_debug ("rygel-changelog.vala:76: Setting up timeout for LastChange");
++		}
+ 		_tmp5_ = g_timeout_add_full (G_PRIORITY_DEFAULT, (guint) 200, _rygel_change_log_timeout_gsource_func, g_object_ref (self), g_object_unref);
+ 		self->priv->timeout_id = _tmp5_;
+ 	}
+@@ -198,7 +198,7 @@ void rygel_change_log_log (RygelChangeLog* self, const gchar* variable, const gc
+ 	g_return_if_fail (value != NULL);
+ 	_tmp0_ = variable;
+ 	_tmp1_ = value;
+-	g_debug ("rygel-changelog.vala:79: '%s = %s' logged", _tmp0_, _tmp1_);
++	g_debug ("rygel-changelog.vala:83: '%s = %s' logged", _tmp0_, _tmp1_);
+ 	_tmp2_ = self->priv->hash;
+ 	_tmp3_ = variable;
+ 	_tmp4_ = variable;
+diff --git a/src/librygel-renderer/rygel-changelog.vala b/src/librygel-renderer/rygel-changelog.vala
+index 93e7e91..3158e23 100644
+--- a/src/librygel-renderer/rygel-changelog.vala
++++ b/src/librygel-renderer/rygel-changelog.vala
+@@ -69,8 +69,12 @@ internal class Rygel.ChangeLog : Object {
+ 
+     private void ensure_timeout () {
+         // Make sure we have a notification timeout
+-        if (this.service.get() != null && this.timeout_id == 0) {
+-            debug ("Setting up timeout for LastChange");
++        if (this.service.get() != null) {
++            if (this.timeout_id != 0) {
++                Source.remove (this.timeout_id);
++            } else {
++                debug ("Setting up timeout for LastChange");
++            }
+             this.timeout_id = Timeout.add (200, this.timeout);
+         }
+     }
+-- 
+2.7.4
+

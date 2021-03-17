@@ -1,0 +1,42 @@
+From 9b101fb61767a436c1dbcab4d68c861de5f0a850 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Mon, 7 Jul 2014 16:20:29 +0200
+Subject: [PATCH] ase: Enable debug led LEDD9086 on startup (solid)
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ board/streamunlimited/stream800/board-beo_ase_board.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/board/streamunlimited/stream800/board-beo_ase_board.c b/board/streamunlimited/stream800/board-beo_ase_board.c
+index 7deffc8..a1c84cf 100644
+--- a/board/streamunlimited/stream800/board-beo_ase_board.c
++++ b/board/streamunlimited/stream800/board-beo_ase_board.c
+@@ -40,11 +40,14 @@ static int update_flag = 0;
+ 
+ #define GPIO_PHY_RESET (60) /* gpio1_28 */
+ 
++#define GPIO_DEBUG_LED (58) /* gpio1_26 */
++
+ static struct module_pin_mux gpio_pin_mux[] = {
+ 	{OFFSET(xdma_event_intr1), MODE(7)},
+ 	{OFFSET(xdma_event_intr0), MODE(7)},
+ 	{OFFSET(gpmc_ad8),  (MODE(7) & (~RXACTIVE))},
+ 	{OFFSET(gpmc_be1n), MODE(7)},
++	{OFFSET(gpmc_a10), MODE(7)},
+ 	{-1},
+ };
+ 
+@@ -54,6 +57,9 @@ void beo_ase__init(const struct Stream800Board *board)
+ 		BUG();
+ 
+ 	configure_module_pin_mux(gpio_pin_mux);
++
++	/* enable debug led */
++	gpio_direction_output(GPIO_DEBUG_LED, 1);
+ }
+ 
+ void beo_ase__late_init(const struct Stream800Board *board)
+-- 
+2.7.4
+

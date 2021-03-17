@@ -1,0 +1,116 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GMimeFilterEnriched</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="GMime 2.6 Reference Manual">
+<link rel="up" href="Filters.html" title="Stream Filters">
+<link rel="prev" href="GMimeFilterCRLF.html" title="GMimeFilterCRLF">
+<link rel="next" href="GMimeFilterFrom.html" title="GMimeFilterFrom">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="GMimeFilterCRLF.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="Filters.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">GMime 2.6 Reference Manual</th>
+<td><a accesskey="n" href="GMimeFilterFrom.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#GMimeFilterEnriched.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#GMimeFilterEnriched.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#GMimeFilterEnriched.object-hierarchy" class="shortcut">Object Hierarchy</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="GMimeFilterEnriched"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="GMimeFilterEnriched.top_of_page"></a>GMimeFilterEnriched</span></h2>
+<p>GMimeFilterEnriched — Convert text/enriched or text/rtf to HTML</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="GMimeFilterEnriched.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">#define             <a class="link" href="GMimeFilterEnriched.html#GMIME-FILTER-ENRICHED-IS-RICHTEXT:CAPS" title="GMIME_FILTER_ENRICHED_IS_RICHTEXT">GMIME_FILTER_ENRICHED_IS_RICHTEXT</a>
+struct              <a class="link" href="GMimeFilterEnriched.html#GMimeFilterEnriched-struct" title="struct GMimeFilterEnriched">GMimeFilterEnriched</a>;
+<a class="link" href="GMimeFilter.html" title="GMimeFilter"><span class="returnvalue">GMimeFilter</span></a> *       <a class="link" href="GMimeFilterEnriched.html#g-mime-filter-enriched-new" title="g_mime_filter_enriched_new ()">g_mime_filter_enriched_new</a>          (<em class="parameter"><code><span class="type">guint32</span> flags</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="GMimeFilterEnriched.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  GObject
+   +----<a class="link" href="GMimeFilter.html" title="GMimeFilter">GMimeFilter</a>
+         +----GMimeFilterEnriched
+</pre>
+</div>
+<div class="refsect1">
+<a name="GMimeFilterEnriched.description"></a><h2>Description</h2>
+<p>
+A <a class="link" href="GMimeFilter.html" title="GMimeFilter"><span class="type">GMimeFilter</span></a> used for converting text/enriched or text/rtf to HTML.
+</p>
+</div>
+<div class="refsect1">
+<a name="GMimeFilterEnriched.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="GMIME-FILTER-ENRICHED-IS-RICHTEXT:CAPS"></a><h3>GMIME_FILTER_ENRICHED_IS_RICHTEXT</h3>
+<pre class="programlisting">#define GMIME_FILTER_ENRICHED_IS_RICHTEXT  (1 &lt;&lt; 0)
+</pre>
+<p>
+A bit flag for <a class="link" href="GMimeFilterEnriched.html#g-mime-filter-enriched-new" title="g_mime_filter_enriched_new ()"><code class="function">g_mime_filter_enriched_new()</code></a> which signifies that
+the filter should expect Rich Text (aka RTF).
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GMimeFilterEnriched-struct"></a><h3>struct GMimeFilterEnriched</h3>
+<pre class="programlisting">struct GMimeFilterEnriched;</pre>
+<p>
+A filter for converting text/enriched or text/richtext textual
+streams into text/html.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-filter-enriched-new"></a><h3>g_mime_filter_enriched_new ()</h3>
+<pre class="programlisting"><a class="link" href="GMimeFilter.html" title="GMimeFilter"><span class="returnvalue">GMimeFilter</span></a> *       g_mime_filter_enriched_new          (<em class="parameter"><code><span class="type">guint32</span> flags</code></em>);</pre>
+<p>
+Creates a new GMimeFilterEnriched object.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>flags</code></em> :</span></p></td>
+<td>flags</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new GMimeFilter object.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<div class="refsect1">
+<a name="GMimeFilterEnriched.see-also"></a><h2>See Also</h2>
+<a class="link" href="GMimeFilter.html" title="GMimeFilter"><span class="type">GMimeFilter</span></a>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

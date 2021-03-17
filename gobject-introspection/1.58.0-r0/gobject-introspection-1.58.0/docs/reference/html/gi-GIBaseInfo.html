@@ -1,0 +1,822 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GIBaseInfo: GObject Introspection Reference Manual</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
+<link rel="home" href="index.html" title="GObject Introspection Reference Manual">
+<link rel="up" href="ch01.html" title="GIRepository">
+<link rel="prev" href="gi-common-types.html" title="common types">
+<link rel="next" href="gi-GICallableInfo.html" title="GICallableInfo">
+<meta name="generator" content="GTK-Doc V1.29.1 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#gi-GIBaseInfo.description" class="shortcut">Description</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="gi-common-types.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="gi-GICallableInfo.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry">
+<a name="gi-GIBaseInfo"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="gi-GIBaseInfo.top_of_page"></a>GIBaseInfo</span></h2>
+<p>GIBaseInfo — Base struct for all GITypelib structs</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1">
+<a name="gi-GIBaseInfo.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="functions_return">
+<col class="functions_name">
+</colgroup>
+<tbody>
+<tr>
+<td class="function_type">
+<span class="returnvalue">GIBaseInfo</span> *
+</td>
+<td class="function_name">
+<a class="link" href="gi-GIBaseInfo.html#g-info-new" title="g_info_new ()">g_info_new</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">GIBaseInfo</span> *
+</td>
+<td class="function_name">
+<a class="link" href="gi-GIBaseInfo.html#g-base-info-ref" title="g_base_info_ref ()">g_base_info_ref</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="gi-GIBaseInfo.html#g-base-info-unref" title="g_base_info_unref ()">g_base_info_unref</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">gboolean</span>
+</td>
+<td class="function_name">
+<a class="link" href="gi-GIBaseInfo.html#g-base-info-equal" title="g_base_info_equal ()">g_base_info_equal</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="gi-GIBaseInfo.html#GIInfoType" title="enum GIInfoType"><span class="returnvalue">GIInfoType</span></a>
+</td>
+<td class="function_name">
+<a class="link" href="gi-GIBaseInfo.html#g-base-info-get-type" title="g_base_info_get_type ()">g_base_info_get_type</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="gi-gitypelib.html#GITypelib" title="GITypelib"><span class="returnvalue">GITypelib</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="gi-GIBaseInfo.html#g-base-info-get-typelib" title="g_base_info_get_typelib ()">g_base_info_get_typelib</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">const <span class="returnvalue">gchar</span> *
+</td>
+<td class="function_name">
+<a class="link" href="gi-GIBaseInfo.html#g-base-info-get-namespace" title="g_base_info_get_namespace ()">g_base_info_get_namespace</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">const <span class="returnvalue">gchar</span> *
+</td>
+<td class="function_name">
+<a class="link" href="gi-GIBaseInfo.html#g-base-info-get-name" title="g_base_info_get_name ()">g_base_info_get_name</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">const <span class="returnvalue">gchar</span> *
+</td>
+<td class="function_name">
+<a class="link" href="gi-GIBaseInfo.html#g-base-info-get-attribute" title="g_base_info_get_attribute ()">g_base_info_get_attribute</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">gboolean</span>
+</td>
+<td class="function_name">
+<a class="link" href="gi-GIBaseInfo.html#g-base-info-iterate-attributes" title="g_base_info_iterate_attributes ()">g_base_info_iterate_attributes</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">GIBaseInfo</span> *
+</td>
+<td class="function_name">
+<a class="link" href="gi-GIBaseInfo.html#g-base-info-get-container" title="g_base_info_get_container ()">g_base_info_get_container</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">gboolean</span>
+</td>
+<td class="function_name">
+<a class="link" href="gi-GIBaseInfo.html#g-base-info-is-deprecated" title="g_base_info_is_deprecated ()">g_base_info_is_deprecated</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="gi-GIBaseInfo.other"></a><h2>Types and Values</h2>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="name">
+<col class="description">
+</colgroup>
+<tbody>
+<tr>
+<td class="datatype_keyword">enum</td>
+<td class="function_name"><a class="link" href="gi-GIBaseInfo.html#GIInfoType" title="enum GIInfoType">GIInfoType</a></td>
+</tr>
+<tr>
+<td class="datatype_keyword"> </td>
+<td class="function_name"><a class="link" href="gi-GIBaseInfo.html#GIAttributeIter" title="GIAttributeIter">GIAttributeIter</a></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="gi-GIBaseInfo.description"></a><h2>Description</h2>
+<p>GIBaseInfo is the common base struct of all other *Info structs
+accessible through the <a class="link" href="GIRepository.html" title="GIRepository"><span class="type">GIRepository</span></a> API.
+All other structs can be casted to a <span class="type">GIBaseInfo</span>, for instance:</p>
+<div class="example">
+<a name="id-1.4.2.5.5.3"></a><p class="title"><b>Example 1. Casting a <a class="link" href="gi-GIFunctionInfo.html#GIFunctionInfo" title="GIFunctionInfo"><span class="type">GIFunctionInfo</span></a> to <span class="type">GIBaseInfo</span></b></p>
+<div class="example-contents">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1
+2</pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="usertype">GIFunctionInfo</span><span class="normal"> </span><span class="symbol">*</span><span class="normal">function_info </span><span class="symbol">=</span><span class="normal"> </span><span class="symbol">...;</span>
+<span class="usertype">GIBaseInfo</span><span class="normal"> </span><span class="symbol">*</span><span class="normal">info </span><span class="symbol">=</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">GIBaseInfo</span><span class="symbol">*)</span><span class="normal">function_info</span><span class="symbol">;</span></pre></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+</div>
+<br class="example-break"><p>Most <a class="link" href="GIRepository.html" title="GIRepository"><span class="type">GIRepository</span></a> APIs returning a <span class="type">GIBaseInfo</span> is actually creating a new struct, in other
+words, <a class="link" href="gi-GIBaseInfo.html#g-base-info-unref" title="g_base_info_unref ()"><code class="function">g_base_info_unref()</code></a> has to be called when done accessing the data.
+GIBaseInfos are normally accessed by calling either
+<a class="link" href="GIRepository.html#g-irepository-find-by-name" title="g_irepository_find_by_name ()"><code class="function">g_irepository_find_by_name()</code></a>, <a class="link" href="GIRepository.html#g-irepository-find-by-gtype" title="g_irepository_find_by_gtype ()"><code class="function">g_irepository_find_by_gtype()</code></a> or <a class="link" href="GIRepository.html#g-irepository-get-info" title="g_irepository_get_info ()"><code class="function">g_irepository_get_info()</code></a>.</p>
+<div class="example">
+<a name="id-1.4.2.5.5.5"></a><p class="title"><b>Example 2. Getting the Button of the Gtk typelib</b></p>
+<div class="example-contents">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1
+2
+3</pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="usertype">GIBaseInfo</span><span class="normal"> </span><span class="symbol">*</span><span class="normal">button_info </span><span class="symbol">=</span><span class="normal"> </span><span class="function"><a href="GIRepository.html#g-irepository-find-by-name">g_irepository_find_by_name</a></span><span class="symbol">(</span><span class="normal">NULL</span><span class="symbol">,</span><span class="normal"> </span><span class="string">"Gtk"</span><span class="symbol">,</span><span class="normal"> </span><span class="string">"Button"</span><span class="symbol">);</span>
+<span class="symbol">...</span><span class="normal"> </span><span class="usertype">use</span><span class="normal"> button_info </span><span class="symbol">...</span>
+<span class="function"><a href="gi-GIBaseInfo.html#g-base-info-unref">g_base_info_unref</a></span><span class="symbol">(</span><span class="normal">button_info</span><span class="symbol">);</span></pre></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+</div>
+<br class="example-break"><div class="refsect1">
+<a name="gi-gibaseinfo.struct-hierarchy"></a><h2>Struct hierarchy</h2>
+<pre class="synopsis">
+  GIBaseInfo
+   +----<a class="link" href="gi-GIArgInfo.html" title="GIArgInfo">GIArgInfo</a>
+   +----<a class="link" href="gi-GICallableInfo.html" title="GICallableInfo">GICallableInfo</a>
+   +----<a class="link" href="gi-GIConstantInfo.html" title="GIConstantInfo">GIConstantInfo</a>
+   +----<a class="link" href="gi-GIFieldInfo.html" title="GIFieldInfo">GIFieldInfo</a>
+   +----<a class="link" href="gi-GIPropertyInfo.html" title="GIPropertyInfo">GIPropertyInfo</a>
+   +----<a class="link" href="gi-GIRegisteredTypeInfo.html" title="GIRegisteredTypeInfo">GIRegisteredTypeInfo</a>
+   +----<a class="link" href="gi-GITypeInfo.html" title="GITypeInfo">GITypeInfo</a>
+</pre>
+</div>
+</div>
+<div class="refsect1">
+<a name="gi-GIBaseInfo.functions_details"></a><h2>Functions</h2>
+<div class="refsect2">
+<a name="g-info-new"></a><h3>g_info_new ()</h3>
+<pre class="programlisting"><span class="returnvalue">GIBaseInfo</span> *
+g_info_new (<em class="parameter"><code><a class="link" href="gi-GIBaseInfo.html#GIInfoType" title="enum GIInfoType"><span class="type">GIInfoType</span></a> type</code></em>,
+            <em class="parameter"><code><span class="type">GIBaseInfo</span> *container</code></em>,
+            <em class="parameter"><code><a class="link" href="gi-gitypelib.html#GITypelib" title="GITypelib"><span class="type">GITypelib</span></a> *typelib</code></em>,
+            <em class="parameter"><code><span class="type">guint32</span> offset</code></em>);</pre>
+<p>TODO</p>
+<div class="refsect3">
+<a name="g-info-new.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>type</p></td>
+<td class="parameter_description"><p>TODO</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>container</p></td>
+<td class="parameter_description"><p>TODO</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>typelib</p></td>
+<td class="parameter_description"><p>TODO</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>offset</p></td>
+<td class="parameter_description"><p>TODO</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="g-info-new.returns"></a><h4>Returns</h4>
+<p> TODO</p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-base-info-ref"></a><h3>g_base_info_ref ()</h3>
+<pre class="programlisting"><span class="returnvalue">GIBaseInfo</span> *
+g_base_info_ref (<em class="parameter"><code><span class="type">GIBaseInfo</span> *info</code></em>);</pre>
+<p>Increases the reference count of <em class="parameter"><code>info</code></em>
+.</p>
+<p><span class="annotation">[<acronym title="Exposed in C code, not necessarily available in other languages."><span class="acronym">skip</span></acronym>]</span></p>
+<div class="refsect3">
+<a name="g-base-info-ref.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>a <span class="type">GIBaseInfo</span></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="g-base-info-ref.returns"></a><h4>Returns</h4>
+<p> the same <em class="parameter"><code>info</code></em>
+.</p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-base-info-unref"></a><h3>g_base_info_unref ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+g_base_info_unref (<em class="parameter"><code><span class="type">GIBaseInfo</span> *info</code></em>);</pre>
+<p>Decreases the reference count of <em class="parameter"><code>info</code></em>
+. When its reference count
+drops to 0, the info is freed.</p>
+<p><span class="annotation">[<acronym title="Exposed in C code, not necessarily available in other languages."><span class="acronym">skip</span></acronym>]</span></p>
+<div class="refsect3">
+<a name="g-base-info-unref.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>a <span class="type">GIBaseInfo</span></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-base-info-equal"></a><h3>g_base_info_equal ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>
+g_base_info_equal (<em class="parameter"><code><span class="type">GIBaseInfo</span> *info1</code></em>,
+                   <em class="parameter"><code><span class="type">GIBaseInfo</span> *info2</code></em>);</pre>
+<p>Compare two <span class="type">GIBaseInfo</span>.</p>
+<p>Using pointer comparison is not practical since many functions return
+different instances of <span class="type">GIBaseInfo</span> that refers to the same part of the
+TypeLib; use this function instead to do <span class="type">GIBaseInfo</span> comparisons.</p>
+<div class="refsect3">
+<a name="g-base-info-equal.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>info1</p></td>
+<td class="parameter_description"><p>a <span class="type">GIBaseInfo</span></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>info2</p></td>
+<td class="parameter_description"><p>a <span class="type">GIBaseInfo</span></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="g-base-info-equal.returns"></a><h4>Returns</h4>
+<p> <code class="literal">TRUE</code> if and only if <em class="parameter"><code>info1</code></em>
+equals <em class="parameter"><code>info2</code></em>
+.</p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-base-info-get-type"></a><h3>g_base_info_get_type ()</h3>
+<pre class="programlisting"><a class="link" href="gi-GIBaseInfo.html#GIInfoType" title="enum GIInfoType"><span class="returnvalue">GIInfoType</span></a>
+g_base_info_get_type (<em class="parameter"><code><span class="type">GIBaseInfo</span> *info</code></em>);</pre>
+<p>Obtain the info type of the GIBaseInfo.</p>
+<div class="refsect3">
+<a name="g-base-info-get-type.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>a <span class="type">GIBaseInfo</span></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="g-base-info-get-type.returns"></a><h4>Returns</h4>
+<p> the info type of <em class="parameter"><code>info</code></em>
+</p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-base-info-get-typelib"></a><h3>g_base_info_get_typelib ()</h3>
+<pre class="programlisting"><a class="link" href="gi-gitypelib.html#GITypelib" title="GITypelib"><span class="returnvalue">GITypelib</span></a> *
+g_base_info_get_typelib (<em class="parameter"><code><span class="type">GIBaseInfo</span> *info</code></em>);</pre>
+<p>Obtain the typelib this <em class="parameter"><code>info</code></em>
+ belongs to</p>
+<div class="refsect3">
+<a name="g-base-info-get-typelib.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>a <span class="type">GIBaseInfo</span></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="g-base-info-get-typelib.returns"></a><h4>Returns</h4>
+<p>the typelib. </p>
+<p><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-base-info-get-namespace"></a><h3>g_base_info_get_namespace ()</h3>
+<pre class="programlisting">const <span class="returnvalue">gchar</span> *
+g_base_info_get_namespace (<em class="parameter"><code><span class="type">GIBaseInfo</span> *info</code></em>);</pre>
+<p>Obtain the namespace of <em class="parameter"><code>info</code></em>
+.</p>
+<div class="refsect3">
+<a name="g-base-info-get-namespace.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>a <span class="type">GIBaseInfo</span></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="g-base-info-get-namespace.returns"></a><h4>Returns</h4>
+<p> the namespace</p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-base-info-get-name"></a><h3>g_base_info_get_name ()</h3>
+<pre class="programlisting">const <span class="returnvalue">gchar</span> *
+g_base_info_get_name (<em class="parameter"><code><span class="type">GIBaseInfo</span> *info</code></em>);</pre>
+<p>Obtain the name of the <em class="parameter"><code>info</code></em>
+. What the name represents depends on
+the <a class="link" href="gi-GIBaseInfo.html#GIInfoType" title="enum GIInfoType"><span class="type">GIInfoType</span></a> of the <em class="parameter"><code>info</code></em>
+. For instance for <a class="link" href="gi-GIFunctionInfo.html#GIFunctionInfo" title="GIFunctionInfo"><span class="type">GIFunctionInfo</span></a> it is
+the name of the function.</p>
+<div class="refsect3">
+<a name="g-base-info-get-name.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>a <span class="type">GIBaseInfo</span></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="g-base-info-get-name.returns"></a><h4>Returns</h4>
+<p> the name of <em class="parameter"><code>info</code></em>
+or <code class="literal">NULL</code> if it lacks a name.</p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-base-info-get-attribute"></a><h3>g_base_info_get_attribute ()</h3>
+<pre class="programlisting">const <span class="returnvalue">gchar</span> *
+g_base_info_get_attribute (<em class="parameter"><code><span class="type">GIBaseInfo</span> *info</code></em>,
+                           <em class="parameter"><code>const <span class="type">gchar</span> *name</code></em>);</pre>
+<p>Retrieve an arbitrary attribute associated with this node.</p>
+<div class="refsect3">
+<a name="g-base-info-get-attribute.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>a <span class="type">GIBaseInfo</span></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>name</p></td>
+<td class="parameter_description"><p>a freeform string naming an attribute</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="g-base-info-get-attribute.returns"></a><h4>Returns</h4>
+<p> The value of the attribute, or <code class="literal">NULL</code> if no such attribute exists</p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-base-info-iterate-attributes"></a><h3>g_base_info_iterate_attributes ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>
+g_base_info_iterate_attributes (<em class="parameter"><code><span class="type">GIBaseInfo</span> *info</code></em>,
+                                <em class="parameter"><code><a class="link" href="gi-GIBaseInfo.html#GIAttributeIter" title="GIAttributeIter"><span class="type">GIAttributeIter</span></a> *iterator</code></em>,
+                                <em class="parameter"><code><span class="type">char</span> **name</code></em>,
+                                <em class="parameter"><code><span class="type">char</span> **value</code></em>);</pre>
+<p>Iterate over all attributes associated with this node.  The iterator
+structure is typically stack allocated, and must have its first
+member initialized to <code class="literal">NULL</code>.  Attributes are arbitrary namespaced key–value
+pairs which can be attached to almost any item.  They are intended for use
+by software higher in the toolchain than bindings, and are distinct from
+normal GIR annotations.</p>
+<p>Both the <em class="parameter"><code>name</code></em>
+ and <em class="parameter"><code>value</code></em>
+ should be treated as constants
+and must not be freed.</p>
+<div class="example">
+<a name="id-1.4.2.5.6.11.6"></a><p class="title"><b>Example 3. Iterating over attributes</b></p>
+<div class="example-contents">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11</pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="type">void</span>
+<span class="function">print_attributes</span><span class="normal"> </span><span class="symbol">(</span><span class="usertype">GIBaseInfo</span><span class="normal"> </span><span class="symbol">*</span><span class="normal">info</span><span class="symbol">)</span>
+<span class="cbracket">{</span>
+<span class="normal">  </span><span class="usertype">GIAttributeIter</span><span class="normal"> iter </span><span class="symbol">=</span><span class="normal"> </span><span class="cbracket">{</span><span class="normal"> </span><span class="number">0</span><span class="symbol">,</span><span class="normal"> </span><span class="cbracket">}</span><span class="symbol">;</span>
+<span class="normal">  </span><span class="type">char</span><span class="normal"> </span><span class="symbol">*</span><span class="normal">name</span><span class="symbol">;</span>
+<span class="normal">  </span><span class="type">char</span><span class="normal"> </span><span class="symbol">*</span><span class="normal">value</span><span class="symbol">;</span>
+<span class="normal">  </span><span class="keyword">while</span><span class="normal"> </span><span class="symbol">(</span><span class="function"><a href="gi-GIBaseInfo.html#g-base-info-iterate-attributes">g_base_info_iterate_attributes</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">info</span><span class="symbol">,</span><span class="normal"> </span><span class="symbol">&amp;</span><span class="normal">iter</span><span class="symbol">,</span><span class="normal"> </span><span class="symbol">&amp;</span><span class="normal">name</span><span class="symbol">,</span><span class="normal"> </span><span class="symbol">&amp;</span><span class="normal">value</span><span class="symbol">))</span>
+<span class="normal">    </span><span class="cbracket">{</span>
+<span class="normal">      </span><span class="function">g_print</span><span class="normal"> </span><span class="symbol">(</span><span class="string">"attribute name: %s value: %s"</span><span class="symbol">,</span><span class="normal"> name</span><span class="symbol">,</span><span class="normal"> value</span><span class="symbol">);</span>
+<span class="normal">    </span><span class="cbracket">}</span>
+<span class="cbracket">}</span></pre></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+</div>
+<br class="example-break"><div class="refsect3">
+<a name="g-base-info-iterate-attributes.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>a <span class="type">GIBaseInfo</span></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>iterator</p></td>
+<td class="parameter_description"><p>a <a class="link" href="gi-GIBaseInfo.html#GIAttributeIter" title="GIAttributeIter"><span class="type">GIAttributeIter</span></a> structure, must be initialized; see below. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Parameter for input and for returning results. Default is transfer full."><span class="acronym">inout</span></acronym>]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>name</p></td>
+<td class="parameter_description"><p>Returned name, must not be freed. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Parameter for returning results. Default is transfer full."><span class="acronym">out</span></acronym>][<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>value</p></td>
+<td class="parameter_description"><p>Returned name, must not be freed. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Parameter for returning results. Default is transfer full."><span class="acronym">out</span></acronym>][<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="g-base-info-iterate-attributes.returns"></a><h4>Returns</h4>
+<p> <code class="literal">TRUE</code> if there are more attributes</p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-base-info-get-container"></a><h3>g_base_info_get_container ()</h3>
+<pre class="programlisting"><span class="returnvalue">GIBaseInfo</span> *
+g_base_info_get_container (<em class="parameter"><code><span class="type">GIBaseInfo</span> *info</code></em>);</pre>
+<p>Obtain the container of the <em class="parameter"><code>info</code></em>
+. The container is the parent
+GIBaseInfo. For instance, the parent of a <a class="link" href="gi-GIFunctionInfo.html#GIFunctionInfo" title="GIFunctionInfo"><span class="type">GIFunctionInfo</span></a> is an
+<a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a> or <a class="link" href="gi-GIInterfaceInfo.html#GIInterfaceInfo" title="GIInterfaceInfo"><span class="type">GIInterfaceInfo</span></a>.</p>
+<div class="refsect3">
+<a name="g-base-info-get-container.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>a <span class="type">GIBaseInfo</span></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="g-base-info-get-container.returns"></a><h4>Returns</h4>
+<p>the container. </p>
+<p><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-base-info-is-deprecated"></a><h3>g_base_info_is_deprecated ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>
+g_base_info_is_deprecated (<em class="parameter"><code><span class="type">GIBaseInfo</span> *info</code></em>);</pre>
+<p>Obtain whether the <em class="parameter"><code>info</code></em>
+ is represents a metadata which is
+deprecated or not.</p>
+<div class="refsect3">
+<a name="g-base-info-is-deprecated.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>a <span class="type">GIBaseInfo</span></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="g-base-info-is-deprecated.returns"></a><h4>Returns</h4>
+<p> <code class="literal">TRUE</code> if deprecated</p>
+</div>
+</div>
+</div>
+<div class="refsect1">
+<a name="gi-GIBaseInfo.other_details"></a><h2>Types and Values</h2>
+<div class="refsect2">
+<a name="GIInfoType"></a><h3>enum GIInfoType</h3>
+<p>The type of a GIBaseInfo struct.</p>
+<div class="refsect3">
+<a name="GIInfoType.members"></a><h4>Members</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="300px" class="enum_members_name">
+<col class="enum_members_description">
+<col width="200px" class="enum_members_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="enum_member_name"><p><a name="GI-INFO-TYPE-INVALID:CAPS"></a>GI_INFO_TYPE_INVALID</p></td>
+<td class="enum_member_description">
+<p>invalid type</p>
+</td>
+<td class="enum_member_annotations"> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="GI-INFO-TYPE-FUNCTION:CAPS"></a>GI_INFO_TYPE_FUNCTION</p></td>
+<td class="enum_member_description">
+<p>function, see <a class="link" href="gi-GIFunctionInfo.html#GIFunctionInfo" title="GIFunctionInfo"><span class="type">GIFunctionInfo</span></a></p>
+</td>
+<td class="enum_member_annotations"> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="GI-INFO-TYPE-CALLBACK:CAPS"></a>GI_INFO_TYPE_CALLBACK</p></td>
+<td class="enum_member_description">
+<p>callback, see <a class="link" href="gi-GIFunctionInfo.html#GIFunctionInfo" title="GIFunctionInfo"><span class="type">GIFunctionInfo</span></a></p>
+</td>
+<td class="enum_member_annotations"> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="GI-INFO-TYPE-STRUCT:CAPS"></a>GI_INFO_TYPE_STRUCT</p></td>
+<td class="enum_member_description">
+<p>struct, see <a class="link" href="gi-GIStructInfo.html#GIStructInfo" title="GIStructInfo"><span class="type">GIStructInfo</span></a></p>
+</td>
+<td class="enum_member_annotations"> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="GI-INFO-TYPE-BOXED:CAPS"></a>GI_INFO_TYPE_BOXED</p></td>
+<td class="enum_member_description">
+<p>boxed, see <a class="link" href="gi-GIStructInfo.html#GIStructInfo" title="GIStructInfo"><span class="type">GIStructInfo</span></a> or <a class="link" href="gi-GIUnionInfo.html#GIUnionInfo" title="GIUnionInfo"><span class="type">GIUnionInfo</span></a></p>
+</td>
+<td class="enum_member_annotations"> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="GI-INFO-TYPE-ENUM:CAPS"></a>GI_INFO_TYPE_ENUM</p></td>
+<td class="enum_member_description">
+<p>enum, see <a class="link" href="gi-GIEnumInfo.html#GIEnumInfo" title="GIEnumInfo"><span class="type">GIEnumInfo</span></a></p>
+</td>
+<td class="enum_member_annotations"> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="GI-INFO-TYPE-FLAGS:CAPS"></a>GI_INFO_TYPE_FLAGS</p></td>
+<td class="enum_member_description">
+<p>flags, see <a class="link" href="gi-GIEnumInfo.html#GIEnumInfo" title="GIEnumInfo"><span class="type">GIEnumInfo</span></a></p>
+</td>
+<td class="enum_member_annotations"> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="GI-INFO-TYPE-OBJECT:CAPS"></a>GI_INFO_TYPE_OBJECT</p></td>
+<td class="enum_member_description">
+<p>object, see <a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a></p>
+</td>
+<td class="enum_member_annotations"> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="GI-INFO-TYPE-INTERFACE:CAPS"></a>GI_INFO_TYPE_INTERFACE</p></td>
+<td class="enum_member_description">
+<p>interface, see <a class="link" href="gi-GIInterfaceInfo.html#GIInterfaceInfo" title="GIInterfaceInfo"><span class="type">GIInterfaceInfo</span></a></p>
+</td>
+<td class="enum_member_annotations"> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="GI-INFO-TYPE-CONSTANT:CAPS"></a>GI_INFO_TYPE_CONSTANT</p></td>
+<td class="enum_member_description">
+<p>contant, see <a class="link" href="gi-GIConstantInfo.html#GIConstantInfo" title="GIConstantInfo"><span class="type">GIConstantInfo</span></a></p>
+</td>
+<td class="enum_member_annotations"> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="GI-INFO-TYPE-INVALID-0:CAPS"></a>GI_INFO_TYPE_INVALID_0</p></td>
+<td class="enum_member_description">
+<p>deleted, used to be GI_INFO_TYPE_ERROR_DOMAIN.</p>
+</td>
+<td class="enum_member_annotations"> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="GI-INFO-TYPE-UNION:CAPS"></a>GI_INFO_TYPE_UNION</p></td>
+<td class="enum_member_description">
+<p>union, see <a class="link" href="gi-GIUnionInfo.html#GIUnionInfo" title="GIUnionInfo"><span class="type">GIUnionInfo</span></a></p>
+</td>
+<td class="enum_member_annotations"> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="GI-INFO-TYPE-VALUE:CAPS"></a>GI_INFO_TYPE_VALUE</p></td>
+<td class="enum_member_description">
+<p>enum value, see <a class="link" href="gi-GIValueInfo.html#GIValueInfo" title="GIValueInfo"><span class="type">GIValueInfo</span></a></p>
+</td>
+<td class="enum_member_annotations"> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="GI-INFO-TYPE-SIGNAL:CAPS"></a>GI_INFO_TYPE_SIGNAL</p></td>
+<td class="enum_member_description">
+<p>signal, see <a class="link" href="gi-GISignalInfo.html#GISignalInfo" title="GISignalInfo"><span class="type">GISignalInfo</span></a></p>
+</td>
+<td class="enum_member_annotations"> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="GI-INFO-TYPE-VFUNC:CAPS"></a>GI_INFO_TYPE_VFUNC</p></td>
+<td class="enum_member_description">
+<p>virtual function, see <a class="link" href="gi-GIVFuncInfo.html#GIVFuncInfo" title="GIVFuncInfo"><span class="type">GIVFuncInfo</span></a></p>
+</td>
+<td class="enum_member_annotations"> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="GI-INFO-TYPE-PROPERTY:CAPS"></a>GI_INFO_TYPE_PROPERTY</p></td>
+<td class="enum_member_description">
+<p>GObject property, see <a class="link" href="gi-GIPropertyInfo.html#GIPropertyInfo" title="GIPropertyInfo"><span class="type">GIPropertyInfo</span></a></p>
+</td>
+<td class="enum_member_annotations"> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="GI-INFO-TYPE-FIELD:CAPS"></a>GI_INFO_TYPE_FIELD</p></td>
+<td class="enum_member_description">
+<p>struct or union field, see <a class="link" href="gi-GIFieldInfo.html#GIFieldInfo" title="GIFieldInfo"><span class="type">GIFieldInfo</span></a></p>
+</td>
+<td class="enum_member_annotations"> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="GI-INFO-TYPE-ARG:CAPS"></a>GI_INFO_TYPE_ARG</p></td>
+<td class="enum_member_description">
+<p>argument of a function or callback, see <a class="link" href="gi-GIArgInfo.html#GIArgInfo" title="GIArgInfo"><span class="type">GIArgInfo</span></a></p>
+</td>
+<td class="enum_member_annotations"> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="GI-INFO-TYPE-TYPE:CAPS"></a>GI_INFO_TYPE_TYPE</p></td>
+<td class="enum_member_description">
+<p>type information, see <a class="link" href="gi-GITypeInfo.html#GITypeInfo" title="GITypeInfo"><span class="type">GITypeInfo</span></a></p>
+</td>
+<td class="enum_member_annotations"> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="GI-INFO-TYPE-UNRESOLVED:CAPS"></a>GI_INFO_TYPE_UNRESOLVED</p></td>
+<td class="enum_member_description">
+<p>unresolved type, a type which is not present in
+  the typelib, or any of its dependencies.</p>
+</td>
+<td class="enum_member_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GIAttributeIter"></a><h3>GIAttributeIter</h3>
+<pre class="programlisting">typedef struct {
+} GIAttributeIter;
+</pre>
+<p>An opaque structure used to iterate over attributes
+in a <span class="type">GIBaseInfo</span> struct.</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>Generated by GTK-Doc V1.29.1</div>
+</body>
+</html>

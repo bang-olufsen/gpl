@@ -1,0 +1,853 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GMimeObject</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="GMime 2.6 Reference Manual">
+<link rel="up" href="MimeParts.html" title="MIME Messages and Parts">
+<link rel="prev" href="MimeParts.html" title="MIME Messages and Parts">
+<link rel="next" href="GMimeMessage.html" title="GMimeMessage">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="MimeParts.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="MimeParts.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">GMime 2.6 Reference Manual</th>
+<td><a accesskey="n" href="GMimeMessage.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#GMimeObject.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#GMimeObject.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#GMimeObject.object-hierarchy" class="shortcut">Object Hierarchy</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="GMimeObject"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="GMimeObject.top_of_page"></a>GMimeObject</span></h2>
+<p>GMimeObject — Abstract MIME objects</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="GMimeObject.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">struct              <a class="link" href="GMimeObject.html#GMimeObject-struct" title="struct GMimeObject">GMimeObject</a>;
+<span class="returnvalue">void</span>                (<a class="link" href="GMimeObject.html#GMimeObjectForeachFunc" title="GMimeObjectForeachFunc ()">*GMimeObjectForeachFunc</a>)           (<em class="parameter"><code><a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> *parent</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> *part</code></em>,
+                                                         <em class="parameter"><code><span class="type">gpointer</span> user_data</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimeObject.html#g-mime-object-register-type" title="g_mime_object_register_type ()">g_mime_object_register_type</a>         (<em class="parameter"><code>const <span class="type">char</span> *type</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *subtype</code></em>,
+                                                         <em class="parameter"><code><span class="type">GType</span> object_type</code></em>);
+<a class="link" href="GMimeObject.html" title="GMimeObject"><span class="returnvalue">GMimeObject</span></a> *       <a class="link" href="GMimeObject.html#g-mime-object-new" title="g_mime_object_new ()">g_mime_object_new</a>                   (<em class="parameter"><code><a class="link" href="GMimeContentType.html" title="GMimeContentType"><span class="type">GMimeContentType</span></a> *content_type</code></em>);
+<a class="link" href="GMimeObject.html" title="GMimeObject"><span class="returnvalue">GMimeObject</span></a> *       <a class="link" href="GMimeObject.html#g-mime-object-new-type" title="g_mime_object_new_type ()">g_mime_object_new_type</a>              (<em class="parameter"><code>const <span class="type">char</span> *type</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *subtype</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimeObject.html#g-mime-object-set-content-type" title="g_mime_object_set_content_type ()">g_mime_object_set_content_type</a>      (<em class="parameter"><code><a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> *object</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeContentType.html" title="GMimeContentType"><span class="type">GMimeContentType</span></a> *content_type</code></em>);
+<a class="link" href="GMimeContentType.html" title="GMimeContentType"><span class="returnvalue">GMimeContentType</span></a> *  <a class="link" href="GMimeObject.html#g-mime-object-get-content-type" title="g_mime_object_get_content_type ()">g_mime_object_get_content_type</a>      (<em class="parameter"><code><a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> *object</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimeObject.html#g-mime-object-set-content-type-parameter" title="g_mime_object_set_content_type_parameter ()">g_mime_object_set_content_type_parameter</a>
+                                                        (<em class="parameter"><code><a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> *object</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *name</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *value</code></em>);
+const <span class="returnvalue">char</span> *        <a class="link" href="GMimeObject.html#g-mime-object-get-content-type-parameter" title="g_mime_object_get_content_type_parameter ()">g_mime_object_get_content_type_parameter</a>
+                                                        (<em class="parameter"><code><a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> *object</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *name</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimeObject.html#g-mime-object-set-disposition" title="g_mime_object_set_disposition ()">g_mime_object_set_disposition</a>       (<em class="parameter"><code><a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> *object</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *disposition</code></em>);
+const <span class="returnvalue">char</span> *        <a class="link" href="GMimeObject.html#g-mime-object-get-disposition" title="g_mime_object_get_disposition ()">g_mime_object_get_disposition</a>       (<em class="parameter"><code><a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> *object</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimeObject.html#g-mime-object-set-content-disposition" title="g_mime_object_set_content_disposition ()">g_mime_object_set_content_disposition</a>
+                                                        (<em class="parameter"><code><a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> *object</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeContentDisposition.html" title="GMimeContentDisposition"><span class="type">GMimeContentDisposition</span></a> *disposition</code></em>);
+<a class="link" href="GMimeContentDisposition.html" title="GMimeContentDisposition"><span class="returnvalue">GMimeContentDisposition</span></a> * <a class="link" href="GMimeObject.html#g-mime-object-get-content-disposition" title="g_mime_object_get_content_disposition ()">g_mime_object_get_content_disposition</a>
+                                                        (<em class="parameter"><code><a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> *object</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimeObject.html#g-mime-object-set-content-disposition-parameter" title="g_mime_object_set_content_disposition_parameter ()">g_mime_object_set_content_disposition_parameter</a>
+                                                        (<em class="parameter"><code><a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> *object</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *attribute</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *value</code></em>);
+const <span class="returnvalue">char</span> *        <a class="link" href="GMimeObject.html#g-mime-object-get-content-disposition-parameter" title="g_mime_object_get_content_disposition_parameter ()">g_mime_object_get_content_disposition_parameter</a>
+                                                        (<em class="parameter"><code><a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> *object</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *attribute</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimeObject.html#g-mime-object-set-content-id" title="g_mime_object_set_content_id ()">g_mime_object_set_content_id</a>        (<em class="parameter"><code><a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> *object</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *content_id</code></em>);
+const <span class="returnvalue">char</span> *        <a class="link" href="GMimeObject.html#g-mime-object-get-content-id" title="g_mime_object_get_content_id ()">g_mime_object_get_content_id</a>        (<em class="parameter"><code><a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> *object</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimeObject.html#g-mime-object-prepend-header" title="g_mime_object_prepend_header ()">g_mime_object_prepend_header</a>        (<em class="parameter"><code><a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> *object</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *header</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *value</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimeObject.html#g-mime-object-append-header" title="g_mime_object_append_header ()">g_mime_object_append_header</a>         (<em class="parameter"><code><a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> *object</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *header</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *value</code></em>);
+<span class="returnvalue">gboolean</span>            <a class="link" href="GMimeObject.html#g-mime-object-remove-header" title="g_mime_object_remove_header ()">g_mime_object_remove_header</a>         (<em class="parameter"><code><a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> *object</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *header</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimeObject.html#g-mime-object-set-header" title="g_mime_object_set_header ()">g_mime_object_set_header</a>            (<em class="parameter"><code><a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> *object</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *header</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *value</code></em>);
+const <span class="returnvalue">char</span> *        <a class="link" href="GMimeObject.html#g-mime-object-get-header" title="g_mime_object_get_header ()">g_mime_object_get_header</a>            (<em class="parameter"><code><a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> *object</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *header</code></em>);
+<span class="returnvalue">char</span> *              <a class="link" href="GMimeObject.html#g-mime-object-get-headers" title="g_mime_object_get_headers ()">g_mime_object_get_headers</a>           (<em class="parameter"><code><a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> *object</code></em>);
+<a class="link" href="gmime-GMimeHeader.html#GMimeHeaderList" title="GMimeHeaderList"><span class="returnvalue">GMimeHeaderList</span></a> *   <a class="link" href="GMimeObject.html#g-mime-object-get-header-list" title="g_mime_object_get_header_list ()">g_mime_object_get_header_list</a>       (<em class="parameter"><code><a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> *object</code></em>);
+<span class="returnvalue">ssize_t</span>             <a class="link" href="GMimeObject.html#g-mime-object-write-to-stream" title="g_mime_object_write_to_stream ()">g_mime_object_write_to_stream</a>       (<em class="parameter"><code><a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> *object</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a> *stream</code></em>);
+<span class="returnvalue">char</span> *              <a class="link" href="GMimeObject.html#g-mime-object-to-string" title="g_mime_object_to_string ()">g_mime_object_to_string</a>             (<em class="parameter"><code><a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> *object</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimeObject.html#g-mime-object-encode" title="g_mime_object_encode ()">g_mime_object_encode</a>                (<em class="parameter"><code><a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> *object</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="gmime-gmime-encodings.html#GMimeEncodingConstraint" title="enum GMimeEncodingConstraint"><span class="type">GMimeEncodingConstraint</span></a> constraint</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="GMimeObject.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  GObject
+   +----GMimeObject
+         +----<a class="link" href="GMimeMessage.html" title="GMimeMessage">GMimeMessage</a>
+         +----<a class="link" href="GMimePart.html" title="GMimePart">GMimePart</a>
+         +----<a class="link" href="GMimeMultipart.html" title="GMimeMultipart">GMimeMultipart</a>
+         +----<a class="link" href="GMimeMessagePart.html" title="GMimeMessagePart">GMimeMessagePart</a>
+</pre>
+</div>
+<div class="refsect1">
+<a name="GMimeObject.description"></a><h2>Description</h2>
+<p>
+<a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> is an abstract class from which all message and MIME
+parts are derived.
+</p>
+</div>
+<div class="refsect1">
+<a name="GMimeObject.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="GMimeObject-struct"></a><h3>struct GMimeObject</h3>
+<pre class="programlisting">struct GMimeObject;</pre>
+<p>
+Base class for all MIME parts.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GMimeObjectForeachFunc"></a><h3>GMimeObjectForeachFunc ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                (*GMimeObjectForeachFunc)           (<em class="parameter"><code><a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> *parent</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> *part</code></em>,
+                                                         <em class="parameter"><code><span class="type">gpointer</span> user_data</code></em>);</pre>
+<p>
+The function signature for a callback to <a class="link" href="GMimeMessage.html#g-mime-message-foreach" title="g_mime_message_foreach ()"><code class="function">g_mime_message_foreach()</code></a>
+and <a class="link" href="GMimeMultipart.html#g-mime-multipart-foreach" title="g_mime_multipart_foreach ()"><code class="function">g_mime_multipart_foreach()</code></a>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>parent</code></em> :</span></p></td>
+<td>parent <a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>part</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>user_data</code></em> :</span></p></td>
+<td>User-supplied callback data.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-object-register-type"></a><h3>g_mime_object_register_type ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_object_register_type         (<em class="parameter"><code>const <span class="type">char</span> *type</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *subtype</code></em>,
+                                                         <em class="parameter"><code><span class="type">GType</span> object_type</code></em>);</pre>
+<p>
+Registers the object type <em class="parameter"><code>object_type</code></em> for use with the
+<a class="link" href="GMimeObject.html#g-mime-object-new-type" title="g_mime_object_new_type ()"><code class="function">g_mime_object_new_type()</code></a> convenience function.
+</p>
+<p>
+Note: You may use the wildcard "*" to match any type and/or
+subtype.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>type</code></em> :</span></p></td>
+<td>mime type</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>subtype</code></em> :</span></p></td>
+<td>mime subtype</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>object_type</code></em> :</span></p></td>
+<td>object type</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-object-new"></a><h3>g_mime_object_new ()</h3>
+<pre class="programlisting"><a class="link" href="GMimeObject.html" title="GMimeObject"><span class="returnvalue">GMimeObject</span></a> *       g_mime_object_new                   (<em class="parameter"><code><a class="link" href="GMimeContentType.html" title="GMimeContentType"><span class="type">GMimeContentType</span></a> *content_type</code></em>);</pre>
+<p>
+Performs a lookup of registered <a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> subclasses, registered
+using <a class="link" href="GMimeObject.html#g-mime-object-register-type" title="g_mime_object_register_type ()"><code class="function">g_mime_object_register_type()</code></a>, to find an appropriate class
+capable of handling MIME parts of the specified Content-Type. If no
+class has been registered to handle that type, it looks for a
+registered class that can handle <em class="parameter"><code>content_type</code></em>'s media type. If
+that also fails, then it will use the generic part class,
+<a class="link" href="GMimePart.html" title="GMimePart"><span class="type">GMimePart</span></a>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>content_type</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeContentType.html" title="GMimeContentType"><span class="type">GMimeContentType</span></a> object</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>an appropriate <a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> registered to handle MIME
+parts appropriate for <em class="parameter"><code>content_type</code></em>.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-object-new-type"></a><h3>g_mime_object_new_type ()</h3>
+<pre class="programlisting"><a class="link" href="GMimeObject.html" title="GMimeObject"><span class="returnvalue">GMimeObject</span></a> *       g_mime_object_new_type              (<em class="parameter"><code>const <span class="type">char</span> *type</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *subtype</code></em>);</pre>
+<p>
+Performs a lookup of registered <a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> subclasses, registered
+using <a class="link" href="GMimeObject.html#g-mime-object-register-type" title="g_mime_object_register_type ()"><code class="function">g_mime_object_register_type()</code></a>, to find an appropriate class
+capable of handling MIME parts of type <em class="parameter"><code>type</code></em>/<em class="parameter"><code>subtype</code></em>. If no class
+has been registered to handle that type, it looks for a registered
+class that can handle <em class="parameter"><code>type</code></em>. If that also fails, then it will use
+the generic part class, <a class="link" href="GMimePart.html" title="GMimePart"><span class="type">GMimePart</span></a>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>type</code></em> :</span></p></td>
+<td>mime type</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>subtype</code></em> :</span></p></td>
+<td>mime subtype</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>an appropriate <a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> registered to handle mime-types
+of <em class="parameter"><code>type</code></em>/<em class="parameter"><code>subtype</code></em>.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-object-set-content-type"></a><h3>g_mime_object_set_content_type ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_object_set_content_type      (<em class="parameter"><code><a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> *object</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeContentType.html" title="GMimeContentType"><span class="type">GMimeContentType</span></a> *content_type</code></em>);</pre>
+<p>
+Sets the content-type for the specified MIME object and then
+serializes it to the Content-Type header field.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>object</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>content_type</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeContentType.html" title="GMimeContentType"><span class="type">GMimeContentType</span></a> object</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-object-get-content-type"></a><h3>g_mime_object_get_content_type ()</h3>
+<pre class="programlisting"><a class="link" href="GMimeContentType.html" title="GMimeContentType"><span class="returnvalue">GMimeContentType</span></a> *  g_mime_object_get_content_type      (<em class="parameter"><code><a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> *object</code></em>);</pre>
+<p>
+Gets the <a class="link" href="GMimeContentType.html" title="GMimeContentType"><span class="type">GMimeContentType</span></a> object for the given MIME object or
+<code class="literal">NULL</code> on fail.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>object</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the content-type object for the specified
+MIME object. <span class="annotation">[<a href="http://foldoc.org/transfer%20none"><span class="acronym">transfer none</span></a>]</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-object-set-content-type-parameter"></a><h3>g_mime_object_set_content_type_parameter ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_object_set_content_type_parameter
+                                                        (<em class="parameter"><code><a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> *object</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *name</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *value</code></em>);</pre>
+<p>
+Sets the content-type param <em class="parameter"><code>name</code></em> to the value <em class="parameter"><code>value</code></em>.
+</p>
+<p>
+Note: The <em class="parameter"><code>name</code></em> string should be in US-ASCII while the <em class="parameter"><code>value</code></em>
+string should be in UTF-8.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>object</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>name</code></em> :</span></p></td>
+<td>param name</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>value</code></em> :</span></p></td>
+<td>param value</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-object-get-content-type-parameter"></a><h3>g_mime_object_get_content_type_parameter ()</h3>
+<pre class="programlisting">const <span class="returnvalue">char</span> *        g_mime_object_get_content_type_parameter
+                                                        (<em class="parameter"><code><a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> *object</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *name</code></em>);</pre>
+<p>
+Gets the value of the content-type param <em class="parameter"><code>name</code></em> set on the MIME part
+<em class="parameter"><code>object</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>object</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>name</code></em> :</span></p></td>
+<td>param name</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the value of the requested content-type param or <code class="literal">NULL</code> if
+the param doesn't exist. If the param is set, the returned string
+will be in UTF-8.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-object-set-disposition"></a><h3>g_mime_object_set_disposition ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_object_set_disposition       (<em class="parameter"><code><a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> *object</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *disposition</code></em>);</pre>
+<p>
+Sets the disposition to <em class="parameter"><code>disposition</code></em> which may be one of
+<a class="link" href="GMimeContentDisposition.html#GMIME-DISPOSITION-ATTACHMENT:CAPS" title="GMIME_DISPOSITION_ATTACHMENT"><span class="type">GMIME_DISPOSITION_ATTACHMENT</span></a> or <a class="link" href="GMimeContentDisposition.html#GMIME-DISPOSITION-INLINE:CAPS" title="GMIME_DISPOSITION_INLINE"><span class="type">GMIME_DISPOSITION_INLINE</span></a> or, by
+your choice, any other string which would indicate how the MIME
+part should be displayed by the MUA.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>object</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>disposition</code></em> :</span></p></td>
+<td>disposition ("attachment" or "inline")</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-object-get-disposition"></a><h3>g_mime_object_get_disposition ()</h3>
+<pre class="programlisting">const <span class="returnvalue">char</span> *        g_mime_object_get_disposition       (<em class="parameter"><code><a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> *object</code></em>);</pre>
+<p>
+Gets the MIME object's disposition if set or <code class="literal">NULL</code> otherwise.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>object</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the disposition string which is probably one of
+<a class="link" href="GMimeContentDisposition.html#GMIME-DISPOSITION-ATTACHMENT:CAPS" title="GMIME_DISPOSITION_ATTACHMENT"><span class="type">GMIME_DISPOSITION_ATTACHMENT</span></a> or <a class="link" href="GMimeContentDisposition.html#GMIME-DISPOSITION-INLINE:CAPS" title="GMIME_DISPOSITION_INLINE"><span class="type">GMIME_DISPOSITION_INLINE</span></a>.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-object-set-content-disposition"></a><h3>g_mime_object_set_content_disposition ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_object_set_content_disposition
+                                                        (<em class="parameter"><code><a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> *object</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeContentDisposition.html" title="GMimeContentDisposition"><span class="type">GMimeContentDisposition</span></a> *disposition</code></em>);</pre>
+<p>
+Set the content disposition for the specified mime part and then
+serializes it to the Content-Disposition header field.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>object</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>disposition</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeContentDisposition.html" title="GMimeContentDisposition"><span class="type">GMimeContentDisposition</span></a> object</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-object-get-content-disposition"></a><h3>g_mime_object_get_content_disposition ()</h3>
+<pre class="programlisting"><a class="link" href="GMimeContentDisposition.html" title="GMimeContentDisposition"><span class="returnvalue">GMimeContentDisposition</span></a> * g_mime_object_get_content_disposition
+                                                        (<em class="parameter"><code><a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> *object</code></em>);</pre>
+<p>
+Gets the <a class="link" href="GMimeContentDisposition.html" title="GMimeContentDisposition"><span class="type">GMimeContentDisposition</span></a> for the specified MIME object.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>object</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the <a class="link" href="GMimeContentDisposition.html" title="GMimeContentDisposition"><span class="type">GMimeContentDisposition</span></a> set on the
+MIME object. <span class="annotation">[<a href="http://foldoc.org/transfer%20none"><span class="acronym">transfer none</span></a>]</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-object-set-content-disposition-parameter"></a><h3>g_mime_object_set_content_disposition_parameter ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_object_set_content_disposition_parameter
+                                                        (<em class="parameter"><code><a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> *object</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *attribute</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *value</code></em>);</pre>
+<p>
+Add a content-disposition parameter to the specified mime part.
+</p>
+<p>
+Note: The <em class="parameter"><code>name</code></em> string should be in US-ASCII while the <em class="parameter"><code>value</code></em>
+string should be in UTF-8.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>object</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>value</code></em> :</span></p></td>
+<td>parameter value</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-object-get-content-disposition-parameter"></a><h3>g_mime_object_get_content_disposition_parameter ()</h3>
+<pre class="programlisting">const <span class="returnvalue">char</span> *        g_mime_object_get_content_disposition_parameter
+                                                        (<em class="parameter"><code><a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> *object</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *attribute</code></em>);</pre>
+<p>
+Gets the value of the Content-Disposition parameter specified by
+<em class="parameter"><code>name</code></em>, or <code class="literal">NULL</code> if the parameter does not exist.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>object</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the value of the requested content-disposition param or
+<code class="literal">NULL</code> if the param doesn't exist. If the param is set, the returned
+string will be in UTF-8.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-object-set-content-id"></a><h3>g_mime_object_set_content_id ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_object_set_content_id        (<em class="parameter"><code><a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> *object</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *content_id</code></em>);</pre>
+<p>
+Sets the Content-Id of the MIME object.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>object</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>content_id</code></em> :</span></p></td>
+<td>content-id (addr-spec portion)</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-object-get-content-id"></a><h3>g_mime_object_get_content_id ()</h3>
+<pre class="programlisting">const <span class="returnvalue">char</span> *        g_mime_object_get_content_id        (<em class="parameter"><code><a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> *object</code></em>);</pre>
+<p>
+Gets the Content-Id of the MIME object or NULL if one is not set.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>object</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a const pointer to the Content-Id header.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-object-prepend-header"></a><h3>g_mime_object_prepend_header ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_object_prepend_header        (<em class="parameter"><code><a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> *object</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *header</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *value</code></em>);</pre>
+<p>
+Prepends a raw, unprocessed header to the MIME object.
+</p>
+<p>
+Note: <em class="parameter"><code>value</code></em> should be encoded with a function such as
+<a class="link" href="gmime-gmime-utils.html#g-mime-utils-header-encode-text" title="g_mime_utils_header_encode_text ()"><code class="function">g_mime_utils_header_encode_text()</code></a>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>object</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>header</code></em> :</span></p></td>
+<td>header name</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>value</code></em> :</span></p></td>
+<td>header value</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-object-append-header"></a><h3>g_mime_object_append_header ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_object_append_header         (<em class="parameter"><code><a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> *object</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *header</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *value</code></em>);</pre>
+<p>
+Appends a raw, unprocessed header to the MIME object.
+</p>
+<p>
+Note: <em class="parameter"><code>value</code></em> should be encoded with a function such as
+<a class="link" href="gmime-gmime-utils.html#g-mime-utils-header-encode-text" title="g_mime_utils_header_encode_text ()"><code class="function">g_mime_utils_header_encode_text()</code></a>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>object</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>header</code></em> :</span></p></td>
+<td>header name</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>value</code></em> :</span></p></td>
+<td>header value</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-object-remove-header"></a><h3>g_mime_object_remove_header ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>            g_mime_object_remove_header         (<em class="parameter"><code><a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> *object</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *header</code></em>);</pre>
+<p>
+Removed the specified header if it exists.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>object</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>header</code></em> :</span></p></td>
+<td>header name</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>
+<code class="literal">TRUE</code> if the header was removed or <code class="literal">FALSE</code> if it could not
+be found.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-object-set-header"></a><h3>g_mime_object_set_header ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_object_set_header            (<em class="parameter"><code><a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> *object</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *header</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *value</code></em>);</pre>
+<p>
+Sets an arbitrary raw, unprocessed header on the MIME object.
+</p>
+<p>
+Note: <em class="parameter"><code>value</code></em> should be encoded with a function such as
+<a class="link" href="gmime-gmime-utils.html#g-mime-utils-header-encode-text" title="g_mime_utils_header_encode_text ()"><code class="function">g_mime_utils_header_encode_text()</code></a>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>object</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>header</code></em> :</span></p></td>
+<td>header name</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>value</code></em> :</span></p></td>
+<td>header value</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-object-get-header"></a><h3>g_mime_object_get_header ()</h3>
+<pre class="programlisting">const <span class="returnvalue">char</span> *        g_mime_object_get_header            (<em class="parameter"><code><a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> *object</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *header</code></em>);</pre>
+<p>
+Gets the raw, unprocessed value of the requested header.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>object</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>header</code></em> :</span></p></td>
+<td>header name</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the raw, unprocessed value of the requested header if it
+exists or <code class="literal">NULL</code> otherwise.
+Note: The returned value should be decoded with a function such as
+<a class="link" href="gmime-gmime-utils.html#g-mime-utils-header-decode-text" title="g_mime_utils_header_decode_text ()"><code class="function">g_mime_utils_header_decode_text()</code></a> before displaying to the user.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-object-get-headers"></a><h3>g_mime_object_get_headers ()</h3>
+<pre class="programlisting"><span class="returnvalue">char</span> *              g_mime_object_get_headers           (<em class="parameter"><code><a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> *object</code></em>);</pre>
+<p>
+Allocates a string buffer containing all of the MIME object's raw
+headers.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>object</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>an allocated string containing all of the raw MIME headers.
+Note: The returned string will not be suitable for display.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-object-get-header-list"></a><h3>g_mime_object_get_header_list ()</h3>
+<pre class="programlisting"><a class="link" href="gmime-GMimeHeader.html#GMimeHeaderList" title="GMimeHeaderList"><span class="returnvalue">GMimeHeaderList</span></a> *   g_mime_object_get_header_list       (<em class="parameter"><code><a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> *object</code></em>);</pre>
+<p>
+Get the header list for <em class="parameter"><code>object</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>object</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the <a class="link" href="gmime-GMimeHeader.html#GMimeHeaderList" title="GMimeHeaderList"><span class="type">GMimeHeaderList</span></a> for <em class="parameter"><code>object</code></em>. Do not
+free this pointer when you are done with it. <span class="annotation">[<a href="http://foldoc.org/transfer%20none"><span class="acronym">transfer none</span></a>]</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-object-write-to-stream"></a><h3>g_mime_object_write_to_stream ()</h3>
+<pre class="programlisting"><span class="returnvalue">ssize_t</span>             g_mime_object_write_to_stream       (<em class="parameter"><code><a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> *object</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a> *stream</code></em>);</pre>
+<p>
+Write the contents of the MIME object to <em class="parameter"><code>stream</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>object</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>stream</code></em> :</span></p></td>
+<td>stream</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the number of bytes written or <code class="literal">-1</code> on fail.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-object-to-string"></a><h3>g_mime_object_to_string ()</h3>
+<pre class="programlisting"><span class="returnvalue">char</span> *              g_mime_object_to_string             (<em class="parameter"><code><a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> *object</code></em>);</pre>
+<p>
+Allocates a string buffer containing the contents of <em class="parameter"><code>object</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>object</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>an allocated string containing the contents of the mime
+object.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-object-encode"></a><h3>g_mime_object_encode ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_object_encode                (<em class="parameter"><code><a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> *object</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="gmime-gmime-encodings.html#GMimeEncodingConstraint" title="enum GMimeEncodingConstraint"><span class="type">GMimeEncodingConstraint</span></a> constraint</code></em>);</pre>
+<p>
+Calculates and sets the most efficient Content-Transfer-Encoding
+for this <a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> and all child parts based on the <em class="parameter"><code>constraint</code></em>
+provided.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>object</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>constraint</code></em> :</span></p></td>
+<td>a <a class="link" href="gmime-gmime-encodings.html#GMimeEncodingConstraint" title="enum GMimeEncodingConstraint"><span class="type">GMimeEncodingConstraint</span></a>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

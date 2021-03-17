@@ -1,0 +1,47 @@
+From ab64c23cd1cbe55ff505d2442b418e2b902f45b7 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@gmail.com>
+Date: Wed, 7 May 2014 06:51:20 +0200
+Subject: [PATCH] configs: stream800: Fix booting with FIT signed image.
+
+Signed-off-by: Marek Belisko <marek.belisko@gmail.com>
+---
+ include/configs/stream800.h | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
+
+diff --git a/include/configs/stream800.h b/include/configs/stream800.h
+index 2334bd3..358b2a8 100644
+--- a/include/configs/stream800.h
++++ b/include/configs/stream800.h
+@@ -215,7 +215,7 @@
+ 
+ #define CONFIG_EXTRA_ENV_SETTINGS \
+     "loadaddr=0x80200000\0" \
+-    "fdtaddr=0x80F80000\0" \
++    "fitaddr=0x80F80000\0" \
+     "fdt_high=0xffffffff\0" \
+     "rdaddr=0x81000000\0" \
+     "bootfile=uImage\0" \
+@@ -240,7 +240,7 @@
+         "fi; \0" \
+     "mtdparts=" MTDPARTS_DEFAULT "\0" \
+     "readuImage=" \
+-        "if nboot ${sfu_load_addr} kernel; " \
++        "if nboot ${fitaddr} kernel; " \
+             "then " \
+             "echo \"INFO: kernel partition load successful\"; " \
+         "else " \
+@@ -288,10 +288,9 @@
+         "run nandargs; " \
+         "echo \"INFO: loading kernel image into RAM...\"; " \
+         "bstate booting; " \
+-        "run readDtb; " \
+         "run readuImage; " \
+         "echo \"INFO: booting kernel image...\"; " \
+-        "bootm ${sfu_load_addr} - ${dtb_load_addr} ${bootargs}; " \
++        "bootm ${fitaddr}; " \
+         "echo \"INFO: kernel boot failed...\"; " \
+         "echo \"INFO: resetting...\"; " \
+         "reset;\0" \
+-- 
+2.7.4
+

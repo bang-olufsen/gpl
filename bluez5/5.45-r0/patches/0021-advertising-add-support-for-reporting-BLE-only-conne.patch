@@ -1,0 +1,138 @@
+From 675632c1ca6f9d05f4c0032c9601690094998b0f Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Mon, 12 Jun 2017 15:37:28 +0200
+Subject: [PATCH] advertising: add support for reporting BLE-only connectable
+
+Signed-off-by: Martin Geier <martin.geier@streamunlimited.com>
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ src/advertising.c | 12 ++++++++++++
+ src/shared/ad.c   | 25 +++++++++++++++++++++++++
+ src/shared/ad.h   |  2 ++
+ 3 files changed, 39 insertions(+)
+
+diff --git a/src/advertising.c b/src/advertising.c
+index 3569c02..790c51f 100644
+--- a/src/advertising.c
++++ b/src/advertising.c
+@@ -37,6 +37,7 @@
+ #include "src/shared/mgmt.h"
+ #include "src/shared/queue.h"
+ #include "src/shared/util.h"
++#include "src/eir.h"
+ 
+ #define LE_ADVERTISING_MGR_IFACE "org.bluez.LEAdvertisingManager1"
+ #define LE_ADVERTISEMENT_IFACE "org.bluez.LEAdvertisement1"
+@@ -54,6 +55,7 @@ struct btd_adv_manager {
+ 
+ #define AD_TYPE_BROADCAST 0
+ #define AD_TYPE_PERIPHERAL 1
++#define AD_TYPE_BLE 2
+ 
+ struct btd_adv_client {
+ 	struct btd_adv_manager *manager;
+@@ -195,6 +197,11 @@ static bool parse_type(GDBusProxy *proxy, uint8_t *type)
+ 		return true;
+ 	}
+ 
++	if (!g_strcmp0(msg_type, "ble")) {
++		*type = AD_TYPE_BLE;
++		return true;
++	}
++
+ 	return false;
+ }
+ 
+@@ -523,6 +530,11 @@ static DBusMessage *refresh_advertisement(struct btd_adv_client *client)
+ 	if (client->type == AD_TYPE_PERIPHERAL)
+ 		flags = MGMT_ADV_FLAG_CONNECTABLE | MGMT_ADV_FLAG_DISCOV;
+ 
++	if (client->type == AD_TYPE_BLE) {
++		flags = MGMT_ADV_FLAG_CONNECTABLE;
++		bt_ad_set_flags(client->data, EIR_GEN_DISC | EIR_BREDR_UNSUP);
++	}
++
+ 	if (client->include_tx_power)
+ 		flags |= MGMT_ADV_FLAG_TX_POWER;
+ 
+diff --git a/src/shared/ad.c b/src/shared/ad.c
+index 70cd0a9..c37a0c3 100644
+--- a/src/shared/ad.c
++++ b/src/shared/ad.c
+@@ -36,6 +36,7 @@ struct bt_ad {
+ 	struct queue *solicit_uuids;
+ 	struct queue *service_data;
+ 	char *local_name;
++	int flags;
+ };
+ 
+ struct bt_ad *bt_ad_new(void)
+@@ -47,6 +48,7 @@ struct bt_ad *bt_ad_new(void)
+ 	ad->manufacturer_data = queue_new();
+ 	ad->solicit_uuids = queue_new();
+ 	ad->service_data = queue_new();
++	ad->flags = -1;
+ 
+ 	return bt_ad_ref(ad);
+ }
+@@ -201,6 +203,9 @@ static size_t calculate_length(struct bt_ad *ad)
+ 	if (ad->local_name)
+ 		length += strlen(ad->local_name) + 2;
+ 
++	if (ad->flags >= 0)
++		length += 3;
++
+ 	return length;
+ }
+ 
+@@ -338,6 +343,15 @@ static void serialize_local_name(const char *local_name, uint8_t *buf,
+ 	*pos += local_name_len;
+ }
+ 
++static void serialize_flags(int flags, uint8_t *buf, uint8_t *pos)
++{
++	if (flags >= 0) {
++		buf[(*pos)++] = 2;
++		buf[(*pos)++] = EIR_FLAGS;
++		buf[(*pos)++] = (uint8_t)flags;
++	}
++}
++
+ uint8_t *bt_ad_generate(struct bt_ad *ad, size_t *length)
+ {
+ 	uint8_t *adv_data;
+@@ -355,6 +369,8 @@ uint8_t *bt_ad_generate(struct bt_ad *ad, size_t *length)
+ 	if (!adv_data)
+ 		return NULL;
+ 
++	serialize_flags(ad->flags, adv_data, &pos);
++
+ 	serialize_service_uuids(ad->service_uuids, adv_data, &pos);
+ 
+ 	serialize_solicit_uuids(ad->solicit_uuids, adv_data, &pos);
+@@ -702,3 +718,12 @@ void bt_ad_clear_local_name(struct bt_ad *ad)
+ 
+ 	ad->local_name = NULL;
+ }
++
++bool bt_ad_set_flags(struct bt_ad *ad, const int flags)
++{
++	if (!ad)
++		return false;
++
++	ad->flags = flags;
++	return true;
++}
+diff --git a/src/shared/ad.h b/src/shared/ad.h
+index 6152ee8..dc8105c 100644
+--- a/src/shared/ad.h
++++ b/src/shared/ad.h
+@@ -92,3 +92,5 @@ void bt_ad_clear_service_data(struct bt_ad *ad);
+ bool bt_ad_set_local_name(struct bt_ad *ad, const char *local_name);
+ 
+ void bt_ad_clear_local_name(struct bt_ad *ad);
++
++bool bt_ad_set_flags(struct bt_ad *ad, const int flags);
+-- 
+2.7.4
+

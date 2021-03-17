@@ -1,0 +1,171 @@
+From 0e6ce68086f5d1de65256cf19c3165334c698a3d Mon Sep 17 00:00:00 2001
+From: Xia Zhou <xia.zhou@streamunlimited.com>
+Date: Wed, 13 Aug 2014 13:34:20 +0200
+Subject: [PATCH] PlayerControllerInterface parameter is being really used
+
+PlayerControllerInterface was unintentionally ignored when passed to
+MediaRenderer contructor.
+
+Signed-off-by: Milan Plzik <milan.plzik@streamunlimited.com>
+Signed-off-by: Xia Zhou <xia.zhou@streamunlimited.com>
+---
+ src/librygel-renderer/rygel-media-renderer.c    | 42 +++++++++++++++++++------
+ src/librygel-renderer/rygel-media-renderer.vala |  9 +++---
+ 2 files changed, 38 insertions(+), 13 deletions(-)
+
+diff --git a/src/librygel-renderer/rygel-media-renderer.c b/src/librygel-renderer/rygel-media-renderer.c
+index 3d31d40..e588e01 100644
+--- a/src/librygel-renderer/rygel-media-renderer.c
++++ b/src/librygel-renderer/rygel-media-renderer.c
+@@ -174,7 +174,7 @@ struct _RygelMediaRendererClass {
+ 
+ struct _RygelMediaRendererPrivate {
+ 	RygelMediaPlayer* _player;
+-	RygelPlayerControllerInterface* controller;
++	RygelPlayerControllerInterface* _controller;
+ };
+ 
+ 
+@@ -199,13 +199,16 @@ GType rygel_media_renderer_get_type (void) G_GNUC_CONST;
+ #define RYGEL_MEDIA_RENDERER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), RYGEL_TYPE_MEDIA_RENDERER, RygelMediaRendererPrivate))
+ enum  {
+ 	RYGEL_MEDIA_RENDERER_DUMMY_PROPERTY,
+-	RYGEL_MEDIA_RENDERER_PLAYER
++	RYGEL_MEDIA_RENDERER_PLAYER,
++	RYGEL_MEDIA_RENDERER_CONTROLLER
+ };
+ RygelMediaRenderer* rygel_media_renderer_new (const gchar* title, RygelMediaPlayer* player, RygelPluginCapabilities capabilities, RygelPlayerControllerInterface* controller);
+ RygelMediaRenderer* rygel_media_renderer_construct (GType object_type, const gchar* title, RygelMediaPlayer* player, RygelPluginCapabilities capabilities, RygelPlayerControllerInterface* controller);
+ static void rygel_media_renderer_real_constructed (GObject* base);
+ static RygelMediaPlayer* rygel_media_renderer_get_player (RygelMediaRenderer* self);
++static RygelPlayerControllerInterface* rygel_media_renderer_get_controller (RygelMediaRenderer* self);
+ static void rygel_media_renderer_set_player (RygelMediaRenderer* self, RygelMediaPlayer* value);
++static void rygel_media_renderer_set_controller (RygelMediaRenderer* self, RygelPlayerControllerInterface* value);
+ static void rygel_media_renderer_finalize (GObject* obj);
+ static void _vala_rygel_media_renderer_get_property (GObject * object, guint property_id, GValue * value, GParamSpec * pspec);
+ static void _vala_rygel_media_renderer_set_property (GObject * object, guint property_id, const GValue * value, GParamSpec * pspec);
+@@ -294,17 +297,13 @@ RygelMediaRenderer* rygel_media_renderer_construct (GType object_type, const gch
+ 	RygelMediaPlayer* _tmp1_ = NULL;
+ 	RygelPluginCapabilities _tmp2_ = 0;
+ 	RygelPlayerControllerInterface* _tmp3_ = NULL;
+-	RygelPlayerControllerInterface* _tmp4_ = NULL;
+ 	g_return_val_if_fail (title != NULL, NULL);
+ 	g_return_val_if_fail (player != NULL, NULL);
+ 	_tmp0_ = title;
+ 	_tmp1_ = player;
+ 	_tmp2_ = capabilities;
+-	self = (RygelMediaRenderer*) g_object_new (object_type, "title", _tmp0_, "player", _tmp1_, "capabilities", _tmp2_, NULL);
+ 	_tmp3_ = controller;
+-	_tmp4_ = _g_object_ref0 (_tmp3_);
+-	_g_object_unref0 (self->priv->controller);
+-	self->priv->controller = _tmp4_;
++	self = (RygelMediaRenderer*) g_object_new (object_type, "title", _tmp0_, "player", _tmp1_, "capabilities", _tmp2_, "controller", _tmp3_, NULL);
+ 	return self;
+ }
+ 
+@@ -336,7 +335,7 @@ static void rygel_media_renderer_real_constructed (GObject* base) {
+ 		_tmp2_ = self->priv->_player;
+ 		_tmp3_ = rygel_media_device_get_capabilities ((RygelMediaDevice*) self);
+ 		_tmp4_ = _tmp3_;
+-		_tmp5_ = self->priv->controller;
++		_tmp5_ = self->priv->_controller;
+ 		_tmp6_ = plugin_new (_tmp2_, _tmp4_, _tmp5_);
+ 		_tmp7_ = _tmp6_;
+ 		rygel_media_device_set_plugin ((RygelMediaDevice*) self, (RygelPlugin*) _tmp7_);
+@@ -369,6 +368,25 @@ static void rygel_media_renderer_set_player (RygelMediaRenderer* self, RygelMedi
+ }
+ 
+ 
++static RygelPlayerControllerInterface* rygel_media_renderer_get_controller (RygelMediaRenderer* self) {
++	RygelPlayerControllerInterface* result;
++	RygelPlayerControllerInterface* _tmp0_ = NULL;
++	g_return_val_if_fail (self != NULL, NULL);
++	_tmp0_ = self->priv->_controller;
++	result = _tmp0_;
++	return result;
++}
++
++
++static void rygel_media_renderer_set_controller (RygelMediaRenderer* self, RygelPlayerControllerInterface* value) {
++	RygelPlayerControllerInterface* _tmp0_ = NULL;
++	g_return_if_fail (self != NULL);
++	_tmp0_ = value;
++	self->priv->_controller = _tmp0_;
++	g_object_notify ((GObject *) self, "controller");
++}
++
++
+ static void rygel_media_renderer_class_init (RygelMediaRendererClass * klass) {
+ 	rygel_media_renderer_parent_class = g_type_class_peek_parent (klass);
+ 	g_type_class_add_private (klass, sizeof (RygelMediaRendererPrivate));
+@@ -377,6 +395,7 @@ static void rygel_media_renderer_class_init (RygelMediaRendererClass * klass) {
+ 	G_OBJECT_CLASS (klass)->set_property = _vala_rygel_media_renderer_set_property;
+ 	G_OBJECT_CLASS (klass)->finalize = rygel_media_renderer_finalize;
+ 	g_object_class_install_property (G_OBJECT_CLASS (klass), RYGEL_MEDIA_RENDERER_PLAYER, g_param_spec_object ("player", "player", "player", RYGEL_TYPE_MEDIA_PLAYER, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_WRITABLE | G_PARAM_CONSTRUCT_ONLY));
++	g_object_class_install_property (G_OBJECT_CLASS (klass), RYGEL_MEDIA_RENDERER_CONTROLLER, g_param_spec_object ("controller", "controller", "controller", RYGEL_TYPE_PLAYER_CONTROLLER_INTERFACE, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_WRITABLE | G_PARAM_CONSTRUCT_ONLY));
+ }
+ 
+ 
+@@ -388,7 +407,6 @@ static void rygel_media_renderer_instance_init (RygelMediaRenderer * self) {
+ static void rygel_media_renderer_finalize (GObject* obj) {
+ 	RygelMediaRenderer * self;
+ 	self = G_TYPE_CHECK_INSTANCE_CAST (obj, RYGEL_TYPE_MEDIA_RENDERER, RygelMediaRenderer);
+-	_g_object_unref0 (self->priv->controller);
+ 	G_OBJECT_CLASS (rygel_media_renderer_parent_class)->finalize (obj);
+ }
+ 
+@@ -421,6 +439,9 @@ static void _vala_rygel_media_renderer_get_property (GObject * object, guint pro
+ 		case RYGEL_MEDIA_RENDERER_PLAYER:
+ 		g_value_set_object (value, rygel_media_renderer_get_player (self));
+ 		break;
++		case RYGEL_MEDIA_RENDERER_CONTROLLER:
++		g_value_set_object (value, rygel_media_renderer_get_controller (self));
++		break;
+ 		default:
+ 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+ 		break;
+@@ -435,6 +456,9 @@ static void _vala_rygel_media_renderer_set_property (GObject * object, guint pro
+ 		case RYGEL_MEDIA_RENDERER_PLAYER:
+ 		rygel_media_renderer_set_player (self, g_value_get_object (value));
+ 		break;
++		case RYGEL_MEDIA_RENDERER_CONTROLLER:
++		rygel_media_renderer_set_controller (self, g_value_get_object (value));
++		break;
+ 		default:
+ 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+ 		break;
+diff --git a/src/librygel-renderer/rygel-media-renderer.vala b/src/librygel-renderer/rygel-media-renderer.vala
+index 9864c7d..f0a0000 100644
+--- a/src/librygel-renderer/rygel-media-renderer.vala
++++ b/src/librygel-renderer/rygel-media-renderer.vala
+@@ -25,7 +25,8 @@ internal class Plugin : Rygel.MediaRendererPlugin {
+     public Plugin (Rygel.MediaPlayer        player,
+                    Rygel.PluginCapabilities capabilities,
+                    Rygel.PlayerControllerInterface?  controller = null) {
+-        base ("LibRygelRenderer", "LibRygelRenderer", null, capabilities, controller);
++        base ("LibRygelRenderer", "LibRygelRenderer", null, capabilities,
++		controller);
+         this.player = player;
+     }
+ 
+@@ -56,8 +57,8 @@ public class Rygel.MediaRenderer : MediaDevice {
+                           PlayerControllerInterface? controller = null) {
+         Object (title: title,
+                 player: player,
+-                capabilities: capabilities);
+-        this.controller = controller;
++                capabilities: capabilities,
++                controller: controller);
+     }
+ 
+     public override void constructed () {
+@@ -68,5 +69,5 @@ public class Rygel.MediaRenderer : MediaDevice {
+         }
+         this.plugin.title = this.title;
+     }
+-    private PlayerControllerInterface controller;
++    public unowned PlayerControllerInterface controller { construct; private get; }
+ }
+-- 
+1.9.1
+

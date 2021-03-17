@@ -1,0 +1,119 @@
+From 4813b0b0812eef9d16f7d1fab038e9ac8470e7ce Mon Sep 17 00:00:00 2001
+From: Xia Zhou <xia.zhou@streamunlimited.com>
+Date: Wed, 3 Sep 2014 12:35:15 +0200
+Subject: [PATCH] fix DLNA test case 7.2.12.2
+
+add FakeAction action in QPlayerDescription.xml to
+use the state variables A_ARG_TYPE_InstanceID, AVTransportURI and
+AVTransportURIMetaData as arguments. Otherwise test case 7.2.12.2
+would fail because above variables are neither evented nor used as
+arguments to action.
+
+Signed-off-by: Xia Zhou <xia.zhou@streamunlimited.com>
+---
+ src/librygel-renderer/rygel-qplay.c    | 30 ++++++++++++++++++++++++++++++
+ src/librygel-renderer/rygel-qplay.vala | 14 +++++++++++++-
+ 2 files changed, 43 insertions(+), 1 deletion(-)
+
+diff --git a/src/librygel-renderer/rygel-qplay.c b/src/librygel-renderer/rygel-qplay.c
+index 65b01c6..58170e5 100644
+--- a/src/librygel-renderer/rygel-qplay.c
++++ b/src/librygel-renderer/rygel-qplay.c
+@@ -73,6 +73,8 @@ static void qplay_set_network_cb (QPlay* self, GUPnPService* registrar, GUPnPSer
+ static void _qplay_set_network_cb_gupnp_service_action_invoked (GUPnPService* _sender, GUPnPServiceAction* action, gpointer self);
+ static void qplay_set_qplay_auth_cb (QPlay* self, GUPnPService* registrar, GUPnPServiceAction* action);
+ static void _qplay_set_qplay_auth_cb_gupnp_service_action_invoked (GUPnPService* _sender, GUPnPServiceAction* action, gpointer self);
++static void qplay_set_fake_action_cb (QPlay* self, GUPnPService* registrar, GUPnPServiceAction* action);
++static void _qplay_set_fake_action_cb_gupnp_service_action_invoked (GUPnPService* _sender, GUPnPServiceAction* action, gpointer self);
+ static void qplay_query_state (QPlay* self, GUPnPService* registrar, const gchar* variable, GValue* value);
+ static void _qplay_query_state_gupnp_service_query_variable (GUPnPService* _sender, const gchar* variable, GValue* value, gpointer self);
+ QPlay* qplay_new (void);
+@@ -90,6 +92,11 @@ static void _qplay_set_qplay_auth_cb_gupnp_service_action_invoked (GUPnPService*
+ }
+ 
+ 
++static void _qplay_set_fake_action_cb_gupnp_service_action_invoked (GUPnPService* _sender, GUPnPServiceAction* action, gpointer self) {
++	qplay_set_fake_action_cb ((QPlay*) self, _sender, action);
++}
++
++
+ static void _qplay_query_state_gupnp_service_query_variable (GUPnPService* _sender, const gchar* variable, GValue* value, gpointer self) {
+ 	qplay_query_state ((QPlay*) self, _sender, variable, value);
+ }
+@@ -101,6 +108,7 @@ static void qplay_real_constructed (GObject* base) {
+ 	G_OBJECT_CLASS (qplay_parent_class)->constructed ((GObject*) G_TYPE_CHECK_INSTANCE_CAST (self, gupnp_service_get_type (), GUPnPService));
+ 	g_signal_connect_object ((GUPnPService*) self, "action-invoked::SetNetwork", (GCallback) _qplay_set_network_cb_gupnp_service_action_invoked, self, 0);
+ 	g_signal_connect_object ((GUPnPService*) self, "action-invoked::QPlayAuth", (GCallback) _qplay_set_qplay_auth_cb_gupnp_service_action_invoked, self, 0);
++	g_signal_connect_object ((GUPnPService*) self, "action-invoked::FakeAction", (GCallback) _qplay_set_fake_action_cb_gupnp_service_action_invoked, self, 0);
+ 	g_signal_connect_object ((GUPnPService*) self, "query-variable::FakeState", (GCallback) _qplay_query_state_gupnp_service_query_variable, self, 0);
+ }
+ 
+@@ -180,6 +188,28 @@ static void qplay_set_qplay_auth_cb (QPlay* self, GUPnPService* registrar, GUPnP
+ }
+ 
+ 
++static void qplay_set_fake_action_cb (QPlay* self, GUPnPService* registrar, GUPnPServiceAction* action) {
++	GUPnPServiceAction* _tmp0_ = NULL;
++	guint _tmp1_ = 0U;
++	GUPnPServiceAction* _tmp4_ = NULL;
++	g_return_if_fail (self != NULL);
++	g_return_if_fail (registrar != NULL);
++	g_return_if_fail (action != NULL);
++	_tmp0_ = action;
++	_tmp1_ = gupnp_service_action_get_argument_count (_tmp0_);
++	if (_tmp1_ != ((guint) 1)) {
++		GUPnPServiceAction* _tmp2_ = NULL;
++		const gchar* _tmp3_ = NULL;
++		_tmp2_ = action;
++		_tmp3_ = _ ("Invalid argument");
++		gupnp_service_action_return_error (_tmp2_, (guint) 402, _tmp3_);
++		return;
++	}
++	_tmp4_ = action;
++	gupnp_service_action_return (_tmp4_);
++}
++
++
+ static void qplay_query_state (QPlay* self, GUPnPService* registrar, const gchar* variable, GValue* value) {
+ 	g_return_if_fail (self != NULL);
+ 	g_return_if_fail (registrar != NULL);
+diff --git a/src/librygel-renderer/rygel-qplay.vala b/src/librygel-renderer/rygel-qplay.vala
+index 1b6600f..45392dc 100644
+--- a/src/librygel-renderer/rygel-qplay.vala
++++ b/src/librygel-renderer/rygel-qplay.vala
+@@ -45,12 +45,13 @@ internal class QPlay: Service {
+ 
+         this.action_invoked["SetNetwork"].connect (this.set_network_cb);
+         this.action_invoked["QPlayAuth"].connect (this.set_qplay_auth_cb);
++        this.action_invoked["FakeAction"].connect (this.set_fake_action_cb);
+ 
+         this.query_variable["FakeState"].connect
+                                         (this.query_state);
+     }
+ 
+-    /* SetNetwork and QPlayAuth action implementations (fake) */
++    /* SetNetwork, QPlayAuth and FakeAction action implementations (fake) */
+     private void set_network_cb (Service       registrar,
+                                  ServiceAction action) {
+         if (action.get_argument_count () != 2) {
+@@ -87,6 +88,17 @@ internal class QPlay: Service {
+         action.return ();
+     }
+ 
++    private void set_fake_action_cb (Service       registrar,
++                                     ServiceAction action) {
++        if (action.get_argument_count () != 1) {
++            action.return_error (402, _("Invalid argument"));
++
++            return;
++        }
++
++        action.return ();
++    }
++
+     private void query_state (Service        registrar,
+                               string         variable,
+                               ref GLib.Value value) {
+-- 
+1.9.1
+

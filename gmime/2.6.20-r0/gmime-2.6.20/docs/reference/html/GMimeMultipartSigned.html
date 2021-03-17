@@ -1,0 +1,198 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GMimeMultipartSigned</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="GMime 2.6 Reference Manual">
+<link rel="up" href="MimeParts.html" title="MIME Messages and Parts">
+<link rel="prev" href="GMimeMultipartEncrypted.html" title="GMimeMultipartEncrypted">
+<link rel="next" href="GMimeMessagePart.html" title="GMimeMessagePart">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="GMimeMultipartEncrypted.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="MimeParts.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">GMime 2.6 Reference Manual</th>
+<td><a accesskey="n" href="GMimeMessagePart.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#GMimeMultipartSigned.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#GMimeMultipartSigned.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#GMimeMultipartSigned.object-hierarchy" class="shortcut">Object Hierarchy</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="GMimeMultipartSigned"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="GMimeMultipartSigned.top_of_page"></a>GMimeMultipartSigned</span></h2>
+<p>GMimeMultipartSigned — Signed MIME multiparts</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="GMimeMultipartSigned.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">struct              <a class="link" href="GMimeMultipartSigned.html#GMimeMultipartSigned-struct" title="struct GMimeMultipartSigned">GMimeMultipartSigned</a>;
+<a class="link" href="GMimeMultipartSigned.html" title="GMimeMultipartSigned"><span class="returnvalue">GMimeMultipartSigned</span></a> * <a class="link" href="GMimeMultipartSigned.html#g-mime-multipart-signed-new" title="g_mime_multipart_signed_new ()">g_mime_multipart_signed_new</a>      (<em class="parameter"><code><span class="type">void</span></code></em>);
+<span class="returnvalue">int</span>                 <a class="link" href="GMimeMultipartSigned.html#g-mime-multipart-signed-sign" title="g_mime_multipart_signed_sign ()">g_mime_multipart_signed_sign</a>        (<em class="parameter"><code><a class="link" href="GMimeMultipartSigned.html" title="GMimeMultipartSigned"><span class="type">GMimeMultipartSigned</span></a> *mps</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> *content</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeCryptoContext.html" title="GMimeCryptoContext"><span class="type">GMimeCryptoContext</span></a> *ctx</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *userid</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeCertificate.html#GMimeDigestAlgo" title="enum GMimeDigestAlgo"><span class="type">GMimeDigestAlgo</span></a> digest</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
+<a class="link" href="GMimeSignature.html#GMimeSignatureList"><span class="returnvalue">GMimeSignatureList</span></a> * <a class="link" href="GMimeMultipartSigned.html#g-mime-multipart-signed-verify" title="g_mime_multipart_signed_verify ()">g_mime_multipart_signed_verify</a>     (<em class="parameter"><code><a class="link" href="GMimeMultipartSigned.html" title="GMimeMultipartSigned"><span class="type">GMimeMultipartSigned</span></a> *mps</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeCryptoContext.html" title="GMimeCryptoContext"><span class="type">GMimeCryptoContext</span></a> *ctx</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="GMimeMultipartSigned.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  GObject
+   +----<a class="link" href="GMimeObject.html" title="GMimeObject">GMimeObject</a>
+         +----<a class="link" href="GMimeMultipart.html" title="GMimeMultipart">GMimeMultipart</a>
+               +----GMimeMultipartSigned
+</pre>
+</div>
+<div class="refsect1">
+<a name="GMimeMultipartSigned.description"></a><h2>Description</h2>
+<p>
+A <a class="link" href="GMimeMultipartSigned.html" title="GMimeMultipartSigned"><span class="type">GMimeMultipartSigned</span></a> part is a special subclass of
+<a class="link" href="GMimeMultipart.html" title="GMimeMultipart"><span class="type">GMimeMultipart</span></a> to make it easier to manipulate the
+multipart/signed MIME type.
+</p>
+</div>
+<div class="refsect1">
+<a name="GMimeMultipartSigned.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="GMimeMultipartSigned-struct"></a><h3>struct GMimeMultipartSigned</h3>
+<pre class="programlisting">struct GMimeMultipartSigned;</pre>
+<p>
+A multipart/signed MIME part.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-multipart-signed-new"></a><h3>g_mime_multipart_signed_new ()</h3>
+<pre class="programlisting"><a class="link" href="GMimeMultipartSigned.html" title="GMimeMultipartSigned"><span class="returnvalue">GMimeMultipartSigned</span></a> * g_mime_multipart_signed_new      (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>
+Creates a new MIME multipart/signed object.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>an empty MIME multipart/signed object.</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-multipart-signed-sign"></a><h3>g_mime_multipart_signed_sign ()</h3>
+<pre class="programlisting"><span class="returnvalue">int</span>                 g_mime_multipart_signed_sign        (<em class="parameter"><code><a class="link" href="GMimeMultipartSigned.html" title="GMimeMultipartSigned"><span class="type">GMimeMultipartSigned</span></a> *mps</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> *content</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeCryptoContext.html" title="GMimeCryptoContext"><span class="type">GMimeCryptoContext</span></a> *ctx</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *userid</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeCertificate.html#GMimeDigestAlgo" title="enum GMimeDigestAlgo"><span class="type">GMimeDigestAlgo</span></a> digest</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>
+Attempts to sign the <em class="parameter"><code>content</code></em> MIME part with <em class="parameter"><code>userid</code></em>'s private key
+using the <em class="parameter"><code>ctx</code></em> signing context with the <em class="parameter"><code>digest</code></em> algorithm. If
+successful, the signed <a class="link" href="GMimeObject.html" title="GMimeObject"><span class="type">GMimeObject</span></a> is set as the signed part of
+the multipart/signed object <em class="parameter"><code>mps</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>mps</code></em> :</span></p></td>
+<td>multipart/signed object</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>content</code></em> :</span></p></td>
+<td>MIME part to sign</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>ctx</code></em> :</span></p></td>
+<td>encryption crypto context</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>userid</code></em> :</span></p></td>
+<td>user id to sign with</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>digest</code></em> :</span></p></td>
+<td>preferred digest algorithm</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>err</code></em> :</span></p></td>
+<td>exception</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>
+<code class="literal">0</code> on success or <code class="literal">-1</code> on fail. If the signing fails, an
+exception will be set on <em class="parameter"><code>err</code></em> to provide information as to why the
+failure occured.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-multipart-signed-verify"></a><h3>g_mime_multipart_signed_verify ()</h3>
+<pre class="programlisting"><a class="link" href="GMimeSignature.html#GMimeSignatureList"><span class="returnvalue">GMimeSignatureList</span></a> * g_mime_multipart_signed_verify     (<em class="parameter"><code><a class="link" href="GMimeMultipartSigned.html" title="GMimeMultipartSigned"><span class="type">GMimeMultipartSigned</span></a> *mps</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeCryptoContext.html" title="GMimeCryptoContext"><span class="type">GMimeCryptoContext</span></a> *ctx</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **err</code></em>);</pre>
+<p>
+Attempts to verify the signed MIME part contained within the
+multipart/signed object <em class="parameter"><code>mps</code></em> using the <em class="parameter"><code>ctx</code></em> crypto context.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>mps</code></em> :</span></p></td>
+<td>multipart/signed object</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>ctx</code></em> :</span></p></td>
+<td>encryption crypto context</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>err</code></em> :</span></p></td>
+<td>exception</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new <a class="link" href="GMimeSignature.html#GMimeSignatureList"><span class="type">GMimeSignatureList</span></a> object on
+success or <code class="literal">NULL</code> on fail. If the verification fails, an exception
+will be set on <em class="parameter"><code>err</code></em> to provide information as to why the failure
+occured. <span class="annotation">[<a href="http://foldoc.org/transfer%20full"><span class="acronym">transfer full</span></a>]</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<div class="refsect1">
+<a name="GMimeMultipartSigned.see-also"></a><h2>See Also</h2>
+<a class="link" href="GMimeMultipart.html" title="GMimeMultipart"><span class="type">GMimeMultipart</span></a>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

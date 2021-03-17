@@ -1,0 +1,116 @@
+From 85566f20451fca0ead270d4b8b38253fb40c6684 Mon Sep 17 00:00:00 2001
+From: Wiktor Drewniak <wiktor.drewniak@gmail.com>
+Date: Thu, 7 Mar 2019 07:53:35 +0100
+Subject: [PATCH 3/4] Pass information about reason of disconnect to nl80211
+
+---
+ drivers/net/wireless/mwifiex/join.c        |  2 +-
+ drivers/net/wireless/mwifiex/main.h        |  3 ++-
+ drivers/net/wireless/mwifiex/sta_cmdresp.c |  5 +++--
+ drivers/net/wireless/mwifiex/sta_event.c   | 12 ++++++------
+ 4 files changed, 12 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/net/wireless/mwifiex/join.c b/drivers/net/wireless/mwifiex/join.c
+index 7342c140c46..5a626360d1e 100644
+--- a/drivers/net/wireless/mwifiex/join.c
++++ b/drivers/net/wireless/mwifiex/join.c
+@@ -1230,7 +1230,7 @@ int mwifiex_ret_802_11_ad_hoc(struct mwifiex_private *priv,
+ 	if (reason_code) {
+ 		dev_err(priv->adapter->dev, "ADHOC_RESP: failed\n");
+ 		if (priv->media_connected)
+-			mwifiex_reset_connect_state(priv, reason_code);
++			mwifiex_reset_connect_state(priv, reason_code, true);
+ 
+ 		memset(&priv->curr_bss_params.bss_descriptor,
+ 		       0x00, sizeof(struct mwifiex_bssdescriptor));
+diff --git a/drivers/net/wireless/mwifiex/main.h b/drivers/net/wireless/mwifiex/main.h
+index 7edfdd9a80a..c480085b8a8 100644
+--- a/drivers/net/wireless/mwifiex/main.h
++++ b/drivers/net/wireless/mwifiex/main.h
+@@ -1092,7 +1092,8 @@ int mwifiex_cmd_802_11_associate(struct mwifiex_private *priv,
+ 				 struct mwifiex_bssdescriptor *bss_desc);
+ int mwifiex_ret_802_11_associate(struct mwifiex_private *priv,
+ 				 struct host_cmd_ds_command *resp);
+-void mwifiex_reset_connect_state(struct mwifiex_private *priv, u16 reason);
++void mwifiex_reset_connect_state(struct mwifiex_private *priv, u16 reason,
++				 bool from_ap);
+ u8 mwifiex_band_to_radio_type(u8 band);
+ int mwifiex_deauthenticate(struct mwifiex_private *priv, u8 *mac);
+ void mwifiex_deauthenticate_all(struct mwifiex_adapter *adapter);
+diff --git a/drivers/net/wireless/mwifiex/sta_cmdresp.c b/drivers/net/wireless/mwifiex/sta_cmdresp.c
+index cd688c8634e..c7f3cef4bb4 100644
+--- a/drivers/net/wireless/mwifiex/sta_cmdresp.c
++++ b/drivers/net/wireless/mwifiex/sta_cmdresp.c
+@@ -556,7 +556,8 @@ static int mwifiex_ret_802_11_deauthenticate(struct mwifiex_private *priv,
+ 	if (!memcmp(resp->params.deauth.mac_addr,
+ 		    &priv->curr_bss_params.bss_descriptor.mac_address,
+ 		    sizeof(resp->params.deauth.mac_addr)))
+-		mwifiex_reset_connect_state(priv, WLAN_REASON_DEAUTH_LEAVING);
++		mwifiex_reset_connect_state(priv, WLAN_REASON_DEAUTH_LEAVING,
++					    false);
+ 
+ 	return 0;
+ }
+@@ -569,7 +570,7 @@ static int mwifiex_ret_802_11_deauthenticate(struct mwifiex_private *priv,
+ static int mwifiex_ret_802_11_ad_hoc_stop(struct mwifiex_private *priv,
+ 					  struct host_cmd_ds_command *resp)
+ {
+-	mwifiex_reset_connect_state(priv, WLAN_REASON_DEAUTH_LEAVING);
++	mwifiex_reset_connect_state(priv, WLAN_REASON_DEAUTH_LEAVING, false);
+ 	return 0;
+ }
+ 
+diff --git a/drivers/net/wireless/mwifiex/sta_event.c b/drivers/net/wireless/mwifiex/sta_event.c
+index 823bb9d95a0..c52d0c0994e 100644
+--- a/drivers/net/wireless/mwifiex/sta_event.c
++++ b/drivers/net/wireless/mwifiex/sta_event.c
+@@ -40,8 +40,8 @@
+  *      - Erases current SSID and BSSID information
+  *      - Sends a disconnect event to upper layers/applications.
+  */
+-void
+-mwifiex_reset_connect_state(struct mwifiex_private *priv, u16 reason_code)
++void mwifiex_reset_connect_state(struct mwifiex_private *priv, u16 reason_code,
++				 bool from_ap)
+ {
+ 	struct mwifiex_adapter *adapter = priv->adapter;
+ 
+@@ -133,7 +133,7 @@ mwifiex_reset_connect_state(struct mwifiex_private *priv, u16 reason_code)
+ 	if (priv->bss_mode == NL80211_IFTYPE_STATION ||
+ 	    priv->bss_mode == NL80211_IFTYPE_P2P_CLIENT) {
+ 		cfg80211_disconnected(priv->netdev, reason_code, NULL, 0,
+-				      false, GFP_KERNEL);
++				      !from_ap, GFP_KERNEL);
+ 	}
+ 	eth_zero_addr(priv->cfg_bssid);
+ 
+@@ -260,7 +260,7 @@ int mwifiex_process_sta_event(struct mwifiex_private *priv)
+ 		if (priv->media_connected) {
+ 			reason_code =
+ 				le16_to_cpu(*(__le16 *)adapter->event_body);
+-			mwifiex_reset_connect_state(priv, reason_code);
++			mwifiex_reset_connect_state(priv, reason_code, true);
+ 		}
+ 		break;
+ 
+@@ -275,7 +275,7 @@ int mwifiex_process_sta_event(struct mwifiex_private *priv)
+ 		if (priv->media_connected) {
+ 			reason_code =
+ 				le16_to_cpu(*(__le16 *)adapter->event_body);
+-			mwifiex_reset_connect_state(priv, reason_code);
++			mwifiex_reset_connect_state(priv, reason_code, true);
+ 		}
+ 		break;
+ 
+@@ -285,7 +285,7 @@ int mwifiex_process_sta_event(struct mwifiex_private *priv)
+ 		if (priv->media_connected) {
+ 			reason_code =
+ 				le16_to_cpu(*(__le16 *)adapter->event_body);
+-			mwifiex_reset_connect_state(priv, reason_code);
++			mwifiex_reset_connect_state(priv, reason_code, true);
+ 		}
+ 		break;
+ 
+-- 
+2.21.0
+

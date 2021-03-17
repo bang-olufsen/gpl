@@ -1,0 +1,51 @@
+From be561415db335dfebc3c8224bd1a87afad861eeb Mon Sep 17 00:00:00 2001
+From: Xia Zhou <xia.zhou@streamunlimited.com>
+Date: Tue, 28 Oct 2014 15:15:56 +0100
+Subject: [PATCH] delete duplicate setting of text/xml profile. supported
+ profiles are already defined in NsdkUPnPSupportedFormat.
+
+fix DLNA CTT test case 7.3.28.5.
+
+Signed-off-by: Xia Zhou <xia.zhou@streamunlimited.com>
+---
+ src/librygel-renderer/rygel-media-renderer-plugin.c    | 3 ---
+ src/librygel-renderer/rygel-media-renderer-plugin.vala | 2 --
+ 2 files changed, 5 deletions(-)
+
+diff --git a/src/librygel-renderer/rygel-media-renderer-plugin.c b/src/librygel-renderer/rygel-media-renderer-plugin.c
+index 9b102db..d77e815 100644
+--- a/src/librygel-renderer/rygel-media-renderer-plugin.c
++++ b/src/librygel-renderer/rygel-media-renderer-plugin.c
+@@ -690,7 +690,6 @@ void rygel_media_renderer_plugin_set_supported_profiles (RygelMediaRendererPlugi
+ 	_tmp0_ = value;
+ 	if (_tmp0_ != NULL) {
+ 		GList* _tmp1_ = NULL;
+-		RygelDLNAProfile* _tmp4_ = NULL;
+ 		_tmp1_ = value;
+ 		{
+ 			GList* profile_collection = NULL;
+@@ -708,8 +707,6 @@ void rygel_media_renderer_plugin_set_supported_profiles (RygelMediaRendererPlugi
+ 				}
+ 			}
+ 		}
+-		_tmp4_ = rygel_dlna_profile_new ("DIDL_S", "text/xml");
+-		self->priv->_supported_profiles = g_list_prepend (self->priv->_supported_profiles, _tmp4_);
+ 		self->priv->_supported_profiles = g_list_reverse (self->priv->_supported_profiles);
+ 	}
+ 	g_object_notify ((GObject *) self, "supported-profiles");
+diff --git a/src/librygel-renderer/rygel-media-renderer-plugin.vala b/src/librygel-renderer/rygel-media-renderer-plugin.vala
+index d40e252..1905b18 100644
+--- a/src/librygel-renderer/rygel-media-renderer-plugin.vala
++++ b/src/librygel-renderer/rygel-media-renderer-plugin.vala
+@@ -55,8 +55,6 @@ public class Rygel.MediaRendererPlugin : Rygel.Plugin {
+                     _supported_profiles.prepend (profile);
+                 }
+ 
+-                _supported_profiles.prepend (new DLNAProfile ("DIDL_S",
+-                                                              "text/xml"));
+                 _supported_profiles.reverse ();
+             }
+         }
+-- 
+1.9.1
+

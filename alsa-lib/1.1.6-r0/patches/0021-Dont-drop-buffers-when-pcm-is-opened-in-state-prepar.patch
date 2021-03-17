@@ -1,0 +1,52 @@
+From 7e679fa011e50e867f7c4b62a27685e793028608 Mon Sep 17 00:00:00 2001
+From: Heine Holm Hansen <hnh@bang-olufsen.dk>
+Date: Thu, 20 Sep 2018 09:52:20 +0200
+Subject: [PATCH] Dont drop buffers when pcm is opened in state prepared
+
+ASEII-1736 Airplay 2: Sometimes beginning of Airplay playback is out of sync
+When the slave pcm is opened while alsa switch is in state prepared, the buffers already written to alsa switch are lost, but a corresponding number of zero initialized bytes are written to the slave pcm to keep the alsa switch and and slave pcm synchronized.
+
+Signed-off-by: Heine Holm Hansen <hnh@bang-olufsen.dk>
+
+%% original patch: 0021-Dont-drop-buffers-when-pcm-is-opened-in-state-prepared.patch
+---
+ src/pcm/pcm_switch.c | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
+
+diff --git a/src/pcm/pcm_switch.c b/src/pcm/pcm_switch.c
+index 4c599fa..707c56e 100644
+--- a/src/pcm/pcm_switch.c
++++ b/src/pcm/pcm_switch.c
+@@ -923,10 +923,10 @@ static void apply_switch_value(snd_pcm_t *pcm)
+ 	if (pcm_state == SND_PCM_STATE_PREPARED ||
+ 	    pcm_state == SND_PCM_STATE_RUNNING) {
+ 		snd_pcm_switch_prepare(pcm);
++		waiting_playback = pcm->buffer_size - avail_playback;
+ 	}
+ 
+ 	if (pcm_state == SND_PCM_STATE_RUNNING) {
+-		waiting_playback = pcm->buffer_size - avail_playback;
+ 
+ 		/* Don't drop audio when on switch value change */
+ 		if (swtch->cur_switch != SWITCH_CTL_ON) {
+@@ -946,6 +946,17 @@ static void apply_switch_value(snd_pcm_t *pcm)
+ 		}
+ 	}
+ 
++	if (pcm_state == SND_PCM_STATE_PREPARED) {
++		/* Don't drop audio when on switch value change */
++		if (swtch->cur_switch == SWITCH_CTL_ON) {
++			if (waiting_playback > 0) {
++				void *buffer = calloc(waiting_playback, pcm->frame_bits / 8);
++				snd_pcm_switch_writei(pcm, buffer, waiting_playback);
++				free(buffer);
++			}
++		}
++	}
++
+ 	if (swtch->cur_switch != SWITCH_CTL_ON)
+ 		snd_pcm_close(slave);
+ }
+-- 
+2.7.4
+

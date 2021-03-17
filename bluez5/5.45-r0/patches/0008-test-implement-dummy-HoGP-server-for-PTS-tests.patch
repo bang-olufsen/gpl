@@ -1,0 +1,43 @@
+From 74710ba7bb1fdda503f854dac0c71c98272537be Mon Sep 17 00:00:00 2001
+From: Bernhard Miller <bernhard.miller@streamunlimited.com>
+Date: Tue, 21 Feb 2017 08:55:44 +0100
+Subject: [PATCH] test: implement dummy HoGP server for PTS tests
+
+Signed-off-by: Bernhard Miller <bernhard.miller@streamunlimited.com>
+---
+ test/example-gatt-server | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/test/example-gatt-server b/test/example-gatt-server
+index 2b47d80..97e0220 100755
+--- a/test/example-gatt-server
++++ b/test/example-gatt-server
+@@ -53,6 +53,7 @@ class Application(dbus.service.Object):
+         self.add_service(BatteryService(bus, 1))
+         self.add_service(TestService(bus, 2))
+         self.add_service(DeviceInformationService(bus, 3))
++        self.add_service(HidOverGattService(bus, 4))
+ 
+     def get_path(self):
+         return dbus.ObjectPath(self.path)
+@@ -646,6 +647,17 @@ class DeviceInformationCharacteristic(Characteristic):
+         return self.value
+ 
+ 
++class HidOverGattService(Service):
++    """
++    Fake HoG service for PTS tests
++
++    """
++    BATTERY_UUID = '1812'
++
++    def __init__(self, bus, index):
++        Service.__init__(self, bus, index, self.BATTERY_UUID, True)
++
++
+ def register_app_cb():
+     print('GATT application registered')
+ 
+-- 
+2.7.4
+

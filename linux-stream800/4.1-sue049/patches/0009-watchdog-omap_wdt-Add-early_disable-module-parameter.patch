@@ -1,0 +1,98 @@
+From a741b5ca2fd86be917b2d8464ca264795da994ae Mon Sep 17 00:00:00 2001
+From: Rostislav Lisovy <lisovy@merica.cz>
+Date: Tue, 16 Sep 2014 16:20:28 +0200
+Subject: [PATCH] watchdog: omap_wdt: Add 'early_disable' module parameter
+
+This parameter makes it possible to control if the watchdog
+is being disabled during initialization or will stay enabled
+in case it was previously initialized in the bootloader.
+
+To maintain the existing behavior, the default value is 'true',
+thus the watchdog is disabled during initialization.
+
+This new feature is highly inspired by the w83627hf_wdt.c
+
+Signed-off-by: Rostislav Lisovy <lisovy@merica.cz>
+[set early_disable = true when stopping watchdog, otherwise watchdog
+ will not start next time]
+Signed-off-by: Radek Dostal <radek.dostal@streamunlimited.com>
+---
+ drivers/watchdog/omap_wdt.c | 27 +++++++++++++++++++++------
+ 1 file changed, 21 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/watchdog/omap_wdt.c b/drivers/watchdog/omap_wdt.c
+index c9c97da..e70a946 100644
+--- a/drivers/watchdog/omap_wdt.c
++++ b/drivers/watchdog/omap_wdt.c
+@@ -53,6 +53,10 @@ static unsigned timer_margin;
+ module_param(timer_margin, uint, 0);
+ MODULE_PARM_DESC(timer_margin, "initial watchdog timeout (in seconds)");
+ 
++static bool early_disable = true;
++module_param(early_disable, bool, 0);
++MODULE_PARM_DESC(early_disable, "Disable watchdog at boot time (default=1)");
++
+ struct omap_wdt_dev {
+ 	void __iomem    *base;          /* physical */
+ 	struct device   *dev;
+@@ -128,9 +132,11 @@ static int omap_wdt_start(struct watchdog_device *wdog)
+ 
+ 	mutex_lock(&wdev->lock);
+ 
+-	wdev->omap_wdt_users = true;
+-
+-	pm_runtime_get_sync(wdev->dev);
++	/* The watchdog was disabled in probe function */
++	if (early_disable) {
++		wdev->omap_wdt_users = true;
++		pm_runtime_get_sync(wdev->dev);
++	}
+ 
+ 	/*
+ 	 * Make sure the watchdog is disabled. This is unfortunately required
+@@ -165,6 +171,7 @@ static int omap_wdt_stop(struct watchdog_device *wdog)
+ 	pm_runtime_put_sync(wdev->dev);
+ 	wdev->omap_wdt_users = false;
+ 	mutex_unlock(&wdev->lock);
++	early_disable = true;
+ 	return 0;
+ }
+ 
+@@ -225,7 +232,7 @@ static int omap_wdt_probe(struct platform_device *pdev)
+ 	if (!wdev)
+ 		return -ENOMEM;
+ 
+-	wdev->omap_wdt_users	= false;
++	wdev->omap_wdt_users	= (early_disable) ? false : true;
+ 	wdev->dev		= &pdev->dev;
+ 	wdev->wdt_trgr_pattern	= 0x1234;
+ 	mutex_init(&wdev->lock);
+@@ -262,7 +269,14 @@ static int omap_wdt_probe(struct platform_device *pdev)
+ 	omap_wdt->bootstatus = (rs & (1 << OMAP_MPU_WD_RST_SRC_ID_SHIFT)) ?
+ 				WDIOF_CARDRESET : 0;
+ 
+-	omap_wdt_disable(wdev);
++	if (early_disable) {
++		omap_wdt_disable(wdev);
++	} else {
++		pr_info("Watchdog already running. Resetting timeout to %d sec\n",
++			omap_wdt->timeout);
++		omap_wdt_set_timeout(omap_wdt, omap_wdt->timeout);
++		omap_wdt_ping(omap_wdt);
++	}
+ 
+ 	ret = watchdog_register_device(omap_wdt);
+ 	if (ret) {
+@@ -274,7 +288,8 @@ static int omap_wdt_probe(struct platform_device *pdev)
+ 		readl_relaxed(wdev->base + OMAP_WATCHDOG_REV) & 0xFF,
+ 		omap_wdt->timeout);
+ 
+-	pm_runtime_put_sync(wdev->dev);
++	if (early_disable)
++		pm_runtime_put_sync(wdev->dev);
+ 
+ 	return 0;
+ }
+-- 
+1.9.1
+

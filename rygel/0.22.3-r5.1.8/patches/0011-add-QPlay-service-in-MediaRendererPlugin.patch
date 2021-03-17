@@ -1,0 +1,450 @@
+From 77264de04235e056b15bc6eee68f927471d54bc2 Mon Sep 17 00:00:00 2001
+From: Xia Zhou <xia.zhou@streamunlimited.com>
+Date: Wed, 20 Aug 2014 12:03:07 +0200
+Subject: [PATCH] add QPlay service in MediaRendererPlugin
+
+Signed-off-by: Xia Zhou <xia.zhou@streamunlimited.com>
+---
+ data/xml/Makefile.am                               |   1 +
+ data/xml/MediaRenderer2.xml.in.in                  |   3 +-
+ data/xml/QPlayDescription.xml.in                   |  88 ++++++++++++
+ src/librygel-renderer/filelist.am                  |   1 +
+ .../rygel-media-renderer-plugin.c                  |  21 +++
+ .../rygel-media-renderer-plugin.vala               |   6 +
+ src/librygel-renderer/rygel-qplay.c                | 148 +++++++++++++++++++++
+ src/librygel-renderer/rygel-qplay.vala             |  61 +++++++++
+ 8 files changed, 328 insertions(+), 1 deletion(-)
+ create mode 100755 data/xml/QPlayDescription.xml.in
+ create mode 100644 src/librygel-renderer/rygel-qplay.c
+ create mode 100644 src/librygel-renderer/rygel-qplay.vala
+
+diff --git a/data/xml/Makefile.am b/data/xml/Makefile.am
+index 6f32b19..55eed8a 100644
+--- a/data/xml/Makefile.am
++++ b/data/xml/Makefile.am
+@@ -6,6 +6,7 @@ xml_in_files = MediaServer3.xml.in \
+                AVTransport2.xml.in \
+                RenderingControl2.xml.in \
+                BasicManagement2.xml.in \
++               QPlayDescription.xml.in \
+                X_MS_MediaReceiverRegistrar1.xml.in
+ 
+ xml_DATA = $(xml_in_files:.xml.in=.xml)
+diff --git a/data/xml/MediaRenderer2.xml.in.in b/data/xml/MediaRenderer2.xml.in.in
+index 0788d46..f879b39 100644
+--- a/data/xml/MediaRenderer2.xml.in.in
++++ b/data/xml/MediaRenderer2.xml.in.in
+@@ -1,10 +1,11 @@
+ <?xml version="1.0"?>
+-<root xmlns="urn:schemas-upnp-org:device-1-0" xmlns:dlna="urn:schemas-dlna-org:device-1-0">
++<root xmlns="urn:schemas-upnp-org:device-1-0" xmlns:dlna="urn:schemas-dlna-org:device-1-0" xmlns:qq="http://www.tencent.com">
+   <specVersion>
+     <major>1</major>
+     <minor>0</minor>
+   </specVersion>
+   <device>
++    <qq:X_QPlay_SoftwareCapability>QPlay:1</qq:X_QPlay_SoftwareCapability>
+     <deviceType>urn:schemas-upnp-org:device:MediaRenderer:2</deviceType>
+     <friendlyName></friendlyName>
+     <manufacturer>Rygel Developers</manufacturer>
+diff --git a/data/xml/QPlayDescription.xml.in b/data/xml/QPlayDescription.xml.in
+new file mode 100755
+index 0000000..6c6a6bd
+--- /dev/null
++++ b/data/xml/QPlayDescription.xml.in
+@@ -0,0 +1,88 @@
++<?xml version="1.0"?>
++<scpd
++  xmlns="urn:schemas-upnp-org:service-1-0">
++	<specVersion>
++		<major>1</major>
++		<minor>0</minor>
++	</specVersion>
++	<actionList>
++		<action>
++			<name>SetNetwork</name>
++			<argumentList>
++				<argument>
++					<name>SSID</name>
++					<direction>in</direction>
++					<relatedStateVariable>A_ARG_TYPE_SSID</relatedStateVariable>
++				</argument>
++				<argument>
++					<name>Key</name>
++					<direction>in</direction>
++					<relatedStateVariable>A_ARG_TYPE_Key</relatedStateVariable>
++				</argument>
++			</argumentList>
++		</action>
++		<action>
++			<name>QPlayAuth</name>
++			<argumentList>
++				<argument>
++					<name>Seed</name>
++					<direction>in</direction>
++					<relatedStateVariable>A_ARG_TYPE_Seed</relatedStateVariable>
++				</argument>
++				<argument>
++					<name>Code</name>
++					<direction>out</direction>
++					<relatedStateVariable>A_ARG_TYPE_Code</relatedStateVariable>
++				</argument>
++				<argument>
++					<name>MID</name>
++					<direction>out</direction>
++					<relatedStateVariable>A_ARG_TYPE_MID</relatedStateVariable>
++				</argument>
++				<argument>
++					<name>DID</name>
++					<direction>out</direction>
++					<relatedStateVariable>A_ARG_TYPE_DID</relatedStateVariable>
++				</argument>
++			</argumentList>
++		</action>
++	</actionList>
++	<serviceStateTable>
++		<stateVariable sendEvents="no">
++			<name>A_ARG_TYPE_SSID</name>
++			<dataType>string</dataType>
++		</stateVariable>
++		<stateVariable sendEvents="no">
++			<name>A_ARG_TYPE_Key</name>
++			<dataType>string</dataType>
++		</stateVariable>
++		<stateVariable sendEvents="no">
++			<name>A_ARG_TYPE_Seed</name>
++			<dataType>string</dataType>
++		</stateVariable>
++		<stateVariable sendEvents="no">
++			<name>A_ARG_TYPE_Code</name>
++			<dataType>string</dataType>
++		</stateVariable>
++		<stateVariable sendEvents="no">
++			<name>A_ARG_TYPE_MID</name>
++			<dataType>string</dataType>
++		</stateVariable>
++		<stateVariable sendEvents="no">
++			<name>A_ARG_TYPE_DID</name>
++			<dataType>string</dataType>
++		</stateVariable>
++		<stateVariable sendEvents="no">
++			<name>A_ARG_TYPE_InstanceID</name>
++			<dataType>ui4</dataType>
++		</stateVariable>
++		<stateVariable sendEvents="no">
++			<name>AVTransportURI</name>
++			<dataType>string</dataType>
++		</stateVariable>
++		<stateVariable sendEvents="no">
++			<name>AVTransportURIMetaData</name>
++			<dataType>string</dataType>
++		</stateVariable>
++	</serviceStateTable>
++</scpd>
+\ No newline at end of file
+diff --git a/src/librygel-renderer/filelist.am b/src/librygel-renderer/filelist.am
+index 25ea56d..5efe8dd 100644
+--- a/src/librygel-renderer/filelist.am
++++ b/src/librygel-renderer/filelist.am
+@@ -9,6 +9,7 @@ LIBRYGEL_RENDERER_NONVAPI_SOURCE_FILES = \
+ 	rygel-av-transport.vala \
+ 	rygel-rendering-control.vala \
+ 	rygel-sink-connection-manager.vala \
++	rygel-qplay.vala \
+ 	rygel-time-utils.vala \
+ 	rygel-changelog.vala \
+ 	rygel-volume.vala
+diff --git a/src/librygel-renderer/rygel-media-renderer-plugin.c b/src/librygel-renderer/rygel-media-renderer-plugin.c
+index b883045..cd79f6c 100644
+--- a/src/librygel-renderer/rygel-media-renderer-plugin.c
++++ b/src/librygel-renderer/rygel-media-renderer-plugin.c
+@@ -98,6 +98,16 @@ typedef struct _RygelAVTransportClass RygelAVTransportClass;
+ typedef struct _RygelRenderingControl RygelRenderingControl;
+ typedef struct _RygelRenderingControlClass RygelRenderingControlClass;
+ 
++#define RYGEL_TYPE_QPLAY (rygel_qplay_get_type ())
++#define RYGEL_QPLAY(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), RYGEL_TYPE_QPLAY, RygelQPlay))
++#define RYGEL_QPLAY_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), RYGEL_TYPE_QPLAY, RygelQPlayClass))
++#define RYGEL_IS_QPLAY(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), RYGEL_TYPE_QPLAY))
++#define RYGEL_IS_QPLAY_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), RYGEL_TYPE_QPLAY))
++#define RYGEL_QPLAY_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), RYGEL_TYPE_QPLAY, RygelQPlayClass))
++
++typedef struct _RygelQPlay RygelQPlay;
++typedef struct _RygelQPlayClass RygelQPlayClass;
++
+ #define RYGEL_TYPE_PLAYER_CONTROLLER (rygel_player_controller_get_type ())
+ #define RYGEL_PLAYER_CONTROLLER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), RYGEL_TYPE_PLAYER_CONTROLLER, RygelPlayerController))
+ #define RYGEL_PLAYER_CONTROLLER_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), RYGEL_TYPE_PLAYER_CONTROLLER, RygelPlayerControllerClass))
+@@ -210,6 +220,10 @@ GType rygel_av_transport_get_type (void) G_GNUC_CONST;
+ #define RYGEL_RENDERING_CONTROL_UPNP_TYPE "urn:schemas-upnp-org:service:RenderingControl:2"
+ #define RYGEL_RENDERING_CONTROL_DESCRIPTION_PATH "xml/RenderingControl2.xml"
+ GType rygel_rendering_control_get_type (void) G_GNUC_CONST;
++#define RYGEL_QPLAY_UPNP_ID "urn:tencent-com:serviceId:QPlay"
++#define RYGEL_QPLAY_UPNP_TYPE "urn:tencent-com:service:QPlay:1"
++#define RYGEL_QPLAY_DESCRIPTION_PATH "xml/QPlayDescription.xml"
++GType rygel_qplay_get_type (void) G_GNUC_CONST;
+ RygelMediaPlayer* rygel_media_renderer_plugin_get_player (RygelMediaRendererPlugin* self);
+ static RygelMediaPlayer* rygel_media_renderer_plugin_real_get_player (RygelMediaRendererPlugin* self);
+ RygelPlayerControllerInterface* rygel_media_renderer_plugin_get_controller (RygelMediaRendererPlugin* self);
+@@ -288,6 +302,8 @@ static void rygel_media_renderer_plugin_real_constructed (GObject* base) {
+ 	RygelResourceInfo* _tmp3_ = NULL;
+ 	RygelResourceInfo* _tmp4_ = NULL;
+ 	RygelResourceInfo* _tmp5_ = NULL;
++	RygelResourceInfo* _tmp6_ = NULL;
++	RygelResourceInfo* _tmp7_ = NULL;
+ 	self = (RygelMediaRendererPlugin*) base;
+ 	G_OBJECT_CLASS (rygel_media_renderer_plugin_parent_class)->constructed ((GObject*) G_TYPE_CHECK_INSTANCE_CAST (self, RYGEL_TYPE_PLUGIN, RygelPlugin));
+ 	_tmp0_ = rygel_resource_info_new (RYGEL_CONNECTION_MANAGER_UPNP_ID, RYGEL_CONNECTION_MANAGER_UPNP_TYPE, RYGEL_CONNECTION_MANAGER_DESCRIPTION_PATH, RYGEL_TYPE_SINK_CONNECTION_MANAGER);
+@@ -304,6 +320,11 @@ static void rygel_media_renderer_plugin_real_constructed (GObject* base) {
+ 	resource = _tmp4_;
+ 	_tmp5_ = resource;
+ 	rygel_plugin_add_resource ((RygelPlugin*) self, _tmp5_);
++	_tmp6_ = rygel_resource_info_new (RYGEL_QPLAY_UPNP_ID, RYGEL_QPLAY_UPNP_TYPE, RYGEL_QPLAY_DESCRIPTION_PATH, RYGEL_TYPE_QPLAY);
++	_rygel_resource_info_unref0 (resource);
++	resource = _tmp6_;
++	_tmp7_ = resource;
++	rygel_plugin_add_resource ((RygelPlugin*) self, _tmp7_);
+ 	_rygel_resource_info_unref0 (resource);
+ }
+ 
+diff --git a/src/librygel-renderer/rygel-media-renderer-plugin.vala b/src/librygel-renderer/rygel-media-renderer-plugin.vala
+index 47b857d..61a6fdb 100644
+--- a/src/librygel-renderer/rygel-media-renderer-plugin.vala
++++ b/src/librygel-renderer/rygel-media-renderer-plugin.vala
+@@ -101,6 +101,12 @@ public class Rygel.MediaRendererPlugin : Rygel.Plugin {
+                                      RenderingControl.DESCRIPTION_PATH,
+                                      typeof (RenderingControl));
+         this.add_resource (resource);
++
++        resource = new ResourceInfo (QPlay.UPNP_ID,
++                                     QPlay.UPNP_TYPE,
++                                     QPlay.DESCRIPTION_PATH,
++                                     typeof (QPlay));
++        this.add_resource (resource);
+     }
+ 
+     public virtual MediaPlayer? get_player () {
+diff --git a/src/librygel-renderer/rygel-qplay.c b/src/librygel-renderer/rygel-qplay.c
+new file mode 100644
+index 0000000..4fdeb73
+--- /dev/null
++++ b/src/librygel-renderer/rygel-qplay.c
+@@ -0,0 +1,148 @@
++/* rygel-qplay.c generated by valac 0.24.0, the Vala compiler
++ * generated from rygel-qplay.vala, do not modify */
++
++/*
++ * Copyright (C) 2008 Zeeshan Ali <zeenix@gmail.com>.
++ *
++ * Author: Zeeshan Ali <zeenix@gmail.com>
++ *
++ * This file is part of Rygel.
++ *
++ * Rygel is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU Lesser General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
++ *
++ * Rygel is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU Lesser General Public License for more details.
++ *
++ * You should have received a copy of the GNU Lesser General Public License
++ * along with this program; if not, write to the Free Software Foundation,
++ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
++ */
++
++#include <glib.h>
++#include <glib-object.h>
++#include <libgupnp/gupnp.h>
++#include <stdlib.h>
++#include <string.h>
++#include <glib/gi18n-lib.h>
++
++
++#define RYGEL_TYPE_QPLAY (rygel_qplay_get_type ())
++#define RYGEL_QPLAY(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), RYGEL_TYPE_QPLAY, RygelQPlay))
++#define RYGEL_QPLAY_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), RYGEL_TYPE_QPLAY, RygelQPlayClass))
++#define RYGEL_IS_QPLAY(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), RYGEL_TYPE_QPLAY))
++#define RYGEL_IS_QPLAY_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), RYGEL_TYPE_QPLAY))
++#define RYGEL_QPLAY_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), RYGEL_TYPE_QPLAY, RygelQPlayClass))
++
++typedef struct _RygelQPlay RygelQPlay;
++typedef struct _RygelQPlayClass RygelQPlayClass;
++typedef struct _RygelQPlayPrivate RygelQPlayPrivate;
++
++struct _RygelQPlay {
++	GUPnPService parent_instance;
++	RygelQPlayPrivate * priv;
++};
++
++struct _RygelQPlayClass {
++	GUPnPServiceClass parent_class;
++};
++
++
++static gpointer rygel_qplay_parent_class = NULL;
++
++GType rygel_qplay_get_type (void) G_GNUC_CONST;
++enum  {
++	RYGEL_QPLAY_DUMMY_PROPERTY
++};
++#define RYGEL_QPLAY_UPNP_ID "urn:tencent-com:serviceId:QPlay"
++#define RYGEL_QPLAY_UPNP_TYPE "urn:tencent-com:service:QPlay:1"
++#define RYGEL_QPLAY_COMPAT_TYPE "urn:schemas-tencent-com:service:QPlay:1"
++#define RYGEL_QPLAY_DESCRIPTION_PATH "xml/QPlayDescription.xml"
++static void rygel_qplay_real_constructed (GObject* base);
++static void rygel_qplay_set_network_cb (RygelQPlay* self, GUPnPService* registrar, GUPnPServiceAction* action);
++static void _rygel_qplay_set_network_cb_gupnp_service_action_invoked (GUPnPService* _sender, GUPnPServiceAction* action, gpointer self);
++RygelQPlay* rygel_qplay_new (void);
++RygelQPlay* rygel_qplay_construct (GType object_type);
++
++
++static void _rygel_qplay_set_network_cb_gupnp_service_action_invoked (GUPnPService* _sender, GUPnPServiceAction* action, gpointer self) {
++	rygel_qplay_set_network_cb ((RygelQPlay*) self, _sender, action);
++}
++
++
++static void rygel_qplay_real_constructed (GObject* base) {
++	RygelQPlay * self;
++	self = (RygelQPlay*) base;
++	G_OBJECT_CLASS (rygel_qplay_parent_class)->constructed ((GObject*) G_TYPE_CHECK_INSTANCE_CAST (self, gupnp_service_get_type (), GUPnPService));
++	g_signal_connect_object ((GUPnPService*) self, "action-invoked::SetNetwork", (GCallback) _rygel_qplay_set_network_cb_gupnp_service_action_invoked, self, 0);
++	g_signal_connect_object ((GUPnPService*) self, "action-invoked::QPlayAuth", (GCallback) _rygel_qplay_set_network_cb_gupnp_service_action_invoked, self, 0);
++}
++
++
++static void rygel_qplay_set_network_cb (RygelQPlay* self, GUPnPService* registrar, GUPnPServiceAction* action) {
++	GUPnPServiceAction* _tmp0_ = NULL;
++	guint _tmp1_ = 0U;
++	GUPnPServiceAction* _tmp4_ = NULL;
++	GUPnPServiceAction* _tmp5_ = NULL;
++	g_return_if_fail (self != NULL);
++	g_return_if_fail (registrar != NULL);
++	g_return_if_fail (action != NULL);
++	_tmp0_ = action;
++	_tmp1_ = gupnp_service_action_get_argument_count (_tmp0_);
++	if (_tmp1_ != ((guint) 1)) {
++		GUPnPServiceAction* _tmp2_ = NULL;
++		const gchar* _tmp3_ = NULL;
++		_tmp2_ = action;
++		_tmp3_ = _ ("Invalid argument");
++		gupnp_service_action_return_error (_tmp2_, (guint) 402, _tmp3_);
++		return;
++	}
++	_tmp4_ = action;
++	gupnp_service_action_set (_tmp4_, "Result", G_TYPE_INT, 1, NULL);
++	_tmp5_ = action;
++	gupnp_service_action_return (_tmp5_);
++}
++
++
++RygelQPlay* rygel_qplay_construct (GType object_type) {
++	RygelQPlay * self = NULL;
++	self = (RygelQPlay*) g_object_new (object_type, NULL);
++	return self;
++}
++
++
++RygelQPlay* rygel_qplay_new (void) {
++	return rygel_qplay_construct (RYGEL_TYPE_QPLAY);
++}
++
++
++static void rygel_qplay_class_init (RygelQPlayClass * klass) {
++	rygel_qplay_parent_class = g_type_class_peek_parent (klass);
++	G_OBJECT_CLASS (klass)->constructed = rygel_qplay_real_constructed;
++}
++
++
++static void rygel_qplay_instance_init (RygelQPlay * self) {
++}
++
++
++/**
++ * Basic implementation of QPlay service version 1.
++ */
++GType rygel_qplay_get_type (void) {
++	static volatile gsize rygel_qplay_type_id__volatile = 0;
++	if (g_once_init_enter (&rygel_qplay_type_id__volatile)) {
++		static const GTypeInfo g_define_type_info = { sizeof (RygelQPlayClass), (GBaseInitFunc) NULL, (GBaseFinalizeFunc) NULL, (GClassInitFunc) rygel_qplay_class_init, (GClassFinalizeFunc) NULL, NULL, sizeof (RygelQPlay), 0, (GInstanceInitFunc) rygel_qplay_instance_init, NULL };
++		GType rygel_qplay_type_id;
++		rygel_qplay_type_id = g_type_register_static (gupnp_service_get_type (), "RygelQPlay", &g_define_type_info, 0);
++		g_once_init_leave (&rygel_qplay_type_id__volatile, rygel_qplay_type_id);
++	}
++	return rygel_qplay_type_id__volatile;
++}
++
++
++
+diff --git a/src/librygel-renderer/rygel-qplay.vala b/src/librygel-renderer/rygel-qplay.vala
+new file mode 100644
+index 0000000..622aeb9
+--- /dev/null
++++ b/src/librygel-renderer/rygel-qplay.vala
+@@ -0,0 +1,61 @@
++/*
++ * Copyright (C) 2008 Zeeshan Ali <zeenix@gmail.com>.
++ *
++ * Author: Zeeshan Ali <zeenix@gmail.com>
++ *
++ * This file is part of Rygel.
++ *
++ * Rygel is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU Lesser General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
++ *
++ * Rygel is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU Lesser General Public License for more details.
++ *
++ * You should have received a copy of the GNU Lesser General Public License
++ * along with this program; if not, write to the Free Software Foundation,
++ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
++ */
++
++using GUPnP;
++
++/**
++ * Basic implementation of QPlay service version 1.
++ */
++internal class Rygel.QPlay: Service {
++    public const string UPNP_ID =
++                    "urn:tencent-com:serviceId:QPlay";
++    // UPnP requires that points replaced by hyphens in domain names
++    public const string UPNP_TYPE =
++                    "urn:tencent-com:service:QPlay:1";
++    // The XBox however doesn't like that so we replace it in the service
++    // description later
++    public const string COMPAT_TYPE =
++                    "urn:schemas-tencent-com:service:QPlay:1";
++    public const string DESCRIPTION_PATH =
++                    "xml/QPlayDescription.xml";
++
++    public override void constructed () {
++        base.constructed ();
++
++        this.action_invoked["SetNetwork"].connect (this.set_network_cb);
++        this.action_invoked["QPlayAuth"].connect (this.set_network_cb);
++    }
++
++    /* SetNetwork and QPlayAuth action implementations (fake) */
++    private void set_network_cb (Service       registrar,
++                                 ServiceAction action) {
++        if (action.get_argument_count () != 1) {
++            action.return_error (402, _("Invalid argument"));
++
++            return;
++        }
++
++        action.set ("Result", typeof (int), 1);
++
++        action.return ();
++    }
++}
+-- 
+1.9.1
+

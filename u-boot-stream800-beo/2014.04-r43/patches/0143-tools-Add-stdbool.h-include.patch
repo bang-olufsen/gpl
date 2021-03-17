@@ -1,0 +1,28 @@
+From 3e1b8c8290b0c93b9f6bc21ace30b411121bdf5d Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Fri, 7 Feb 2020 13:54:25 +0100
+Subject: [PATCH] tools: Add stdbool.h include
+
+This fixes error:
+| /tmp/uboot-beoase/tools/fit_image.c:50:24: error: unknown type name 'bool'
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ tools/fit_image.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/tools/fit_image.c b/tools/fit_image.c
+index 1466164..b56a340 100644
+--- a/tools/fit_image.c
++++ b/tools/fit_image.c
+@@ -18,6 +18,7 @@
+ #include "mkimage.h"
+ #include <image.h>
+ #include <u-boot/crc.h>
++#include <stdbool.h>
+ 
+ static image_header_t header;
+ 
+-- 
+2.7.4
+

@@ -1,0 +1,25 @@
+From 08748e7b445be1bf6bfe80210f737de778c619a6 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@gmail.com>
+Date: Fri, 2 May 2014 12:33:50 +0200
+Subject: [PATCH] stream800: Add fdt_high env
+
+Signed-off-by: Marek Belisko <marek.belisko@gmail.com>
+---
+ include/configs/stream800.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/include/configs/stream800.h b/include/configs/stream800.h
+index 5f52d1d..2334bd3 100644
+--- a/include/configs/stream800.h
++++ b/include/configs/stream800.h
+@@ -216,6 +216,7 @@
+ #define CONFIG_EXTRA_ENV_SETTINGS \
+     "loadaddr=0x80200000\0" \
+     "fdtaddr=0x80F80000\0" \
++    "fdt_high=0xffffffff\0" \
+     "rdaddr=0x81000000\0" \
+     "bootfile=uImage\0" \
+     "fdtfile=\0" \
+-- 
+2.7.4
+

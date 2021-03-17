@@ -1,0 +1,58 @@
+From 15aa5dc3ea8dbebd9727017f41041e6881159542 Mon Sep 17 00:00:00 2001
+From: Martin Flaska <martin.flaska@streamunlimited.com>
+Date: Fri, 25 Jan 2013 12:15:15 +0100
+Subject: [PATCH] env cmd: add 'reload' option for 'env' command
+
+function: reload environment from flash
+
+Signed-off-by: Martin Flaska <martin.flaska@streamunlimited.com>
+---
+ common/cmd_nvedit.c | 17 ++++++++++++++++-
+ 1 file changed, 16 insertions(+), 1 deletion(-)
+
+diff --git a/common/cmd_nvedit.c b/common/cmd_nvedit.c
+index c53601c..fd3ef54 100644
+--- a/common/cmd_nvedit.c
++++ b/common/cmd_nvedit.c
+@@ -570,6 +570,19 @@ int do_env_flags(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
+ }
+ #endif
+ 
++
++#ifndef CONFIG_SPL_BUILD
++extern void env_relocate_spec(void);
++static int do_env_reload (cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
++{
++	if (gd->env_valid == 0) {
++		return 1;
++	}
++	env_relocate_spec();
++	return 0;
++}
++#endif /* CONFIG_SPL_BUILD */
++
+ /*
+  * Interactively edit an environment variable
+  */
+@@ -1115,6 +1128,7 @@ static cmd_tbl_t cmd_env_sub[] = {
+ #if defined(CONFIG_CMD_ENV_EXISTS)
+ 	U_BOOT_CMD_MKENT(exists, 2, 0, do_env_exists, "", ""),
+ #endif
++	U_BOOT_CMD_MKENT(reload, 1, 0, do_env_reload, "", ""),
+ };
+ 
+ #if defined(CONFIG_NEEDS_MANUAL_RELOC)
+@@ -1183,8 +1197,9 @@ static char env_help_text[] =
+ #if defined(CONFIG_CMD_SAVEENV) && !defined(CONFIG_ENV_IS_NOWHERE)
+ 	"env save - save environment\n"
+ #endif
+-	"env set [-f] name [arg ...]\n";
++	"env set [-f] name [arg ...]\n"
+ #endif
++	"env reload - reload environment from flash\n";
+ 
+ U_BOOT_CMD(
+ 	env, CONFIG_SYS_MAXARGS, 1, do_env,
+-- 
+2.7.4
+

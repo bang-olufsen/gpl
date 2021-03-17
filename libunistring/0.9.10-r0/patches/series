@@ -1,0 +1,2 @@
+iconv-m4-remove-the-test-to-convert-euc-jp.patch -p1
+0001-Unset-need_charset_alias-when-building-for-musl.patch -p1

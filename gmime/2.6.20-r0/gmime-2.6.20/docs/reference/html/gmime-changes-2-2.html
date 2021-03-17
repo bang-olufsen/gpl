@@ -1,0 +1,91 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Changes from 2.0 to 2.2</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="GMime 2.6 Reference Manual">
+<link rel="up" href="gmime.html" title="Part I. GMime Overview">
+<link rel="prev" href="gmime-changes-2-0.html" title="Changes from 1.0 to 2.0">
+<link rel="next" href="gmime-changes-2-4.html" title="Changes from 2.2 to 2.4">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2"><tr valign="middle">
+<td><a accesskey="p" href="gmime-changes-2-0.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="gmime.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">GMime 2.6 Reference Manual</th>
+<td><a accesskey="n" href="gmime-changes-2-4.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry">
+<a name="gmime-changes-2-2"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle">Changes from 2.0 to 2.2</span></h2>
+<p>Changes from 2.0 to 2.2 — Incompatible changes made between version 2.0 and version 2.2</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1">
+<a name="idp5446096"></a><h2>Incompatible changes from 2.0 to 2.2</h2>
+<p>See also the PORTING document in the toplevel GMime source directory.</p>
+<p>There are no incompatible changes between 2.0 and 2.2.</p>
+<p>GMime 2.2 is both API and ABI compatible with GMime 2.0 meaning
+that any program written for GMime 2.0 will compile fine with GMime
+2.2 and any program linked against GMime 2.0's libraries will also
+work with GMime 2.2's libraries.</p>
+<p>Most of the changes made between 2.0 and 2.2 were internal but there
+are a few API changes you should be aware of (as these interfaces will
+be deprecated in some future version, probably 3.0).</p>
+</div>
+<div class="refsect1">
+<a name="idp5491600"></a><h2>Replacement interfaces from 2.0 to 2.2</h2>
+<div class="itemizedlist"><ul class="itemizedlist" type="disc">
+<li class="listitem"><p>
+<code class="function">g_mime_utils_8bit_header_decode()</code> has been split
+into 2 functions. We now have
+<code class="function">g_mime_utils_header_decode_text()</code> and
+<code class="function">g_mime_utils_header_decode_phrase()</code>.
+<code class="function">g_mime_utils_header_decode_text()</code> no longer
+requires encoded-words to be rfc822 atoms. 
+<code class="function">g_mime_utils_header_decode_phrase()</code> is
+still strict in that encoded-words MUST be valid rfc822 atoms.</p></li>
+<li class="listitem"><p>
+<code class="function">g_mime_utils_8bit_header_encode()</code> has been
+renamed to <code class="function">g_mime_utils_header_encode_text()</code> to
+be more clear as to what type of header this is supposed to encode. If
+you haven't guessed, this function is for encoding rfc822 'text'
+headers (such as Subject).</p></li>
+<li class="listitem"><p>
+<code class="function">g_mime_utils_8bit_header_encode_phrase()</code> has been
+renamed to <code class="function">g_mime_utils_header_encode_phrase()</code>
+mostly for consistancy with the previous 2 changes.</p></li>
+<li class="listitem"><p>
+<code class="function">g_mime_charset_name()</code> has been renamed to
+<code class="function">g_mime_charset_iconv_name()</code> for clarity.</p></li>
+<li class="listitem"><p>
+<code class="function">g_mime_charset_locale_name()</code> has been renamed to
+<code class="function">g_mime_locale_charset()</code>.</p></li>
+<li class="listitem"><p>
+<code class="function">g_mime_cipher_context_verify()</code> no longer returns
+a <span class="structname">GMimeCipherValidity</span>, instead it returns a
+<span class="structname">GMimeSignatureValidity</span> which is far more
+useful. Never fear, you may still use the
+<span class="structname">GMimeCipherValidity</span> APIs for the time being -
+they work fine given a <span class="structname">GMimeSignatureValidity</span>
+structure.</p></li>
+<li class="listitem"><p>
+<code class="function">g_mime_multipart_signed_verify()</code> also now returns
+a <span class="structname">GMimeSignatureValidity</span> structure rather than
+a <span class="structname">GMimeCipherValidity</span> structure. See changes to
+<code class="function">g_mime_cipher_context_verify()</code> for details.</p></li>
+</ul></div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

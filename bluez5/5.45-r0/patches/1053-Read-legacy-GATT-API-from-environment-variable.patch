@@ -1,0 +1,42 @@
+From c2179af6afabd509e6d70977120fa3e41f6f707b Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Mon, 19 Aug 2019 16:26:06 +0200
+Subject: [PATCH] Read legacy GATT API from environment variable
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ src/device.c | 18 ++++++++++++++----
+ 1 file changed, 14 insertions(+), 4 deletions(-)
+
+diff --git a/src/device.c b/src/device.c
+index 560c461..171f14b 100644
+--- a/src/device.c
++++ b/src/device.c
+@@ -4991,10 +4991,20 @@ bool device_attach_att(struct btd_device *dev, GIOChannel *io)
+ 	const bdaddr_t *src, *dst;
+ 	char srcaddr[18], dstaddr[18];
+ 	bool legacy_gatt_api = FALSE;
+-
+-	if (strncmp(dev->name, "BEORC", 5) == 0) {
+-		DBG("Using legacy GATT api!");
+-		legacy_gatt_api = TRUE;
++	static char **legacy_gatt_api_devices = NULL;
++	char **devices_iter;
++
++	if (!legacy_gatt_api_devices && getenv("LEGACY_GATT_API_DEVICES")) {
++		legacy_gatt_api_devices = g_strsplit(getenv("LEGACY_GATT_API_DEVICES"), ",", -1);
++	}
++	if (legacy_gatt_api_devices) {
++		for (devices_iter = legacy_gatt_api_devices; *devices_iter; ++devices_iter) {
++			if (strcmp(dev->name, *devices_iter) == 0) {
++				DBG("Using legacy GATT api!");
++				legacy_gatt_api = TRUE;
++				break;
++			}
++		}
+ 	}
+ 
+ 	bt_io_get(io, &gerr, BT_IO_OPT_SEC_LEVEL, &sec_level,
+-- 
+2.7.4
+

@@ -1,0 +1,53 @@
+From 3196f8fcd3889f9eb5c207b271961d442856d58e Mon Sep 17 00:00:00 2001
+From: Simon Glass <sjg@chromium.org>
+Date: Wed, 16 Apr 2014 08:41:34 -0600
+Subject: [PATCH] Check that u-boot.bin size looks correct
+
+Check that the image size matches the size we get from u-boot.bin. If it
+doesn't, that generally means that some extra sections are being added to
+u-boot.bin, meaning that it is not possible to access data appended to
+the U-Boot binary. This is used for device tree, so needs to work.
+
+This problem was introduced by commit b02bfc4. By adding a test we can
+prevent a reccurence.
+
+Signed-off-by: Simon Glass <sjg@chromium.org>
+---
+ Makefile | 14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
+
+diff --git a/Makefile b/Makefile
+index 2bc9c94..580c0fe 100644
+--- a/Makefile
++++ b/Makefile
+@@ -694,7 +694,7 @@ DO_STATIC_RELA =
+ endif
+ 
+ # Always append ALL so that arch config.mk's can add custom ones
+-ALL-y += u-boot.srec u-boot.bin System.map
++ALL-y += u-boot.srec u-boot.bin System.map binary_size_check
+ 
+ ALL-$(CONFIG_NAND_U_BOOT) += u-boot-nand.bin
+ ALL-$(CONFIG_ONENAND_U_BOOT) += u-boot-onenand.bin
+@@ -767,6 +767,18 @@ u-boot.hex u-boot.srec: u-boot FORCE
+ 
+ OBJCOPYFLAGS_u-boot.bin := -O binary
+ 
++binary_size_check: u-boot.bin System.map FORCE
++	@file_size=`stat -c %s u-boot.bin` ; \
++	map_size=$(shell cat System.map | \
++		awk '/_image_copy_start/ {start = $$1} /_image_binary_end/ {end = $$1} END {if (start != "" && end != "") print strtonum("0x" end) - strtonum("0x" start)}'); \
++	if [ "" != "$$map_size" ]; then \
++		if test $$map_size -ne $$file_size; then \
++			echo "System.map shows a binary size of $$map_size" >&2 ; \
++			echo "  but u-boot.bin shows $$file_size" >&2 ; \
++			exit 1; \
++		fi \
++	fi
++
+ u-boot.bin: u-boot FORCE
+ 	$(call if_changed,objcopy)
+ 	$(call DO_STATIC_RELA,$<,$@,$(CONFIG_SYS_TEXT_BASE))
+-- 
+2.7.4
+

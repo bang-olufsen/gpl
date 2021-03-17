@@ -1,0 +1,65 @@
+From 5beaf275f97a067319c6a0a3026c66a7f6630402 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Thu, 20 Nov 2014 07:00:59 +0100
+Subject: [PATCH] ase: Add command to read board versions
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ board/streamunlimited/stream800/ase_fep.c | 10 ++++++++++
+ board/streamunlimited/stream800/ase_fep.h | 19 +++++++++++++++++--
+ 2 files changed, 27 insertions(+), 2 deletions(-)
+
+diff --git a/board/streamunlimited/stream800/ase_fep.c b/board/streamunlimited/stream800/ase_fep.c
+index e5c32fd..cc2c954 100644
+--- a/board/streamunlimited/stream800/ase_fep.c
++++ b/board/streamunlimited/stream800/ase_fep.c
+@@ -105,6 +105,16 @@ struct ase_fep *init_ase_fep(void)
+ struct ase_fep_version version_ase_fep(struct ase_fep *fep)
+ {
+ 	struct ase_fep_version version;
++	const u8 getHWVersionCmd[] = {0x82, 0x80, 0x08, 0x00, 0x0c, 0x00, 0x00, 0x00};
++	u8 reply[12];
++
++	send_ase_fep(fep, getHWVersionCmd, 8);
++	int len = receive_ase_fep(fep, reply, 12);
++	if (len) {
++		memcpy(&version, reply, len);
++	}
++
++	printf("board version: %c - %d - %d - %d\n", version.revision, version.pcbVariant, version.productVariant, version.productId);
+ 	return version;
+ }
+ 
+diff --git a/board/streamunlimited/stream800/ase_fep.h b/board/streamunlimited/stream800/ase_fep.h
+index 2d2ff57..aa616d6 100644
+--- a/board/streamunlimited/stream800/ase_fep.h
++++ b/board/streamunlimited/stream800/ase_fep.h
+@@ -20,8 +20,23 @@
+ #include <common.h>
+ 
+ struct ase_fep_version {
+-	u16 bom_version;
+-	u16 pcba_variant;
++	u16 rsp;
++	u16 len;
++	u16 revision;
++	u16 pcbVariant;
++	u16 productVariant;
++	u16 productId;
++};
++
++enum ase_beo_productId {
++	unknown = 0,
++	a29mk2_version_a = 1,
++	a29mk2 = 2,
++	ez2mk2 = 3,
++	s47 = 4,
++	ca6 = 5,
++	unknownWithIR = 10,
++	noProductAttached = 12,
+ };
+ 
+ struct ase_fep {
+-- 
+2.7.4
+

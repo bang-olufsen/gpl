@@ -1,0 +1,70 @@
+diff --git a/src/adapter.c b/src/adapter.c
+index c3acb8c..710956f 100644
+--- a/src/adapter.c
++++ b/src/adapter.c
+@@ -5629,6 +5629,21 @@ static bool is_filter_match(GSList *discovery_filter, struct eir_data *eir_data,
+ 	return got_match;
+ }
+ 
++static void add_beoremote_one_company_id(struct eir_data *eir_data)
++{
++	/* BeoRemote One does not include a company identifier - thanks TP Vision */
++	if (eir_data && eir_data->name && (strcmp(eir_data->name, "BEORC") == 0)) {
++		struct eir_msd *msd = g_slist_nth_data(eir_data->msd_list, 0);
++		if (msd) {
++			memcpy(&msd->data[2], &msd->data[0], msd->data_len);
++			msd->data[0] = msd->company & 0xFF;
++			msd->data[1] = (msd->company >> 8) & 0xFF;
++			msd->company = 0x0103;
++			msd->data_len += 2;
++		}
++	}
++}
++
+ static void update_found_devices(struct btd_adapter *adapter,
+ 					const bdaddr_t *bdaddr,
+ 					uint8_t bdaddr_type, int8_t rssi,
+@@ -5740,6 +5755,7 @@ static void update_found_devices(struct btd_adapter *adapter,
+ 	device_add_eir_uuids(dev, eir_data.services);
+ 
+ 	if (eir_data.msd_list) {
++		add_beoremote_one_company_id(&eir_data);
+ 		device_set_manufacturer_data(dev, eir_data.msd_list);
+ 		adapter_msd_notify(adapter, dev, eir_data.msd_list);
+ 	}
+@@ -7776,6 +7792,12 @@ static void connected_callback(uint16_t index, uint16_t length,
+ 	if (eir_data.class != 0)
+ 		device_set_class(device, eir_data.class);
+ 
++	if (eir_data.msd_list) {
++		add_beoremote_one_company_id(&eir_data);
++		device_set_manufacturer_data(device, eir_data.msd_list);
++		adapter_msd_notify(adapter, device, eir_data.msd_list);
++	}
++
+ 	btd_device_set_disconnect_reason(device, MGMT_DEV_DISCONN_UNKNOWN);
+ 
+ 	adapter_add_connection(adapter, device, ev->addr.type);
+@@ -7787,9 +7809,6 @@ static void connected_callback(uint16_t index, uint16_t length,
+ 		btd_device_device_set_name(device, eir_data.name);
+ 	}
+ 
+-	if (eir_data.msd_list)
+-		adapter_msd_notify(adapter, device, eir_data.msd_list);
+-
+ 	eir_data_free(&eir_data);
+ }
+ 
+diff --git a/src/shared/ad.c b/src/shared/ad.c
+index c37a0c3..b9a8369 100644
+--- a/src/shared/ad.c
++++ b/src/shared/ad.c
+@@ -474,8 +474,6 @@ bool bt_ad_add_manufacturer_data(struct bt_ad *ad, uint16_t manufacturer_id,
+ 	new_data = queue_find(ad->manufacturer_data, manufacturer_id_data_match,
+ 						UINT_TO_PTR(manufacturer_id));
+ 	if (new_data) {
+-		if (new_data->len == len && !memcmp(new_data->data, data, len))
+-			return false;
+ 		new_data->data = realloc(new_data->data, len);
+ 		memcpy(new_data->data, data, len);
+ 		new_data->len = len;

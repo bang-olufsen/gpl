@@ -1,0 +1,31 @@
+From 4fac83ba5b6dee39ff0a6428a4d897d568137925 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Fri, 2 Jun 2017 12:02:44 +0200
+Subject: [PATCH] wireless: Don't return when not in world reg domain
+
+Without that we cannot connect to 5GHz hidden ssid as becacon hint was
+not working due to this code. Remove it as we're using custom regulatory.
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ net/wireless/reg.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/net/wireless/reg.c b/net/wireless/reg.c
+index 88d6178..a986142 100644
+--- a/net/wireless/reg.c
++++ b/net/wireless/reg.c
+@@ -1385,8 +1385,8 @@ static void handle_reg_beacon(struct wiphy *wiphy, unsigned int chan_idx,
+ 
+ 	chan->beacon_found = true;
+ 
+-	if (!reg_is_world_roaming(wiphy))
+-		return;
++//	if (!reg_is_world_roaming(wiphy))
++//		return;
+ 
+ 	if (wiphy->regulatory_flags & REGULATORY_DISABLE_BEACON_HINTS)
+ 		return;
+-- 
+2.7.4
+

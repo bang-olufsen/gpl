@@ -1,0 +1,31 @@
+From c15f46c259258d4db5e6647ab94d0d809f1fa252 Mon Sep 17 00:00:00 2001
+From: Bernhard Miller <bernhard.miller@streamunlimited.com>
+Date: Mon, 22 Feb 2016 11:46:40 +0100
+Subject: [PATCH] avrcp: set interval for track position callback to one second
+
+Signed-off-by: Bernhard Miller <bernhard.miller@streamunlimited.com>
+---
+ profiles/audio/avrcp.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/profiles/audio/avrcp.c b/profiles/audio/avrcp.c
+index aa0085b..3c2cea8 100644
+--- a/profiles/audio/avrcp.c
++++ b/profiles/audio/avrcp.c
+@@ -3744,11 +3744,10 @@ static void avrcp_register_notification(struct avrcp *session, uint8_t event)
+ 	pdu->params[0] = event;
+ 
+ 	/*
+-	 * Set maximum interval possible for position changed as we only
+-	 * use it to resync.
++	 * Set maximum interval possible for position changed to 1 second
+ 	 */
+ 	if (event == AVRCP_EVENT_PLAYBACK_POS_CHANGED)
+-		bt_put_be32(UINT32_MAX / 1000, &pdu->params[1]);
++		bt_put_be32(1, &pdu->params[1]);
+ 
+ 	pdu->params_len = htons(AVRCP_REGISTER_NOTIFICATION_PARAM_LENGTH);
+ 
+-- 
+2.7.4
+

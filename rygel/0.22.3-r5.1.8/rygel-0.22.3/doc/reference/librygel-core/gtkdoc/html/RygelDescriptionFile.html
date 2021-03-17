@@ -1,0 +1,785 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>librygel-core Reference Manual: RygelDescriptionFile</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="index.html" title="librygel-core Reference Manual">
+<link rel="up" href="api-main-list-c.html" title="librygel-core API Reference">
+<link rel="prev" href="RygelDBusInterface.html" title="RygelDBusInterface">
+<link rel="next" href="RygelPluginLoader.html" title="RygelPluginLoader">
+<meta name="generator" content="GTK-Doc V1.20.1 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#RygelDescriptionFile.description" class="shortcut">Description</a></span><span id="nav_hierarchy">  <span class="dim">|</span> 
+                  <a href="#RygelDescriptionFile.object-hierarchy" class="shortcut">Object Hierarchy</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="api-main-list-c.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="RygelDBusInterface.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="RygelPluginLoader.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry">
+<a name="RygelDescriptionFile"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="RygelDescriptionFile.top_of_page"></a>RygelDescriptionFile</span></h2>
+<p>RygelDescriptionFile — Represents a device description document and offers methods for easy manipulation of those.</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1">
+<a name="RygelDescriptionFile.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="functions_return">
+<col class="functions_name">
+</colgroup>
+<tbody>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a class="link" href="RygelDescriptionFile.html#RYGEL-TYPE-DESCRIPTION-FILE:CAPS" title="RYGEL_TYPE_DESCRIPTION_FILE">RYGEL_TYPE_DESCRIPTION_FILE</a></td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="RygelDescriptionFile.html#rygel-description-file-set-device-type" title="rygel_description_file_set_device_type ()">rygel_description_file_set_device_type</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="RygelDescriptionFile.html#rygel-description-file-set-model-description" title="rygel_description_file_set_model_description ()">rygel_description_file_set_model_description</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="RygelDescriptionFile.html#rygel-description-file-set-model-name" title="rygel_description_file_set_model_name ()">rygel_description_file_set_model_name</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="RygelDescriptionFile.html#rygel-description-file-set-model-number" title="rygel_description_file_set_model_number ()">rygel_description_file_set_model_number</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="RygelDescriptionFile.html#rygel-description-file-set-friendly-name" title="rygel_description_file_set_friendly_name ()">rygel_description_file_set_friendly_name</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="RygelDescriptionFile.html#rygel-description-file-get-friendly-name" title="rygel_description_file_get_friendly_name ()">rygel_description_file_get_friendly_name</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="RygelDescriptionFile.html#rygel-description-file-set-udn" title="rygel_description_file_set_udn ()">rygel_description_file_set_udn</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="RygelDescriptionFile.html#rygel-description-file-get-udn" title="rygel_description_file_get_udn ()">rygel_description_file_get_udn</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="RygelDescriptionFile.html#rygel-description-file-set-dlna-caps" title="rygel_description_file_set_dlna_caps ()">rygel_description_file_set_dlna_caps</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="RygelDescriptionFile.html#rygel-description-file-clear-service-list" title="rygel_description_file_clear_service_list ()">rygel_description_file_clear_service_list</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="RygelDescriptionFile.html#rygel-description-file-add-service" title="rygel_description_file_add_service ()">rygel_description_file_add_service</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="RygelDescriptionFile.html#rygel-description-file-clear-icon-list" title="rygel_description_file_clear_icon_list ()">rygel_description_file_clear_icon_list</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="RygelDescriptionFile.html#rygel-description-file-add-icon" title="rygel_description_file_add_icon ()">rygel_description_file_add_icon</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="RygelDescriptionFile.html#rygel-description-file-modify-service-type" title="rygel_description_file_modify_service_type ()">rygel_description_file_modify_service_type</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="RygelDescriptionFile.html#rygel-description-file-save" title="rygel_description_file_save ()">rygel_description_file_save</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="RygelDescriptionFile.html" title="RygelDescriptionFile"><span class="returnvalue">RygelDescriptionFile</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="RygelDescriptionFile.html#rygel-description-file-new" title="rygel_description_file_new ()">rygel_description_file_new</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="RygelDescriptionFile.html" title="RygelDescriptionFile"><span class="returnvalue">RygelDescriptionFile</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="RygelDescriptionFile.html#rygel-description-file-new-from-xml-document" title="rygel_description_file_new_from_xml_document ()">rygel_description_file_new_from_xml_document</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="RygelDescriptionFile.other"></a><h2>Types and Values</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="name">
+<col class="description">
+</colgroup>
+<tbody>
+<tr>
+<td class="datatype_keyword">struct</td>
+<td class="function_name"><a class="link" href="RygelDescriptionFile.html#RygelDescriptionFile-struct" title="struct RygelDescriptionFile">RygelDescriptionFile</a></td>
+</tr>
+<tr>
+<td class="datatype_keyword">struct</td>
+<td class="function_name"><a class="link" href="RygelDescriptionFile.html#RygelDescriptionFileClass" title="struct RygelDescriptionFileClass">RygelDescriptionFileClass</a></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="RygelDescriptionFile.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="screen">    <a href="../gobject/gobject-The-Base-Object-Type.html#GObject">GObject</a>
+    <span class="lineart">╰──</span> RygelDescriptionFile
+</pre>
+</div>
+<div class="refsect1">
+<a name="RygelDescriptionFile.description"></a><h2>Description</h2>
+</div>
+<div class="refsect1">
+<a name="RygelDescriptionFile.functions_details"></a><h2>Functions</h2>
+<div class="refsect2">
+<a name="RYGEL-TYPE-DESCRIPTION-FILE:CAPS"></a><h3>RYGEL_TYPE_DESCRIPTION_FILE</h3>
+<pre class="programlisting">#define RYGEL_TYPE_DESCRIPTION_FILE (rygel_description_file_get_type ())
+</pre>
+<p>The type for <a class="link" href="RygelDescriptionFile.html" title="RygelDescriptionFile"><span class="type">RygelDescriptionFile</span></a>.</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-description-file-set-device-type"></a><h3>rygel_description_file_set_device_type ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+rygel_description_file_set_device_type
+                               (<em class="parameter"><code><a class="link" href="RygelDescriptionFile.html" title="RygelDescriptionFile"><span class="type">RygelDescriptionFile</span></a> *self</code></em>,
+                                <em class="parameter"><code>const <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *device_type</code></em>);</pre>
+<p>Change the type of a service.</p>
+<p>Usually used to modify the device version, e.g. default device type is "MediaServer:2" and device_type = "MediaServer:1".</p>
+<div class="refsect3">
+<a name="id-1.3.7.7.3.6"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelDescriptionFile.html" title="RygelDescriptionFile"><span class="type">RygelDescriptionFile</span></a> instance</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>device_type</p></td>
+<td class="parameter_description"><p>  .  is the current content of serviceType. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Parameter for input. Default is transfer none."><span class="acronym">in</span></acronym>]</span></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-description-file-set-model-description"></a><h3>rygel_description_file_set_model_description ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+rygel_description_file_set_model_description
+                               (<em class="parameter"><code><a class="link" href="RygelDescriptionFile.html" title="RygelDescriptionFile"><span class="type">RygelDescriptionFile</span></a> *self</code></em>,
+                                <em class="parameter"><code>const <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *model_description</code></em>);</pre>
+<p>Modify the model description.</p>
+<p>A longer user friendly description of the device.</p>
+<div class="refsect3">
+<a name="id-1.3.7.7.4.6"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelDescriptionFile.html" title="RygelDescriptionFile"><span class="type">RygelDescriptionFile</span></a> instance</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>model_description</p></td>
+<td class="parameter_description"><p>  .  is the new model description. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Parameter for input. Default is transfer none."><span class="acronym">in</span></acronym>]</span></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-description-file-set-model-name"></a><h3>rygel_description_file_set_model_name ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+rygel_description_file_set_model_name (<em class="parameter"><code><a class="link" href="RygelDescriptionFile.html" title="RygelDescriptionFile"><span class="type">RygelDescriptionFile</span></a> *self</code></em>,
+                                       <em class="parameter"><code>const <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *model_name</code></em>);</pre>
+<p>Modify the model name.</p>
+<p>Usually the name of the software implementing this device.</p>
+<div class="refsect3">
+<a name="id-1.3.7.7.5.6"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelDescriptionFile.html" title="RygelDescriptionFile"><span class="type">RygelDescriptionFile</span></a> instance</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>model_name</p></td>
+<td class="parameter_description"><p>  .  is the new model name. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Parameter for input. Default is transfer none."><span class="acronym">in</span></acronym>]</span></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-description-file-set-model-number"></a><h3>rygel_description_file_set_model_number ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+rygel_description_file_set_model_number
+                               (<em class="parameter"><code><a class="link" href="RygelDescriptionFile.html" title="RygelDescriptionFile"><span class="type">RygelDescriptionFile</span></a> *self</code></em>,
+                                <em class="parameter"><code>const <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *model_number</code></em>);</pre>
+<p>Modify the model number.</p>
+<p>Usually the version of the software implementing this device.</p>
+<div class="refsect3">
+<a name="id-1.3.7.7.6.6"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelDescriptionFile.html" title="RygelDescriptionFile"><span class="type">RygelDescriptionFile</span></a> instance</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>model_number</p></td>
+<td class="parameter_description"><p>  .  is the new model number. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Parameter for input. Default is transfer none."><span class="acronym">in</span></acronym>]</span></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-description-file-set-friendly-name"></a><h3>rygel_description_file_set_friendly_name ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+rygel_description_file_set_friendly_name
+                               (<em class="parameter"><code><a class="link" href="RygelDescriptionFile.html" title="RygelDescriptionFile"><span class="type">RygelDescriptionFile</span></a> *self</code></em>,
+                                <em class="parameter"><code>const <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *friendly_name</code></em>);</pre>
+<p>Set the friendly name of the device.</p>
+<p>The friendly name is the one usually presented to the user in control points or DMPs</p>
+<div class="refsect3">
+<a name="id-1.3.7.7.7.6"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelDescriptionFile.html" title="RygelDescriptionFile"><span class="type">RygelDescriptionFile</span></a> instance</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>friendly_name</p></td>
+<td class="parameter_description"><p>  .  is the new friendly name of the device. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Parameter for input. Default is transfer none."><span class="acronym">in</span></acronym>]</span></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-description-file-get-friendly-name"></a><h3>rygel_description_file_get_friendly_name ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *
+rygel_description_file_get_friendly_name
+                               (<em class="parameter"><code><a class="link" href="RygelDescriptionFile.html" title="RygelDescriptionFile"><span class="type">RygelDescriptionFile</span></a> *self</code></em>);</pre>
+<p>Get the current friendly name of the device.</p>
+<div class="refsect3">
+<a name="id-1.3.7.7.8.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelDescriptionFile.html" title="RygelDescriptionFile"><span class="type">RygelDescriptionFile</span></a> instance</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.3.7.7.8.6"></a><h4>Returns</h4>
+<p> The currenly set friendly name. </p>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-description-file-set-udn"></a><h3>rygel_description_file_set_udn ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+rygel_description_file_set_udn (<em class="parameter"><code><a class="link" href="RygelDescriptionFile.html" title="RygelDescriptionFile"><span class="type">RygelDescriptionFile</span></a> *self</code></em>,
+                                <em class="parameter"><code>const <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *udn</code></em>);</pre>
+<p>Set the Unique Device Name of the device.</p>
+<p>Unique Device Name is the UUID of this particular device instance.</p>
+<div class="refsect3">
+<a name="id-1.3.7.7.9.6"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelDescriptionFile.html" title="RygelDescriptionFile"><span class="type">RygelDescriptionFile</span></a> instance</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>udn</p></td>
+<td class="parameter_description"><p>  .  is the Unique Device Name of the device. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Parameter for input. Default is transfer none."><span class="acronym">in</span></acronym>]</span></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-description-file-get-udn"></a><h3>rygel_description_file_get_udn ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *
+rygel_description_file_get_udn (<em class="parameter"><code><a class="link" href="RygelDescriptionFile.html" title="RygelDescriptionFile"><span class="type">RygelDescriptionFile</span></a> *self</code></em>);</pre>
+<p>Get the current UDN of the device.</p>
+<div class="refsect3">
+<a name="id-1.3.7.7.10.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelDescriptionFile.html" title="RygelDescriptionFile"><span class="type">RygelDescriptionFile</span></a> instance</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.3.7.7.10.6"></a><h4>Returns</h4>
+<p> The currenly set UDN. </p>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-description-file-set-dlna-caps"></a><h3>rygel_description_file_set_dlna_caps ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+rygel_description_file_set_dlna_caps (<em class="parameter"><code><a class="link" href="RygelDescriptionFile.html" title="RygelDescriptionFile"><span class="type">RygelDescriptionFile</span></a> *self</code></em>,
+                                      <em class="parameter"><code><a class="link" href="RygelPlugin.html#RygelPluginCapabilities" title="enum RygelPluginCapabilities"><span class="type">RygelPluginCapabilities</span></a> capabilities</code></em>);</pre>
+<p>Set the DLNA caps of this root device and while taking the capabilities of the plugin into account.</p>
+<div class="refsect3">
+<a name="id-1.3.7.7.11.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelDescriptionFile.html" title="RygelDescriptionFile"><span class="type">RygelDescriptionFile</span></a> instance</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>capabilities</p></td>
+<td class="parameter_description"><p>  .  RygelPluginCapabilities flags. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Parameter for input. Default is transfer none."><span class="acronym">in</span></acronym>]</span></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-description-file-clear-service-list"></a><h3>rygel_description_file_clear_service_list ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+rygel_description_file_clear_service_list
+                               (<em class="parameter"><code><a class="link" href="RygelDescriptionFile.html" title="RygelDescriptionFile"><span class="type">RygelDescriptionFile</span></a> *self</code></em>);</pre>
+<div class="refsect3">
+<a name="id-1.3.7.7.12.4"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelDescriptionFile.html" title="RygelDescriptionFile"><span class="type">RygelDescriptionFile</span></a> instance</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-description-file-add-service"></a><h3>rygel_description_file_add_service ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+rygel_description_file_add_service (<em class="parameter"><code><a class="link" href="RygelDescriptionFile.html" title="RygelDescriptionFile"><span class="type">RygelDescriptionFile</span></a> *self</code></em>,
+                                    <em class="parameter"><code>const <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *device_name</code></em>,
+                                    <em class="parameter"><code><a class="link" href="RygelResourceInfo.html" title="RygelResourceInfo"><span class="type">RygelResourceInfo</span></a> *resource_info</code></em>);</pre>
+<div class="refsect3">
+<a name="id-1.3.7.7.13.4"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelDescriptionFile.html" title="RygelDescriptionFile"><span class="type">RygelDescriptionFile</span></a> instance</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>device_name</p></td>
+<td class="parameter_description"><p> </p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>resource_info</p></td>
+<td class="parameter_description"><p> </p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-description-file-clear-icon-list"></a><h3>rygel_description_file_clear_icon_list ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+rygel_description_file_clear_icon_list
+                               (<em class="parameter"><code><a class="link" href="RygelDescriptionFile.html" title="RygelDescriptionFile"><span class="type">RygelDescriptionFile</span></a> *self</code></em>);</pre>
+<div class="refsect3">
+<a name="id-1.3.7.7.14.4"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelDescriptionFile.html" title="RygelDescriptionFile"><span class="type">RygelDescriptionFile</span></a> instance</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-description-file-add-icon"></a><h3>rygel_description_file_add_icon ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+rygel_description_file_add_icon (<em class="parameter"><code><a class="link" href="RygelDescriptionFile.html" title="RygelDescriptionFile"><span class="type">RygelDescriptionFile</span></a> *self</code></em>,
+                                 <em class="parameter"><code>const <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *device_name</code></em>,
+                                 <em class="parameter"><code><a class="link" href="RygelIconInfo.html" title="RygelIconInfo"><span class="type">RygelIconInfo</span></a> *icon_info</code></em>,
+                                 <em class="parameter"><code>const <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *url</code></em>);</pre>
+<div class="refsect3">
+<a name="id-1.3.7.7.15.4"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelDescriptionFile.html" title="RygelDescriptionFile"><span class="type">RygelDescriptionFile</span></a> instance</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>device_name</p></td>
+<td class="parameter_description"><p> </p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>icon_info</p></td>
+<td class="parameter_description"><p> </p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>url</p></td>
+<td class="parameter_description"><p> </p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-description-file-modify-service-type"></a><h3>rygel_description_file_modify_service_type ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+rygel_description_file_modify_service_type
+                               (<em class="parameter"><code><a class="link" href="RygelDescriptionFile.html" title="RygelDescriptionFile"><span class="type">RygelDescriptionFile</span></a> *self</code></em>,
+                                <em class="parameter"><code>const <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *old_type</code></em>,
+                                <em class="parameter"><code>const <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *new_type</code></em>);</pre>
+<p>Change the type of a service.</p>
+<p>Usually used to modify the service version, e.g. old_type = "ContentDirectory:2" and new_type = "ContentDirectory:1".</p>
+<div class="refsect3">
+<a name="id-1.3.7.7.16.6"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelDescriptionFile.html" title="RygelDescriptionFile"><span class="type">RygelDescriptionFile</span></a> instance</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>old_type</p></td>
+<td class="parameter_description"><p>  .  is the current content of serviceType. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Parameter for input. Default is transfer none."><span class="acronym">in</span></acronym>]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>new_type</p></td>
+<td class="parameter_description"><p>  .  is the content serviceType will be set to. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Parameter for input. Default is transfer none."><span class="acronym">in</span></acronym>]</span></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-description-file-save"></a><h3>rygel_description_file_save ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+rygel_description_file_save (<em class="parameter"><code><a class="link" href="RygelDescriptionFile.html" title="RygelDescriptionFile"><span class="type">RygelDescriptionFile</span></a> *self</code></em>,
+                             <em class="parameter"><code>const <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *path</code></em>,
+                             <em class="parameter"><code><a href="../glib/glib-Error-Reporting.html#GError"><span class="type">GError</span></a> **error</code></em>);</pre>
+<p>Writes the current document to a file.</p>
+<p>It makes sure that the resulting file has the correct UTF-8 encoding and does not have any kind of newlines. This is necessary as some devices with broken XML parsers can't cope with UNIX newlines. If a file with the same name exists it will be overwritten.</p>
+<p><a href="../glib/glib-Error-Reporting.html#GError"><span class="type">GError</span></a> will be returned in <em class="parameter"><code>error</code></em> if anything fails while creating the XML dump. </p>
+<div class="refsect3">
+<a name="id-1.3.7.7.17.7"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelDescriptionFile.html" title="RygelDescriptionFile"><span class="type">RygelDescriptionFile</span></a> instance</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>path</p></td>
+<td class="parameter_description"><p>  .  is a path to a file. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Parameter for input. Default is transfer none."><span class="acronym">in</span></acronym>]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>error</p></td>
+<td class="parameter_description"><p>location to store the error occuring, or <a href="../glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a> to ignore</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-description-file-new"></a><h3>rygel_description_file_new ()</h3>
+<pre class="programlisting"><a class="link" href="RygelDescriptionFile.html" title="RygelDescriptionFile"><span class="returnvalue">RygelDescriptionFile</span></a> *
+rygel_description_file_new (<em class="parameter"><code>const <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *template_file</code></em>,
+                            <em class="parameter"><code><a href="../glib/glib-Error-Reporting.html#GError"><span class="type">GError</span></a> **error</code></em>);</pre>
+<p>Constructor to load a description file from disk</p>
+<p><code class="literal">GUPNP_XML_ERROR_PARSE</code> will be returned in <em class="parameter"><code>error</code></em> if there was an error reading or parsing the file. </p>
+<div class="refsect3">
+<a name="id-1.3.7.7.18.6"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>template_file</p></td>
+<td class="parameter_description"><p>  .  the path to the description file. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Parameter for input. Default is transfer none."><span class="acronym">in</span></acronym>]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>error</p></td>
+<td class="parameter_description"><p>location to store the error occuring, or <a href="../glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a> to ignore</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-description-file-new-from-xml-document"></a><h3>rygel_description_file_new_from_xml_document ()</h3>
+<pre class="programlisting"><a class="link" href="RygelDescriptionFile.html" title="RygelDescriptionFile"><span class="returnvalue">RygelDescriptionFile</span></a> *
+rygel_description_file_new_from_xml_document
+                               (<em class="parameter"><code><a href="../gupnp/GUPnPXMLDoc.html"><span class="type">GUPnPXMLDoc</span></a> *doc</code></em>);</pre>
+<p>Constructor which wraps an existing GUPnP.XMLDoc as a description file.</p>
+<div class="refsect3">
+<a name="id-1.3.7.7.19.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>doc</p></td>
+<td class="parameter_description"><p>  .  is the GUPnP.XMLDoc to wrap. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Parameter for input. Default is transfer none."><span class="acronym">in</span></acronym>]</span></td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="refsect1">
+<a name="RygelDescriptionFile.other_details"></a><h2>Types and Values</h2>
+<div class="refsect2">
+<a name="RygelDescriptionFile-struct"></a><h3>struct RygelDescriptionFile</h3>
+<pre class="programlisting">struct RygelDescriptionFile;</pre>
+<p>Represents a device description document and offers methods for easy manipulation of those.</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelDescriptionFileClass"></a><h3>struct RygelDescriptionFileClass</h3>
+<pre class="programlisting">struct RygelDescriptionFileClass {
+	GObjectClass parent_class;
+};
+</pre>
+<p>The class structure for <a class="link" href="RygelDescriptionFile.html#RYGEL-TYPE-DESCRIPTION-FILE:CAPS" title="RYGEL_TYPE_DESCRIPTION_FILE"><code class="literal">RYGEL_TYPE_DESCRIPTION_FILE</code></a>. All the fields in this structure are private and should never be accessed directly.</p>
+<div class="refsect3">
+<a name="id-1.3.7.8.3.5"></a><h4>Members</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="300px" class="struct_members_name">
+<col class="struct_members_description">
+<col width="200px" class="struct_members_annotations">
+</colgroup>
+<tbody><tr>
+<td class="struct_member_name"><p><a href="../gobject/gobject-The-Base-Object-Type.html#GObjectClass"><span class="type">GObjectClass</span></a> <em class="structfield"><code><a name="RygelDescriptionFileClass.parent-class"></a>parent_class</code></em>;</p></td>
+<td class="struct_member_description"><p>the parent class structure</p></td>
+<td class="struct_member_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.20.1</div>
+</body>
+</html>

@@ -1,0 +1,44 @@
+From cd143ef6d4baee2bfd9206ec42ada8215cf57510 Mon Sep 17 00:00:00 2001
+From: Xia Zhou <xia.zhou@streamunlimited.com>
+Date: Mon, 17 Nov 2014 11:31:11 +0100
+Subject: [PATCH] ASE-727: android qq music app hack
+
+Android qq music app cannot read out time format with millisecond. Discard
+millisecond in time. Fix seekbar issue ASE-727.
+
+Signed-off-by: Xia Zhou <xia.zhou@streamunlimited.com>
+---
+ src/librygel-renderer/rygel-time-utils.c    | 2 +-
+ src/librygel-renderer/rygel-time-utils.vala | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/src/librygel-renderer/rygel-time-utils.c b/src/librygel-renderer/rygel-time-utils.c
+index aa4c1f9..b64a8a6 100644
+--- a/src/librygel-renderer/rygel-time-utils.c
++++ b/src/librygel-renderer/rygel-time-utils.c
+@@ -297,7 +297,7 @@ gchar* rygel_time_utils_time_to_string (gint64 time) {
+ 	msecs = (_tmp9_ - totsecs) / G_TIME_SPAN_MILLISECOND;
+ 	_tmp10_ = sign;
+ 	_tmp11_ = seconds;
+-	_tmp12_ = g_strdup_printf ("%s%llu:%.2llu:%.2llu.%.3llu", _tmp10_, hours, minutes, _tmp11_, msecs);
++	_tmp12_ = g_strdup_printf ("%s%llu:%.2llu:%.2llu", _tmp10_, hours, minutes, _tmp11_);
+ 	result = _tmp12_;
+ 	_g_free0 (sign);
+ 	return result;
+diff --git a/src/librygel-renderer/rygel-time-utils.vala b/src/librygel-renderer/rygel-time-utils.vala
+index fb91ecd..26a08b1 100644
+--- a/src/librygel-renderer/rygel-time-utils.vala
++++ b/src/librygel-renderer/rygel-time-utils.vala
+@@ -70,7 +70,7 @@ internal abstract class Rygel.TimeUtils {
+         totsecs = (hours * 3600 + minutes * 60 + seconds) * TimeSpan.SECOND;
+         msecs = (time - totsecs) / TimeSpan.MILLISECOND;
+ 
+-        return "%s%llu:%.2llu:%.2llu.%.3llu".printf (sign, hours, minutes,
+-                                                     seconds, msecs);
++        return "%s%llu:%.2llu:%.2llu".printf (sign, hours, minutes,
++                                              seconds);
+     }
+ }
+-- 
+1.9.1
+

@@ -1,0 +1,54 @@
+# This is the world regulatory domain
+country 00:
+	(2402 - 2472 @ 40), (3, 20)
+	# Channel 12 - 13.
+	(2457 - 2482 @ 40), (3, 20), NO-IR
+	# Channel 14. Only JP enables this and for 802.11b only
+	(2474 - 2494 @ 20), (3, 20), NO-IR, NO-OFDM
+	# Channel 36 - 48
+	(5170 - 5250 @ 40), (3, 20), NO-IR
+	# NB: 5260 MHz - 5700 MHz requies DFS
+	# Channel 149 - 165
+	(5735 - 5835 @ 40), (3, 20), NO-IR
+
+# ASE specific regions
+# mapping:
+# 	AA = United States
+#	AB = Rest of the world
+#	AC = China
+
+country AA:
+	(2402 - 2472 @ 40), (N/A, 14)
+	(5170 - 5250 @ 40), (N/A, 16)
+	(5250 - 5330 @ 40), (N/A, 16), DFS
+	(5490 - 5590 @ 40), (N/A, 16), DFS
+	(5650 - 5710 @ 40), (N/A, 16), DFS
+	(5735 - 5835 @ 40), (N/A, 16)
+
+country AB:
+	(2402 - 2472 @ 40), (N/A, 14)
+	# Channel 12 - 13.
+	(2457 - 2482 @ 20), (N/A, 14), NO-IR
+	(5170 - 5250 @ 40), (N/A, 13), NO-IR
+	(5250 - 5330 @ 40), (N/A, 14), DFS, NO-IR
+	(5490 - 5590 @ 40), (N/A, 16), DFS, NO-IR
+	(5650 - 5710 @ 40), (N/A, 16), DFS, NO-IR
+
+country AC:
+	(2402 - 2482 @ 40), (N/A, 14)
+	(5735 - 5835 @ 40), (N/A, 16)
+
+# ASE default setting
+country RZ:
+	(2402 - 2482 @ 40), (3, 14)
+	# Channel 14. Only JP enables this and for 802.11b only
+	(2474 - 2494 @ 20), (3, 14), NO-IR, NO-OFDM
+	# Channel 36 - 48
+	(5170 - 5250 @ 40), (3, 13), NO-IR
+	# Channel 52 - 64
+	(5250 - 5330 @ 40), (3, 13), NO-IR, DFS
+	# Channel 100 - 140
+	(5490 - 5730 @ 40), (3, 13), NO-IR, DFS
+	# Channel 149 - 165
+	(5735 - 5835 @ 40), (3, 13), NO-IR
+

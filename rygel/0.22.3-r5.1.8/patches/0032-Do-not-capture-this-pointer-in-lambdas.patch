@@ -1,0 +1,584 @@
+From 3ac63520568fd5b0c2e2bf80baee65255fa15e28 Mon Sep 17 00:00:00 2001
+From: Milan Plzik <milan.plzik@streamunlimited.com>
+Date: Fri, 20 Feb 2015 10:27:32 +0100
+Subject: [PATCH] Do not capture 'this' pointer in lambdas.
+
+In Vala, 'this' pointer is captures in lambdas by default. This causes issues
+with a buggy C code, which depends on the order of object destruction (e.g.
+AVTransport is destroyed much later than the rest of services, causing it to
+use already-freed objects).
+
+Signed-off-by: Milan Plzik <milan.plzik@streamunlimited.com>
+---
+ src/librygel-renderer/rygel-av-transport.c    | 389 +++++++++++++++++---------
+ src/librygel-renderer/rygel-av-transport.vala |  50 +++-
+ 2 files changed, 299 insertions(+), 140 deletions(-)
+
+diff --git a/src/librygel-renderer/rygel-av-transport.c b/src/librygel-renderer/rygel-av-transport.c
+index 1b7ce15..aa32d23 100644
+--- a/src/librygel-renderer/rygel-av-transport.c
++++ b/src/librygel-renderer/rygel-av-transport.c
+@@ -98,6 +98,7 @@ typedef struct _Block2Data Block2Data;
+ #define __g_list_free__g_object_unref0_0(var) ((var == NULL) ? NULL : (var = (_g_list_free__g_object_unref0_ (var), NULL)))
+ typedef struct _RygelAvTransportHandlePlaylistData RygelAvTransportHandlePlaylistData;
+ typedef struct _Block3Data Block3Data;
++typedef struct _Block4Data Block4Data;
+ 
+ struct _RygelAVTransport {
+ 	GUPnPService parent_instance;
+@@ -278,10 +279,17 @@ struct _RygelAvTransportHandlePlaylistData {
+ 
+ struct _Block3Data {
+ 	int _ref_count_;
+-	RygelAVTransport* self;
+-	GUPnPServiceAction* action;
++	GWeakRef weakme;
++	GWeakRef weakmsg;
++};
++
++struct _Block4Data {
++	int _ref_count_;
++	GWeakRef weakme;
++	GWeakRef weakmsg;
+ 	gchar* uri;
+ 	gchar* metadata;
++	GUPnPServiceAction* action;
+ };
+ 
+ 
+@@ -421,14 +429,18 @@ static void _g_list_free__g_object_unref0_ (GList* self);
+ void rygel_player_controller_interface_set_playlist_uri (RygelPlayerControllerInterface* self, const gchar* uri, const gchar* metadata, GUPnPMediaCollection* collection);
+ void rygel_player_controller_interface_set_next_playlist_uri (RygelPlayerControllerInterface* self, const gchar* uri, const gchar* metadata, GUPnPMediaCollection* collection);
+ static gboolean rygel_av_transport_is_playlist (RygelAVTransport* self, const gchar* mime, const gchar* features);
+-static void rygel_av_transport_check_resource (RygelAVTransport* self, SoupMessage* msg, const gchar* _uri, const gchar* _metadata, GUPnPServiceAction* action);
+-static void ___lambda7_ (RygelAVTransport* self, SoupMessage* msg);
+-static void ____lambda7__soup_message_got_headers (SoupMessage* _sender, gpointer self);
+-static void rygel_av_transport_set_single_play_uri (RygelAVTransport* self, GUPnPServiceAction* action, const gchar* uri, const gchar* metadata, const gchar* mime, const gchar* features);
++static void rygel_av_transport_setup_check_resource_callback (RygelAVTransport* instance, SoupMessage* message);
+ static Block3Data* block3_data_ref (Block3Data* _data3_);
+ static void block3_data_unref (void * _userdata_);
+-static void ___lambda6_ (Block3Data* _data3_, SoupMessage* msg);
+-static void ____lambda6__soup_message_finished (SoupMessage* _sender, gpointer self);
++static void __lambda7_ (Block3Data* _data3_);
++static void ___lambda7__soup_message_got_headers (SoupMessage* _sender, gpointer self);
++static void rygel_av_transport_check_resource (RygelAVTransport* self, SoupMessage* msg, const gchar* _uri, const gchar* _metadata, GUPnPServiceAction* action);
++static void rygel_av_transport_set_single_play_uri (RygelAVTransport* self, GUPnPServiceAction* action, const gchar* uri, const gchar* metadata, const gchar* mime, const gchar* features);
++static void rygel_av_transport_setup_handle_new_transport_uri_callback (RygelAVTransport* instance, SoupMessage* message, const gchar* uri, const gchar* metadata, GUPnPServiceAction* action);
++static Block4Data* block4_data_ref (Block4Data* _data4_);
++static void block4_data_unref (void * _userdata_);
++static void __lambda6_ (Block4Data* _data4_);
++static void ___lambda6__soup_message_finished (SoupMessage* _sender, gpointer self);
+ static void rygel_av_transport_set_qplay_queue_uri (RygelAVTransport* self, GUPnPServiceAction* action, const gchar* uri, const gchar* metadata, const gchar* mime, const gchar* features);
+ void rygel_player_controller_interface_set_qplay_queue_uri (RygelPlayerControllerInterface* self, const gchar* uri, const gchar* metadata, const gchar* mime, const gchar* features);
+ void rygel_player_controller_interface_set_single_play_uri (RygelPlayerControllerInterface* self, const gchar* uri, const gchar* metadata, const gchar* mime, const gchar* features);
+@@ -2504,25 +2516,90 @@ static gboolean rygel_av_transport_is_playlist (RygelAVTransport* self, const gc
+ }
+ 
+ 
+-static void ___lambda7_ (RygelAVTransport* self, SoupMessage* msg) {
+-	SoupSession* _tmp0_ = NULL;
+-	SoupMessage* _tmp1_ = NULL;
+-	SoupMessage* _tmp2_ = NULL;
+-	guint _tmp3_ = 0U;
+-	guint _tmp4_ = 0U;
+-	g_return_if_fail (msg != NULL);
+-	self->priv->head_faked = TRUE;
+-	_tmp0_ = self->priv->session;
+-	_tmp1_ = msg;
+-	_tmp2_ = msg;
+-	g_object_get (_tmp2_, "status-code", &_tmp3_, NULL);
+-	_tmp4_ = _tmp3_;
+-	soup_session_cancel_message (_tmp0_, _tmp1_, _tmp4_);
++static Block3Data* block3_data_ref (Block3Data* _data3_) {
++	g_atomic_int_inc (&_data3_->_ref_count_);
++	return _data3_;
++}
++
++
++static void block3_data_unref (void * _userdata_) {
++	Block3Data* _data3_;
++	_data3_ = (Block3Data*) _userdata_;
++	if (g_atomic_int_dec_and_test (&_data3_->_ref_count_)) {
++		g_weak_ref_clear (&_data3_->weakmsg);
++		g_weak_ref_clear (&_data3_->weakme);
++		g_slice_free (Block3Data, _data3_);
++	}
++}
++
++
++static void __lambda7_ (Block3Data* _data3_) {
++	RygelAVTransport* me = NULL;
++	GObject* _tmp0_ = NULL;
++	SoupMessage* msg = NULL;
++	GObject* _tmp1_ = NULL;
++	gboolean _tmp2_ = FALSE;
++	RygelAVTransport* _tmp3_ = NULL;
++	RygelAVTransport* _tmp5_ = NULL;
++	RygelAVTransport* _tmp6_ = NULL;
++	SoupSession* _tmp7_ = NULL;
++	SoupMessage* _tmp8_ = NULL;
++	SoupMessage* _tmp9_ = NULL;
++	guint _tmp10_ = 0U;
++	guint _tmp11_ = 0U;
++	_tmp0_ = g_weak_ref_get (&_data3_->weakme);
++	me = G_TYPE_CHECK_INSTANCE_CAST (_tmp0_, RYGEL_TYPE_AV_TRANSPORT, RygelAVTransport);
++	_tmp1_ = g_weak_ref_get (&_data3_->weakmsg);
++	msg = G_TYPE_CHECK_INSTANCE_CAST (_tmp1_, soup_message_get_type (), SoupMessage);
++	_tmp3_ = me;
++	if (_tmp3_ == NULL) {
++		_tmp2_ = TRUE;
++	} else {
++		SoupMessage* _tmp4_ = NULL;
++		_tmp4_ = msg;
++		_tmp2_ = _tmp4_ == NULL;
++	}
++	if (_tmp2_) {
++		_g_object_unref0 (msg);
++		_g_object_unref0 (me);
++		return;
++	}
++	_tmp5_ = me;
++	_tmp5_->priv->head_faked = TRUE;
++	_tmp6_ = me;
++	_tmp7_ = _tmp6_->priv->session;
++	_tmp8_ = msg;
++	_tmp9_ = msg;
++	g_object_get (_tmp9_, "status-code", &_tmp10_, NULL);
++	_tmp11_ = _tmp10_;
++	soup_session_cancel_message (_tmp7_, _tmp8_, _tmp11_);
++	_g_object_unref0 (msg);
++	_g_object_unref0 (me);
+ }
+ 
+ 
+-static void ____lambda7__soup_message_got_headers (SoupMessage* _sender, gpointer self) {
+-	___lambda7_ ((RygelAVTransport*) self, _sender);
++static void ___lambda7__soup_message_got_headers (SoupMessage* _sender, gpointer self) {
++	__lambda7_ (self);
++}
++
++
++static void rygel_av_transport_setup_check_resource_callback (RygelAVTransport* instance, SoupMessage* message) {
++	Block3Data* _data3_;
++	RygelAVTransport* _tmp0_ = NULL;
++	SoupMessage* _tmp1_ = NULL;
++	SoupMessage* _tmp2_ = NULL;
++	g_return_if_fail (instance != NULL);
++	g_return_if_fail (message != NULL);
++	_data3_ = g_slice_new0 (Block3Data);
++	_data3_->_ref_count_ = 1;
++	_tmp0_ = instance;
++	g_weak_ref_init (&_data3_->weakme, (GObject*) _tmp0_);
++	_tmp1_ = message;
++	g_weak_ref_init (&_data3_->weakmsg, (GObject*) _tmp1_);
++	_tmp2_ = message;
++	g_signal_connect_data (_tmp2_, "got-headers", (GCallback) ___lambda7__soup_message_got_headers, block3_data_ref (_data3_), (GClosureNotify) block3_data_unref, 0);
++	block3_data_unref (_data3_);
++	_data3_ = NULL;
+ }
+ 
+ 
+@@ -2615,11 +2692,11 @@ static void rygel_av_transport_check_resource (RygelAVTransport* self, SoupMessa
+ 		SoupSession* _tmp22_ = NULL;
+ 		SoupMessage* _tmp23_ = NULL;
+ 		SoupMessage* _tmp24_ = NULL;
+-		g_debug ("rygel-av-transport.vala:749: Peer does not support HEAD, trying GET");
++		g_debug ("rygel-av-transport.vala:768: Peer does not support HEAD, trying GET");
+ 		_tmp20_ = msg;
+ 		g_object_set (_tmp20_, "method", "GET", NULL);
+ 		_tmp21_ = msg;
+-		g_signal_connect_object (_tmp21_, "got-headers", (GCallback) ____lambda7__soup_message_got_headers, self, 0);
++		rygel_av_transport_setup_check_resource_callback (self, _tmp21_);
+ 		_tmp22_ = self->priv->session;
+ 		_tmp23_ = msg;
+ 		_tmp24_ = _g_object_ref0 (_tmp23_);
+@@ -2686,7 +2763,7 @@ static void rygel_av_transport_check_resource (RygelAVTransport* self, SoupMessa
+ 		GUPnPServiceAction* _tmp53_ = NULL;
+ 		const gchar* _tmp54_ = NULL;
+ 		_tmp52_ = mime;
+-		g_debug ("rygel-av-transport.vala:782: Unsupported mime type %s", _tmp52_);
++		g_debug ("rygel-av-transport.vala:798: Unsupported mime type %s", _tmp52_);
+ 		_tmp53_ = action;
+ 		_tmp54_ = _ ("Illegal MIME-type");
+ 		gupnp_service_action_return_error (_tmp53_, (guint) 714, _tmp54_);
+@@ -2727,143 +2804,189 @@ static void rygel_av_transport_check_resource (RygelAVTransport* self, SoupMessa
+ }
+ 
+ 
+-static Block3Data* block3_data_ref (Block3Data* _data3_) {
+-	g_atomic_int_inc (&_data3_->_ref_count_);
+-	return _data3_;
++static Block4Data* block4_data_ref (Block4Data* _data4_) {
++	g_atomic_int_inc (&_data4_->_ref_count_);
++	return _data4_;
+ }
+ 
+ 
+-static void block3_data_unref (void * _userdata_) {
+-	Block3Data* _data3_;
+-	_data3_ = (Block3Data*) _userdata_;
+-	if (g_atomic_int_dec_and_test (&_data3_->_ref_count_)) {
+-		RygelAVTransport* self;
+-		self = _data3_->self;
+-		__vala_GUPnPServiceAction_free0 (_data3_->action);
+-		_g_free0 (_data3_->uri);
+-		_g_free0 (_data3_->metadata);
+-		_g_object_unref0 (self);
+-		g_slice_free (Block3Data, _data3_);
++static void block4_data_unref (void * _userdata_) {
++	Block4Data* _data4_;
++	_data4_ = (Block4Data*) _userdata_;
++	if (g_atomic_int_dec_and_test (&_data4_->_ref_count_)) {
++		g_weak_ref_clear (&_data4_->weakmsg);
++		g_weak_ref_clear (&_data4_->weakme);
++		_g_free0 (_data4_->uri);
++		_g_free0 (_data4_->metadata);
++		__vala_GUPnPServiceAction_free0 (_data4_->action);
++		g_slice_free (Block4Data, _data4_);
+ 	}
+ }
+ 
+ 
+-static void ___lambda6_ (Block3Data* _data3_, SoupMessage* msg) {
+-	RygelAVTransport* self;
+-	SoupMessage* _tmp0_ = NULL;
+-	const gchar* _tmp1_ = NULL;
+-	const gchar* _tmp2_ = NULL;
+-	GUPnPServiceAction* _tmp3_ = NULL;
+-	self = _data3_->self;
+-	g_return_if_fail (msg != NULL);
+-	_tmp0_ = msg;
+-	_tmp1_ = _data3_->uri;
+-	_tmp2_ = _data3_->metadata;
+-	_tmp3_ = _data3_->action;
+-	rygel_av_transport_check_resource (self, _tmp0_, _tmp1_, _tmp2_, _tmp3_);
++static void __lambda6_ (Block4Data* _data4_) {
++	RygelAVTransport* me = NULL;
++	GObject* _tmp0_ = NULL;
++	SoupMessage* msg = NULL;
++	GObject* _tmp1_ = NULL;
++	gboolean _tmp2_ = FALSE;
++	RygelAVTransport* _tmp3_ = NULL;
++	RygelAVTransport* _tmp5_ = NULL;
++	SoupMessage* _tmp6_ = NULL;
++	const gchar* _tmp7_ = NULL;
++	const gchar* _tmp8_ = NULL;
++	GUPnPServiceAction* _tmp9_ = NULL;
++	_tmp0_ = g_weak_ref_get (&_data4_->weakme);
++	me = G_TYPE_CHECK_INSTANCE_CAST (_tmp0_, RYGEL_TYPE_AV_TRANSPORT, RygelAVTransport);
++	_tmp1_ = g_weak_ref_get (&_data4_->weakmsg);
++	msg = G_TYPE_CHECK_INSTANCE_CAST (_tmp1_, soup_message_get_type (), SoupMessage);
++	_tmp3_ = me;
++	if (_tmp3_ == NULL) {
++		_tmp2_ = TRUE;
++	} else {
++		SoupMessage* _tmp4_ = NULL;
++		_tmp4_ = msg;
++		_tmp2_ = _tmp4_ == NULL;
++	}
++	if (_tmp2_) {
++		_g_object_unref0 (msg);
++		_g_object_unref0 (me);
++		return;
++	}
++	_tmp5_ = me;
++	_tmp6_ = msg;
++	_tmp7_ = _data4_->uri;
++	_tmp8_ = _data4_->metadata;
++	_tmp9_ = _data4_->action;
++	rygel_av_transport_check_resource (_tmp5_, _tmp6_, _tmp7_, _tmp8_, _tmp9_);
++	_g_object_unref0 (msg);
++	_g_object_unref0 (me);
+ }
+ 
+ 
+-static void ____lambda6__soup_message_finished (SoupMessage* _sender, gpointer self) {
+-	___lambda6_ (self, _sender);
++static void ___lambda6__soup_message_finished (SoupMessage* _sender, gpointer self) {
++	__lambda6_ (self);
+ }
+ 
+ 
+-static void rygel_av_transport_handle_new_transport_uri (RygelAVTransport* self, GUPnPServiceAction* action, const gchar* uri, const gchar* metadata) {
+-	Block3Data* _data3_;
+-	GUPnPServiceAction* _tmp0_ = NULL;
+-	GUPnPServiceAction* _tmp1_ = NULL;
++static void rygel_av_transport_setup_handle_new_transport_uri_callback (RygelAVTransport* instance, SoupMessage* message, const gchar* uri, const gchar* metadata, GUPnPServiceAction* action) {
++	Block4Data* _data4_;
++	const gchar* _tmp0_ = NULL;
++	gchar* _tmp1_ = NULL;
+ 	const gchar* _tmp2_ = NULL;
+ 	gchar* _tmp3_ = NULL;
+-	const gchar* _tmp4_ = NULL;
+-	gchar* _tmp5_ = NULL;
+-	gboolean _tmp6_ = FALSE;
+-	const gchar* _tmp7_ = NULL;
+-	gboolean _tmp8_ = FALSE;
++	GUPnPServiceAction* _tmp4_ = NULL;
++	GUPnPServiceAction* _tmp5_ = NULL;
++	RygelAVTransport* _tmp6_ = NULL;
++	SoupMessage* _tmp7_ = NULL;
++	SoupMessage* _tmp8_ = NULL;
++	g_return_if_fail (instance != NULL);
++	g_return_if_fail (message != NULL);
++	g_return_if_fail (uri != NULL);
++	g_return_if_fail (metadata != NULL);
++	g_return_if_fail (action != NULL);
++	_data4_ = g_slice_new0 (Block4Data);
++	_data4_->_ref_count_ = 1;
++	_tmp0_ = uri;
++	_tmp1_ = g_strdup (_tmp0_);
++	_g_free0 (_data4_->uri);
++	_data4_->uri = _tmp1_;
++	_tmp2_ = metadata;
++	_tmp3_ = g_strdup (_tmp2_);
++	_g_free0 (_data4_->metadata);
++	_data4_->metadata = _tmp3_;
++	_tmp4_ = action;
++	_tmp5_ = __vala_GUPnPServiceAction_copy0 (_tmp4_);
++	__vala_GUPnPServiceAction_free0 (_data4_->action);
++	_data4_->action = _tmp5_;
++	_tmp6_ = instance;
++	g_weak_ref_init (&_data4_->weakme, (GObject*) _tmp6_);
++	_tmp7_ = message;
++	g_weak_ref_init (&_data4_->weakmsg, (GObject*) _tmp7_);
++	_tmp8_ = message;
++	g_signal_connect_data (_tmp8_, "finished", (GCallback) ___lambda6__soup_message_finished, block4_data_ref (_data4_), (GClosureNotify) block4_data_unref, 0);
++	block4_data_unref (_data4_);
++	_data4_ = NULL;
++}
++
++
++static void rygel_av_transport_handle_new_transport_uri (RygelAVTransport* self, GUPnPServiceAction* action, const gchar* uri, const gchar* metadata) {
++	gboolean _tmp0_ = FALSE;
++	const gchar* _tmp1_ = NULL;
++	gboolean _tmp2_ = FALSE;
+ 	g_return_if_fail (self != NULL);
+ 	g_return_if_fail (action != NULL);
+ 	g_return_if_fail (uri != NULL);
+ 	g_return_if_fail (metadata != NULL);
+-	_data3_ = g_slice_new0 (Block3Data);
+-	_data3_->_ref_count_ = 1;
+-	_data3_->self = g_object_ref (self);
+-	_tmp0_ = action;
+-	_tmp1_ = __vala_GUPnPServiceAction_copy0 (_tmp0_);
+-	__vala_GUPnPServiceAction_free0 (_data3_->action);
+-	_data3_->action = _tmp1_;
+-	_tmp2_ = uri;
+-	_tmp3_ = g_strdup (_tmp2_);
+-	_g_free0 (_data3_->uri);
+-	_data3_->uri = _tmp3_;
+-	_tmp4_ = metadata;
+-	_tmp5_ = g_strdup (_tmp4_);
+-	_g_free0 (_data3_->metadata);
+-	_data3_->metadata = _tmp5_;
+-	_tmp7_ = _data3_->uri;
+-	_tmp8_ = g_str_has_prefix (_tmp7_, "http://");
+-	if (_tmp8_) {
+-		_tmp6_ = TRUE;
++	_tmp1_ = uri;
++	_tmp2_ = g_str_has_prefix (_tmp1_, "http://");
++	if (_tmp2_) {
++		_tmp0_ = TRUE;
+ 	} else {
+-		const gchar* _tmp9_ = NULL;
+-		gboolean _tmp10_ = FALSE;
+-		_tmp9_ = _data3_->uri;
+-		_tmp10_ = g_str_has_prefix (_tmp9_, "https://");
+-		_tmp6_ = _tmp10_;
++		const gchar* _tmp3_ = NULL;
++		gboolean _tmp4_ = FALSE;
++		_tmp3_ = uri;
++		_tmp4_ = g_str_has_prefix (_tmp3_, "https://");
++		_tmp0_ = _tmp4_;
+ 	}
+-	if (_tmp6_) {
++	if (_tmp0_) {
+ 		SoupMessage* message = NULL;
+-		const gchar* _tmp11_ = NULL;
+-		SoupMessage* _tmp12_ = NULL;
+-		SoupMessage* _tmp13_ = NULL;
+-		SoupMessageHeaders* _tmp14_ = NULL;
+-		SoupMessage* _tmp15_ = NULL;
+-		SoupMessageHeaders* _tmp16_ = NULL;
++		const gchar* _tmp5_ = NULL;
++		SoupMessage* _tmp6_ = NULL;
++		SoupMessage* _tmp7_ = NULL;
++		SoupMessageHeaders* _tmp8_ = NULL;
++		SoupMessage* _tmp9_ = NULL;
++		SoupMessageHeaders* _tmp10_ = NULL;
++		SoupMessage* _tmp11_ = NULL;
++		const gchar* _tmp12_ = NULL;
++		const gchar* _tmp13_ = NULL;
++		GUPnPServiceAction* _tmp14_ = NULL;
++		SoupSession* _tmp15_ = NULL;
++		SoupMessage* _tmp16_ = NULL;
+ 		SoupMessage* _tmp17_ = NULL;
+-		SoupSession* _tmp18_ = NULL;
+-		SoupMessage* _tmp19_ = NULL;
+-		SoupMessage* _tmp20_ = NULL;
+-		_tmp11_ = _data3_->uri;
+-		_tmp12_ = soup_message_new ("HEAD", _tmp11_);
+-		message = _tmp12_;
+-		_tmp13_ = message;
+-		_tmp14_ = _tmp13_->request_headers;
+-		soup_message_headers_append (_tmp14_, "getContentFeatures.dlna.org", "1");
+-		_tmp15_ = message;
+-		_tmp16_ = _tmp15_->request_headers;
+-		soup_message_headers_append (_tmp16_, "Connection", "close");
++		_tmp5_ = uri;
++		_tmp6_ = soup_message_new ("HEAD", _tmp5_);
++		message = _tmp6_;
++		_tmp7_ = message;
++		_tmp8_ = _tmp7_->request_headers;
++		soup_message_headers_append (_tmp8_, "getContentFeatures.dlna.org", "1");
++		_tmp9_ = message;
++		_tmp10_ = _tmp9_->request_headers;
++		soup_message_headers_append (_tmp10_, "Connection", "close");
+ 		self->priv->head_faked = FALSE;
+-		_tmp17_ = message;
+-		g_signal_connect_data (_tmp17_, "finished", (GCallback) ____lambda6__soup_message_finished, block3_data_ref (_data3_), (GClosureNotify) block3_data_unref, 0);
+-		_tmp18_ = self->priv->session;
+-		_tmp19_ = message;
+-		_tmp20_ = _g_object_ref0 (_tmp19_);
+-		soup_session_queue_message (_tmp18_, _tmp20_, NULL, NULL);
++		_tmp11_ = message;
++		_tmp12_ = uri;
++		_tmp13_ = metadata;
++		_tmp14_ = action;
++		rygel_av_transport_setup_handle_new_transport_uri_callback (self, _tmp11_, _tmp12_, _tmp13_, _tmp14_);
++		_tmp15_ = self->priv->session;
++		_tmp16_ = message;
++		_tmp17_ = _g_object_ref0 (_tmp16_);
++		soup_session_queue_message (_tmp15_, _tmp17_, NULL, NULL);
+ 		_g_object_unref0 (message);
+ 	} else {
+-		const gchar* _tmp21_ = NULL;
+-		gboolean _tmp22_ = FALSE;
+-		_tmp21_ = _data3_->uri;
+-		_tmp22_ = g_str_has_prefix (_tmp21_, "qplay://");
+-		if (_tmp22_) {
++		const gchar* _tmp18_ = NULL;
++		gboolean _tmp19_ = FALSE;
++		_tmp18_ = uri;
++		_tmp19_ = g_str_has_prefix (_tmp18_, "qplay://");
++		if (_tmp19_) {
++			GUPnPServiceAction* _tmp20_ = NULL;
++			const gchar* _tmp21_ = NULL;
++			const gchar* _tmp22_ = NULL;
++			_tmp20_ = action;
++			_tmp21_ = uri;
++			_tmp22_ = metadata;
++			rygel_av_transport_set_qplay_queue_uri (self, _tmp20_, _tmp21_, _tmp22_, NULL, NULL);
++		} else {
+ 			GUPnPServiceAction* _tmp23_ = NULL;
+ 			const gchar* _tmp24_ = NULL;
+ 			const gchar* _tmp25_ = NULL;
+-			_tmp23_ = _data3_->action;
+-			_tmp24_ = _data3_->uri;
+-			_tmp25_ = _data3_->metadata;
+-			rygel_av_transport_set_qplay_queue_uri (self, _tmp23_, _tmp24_, _tmp25_, NULL, NULL);
+-		} else {
+-			GUPnPServiceAction* _tmp26_ = NULL;
+-			const gchar* _tmp27_ = NULL;
+-			const gchar* _tmp28_ = NULL;
+-			_tmp26_ = _data3_->action;
+-			_tmp27_ = _data3_->uri;
+-			_tmp28_ = _data3_->metadata;
+-			rygel_av_transport_set_single_play_uri (self, _tmp26_, _tmp27_, _tmp28_, NULL, NULL);
++			_tmp23_ = action;
++			_tmp24_ = uri;
++			_tmp25_ = metadata;
++			rygel_av_transport_set_single_play_uri (self, _tmp23_, _tmp24_, _tmp25_, NULL, NULL);
+ 		}
+ 	}
+-	block3_data_unref (_data3_);
+-	_data3_ = NULL;
+ }
+ 
+ 
+diff --git a/src/librygel-renderer/rygel-av-transport.vala b/src/librygel-renderer/rygel-av-transport.vala
+index b204a11..657532c 100644
+--- a/src/librygel-renderer/rygel-av-transport.vala
++++ b/src/librygel-renderer/rygel-av-transport.vala
+@@ -734,6 +734,25 @@ internal class Rygel.AVTransport : Service {
+ 
+     bool head_faked;
+ 
++    // HACK ALERT: This work around vala's feature of capturing 'this' pointer
++    // for all lambdas introduced in a class instance, even if 'this' is never
++    // used. Captured 'this' extends lifetime of an AVTransport instance beyond
++    // time expected by GUPnP. Due to GUPnP not using weak pointers at some
++    // places (e.g. xmlNode property of GUPnPServiceInfo), a crash happens when
++    // AVTransport is freed.
++    private static void setup_check_resource_callback (AVTransport instance, Soup.Message message) {
++        var weakme = WeakRef (instance);
++        var weakmsg = WeakRef (message);
++        message.got_headers.connect( () => {
++                Rygel.AVTransport? me = (Rygel.AVTransport?)weakme.get();
++                Soup.Message? msg = (Soup.Message?)weakmsg.get();
++                if (me == null || msg == null)
++                    return;
++                me.head_faked = true;
++                me.session.cancel_message (msg, msg.status_code);
++            });
++    }
++
+     private void check_resource (Soup.Message msg,
+                                  string       _uri,
+                                  string       _metadata,
+@@ -751,10 +770,7 @@ internal class Rygel.AVTransport : Service {
+ 
+             // Fake HEAD request by cancelling the message after the headers
+             // were received, then restart the message
+-            msg.got_headers.connect ((msg) => {
+-                this.head_faked = true;
+-                this.session.cancel_message (msg, msg.status_code);
+-            });
++            setup_check_resource_callback (this, msg);
+ 
+             this.session.queue_message (msg, null);
+ 
+@@ -797,6 +813,27 @@ internal class Rygel.AVTransport : Service {
+         }
+     }
+ 
++    // HACK ALERT: This work around vala's feature of capturing 'this' pointer
++    // for all lambdas introduced in a class instance, even if 'this' is never
++    // used. Captured 'this' extends lifetime of an AVTransport instance beyond
++    // time expected by GUPnP. Due to GUPnP not using weak pointers at some
++    // places (e.g. xmlNode property of GUPnPServiceInfo), a crash happens when
++    // AVTransport is freed.
++    private static void setup_handle_new_transport_uri_callback(AVTransport instance,
++    Message message, string uri, string metadata, GUPnP.ServiceAction action) {
++        var weakme = WeakRef(instance);
++        var weakmsg = WeakRef(message);
++        //var weakact = WeakRef(action);
++        message.finished.connect( () => {
++            Rygel.AVTransport? me = (Rygel.AVTransport?)weakme.get();
++            Soup.Message? msg = (Soup.Message?)weakmsg.get();
++            //GUPnP.ServiceAction? act = (GUPnP.ServiceAction?)weakact.get();
++            if (me == null || msg == null)
++                return;
++            me.check_resource (msg, uri, metadata, action);
++        });
++    }
++
+     private void handle_new_transport_uri (ServiceAction action,
+                                            string        uri,
+                                            string        metadata) {
+@@ -806,9 +843,8 @@ internal class Rygel.AVTransport : Service {
+                                             "1");
+             message.request_headers.append ("Connection", "close");
+             this.head_faked = false;
+-            message.finished.connect ((msg) => {
+-                this.check_resource (msg, uri, metadata, action);
+-            });
++            setup_handle_new_transport_uri_callback(this, message, uri,
++            metadata, action);
+ 
+             this.session.queue_message (message, null);
+         } else if (uri.has_prefix ("qplay://")) {
+-- 
+1.9.1
+

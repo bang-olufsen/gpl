@@ -1,0 +1,64 @@
+From 9cd69b5427080d746252df1020011aca4fce50a0 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Tue, 26 Jul 2016 09:35:57 +0200
+Subject: [PATCH] Remove updating flag
+
+There is no need for this flag because crashing was fixed in 743d0d6
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+
+%% original patch: 0008-Remove-updating-flag.patch
+---
+ src/pcm/pcm_switch.c | 15 ++++-----------
+ 1 file changed, 4 insertions(+), 11 deletions(-)
+
+diff --git a/src/pcm/pcm_switch.c b/src/pcm/pcm_switch.c
+index 7ba20cc..3a1f54b 100644
+--- a/src/pcm/pcm_switch.c
++++ b/src/pcm/pcm_switch.c
+@@ -45,7 +45,6 @@ typedef struct {
+ 	int cur_switch;
+ 	int active_switch;
+ 	int needs_update;
+-	int updating;
+ 	snd_async_handler_t *async_handler;
+ 	int has_sw_params;
+ 	snd_pcm_sw_params_t sw_params;
+@@ -105,11 +104,8 @@ static void check_switch_value(snd_pcm_t *pcm)
+ {
+ 	snd_pcm_switch_t *swtch = pcm->private_data;
+ 
+-	if (!swtch->updating && swtch->needs_update) {
+-		if (!swtch->gen.slave || snd_pcm_state(swtch->gen.slave) == SND_PCM_STATE_RUNNING) {
+-			swtch->updating = 1;
+-			apply_switch_value(pcm);
+-		}
++	if (swtch->needs_update) {
++		apply_switch_value(pcm);
+ 	}
+ }
+ 
+@@ -861,9 +857,6 @@ static snd_pcm_sframes_t snd_pcm_switch_writei(snd_pcm_t *pcm, const void *buffe
+ 	frames = snd_pcm_write_areas(pcm, areas, 0, size, snd_pcm_switch_xfer_write_areas);
+ 	TRACE("frames=%ld size=%ld", frames, size);
+ 
+-	if (frames > 0)
+-		swtch->updating = 0;
+-
+ 	return frames;
+ }
+ 
+@@ -1116,8 +1109,8 @@ static void switch_ctl_async_handler(snd_async_handler_t *handler)
+ 	new_value = swtch->cur_switch;
+ 
+ 	if (old_value != new_value) {
+-		DEBUG("~~~ Switch changed (updating=%d, needs_update=%d)", swtch->updating, swtch->needs_update);
+-		if (swtch->updating || snd_pcm_switch_state(pcm) == SND_PCM_STATE_RUNNING)
++		DEBUG("~~~ Switch changed (needs_update=%d)", swtch->needs_update);
++		if (snd_pcm_switch_state(pcm) == SND_PCM_STATE_RUNNING)
+ 			swtch->needs_update = !swtch->needs_update;
+ 		else
+ 			apply_switch_value(pcm);
+-- 
+2.7.4
+

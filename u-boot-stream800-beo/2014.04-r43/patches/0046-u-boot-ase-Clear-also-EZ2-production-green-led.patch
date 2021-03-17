@@ -1,0 +1,34 @@
+From e141498b6becf916697af5c671134775b5f06e0b Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Fri, 6 Mar 2015 11:50:52 +0100
+Subject: [PATCH] u-boot: ase: Clear also EZ2 production green led
+
+When state was changed to dontunplug production green led wasn't cleared
+(new led on ez2 mk2).
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ board/streamunlimited/stream800/ase_fep.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/board/streamunlimited/stream800/ase_fep.c b/board/streamunlimited/stream800/ase_fep.c
+index cc2c954..1c5cf1f 100644
+--- a/board/streamunlimited/stream800/ase_fep.c
++++ b/board/streamunlimited/stream800/ase_fep.c
+@@ -158,11 +158,11 @@ static void disable_net_leds(struct ase_fep *fep)
+ static void disable_prod_leds(struct ase_fep *fep)
+ {
+ 	/* disable all production colors leds */
+-	int led; // production led start at index 4 and end at 6
++	int led; // production led start at index 4 and end at 7
+ 	u8 stateLedCmd[] = { 0x20,0x80,0x10,0x00,0x04,0x00,0x00,0x00,0x00,0x00,0x00,0x0,0x00,0x0,0x0,0x0 };
+ 	u8 stateReply[20];
+ 
+-	for (led = 0; led < 3; led ++) {
++	for (led = 0; led < 4; led ++) {
+ 		stateLedCmd[8] = led + 4;
+ 		send_ase_fep(fep, stateLedCmd, 16);
+ 		receive_ase_fep(fep, stateReply, 20);
+-- 
+2.7.4
+

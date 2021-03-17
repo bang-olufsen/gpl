@@ -1,0 +1,756 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GMimeSignature</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="GMime 2.6 Reference Manual">
+<link rel="up" href="CryptoContexts.html" title="Cryptography Contexts">
+<link rel="prev" href="GMimeCertificate.html" title="GMimeCertificate">
+<link rel="next" href="GMimeCryptoContext.html" title="GMimeCryptoContext">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="GMimeCertificate.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="CryptoContexts.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">GMime 2.6 Reference Manual</th>
+<td><a accesskey="n" href="GMimeCryptoContext.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#GMimeSignature.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#GMimeSignature.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#GMimeSignature.object-hierarchy" class="shortcut">Object Hierarchy</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="GMimeSignature"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="GMimeSignature.top_of_page"></a>GMimeSignature</span></h2>
+<p>GMimeSignature — Digital signatures</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="GMimeSignature.synopsis"></a><h2>Synopsis</h2>
+<a name="GMimeSignatureList"></a><pre class="synopsis">enum                <a class="link" href="GMimeSignature.html#GMimeSignatureStatus" title="enum GMimeSignatureStatus">GMimeSignatureStatus</a>;
+enum                <a class="link" href="GMimeSignature.html#GMimeSignatureError" title="enum GMimeSignatureError">GMimeSignatureError</a>;
+struct              <a class="link" href="GMimeSignature.html#GMimeSignature-struct" title="struct GMimeSignature">GMimeSignature</a>;
+<a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="returnvalue">GMimeSignature</span></a> *    <a class="link" href="GMimeSignature.html#g-mime-signature-new" title="g_mime_signature_new ()">g_mime_signature_new</a>                (<em class="parameter"><code><span class="type">void</span></code></em>);
+<a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="returnvalue">GMimeCertificate</span></a> *  <a class="link" href="GMimeSignature.html#g-mime-signature-get-certificate" title="g_mime_signature_get_certificate ()">g_mime_signature_get_certificate</a>    (<em class="parameter"><code><a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a> *sig</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimeSignature.html#g-mime-signature-set-certificate" title="g_mime_signature_set_certificate ()">g_mime_signature_set_certificate</a>    (<em class="parameter"><code><a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a> *sig</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> *cert</code></em>);
+<a class="link" href="GMimeSignature.html#GMimeSignatureStatus" title="enum GMimeSignatureStatus"><span class="returnvalue">GMimeSignatureStatus</span></a> <a class="link" href="GMimeSignature.html#g-mime-signature-get-status" title="g_mime_signature_get_status ()">g_mime_signature_get_status</a>        (<em class="parameter"><code><a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a> *sig</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimeSignature.html#g-mime-signature-set-status" title="g_mime_signature_set_status ()">g_mime_signature_set_status</a>         (<em class="parameter"><code><a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a> *sig</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeSignature.html#GMimeSignatureStatus" title="enum GMimeSignatureStatus"><span class="type">GMimeSignatureStatus</span></a> status</code></em>);
+<a class="link" href="GMimeSignature.html#GMimeSignatureError" title="enum GMimeSignatureError"><span class="returnvalue">GMimeSignatureError</span></a> <a class="link" href="GMimeSignature.html#g-mime-signature-get-errors" title="g_mime_signature_get_errors ()">g_mime_signature_get_errors</a>         (<em class="parameter"><code><a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a> *sig</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimeSignature.html#g-mime-signature-set-errors" title="g_mime_signature_set_errors ()">g_mime_signature_set_errors</a>         (<em class="parameter"><code><a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a> *sig</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeSignature.html#GMimeSignatureError" title="enum GMimeSignatureError"><span class="type">GMimeSignatureError</span></a> errors</code></em>);
+<span class="returnvalue">time_t</span>              <a class="link" href="GMimeSignature.html#g-mime-signature-get-created" title="g_mime_signature_get_created ()">g_mime_signature_get_created</a>        (<em class="parameter"><code><a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a> *sig</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimeSignature.html#g-mime-signature-set-created" title="g_mime_signature_set_created ()">g_mime_signature_set_created</a>        (<em class="parameter"><code><a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a> *sig</code></em>,
+                                                         <em class="parameter"><code><span class="type">time_t</span> created</code></em>);
+<span class="returnvalue">time_t</span>              <a class="link" href="GMimeSignature.html#g-mime-signature-get-expires" title="g_mime_signature_get_expires ()">g_mime_signature_get_expires</a>        (<em class="parameter"><code><a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a> *sig</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimeSignature.html#g-mime-signature-set-expires" title="g_mime_signature_set_expires ()">g_mime_signature_set_expires</a>        (<em class="parameter"><code><a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a> *sig</code></em>,
+                                                         <em class="parameter"><code><span class="type">time_t</span> expires</code></em>);
+
+struct              <a class="link" href="GMimeSignature.html#GMimeSignatureList-struct" title="struct GMimeSignatureList">GMimeSignatureList</a>;
+<a class="link" href="GMimeSignature.html#GMimeSignatureList"><span class="returnvalue">GMimeSignatureList</span></a> * <a class="link" href="GMimeSignature.html#g-mime-signature-list-new" title="g_mime_signature_list_new ()">g_mime_signature_list_new</a>          (<em class="parameter"><code><span class="type">void</span></code></em>);
+<span class="returnvalue">int</span>                 <a class="link" href="GMimeSignature.html#g-mime-signature-list-length" title="g_mime_signature_list_length ()">g_mime_signature_list_length</a>        (<em class="parameter"><code><a class="link" href="GMimeSignature.html#GMimeSignatureList"><span class="type">GMimeSignatureList</span></a> *list</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimeSignature.html#g-mime-signature-list-clear" title="g_mime_signature_list_clear ()">g_mime_signature_list_clear</a>         (<em class="parameter"><code><a class="link" href="GMimeSignature.html#GMimeSignatureList"><span class="type">GMimeSignatureList</span></a> *list</code></em>);
+<span class="returnvalue">int</span>                 <a class="link" href="GMimeSignature.html#g-mime-signature-list-add" title="g_mime_signature_list_add ()">g_mime_signature_list_add</a>           (<em class="parameter"><code><a class="link" href="GMimeSignature.html#GMimeSignatureList"><span class="type">GMimeSignatureList</span></a> *list</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a> *sig</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimeSignature.html#g-mime-signature-list-insert" title="g_mime_signature_list_insert ()">g_mime_signature_list_insert</a>        (<em class="parameter"><code><a class="link" href="GMimeSignature.html#GMimeSignatureList"><span class="type">GMimeSignatureList</span></a> *list</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> index</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a> *sig</code></em>);
+<span class="returnvalue">gboolean</span>            <a class="link" href="GMimeSignature.html#g-mime-signature-list-remove" title="g_mime_signature_list_remove ()">g_mime_signature_list_remove</a>        (<em class="parameter"><code><a class="link" href="GMimeSignature.html#GMimeSignatureList"><span class="type">GMimeSignatureList</span></a> *list</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a> *sig</code></em>);
+<span class="returnvalue">gboolean</span>            <a class="link" href="GMimeSignature.html#g-mime-signature-list-remove-at" title="g_mime_signature_list_remove_at ()">g_mime_signature_list_remove_at</a>     (<em class="parameter"><code><a class="link" href="GMimeSignature.html#GMimeSignatureList"><span class="type">GMimeSignatureList</span></a> *list</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> index</code></em>);
+<span class="returnvalue">gboolean</span>            <a class="link" href="GMimeSignature.html#g-mime-signature-list-contains" title="g_mime_signature_list_contains ()">g_mime_signature_list_contains</a>      (<em class="parameter"><code><a class="link" href="GMimeSignature.html#GMimeSignatureList"><span class="type">GMimeSignatureList</span></a> *list</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a> *sig</code></em>);
+<span class="returnvalue">int</span>                 <a class="link" href="GMimeSignature.html#g-mime-signature-list-index-of" title="g_mime_signature_list_index_of ()">g_mime_signature_list_index_of</a>      (<em class="parameter"><code><a class="link" href="GMimeSignature.html#GMimeSignatureList"><span class="type">GMimeSignatureList</span></a> *list</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a> *sig</code></em>);
+<a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="returnvalue">GMimeSignature</span></a> *    <a class="link" href="GMimeSignature.html#g-mime-signature-list-get-signature" title="g_mime_signature_list_get_signature ()">g_mime_signature_list_get_signature</a> (<em class="parameter"><code><a class="link" href="GMimeSignature.html#GMimeSignatureList"><span class="type">GMimeSignatureList</span></a> *list</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> index</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimeSignature.html#g-mime-signature-list-set-signature" title="g_mime_signature_list_set_signature ()">g_mime_signature_list_set_signature</a> (<em class="parameter"><code><a class="link" href="GMimeSignature.html#GMimeSignatureList"><span class="type">GMimeSignatureList</span></a> *list</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> index</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a> *sig</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="GMimeSignature.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  GObject
+   +----GMimeSignature
+</pre>
+<pre class="synopsis">
+  GObject
+   +----GMimeSignatureList
+</pre>
+</div>
+<div class="refsect1">
+<a name="GMimeSignature.description"></a><h2>Description</h2>
+<p>
+A <a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a> is an object containing useful information about a
+digital signature as used in signing and encrypting data.
+</p>
+</div>
+<div class="refsect1">
+<a name="GMimeSignature.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="GMimeSignatureStatus"></a><h3>enum GMimeSignatureStatus</h3>
+<pre class="programlisting">typedef enum {
+	GMIME_SIGNATURE_STATUS_GOOD,
+	GMIME_SIGNATURE_STATUS_ERROR,
+	GMIME_SIGNATURE_STATUS_BAD
+} GMimeSignatureStatus;
+</pre>
+<p>
+A value representing the signature status for a particular
+<a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><a name="GMIME-SIGNATURE-STATUS-GOOD:CAPS"></a><span class="term"><code class="literal">GMIME_SIGNATURE_STATUS_GOOD</code></span></p></td>
+<td>Good signature.
+</td>
+</tr>
+<tr>
+<td><p><a name="GMIME-SIGNATURE-STATUS-ERROR:CAPS"></a><span class="term"><code class="literal">GMIME_SIGNATURE_STATUS_ERROR</code></span></p></td>
+<td>An error occurred.
+</td>
+</tr>
+<tr>
+<td><p><a name="GMIME-SIGNATURE-STATUS-BAD:CAPS"></a><span class="term"><code class="literal">GMIME_SIGNATURE_STATUS_BAD</code></span></p></td>
+<td>Bad signature.
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GMimeSignatureError"></a><h3>enum GMimeSignatureError</h3>
+<pre class="programlisting">typedef enum {
+	GMIME_SIGNATURE_ERROR_NONE        = 0,
+	GMIME_SIGNATURE_ERROR_EXPSIG      = (1 &lt;&lt; 0),  /* expired signature */
+	GMIME_SIGNATURE_ERROR_NO_PUBKEY   = (1 &lt;&lt; 1),  /* no public key */
+	GMIME_SIGNATURE_ERROR_EXPKEYSIG   = (1 &lt;&lt; 2),  /* expired key */
+	GMIME_SIGNATURE_ERROR_REVKEYSIG   = (1 &lt;&lt; 3),  /* revoked key */
+	GMIME_SIGNATURE_ERROR_UNSUPP_ALGO = (1 &lt;&lt; 4)   /* unsupported algorithm */
+} GMimeSignatureError;
+</pre>
+<p>
+Possible errors that a <a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a> could have.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><a name="GMIME-SIGNATURE-ERROR-NONE:CAPS"></a><span class="term"><code class="literal">GMIME_SIGNATURE_ERROR_NONE</code></span></p></td>
+<td>No error.
+</td>
+</tr>
+<tr>
+<td><p><a name="GMIME-SIGNATURE-ERROR-EXPSIG:CAPS"></a><span class="term"><code class="literal">GMIME_SIGNATURE_ERROR_EXPSIG</code></span></p></td>
+<td>Expired signature.
+</td>
+</tr>
+<tr>
+<td><p><a name="GMIME-SIGNATURE-ERROR-NO-PUBKEY:CAPS"></a><span class="term"><code class="literal">GMIME_SIGNATURE_ERROR_NO_PUBKEY</code></span></p></td>
+<td>No public key found.
+</td>
+</tr>
+<tr>
+<td><p><a name="GMIME-SIGNATURE-ERROR-EXPKEYSIG:CAPS"></a><span class="term"><code class="literal">GMIME_SIGNATURE_ERROR_EXPKEYSIG</code></span></p></td>
+<td>Expired signature key.
+</td>
+</tr>
+<tr>
+<td><p><a name="GMIME-SIGNATURE-ERROR-REVKEYSIG:CAPS"></a><span class="term"><code class="literal">GMIME_SIGNATURE_ERROR_REVKEYSIG</code></span></p></td>
+<td>Revoked signature key.
+</td>
+</tr>
+<tr>
+<td><p><a name="GMIME-SIGNATURE-ERROR-UNSUPP-ALGO:CAPS"></a><span class="term"><code class="literal">GMIME_SIGNATURE_ERROR_UNSUPP_ALGO</code></span></p></td>
+<td>Unsupported algorithm.
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GMimeSignature-struct"></a><h3>struct GMimeSignature</h3>
+<pre class="programlisting">struct GMimeSignature;</pre>
+<p>
+An object containing useful information about a signature.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-signature-new"></a><h3>g_mime_signature_new ()</h3>
+<pre class="programlisting"><a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="returnvalue">GMimeSignature</span></a> *    g_mime_signature_new                (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>
+Creates a new <a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a> object.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new <a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a> object.</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-signature-get-certificate"></a><h3>g_mime_signature_get_certificate ()</h3>
+<pre class="programlisting"><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="returnvalue">GMimeCertificate</span></a> *  g_mime_signature_get_certificate    (<em class="parameter"><code><a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a> *sig</code></em>);</pre>
+<p>
+Get the signature's certificate.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>sig</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the signature's certificate. <span class="annotation">[<a href="http://foldoc.org/transfer%20none"><span class="acronym">transfer none</span></a>]</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-signature-set-certificate"></a><h3>g_mime_signature_set_certificate ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_signature_set_certificate    (<em class="parameter"><code><a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a> *sig</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> *cert</code></em>);</pre>
+<p>
+Set the signature's certificate.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>sig</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>cert</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-signature-get-status"></a><h3>g_mime_signature_get_status ()</h3>
+<pre class="programlisting"><a class="link" href="GMimeSignature.html#GMimeSignatureStatus" title="enum GMimeSignatureStatus"><span class="returnvalue">GMimeSignatureStatus</span></a> g_mime_signature_get_status        (<em class="parameter"><code><a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a> *sig</code></em>);</pre>
+<p>
+Get the signature status.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>sig</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the signature status.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-signature-set-status"></a><h3>g_mime_signature_set_status ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_signature_set_status         (<em class="parameter"><code><a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a> *sig</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeSignature.html#GMimeSignatureStatus" title="enum GMimeSignatureStatus"><span class="type">GMimeSignatureStatus</span></a> status</code></em>);</pre>
+<p>
+Set the status on the signature.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>sig</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>status</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeSignature.html#GMimeSignatureStatus" title="enum GMimeSignatureStatus"><span class="type">GMimeSignatureStatus</span></a>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-signature-get-errors"></a><h3>g_mime_signature_get_errors ()</h3>
+<pre class="programlisting"><a class="link" href="GMimeSignature.html#GMimeSignatureError" title="enum GMimeSignatureError"><span class="returnvalue">GMimeSignatureError</span></a> g_mime_signature_get_errors         (<em class="parameter"><code><a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a> *sig</code></em>);</pre>
+<p>
+Get the signature errors. If the <a class="link" href="GMimeSignature.html#GMimeSignatureStatus" title="enum GMimeSignatureStatus"><span class="type">GMimeSignatureStatus</span></a> returned from
+<a class="link" href="GMimeSignature.html#g-mime-signature-get-status" title="g_mime_signature_get_status ()"><code class="function">g_mime_signature_get_status()</code></a> is not <a class="link" href="GMimeSignature.html#GMIME-SIGNATURE-STATUS-GOOD:CAPS"><span class="type">GMIME_SIGNATURE_STATUS_GOOD</span></a>, then the
+errors may provide a clue as to why.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>sig</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a bitfield of errors.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-signature-set-errors"></a><h3>g_mime_signature_set_errors ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_signature_set_errors         (<em class="parameter"><code><a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a> *sig</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeSignature.html#GMimeSignatureError" title="enum GMimeSignatureError"><span class="type">GMimeSignatureError</span></a> errors</code></em>);</pre>
+<p>
+Set the errors on the signature.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>sig</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>errors</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeSignature.html#GMimeSignatureError" title="enum GMimeSignatureError"><span class="type">GMimeSignatureError</span></a>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-signature-get-created"></a><h3>g_mime_signature_get_created ()</h3>
+<pre class="programlisting"><span class="returnvalue">time_t</span>              g_mime_signature_get_created        (<em class="parameter"><code><a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a> *sig</code></em>);</pre>
+<p>
+Get the creation date of the signature.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>sig</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the creation date of the signature or <code class="literal">-1</code> if unknown.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-signature-set-created"></a><h3>g_mime_signature_set_created ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_signature_set_created        (<em class="parameter"><code><a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a> *sig</code></em>,
+                                                         <em class="parameter"><code><span class="type">time_t</span> created</code></em>);</pre>
+<p>
+Set the creation date of the signature.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>sig</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>created</code></em> :</span></p></td>
+<td>creation date</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-signature-get-expires"></a><h3>g_mime_signature_get_expires ()</h3>
+<pre class="programlisting"><span class="returnvalue">time_t</span>              g_mime_signature_get_expires        (<em class="parameter"><code><a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a> *sig</code></em>);</pre>
+<p>
+Get the expiration date of the signature.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>sig</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the expiration date of the signature or <code class="literal">-1</code> if unknown.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-signature-set-expires"></a><h3>g_mime_signature_set_expires ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_signature_set_expires        (<em class="parameter"><code><a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a> *sig</code></em>,
+                                                         <em class="parameter"><code><span class="type">time_t</span> expires</code></em>);</pre>
+<p>
+Set the expiration date of the signature.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>sig</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>expires</code></em> :</span></p></td>
+<td>expiration date</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GMimeSignatureList-struct"></a><h3>struct GMimeSignatureList</h3>
+<pre class="programlisting">struct GMimeSignatureList;</pre>
+<p>
+A collection of <a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a> objects.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-signature-list-new"></a><h3>g_mime_signature_list_new ()</h3>
+<pre class="programlisting"><a class="link" href="GMimeSignature.html#GMimeSignatureList"><span class="returnvalue">GMimeSignatureList</span></a> * g_mime_signature_list_new          (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>
+Creates a new <a class="link" href="GMimeSignature.html#GMimeSignatureList"><span class="type">GMimeSignatureList</span></a>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new <a class="link" href="GMimeSignature.html#GMimeSignatureList"><span class="type">GMimeSignatureList</span></a>.</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-signature-list-length"></a><h3>g_mime_signature_list_length ()</h3>
+<pre class="programlisting"><span class="returnvalue">int</span>                 g_mime_signature_list_length        (<em class="parameter"><code><a class="link" href="GMimeSignature.html#GMimeSignatureList"><span class="type">GMimeSignatureList</span></a> *list</code></em>);</pre>
+<p>
+Gets the length of the list.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>list</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeSignature.html#GMimeSignatureList"><span class="type">GMimeSignatureList</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the number of <a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a> objects in the list.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-signature-list-clear"></a><h3>g_mime_signature_list_clear ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_signature_list_clear         (<em class="parameter"><code><a class="link" href="GMimeSignature.html#GMimeSignatureList"><span class="type">GMimeSignatureList</span></a> *list</code></em>);</pre>
+<p>
+Clears the list of addresses.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><em class="parameter"><code>list</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeSignature.html#GMimeSignatureList"><span class="type">GMimeSignatureList</span></a>
+</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-signature-list-add"></a><h3>g_mime_signature_list_add ()</h3>
+<pre class="programlisting"><span class="returnvalue">int</span>                 g_mime_signature_list_add           (<em class="parameter"><code><a class="link" href="GMimeSignature.html#GMimeSignatureList"><span class="type">GMimeSignatureList</span></a> *list</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a> *sig</code></em>);</pre>
+<p>
+Adds a <a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a> to the <a class="link" href="GMimeSignature.html#GMimeSignatureList"><span class="type">GMimeSignatureList</span></a>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>list</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeSignature.html#GMimeSignatureList"><span class="type">GMimeSignatureList</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>sig</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the index of the added <a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a>.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-signature-list-insert"></a><h3>g_mime_signature_list_insert ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_signature_list_insert        (<em class="parameter"><code><a class="link" href="GMimeSignature.html#GMimeSignatureList"><span class="type">GMimeSignatureList</span></a> *list</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> index</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a> *sig</code></em>);</pre>
+<p>
+Inserts a <a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a> into the <a class="link" href="GMimeSignature.html#GMimeSignatureList"><span class="type">GMimeSignatureList</span></a> at the specified
+index.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>list</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeSignature.html#GMimeSignatureList"><span class="type">GMimeSignatureList</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>index</code></em> :</span></p></td>
+<td>index to insert at</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>sig</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-signature-list-remove"></a><h3>g_mime_signature_list_remove ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>            g_mime_signature_list_remove        (<em class="parameter"><code><a class="link" href="GMimeSignature.html#GMimeSignatureList"><span class="type">GMimeSignatureList</span></a> *list</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a> *sig</code></em>);</pre>
+<p>
+Removes a <a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a> from the <a class="link" href="GMimeSignature.html#GMimeSignatureList"><span class="type">GMimeSignatureList</span></a>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>list</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeSignature.html#GMimeSignatureList"><span class="type">GMimeSignatureList</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>sig</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>
+<code class="literal">TRUE</code> if the specified <a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a> was removed or <code class="literal">FALSE</code>
+otherwise.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-signature-list-remove-at"></a><h3>g_mime_signature_list_remove_at ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>            g_mime_signature_list_remove_at     (<em class="parameter"><code><a class="link" href="GMimeSignature.html#GMimeSignatureList"><span class="type">GMimeSignatureList</span></a> *list</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> index</code></em>);</pre>
+<p>
+Removes a <a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a> from the <a class="link" href="GMimeSignature.html#GMimeSignatureList"><span class="type">GMimeSignatureList</span></a> at the specified
+index.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>list</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeSignature.html#GMimeSignatureList"><span class="type">GMimeSignatureList</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>index</code></em> :</span></p></td>
+<td>index to remove</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>
+<code class="literal">TRUE</code> if an <a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a> was removed or <code class="literal">FALSE</code> otherwise.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-signature-list-contains"></a><h3>g_mime_signature_list_contains ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>            g_mime_signature_list_contains      (<em class="parameter"><code><a class="link" href="GMimeSignature.html#GMimeSignatureList"><span class="type">GMimeSignatureList</span></a> *list</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a> *sig</code></em>);</pre>
+<p>
+Checks whether or not the specified <a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a> is contained within
+the <a class="link" href="GMimeSignature.html#GMimeSignatureList"><span class="type">GMimeSignatureList</span></a>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>list</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeSignature.html#GMimeSignatureList"><span class="type">GMimeSignatureList</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>sig</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>
+<code class="literal">TRUE</code> if the specified <a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a> is contained within the
+specified <a class="link" href="GMimeSignature.html#GMimeSignatureList"><span class="type">GMimeSignatureList</span></a> or <code class="literal">FALSE</code> otherwise.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-signature-list-index-of"></a><h3>g_mime_signature_list_index_of ()</h3>
+<pre class="programlisting"><span class="returnvalue">int</span>                 g_mime_signature_list_index_of      (<em class="parameter"><code><a class="link" href="GMimeSignature.html#GMimeSignatureList"><span class="type">GMimeSignatureList</span></a> *list</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a> *sig</code></em>);</pre>
+<p>
+Gets the index of the specified <a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a> inside the
+<a class="link" href="GMimeSignature.html#GMimeSignatureList"><span class="type">GMimeSignatureList</span></a>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>list</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeSignature.html#GMimeSignatureList"><span class="type">GMimeSignatureList</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>sig</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the index of the requested <a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a> within the
+<a class="link" href="GMimeSignature.html#GMimeSignatureList"><span class="type">GMimeSignatureList</span></a> or <code class="literal">-1</code> if it is not contained within the
+<a class="link" href="GMimeSignature.html#GMimeSignatureList"><span class="type">GMimeSignatureList</span></a>.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-signature-list-get-signature"></a><h3>g_mime_signature_list_get_signature ()</h3>
+<pre class="programlisting"><a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="returnvalue">GMimeSignature</span></a> *    g_mime_signature_list_get_signature (<em class="parameter"><code><a class="link" href="GMimeSignature.html#GMimeSignatureList"><span class="type">GMimeSignatureList</span></a> *list</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> index</code></em>);</pre>
+<p>
+Gets the <a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a> at the specified index.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>list</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeSignature.html#GMimeSignatureList"><span class="type">GMimeSignatureList</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>index</code></em> :</span></p></td>
+<td>index of <a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a> to get</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the <a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a> at the specified
+index or <code class="literal">NULL</code> if the index is out of range. <span class="annotation">[<a href="http://foldoc.org/transfer%20none"><span class="acronym">transfer none</span></a>]</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-signature-list-set-signature"></a><h3>g_mime_signature_list_set_signature ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_signature_list_set_signature (<em class="parameter"><code><a class="link" href="GMimeSignature.html#GMimeSignatureList"><span class="type">GMimeSignatureList</span></a> *list</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> index</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a> *sig</code></em>);</pre>
+<p>
+Sets the <a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a> at the specified index to <em class="parameter"><code>sig</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>list</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeSignature.html#GMimeSignatureList"><span class="type">GMimeSignatureList</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>index</code></em> :</span></p></td>
+<td>index of <a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a> to set</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>sig</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeSignature.html" title="GMimeSignature"><span class="type">GMimeSignature</span></a>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

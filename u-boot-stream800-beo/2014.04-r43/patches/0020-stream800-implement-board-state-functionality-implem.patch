@@ -1,0 +1,400 @@
+From 20e201c59cd731b507be4cab6f378229f02d5f61 Mon Sep 17 00:00:00 2001
+From: Matus Ujhelyi <matus.ujhelyi@streamunlimited.com>
+Date: Thu, 28 Feb 2013 15:16:32 +0100
+Subject: [PATCH] stream800: implement board state functionality, implement
+ 'bstate' command for handling board status
+
+changes of board status can be handled differently for each board type
+(LEDs, ...)
+
+Signed-off-by: Martin Flaska <martin.flaska@streamunlimited.com>
+Signed-off-by: Matus Ujhelyi <matus.ujhelyi@streamunlimited.com>
+---
+ .../stream800/board-lan_dock_board.c               | 106 +++++++++++++++++++++
+ .../stream800/board-lan_dock_board.h               |   7 ++
+ .../stream800/board-sue_demo_client_board.c        |   5 +
+ .../stream800/board-sue_demo_client_board.h        |   3 +
+ .../stream800/board-sue_first_carrier_board.c      |   5 +
+ .../stream800/board-sue_first_carrier_board.h      |   3 +
+ board/streamunlimited/stream800/board.c            |  73 +++++++++++++-
+ board/streamunlimited/stream800/board.h            |  18 ++++
+ board/streamunlimited/stream800/fwupdate.c         |   7 +-
+ include/configs/stream800.h                        |   1 +
+ 10 files changed, 221 insertions(+), 7 deletions(-)
+
+diff --git a/board/streamunlimited/stream800/board-lan_dock_board.c b/board/streamunlimited/stream800/board-lan_dock_board.c
+index 2867e88..168e3a8 100644
+--- a/board/streamunlimited/stream800/board-lan_dock_board.c
++++ b/board/streamunlimited/stream800/board-lan_dock_board.c
+@@ -26,15 +26,59 @@
+ #include <asm/arch/hardware.h>
+ #include <phy.h>
+ #include <asm/arch-am33xx/phy.h>
++#include <asm/arch-am33xx/cpu.h>
++#include <asm-generic/gpio.h>
++#include <asm/arch/mux.h>
+ 
+ static struct ctrl_dev *cdev = (struct ctrl_dev *)CTRL_DEVICE_BASE;
+ 
++/* LED 1 : LAN status (active in low) */
++#define LED1_R_GPIO	3
++#define LED1_R_ON	gpio_set_value(LED1_R_GPIO, 0)
++#define LED1_R_OFF	gpio_set_value(LED1_R_GPIO, 1)
++
++#define LED1_G_GPIO	4
++#define LED1_G_ON	gpio_set_value(LED1_G_GPIO, 0)
++#define LED1_G_OFF	gpio_set_value(LED1_G_GPIO, 1)
++
++/* LED 1 : Device & Recorder status (active in low) */
++#define LED2_R_GPIO	2
++#define LED2_R_ON	gpio_set_value(LED2_R_GPIO, 0)
++#define LED2_R_OFF	gpio_set_value(LED2_R_GPIO, 1)
++
++#define LED2_G_GPIO	(32 + 8)
++#define LED2_G_ON	gpio_set_value(LED2_G_GPIO, 0)
++#define LED2_G_OFF	gpio_set_value(LED2_G_GPIO, 1)
++
+ // "Dictations LAN dock" board initialization
+ void lan_dock__init(const struct Stream800Board *board)
+ {
+ 	if (!board || board->carrierBoardType != CBT_LanDockBoard)
+ 		BUG();
+ 
++	/* initialize GPIO for LEDs 1, 2
++	 * LED1 (D11): red: GPIO_0_3, green: GPIO_0_4
++	 * LED2 (D12): red: GPIO_0_2, green: GPIO_1_8
++	 *
++	 * Note: active in low
++	 */
++
++	if (gpio_request(LED1_R_GPIO, "D1 R"))
++		printf("error: cannot request GPIO %d\n", LED1_R_GPIO);
++	gpio_direction_output(LED1_R_GPIO, 1);
++
++	if (gpio_request(LED1_G_GPIO, "D1 G"))
++		printf("error: cannot request GPIO %d\n", LED1_G_GPIO);
++	gpio_direction_output(LED1_G_GPIO, 1);
++
++	if (gpio_request(LED2_R_GPIO, "D2 R"))
++		printf("error: cannot request GPIO %d\n", LED2_R_GPIO);
++	gpio_direction_output(LED2_R_GPIO, 1);
++
++	if (gpio_request(LED2_G_GPIO, "D1 G"))
++		printf("error: cannot request GPIO %d\n", LED2_G_GPIO);
++	gpio_direction_output(LED2_G_GPIO, 1);
++
+ 	printf("TODO: 'Dictations LAN dock' board initialization.\n");
+ }
+ 
+@@ -63,3 +107,65 @@ void lan_dock__cpsw_eth_init(const struct Stream800Board *board, struct cpsw_pla
+ 		| MII2_MODE_NOT_USED , &cdev->miisel);
+ }
+ #endif /* CONFIG_DRIVER_TI_CPSW */
++
++void lan_dock__pin_mux_post_init(void)
++{
++	static struct module_pin_mux leds_pin_mux[] = {
++		{OFFSET(spi0_sclk), (MODE(7))},	/* LED2 R (D12) gpio0_2, conflict: uart2_pin_mux, spi0_pin_mux */
++		{OFFSET(spi0_d0), (MODE(7))},	/* LED1 R (D13) gpio0_3, conflict: uart2_pin_mux, spi0_pin_mux */
++		{OFFSET(spi0_d1), (MODE(7))},	/* LED1 G (D13) gpio0_4  conflict: i2c1_pin_mux, spi0_pin_mux */
++		{OFFSET(uart0_ctsn), (MODE(7))},/* LED2 G (D12) gpio1_8 */
++		{-1},
++	};
++	configure_module_pin_mux(leds_pin_mux);
++}
++
++void lan_dock__on_board_state_changed(const struct Stream800Board *board, BoardState state)
++{
++	printf("Board state changed to '%s'\n", boardStateStrings[state]);
++
++	switch (state) {
++	case BS_Normal:
++		LED1_R_ON;
++		LED1_G_ON;
++		LED2_R_OFF;
++		LED2_G_OFF;
++		break;
++
++	case BS_DontUnplug:
++		LED1_R_ON;
++		LED1_G_ON;
++		LED2_R_ON;
++		LED2_G_ON;
++		break;
++
++	case BS_HardFailure:
++		LED1_R_ON;
++		LED1_G_OFF;
++		LED2_R_ON;
++		LED2_G_OFF;
++		break;
++
++	case BS_BootingKernel:
++		LED1_R_ON;
++		LED1_G_ON;
++		LED2_R_OFF;
++		LED2_G_OFF;
++		break;
++
++	case BS_Off:
++		LED1_R_OFF;
++		LED1_G_OFF;
++		LED2_R_OFF;
++		LED2_G_OFF;
++		break;
++
++	default:
++		printf("state leds: unknown state %d\n", state);
++		LED1_R_OFF;
++		LED1_G_OFF;
++		LED2_R_OFF;
++		LED2_G_OFF;
++		break;
++	}
++}
+diff --git a/board/streamunlimited/stream800/board-lan_dock_board.h b/board/streamunlimited/stream800/board-lan_dock_board.h
+index 42b90ab..3936a7a 100644
+--- a/board/streamunlimited/stream800/board-lan_dock_board.h
++++ b/board/streamunlimited/stream800/board-lan_dock_board.h
+@@ -28,4 +28,11 @@ void lan_dock__init(const struct Stream800Board *board);
+ void lan_dock__cpsw_eth_init(const struct Stream800Board *board, struct cpsw_platform_data *cpsw_data);
+ #endif
+ 
++/* Additional board pin mux
++ * Must be set after SI5351 initialization due conflict with i2c1_pin_mux.
++ */
++void lan_dock__pin_mux_post_init(void);
++
++void lan_dock__on_board_state_changed(const struct Stream800Board *board, BoardState state);
++
+ #endif	// __BOARD_LAN_DOCK_BOARD_H
+diff --git a/board/streamunlimited/stream800/board-sue_demo_client_board.c b/board/streamunlimited/stream800/board-sue_demo_client_board.c
+index e4588f4..4a7ae6d 100644
+--- a/board/streamunlimited/stream800/board-sue_demo_client_board.c
++++ b/board/streamunlimited/stream800/board-sue_demo_client_board.c
+@@ -62,3 +62,8 @@ void demo_client__cpsw_eth_init(const struct Stream800Board *board, struct cpsw_
+ 		| MII2_MODE_NOT_USED , &cdev->miisel);
+ }
+ #endif /* CONFIG_DRIVER_TI_CPSW */
++
++void demo_client__on_board_state_changed(const struct Stream800Board *board, BoardState state)
++{
++	printf("TODO: Board state changed to '%s'\n", boardStateStrings[state]);
++}
+diff --git a/board/streamunlimited/stream800/board-sue_demo_client_board.h b/board/streamunlimited/stream800/board-sue_demo_client_board.h
+index afe5f1b..ad4b398 100644
+--- a/board/streamunlimited/stream800/board-sue_demo_client_board.h
++++ b/board/streamunlimited/stream800/board-sue_demo_client_board.h
+@@ -28,4 +28,7 @@ void demo_client__init(const struct Stream800Board *board);
+ void demo_client__cpsw_eth_init(const struct Stream800Board *board, struct cpsw_platform_data *cpsw_data);
+ #endif
+ 
++/* Handling board state change (LED indication, ...) */
++void demo_client__on_board_state_changed(const struct Stream800Board *board, BoardState state);
++
+ #endif	// __BOARD_SUE_DEMO_CLIENT_BOARD_H
+diff --git a/board/streamunlimited/stream800/board-sue_first_carrier_board.c b/board/streamunlimited/stream800/board-sue_first_carrier_board.c
+index 945cc59..5ab9489 100644
+--- a/board/streamunlimited/stream800/board-sue_first_carrier_board.c
++++ b/board/streamunlimited/stream800/board-sue_first_carrier_board.c
+@@ -69,3 +69,8 @@ void first_carrier__cpsw_eth_init(const struct Stream800Board *board, struct cps
+ 		| RGMII2_MODE_ENABLE | RGMII2_NO_INTERNAL_DELAY , &cdev->miisel);
+ }
+ #endif /* CONFIG_DRIVER_TI_CPSW */
++
++void first_carrier__on_board_state_changed(const struct Stream800Board *board, BoardState state)
++{
++	printf("TODO: Board state changed to '%s'\n", boardStateStrings[state]);
++}
+diff --git a/board/streamunlimited/stream800/board-sue_first_carrier_board.h b/board/streamunlimited/stream800/board-sue_first_carrier_board.h
+index 4698f80..002f380 100644
+--- a/board/streamunlimited/stream800/board-sue_first_carrier_board.h
++++ b/board/streamunlimited/stream800/board-sue_first_carrier_board.h
+@@ -28,4 +28,7 @@ void first_carrier__init(const struct Stream800Board *board);
+ void first_carrier__cpsw_eth_init(const struct Stream800Board *board, struct cpsw_platform_data *cpsw_data);
+ #endif
+ 
++/* Handling board state change (LED indication, ...) */
++void first_carrier__on_board_state_changed(const struct Stream800Board *board, BoardState state);
++
+ #endif	// __BOARD_SUE_FIRST_CARRIER_BOARD_H
+diff --git a/board/streamunlimited/stream800/board.c b/board/streamunlimited/stream800/board.c
+index bb9afa3..ea49d57 100644
+--- a/board/streamunlimited/stream800/board.c
++++ b/board/streamunlimited/stream800/board.c
+@@ -69,6 +69,8 @@ static struct ctrl_dev *cdev = (struct ctrl_dev *)CTRL_DEVICE_BASE;
+ 
+ static struct Stream800Board __attribute__((section (".data"))) board = {moduleVersion : MV_unknown, carrierBoardType : CBT_unknown};
+ 
++static BoardState boardState = BS_Off;
++
+ static void init_si5351x(void);
+ 
+ void enable_caches(void)
+@@ -117,6 +119,12 @@ int board_init(void)
+ 	i2c_init(CONFIG_SYS_I2C_SPEED, CONFIG_SYS_I2C_SLAVE);
+ 	init_si5351x();
+ 
++	/* LANDock board mux post init - must be done after SI5351 initialization due to conflict with i2c1_pin_mux */
++	if (get_carrier_board_type() == CBT_LanDockBoard)
++		lan_dock__pin_mux_post_init();
++
++	set_board_state(BS_Normal);
++
+ #ifdef DEBUG
+ 	{
+ 		uint32_t rstst = readl(PRM_RSTST);
+@@ -464,19 +472,78 @@ U_BOOT_CMD(
+ 	""
+ );
+ 
++/* Handling board state change.
++ * Should be handled individually for each board (LED indication, ...)
++ */
++void on_board_state_changed(BoardState state)
++{
++	switch (get_carrier_board_type()) {
++	case CBT_LanDockBoard:
++		lan_dock__on_board_state_changed(&board,state);
++		break;
++	case CBT_SueDemoClientBoard:
++		demo_client__on_board_state_changed(&board, state);
++		break;
++	case CBT_SueFirstCarrierBoard:
++		first_carrier__on_board_state_changed(&board, state);
++		break;
++	default:
++		printf("on_board_state_changed: Not supported board!\n");
++		//panic("Not supported board!");
++	}
++}
++
++void set_board_state(BoardState state)
++{
++	if (state == get_board_state() && state != 111)
++		return;
++
++	boardState = state;
++	on_board_state_changed(state);
++}
++
++BoardState get_board_state(void)
++{
++	return boardState;
++}
++
+ /* change/get board status */
+ static int do_bstate(cmd_tbl_t * cmdtp, int flag, int argc, char * const argv[])
+ {
+-	// TODO: do_bstate (handle differently for each boar type)
++	if (argc < 1 || argc > 2) {
++		printf ("Wrong arguments.\nUsage: %s\n", cmdtp->help);
++		return 1;
++	}
++
++	if (argc == 1) {
++		printf("Current board state: '%s'\n", boardStateStrings[get_board_state()]);
++		return 0;
++	}
++
++	if (strncmp(argv[1], "normal", 5) == 0) {
++		set_board_state(BS_Normal);
++	} else if (strncmp(argv[1], "dontunplug", 10) == 0) {
++		set_board_state(BS_DontUnplug);
++	} else if (strncmp(argv[1], "hardfailure", 11) == 0) {
++		set_board_state(BS_HardFailure);
++	} else if (strncmp(argv[1], "booting", 7) == 0) {
++		set_board_state(BS_BootingKernel);
++	} else {
++		printf ("Invalid parameter: '%s'\n", argv[1]);
++		printf ("Usage: %s\n", cmdtp->help);
++		return 1;
++	}
++
+ 	return 0;
+ }
+ 
+ U_BOOT_CMD(
+ 	bstate, 2, 1,  do_bstate,
+ 	"set/get board state",
+-	"bstate [state]\n" \
++	"[state]\n" \
+ 	"    state: board state to set\n"\
+ 	"            normal - initial state, running\n"\
+ 	"        dontunplug - do not power off or unplug device (FW update, ...)\n"\
+-	"       hardfailure - non recoverable error state\n"
++	"       hardfailure - non recoverable error state\n"\
++	"           booting - booting kernel\n"
+ );
+diff --git a/board/streamunlimited/stream800/board.h b/board/streamunlimited/stream800/board.h
+index 8b06a72..540474b 100644
+--- a/board/streamunlimited/stream800/board.h
++++ b/board/streamunlimited/stream800/board.h
+@@ -69,9 +69,27 @@ typedef enum {
+ 	BS_Normal,
+ 	BS_DontUnplug,		/* flashing new FW, ... */
+ 	BS_HardFailure,		/* cannot boot, ... */
++	BS_BootingKernel,
+ } BoardState;
+ 
++static const char *boardStateStrings[] = {
++	[BS_Off]		= "unknown",
++	[BS_Normal]		= "normal",
++	[BS_DontUnplug]		= "dont unplug/flashing new fw",
++	[BS_HardFailure]	= "hard failure/cannot boot",
++	[BS_BootingKernel]	= "booting kernel",
++};
++
+ Stream800ModuleVersion get_module_version(void);
+ Stream800CarrierBoardType get_carrier_board_type(void);
+ 
++
++void set_board_state(BoardState state);
++BoardState get_board_state(void);
++
++/* Handling board state change.
++ * Should be handled individually for each board (LED indication, ...)
++ */
++void on_board_state_changed(BoardState state);
++
+ #endif	// _BOARD_H_
+diff --git a/board/streamunlimited/stream800/fwupdate.c b/board/streamunlimited/stream800/fwupdate.c
+index 3ad08e2..ddafc32 100644
+--- a/board/streamunlimited/stream800/fwupdate.c
++++ b/board/streamunlimited/stream800/fwupdate.c
+@@ -21,6 +21,7 @@
+  */
+ 
+ #include "fwupdate.h"
++#include "board.h"
+ 
+ #include <common.h>
+ #include <hush.h>
+@@ -304,10 +305,8 @@ static int do_sfu(cmd_tbl_t * cmdtp, int flag, int argc, char * const argv[])
+ 		 *   sfu errstate
+ 		 */
+ 		if (strcmp(argv[1], "errstate") == 0) {
+-			// Set status LED to solid red to indicate error state
+-			// TODO ERROR LED
+-			//if (NULL != LedFp) {
+-			//mLedFp(LED_RED, LED_ON);
++			// Set error state (status LED to solid red, ...)
++			set_board_state(BS_HardFailure);
+ 			printf("SERIOUS ERROR\n");
+ 
+ 			//}
+diff --git a/include/configs/stream800.h b/include/configs/stream800.h
+index 6603c37..3e0c805 100644
+--- a/include/configs/stream800.h
++++ b/include/configs/stream800.h
+@@ -310,6 +310,7 @@
+     "nand_boot=echo \"Booting from nand ...\"; " \
+         "run nandargs; " \
+         "echo \"INFO: loading kernel image into RAM...\"; " \
++        "bstate booting; " \
+         "run readuImage; " \
+         "echo \"INFO: booting kernel image...\"; " \
+         "bootm ${sfu_load_addr}; " \
+-- 
+2.7.4
+

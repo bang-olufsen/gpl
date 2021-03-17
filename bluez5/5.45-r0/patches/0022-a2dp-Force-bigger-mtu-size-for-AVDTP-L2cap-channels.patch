@@ -1,0 +1,54 @@
+From 5b356556d5ddd116d6c2d81d29b68aee17626cd0 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Mon, 15 May 2017 12:06:31 +0200
+Subject: [PATCH] a2dp: Force bigger mtu size for AVDTP L2cap channels
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ profiles/audio/a2dp.c  | 2 ++
+ profiles/audio/avdtp.c | 2 ++
+ profiles/audio/avdtp.h | 2 ++
+ 3 files changed, 6 insertions(+)
+
+diff --git a/profiles/audio/a2dp.c b/profiles/audio/a2dp.c
+index db0736d..92432b4 100644
+--- a/profiles/audio/a2dp.c
++++ b/profiles/audio/a2dp.c
+@@ -1570,6 +1570,8 @@ static bool a2dp_server_listen(struct a2dp_server *server)
+ 				BT_IO_OPT_PSM, AVDTP_PSM,
+ 				BT_IO_OPT_SEC_LEVEL, BT_IO_SEC_MEDIUM,
+ 				BT_IO_OPT_MASTER, true,
++				BT_IO_OPT_IMTU, AVDTP_L2CAP_MTU_SIZE,
++				BT_IO_OPT_OMTU, AVDTP_L2CAP_MTU_SIZE,
+ 				BT_IO_OPT_INVALID);
+ 	if (server->io)
+ 		return true;
+diff --git a/profiles/audio/avdtp.c b/profiles/audio/avdtp.c
+index a4a5b5c..55cc82a 100644
+--- a/profiles/audio/avdtp.c
++++ b/profiles/audio/avdtp.c
+@@ -2396,6 +2396,8 @@ static GIOChannel *l2cap_connect(struct avdtp *session)
+ 				device_get_address(session->device),
+ 				BT_IO_OPT_PSM, AVDTP_PSM,
+ 				BT_IO_OPT_SEC_LEVEL, BT_IO_SEC_MEDIUM,
++				BT_IO_OPT_IMTU, AVDTP_L2CAP_MTU_SIZE,
++				BT_IO_OPT_OMTU, AVDTP_L2CAP_MTU_SIZE,
+ 				BT_IO_OPT_INVALID);
+ 	if (!io) {
+ 		error("%s", err->message);
+diff --git a/profiles/audio/avdtp.h b/profiles/audio/avdtp.h
+index 621a6e3..cad95b7 100644
+--- a/profiles/audio/avdtp.h
++++ b/profiles/audio/avdtp.h
+@@ -80,6 +80,8 @@ struct avdtp_error {
+ #define AVDTP_MEDIA_TYPE_VIDEO			0x01
+ #define AVDTP_MEDIA_TYPE_MULTIMEDIA		0x02
+ 
++#define AVDTP_L2CAP_MTU_SIZE 1024
++
+ typedef enum {
+ 	AVDTP_STATE_IDLE,
+ 	AVDTP_STATE_CONFIGURED,
+-- 
+2.7.4
+

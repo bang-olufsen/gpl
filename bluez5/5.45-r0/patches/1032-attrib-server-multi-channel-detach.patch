@@ -1,0 +1,31 @@
+diff -Naur a/src/attrib-server.c b/src/attrib-server.c
+--- a/src/attrib-server.c	2017-08-30 12:39:05.294927000 +0200
++++ b/src/attrib-server.c	2017-08-30 14:54:50.767918626 +0200
+@@ -1258,7 +1258,7 @@
+ 
+ 	server->clients = g_slist_append(server->clients, channel);
+ 
+-	return channel->id;
++	return GPOINTER_TO_UINT(channel);
+ }
+ 
+ static struct gatt_channel *find_channel(guint id)
+@@ -1269,14 +1269,13 @@
+ 		struct gatt_server *server = l->data;
+ 		GSList *c;
+ 
+-		for (c = server->clients; c; c = g_slist_next(c)) {
++		c = g_slist_find(server->clients, GUINT_TO_POINTER(id));
++		if (c) {
+ 			struct gatt_channel *channel = c->data;
+-
+-			if (channel->id == id)
+-				return channel;
++			return channel;
+ 		}
+ 	}
+-
++		
+ 	return NULL;
+ }
+ 

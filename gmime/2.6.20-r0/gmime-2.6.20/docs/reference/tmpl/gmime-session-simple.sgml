@@ -1,0 +1,52 @@
+<!-- ##### SECTION Title ##### -->
+gmime-session-simple
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT GMimeSessionSimple ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION g_mime_session_simple_set_request_passwd ##### -->
+<para>
+
+</para>
+
+@session: 
+@request_passwd: 
+
+
+<!-- ##### FUNCTION g_mime_session_simple_set_forget_passwd ##### -->
+<para>
+
+</para>
+
+@session: 
+@forget_passwd: 
+
+
+<!-- ##### FUNCTION g_mime_session_simple_set_is_online ##### -->
+<para>
+
+</para>
+
+@session: 
+@is_online: 
+
+

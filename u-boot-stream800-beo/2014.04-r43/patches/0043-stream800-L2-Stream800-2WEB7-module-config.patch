@@ -1,0 +1,30 @@
+From f569316a66a6c7b7d32070753d31cf983a3c0a30 Mon Sep 17 00:00:00 2001
+From: Hannes Riedl <hannes.riedl@streamunlimited.com>
+Date: Fri, 21 Jun 2013 14:23:16 +0200
+Subject: [PATCH] stream800: L2 - Stream800/2WEB7 module config
+
+Signed-off-by: Hannes Riedl <hannes.riedl@streamunlimited.com>
+---
+ board/streamunlimited/stream800/board.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/board/streamunlimited/stream800/board.c b/board/streamunlimited/stream800/board.c
+index d07494e..ff2cd1f 100755
+--- a/board/streamunlimited/stream800/board.c
++++ b/board/streamunlimited/stream800/board.c
+@@ -190,9 +190,11 @@ static struct SupportedModules {
+ 	unsigned lsb_max;
+ } supportedModules[] = {
+ 	{MV_L2,		0xCCC,	0xD54,	0x4CC,	0x555},
+-	// L2 - Stream800/1WEB7: same config for different ADC values, as RAM
++	// L2 - Stream800/1WEB7 and  L2 - Stream800/2WEB7:
++	// same config for different ADC values, as RAM
+ 	// and Bluetooth are auto-detected at runtime:
+ 	{MV_L2,		0xCCC,	0xD54,	0x111,	0x199},
++	{MV_L2,		0xCCC,	0xD54,	0x199,	0x222},
+ 	// TODO: add another stream800 module revisions here
+ };
+ 
+-- 
+2.7.4
+

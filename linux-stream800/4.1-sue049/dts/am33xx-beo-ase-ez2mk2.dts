@@ -1,0 +1,120 @@
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ */
+
+/dts-v1/;
+
+#include "am33xx-beo-ase-0.dtsi"
+
+/ {
+	model = "Bang&Olufsen ASE_EZ2MK2 (AM33xx)";
+};
+
+&fep {
+	leds {
+		compatible = "beo,beo-hh1-leds";
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		led0@0 {
+			label = "NetWhite";
+			reg = <0x00>;
+		};
+		led1@1 {
+			label = "NetOrange";
+			reg = <0x01>;
+		};
+		led2@2 {
+			label = "NetRed";
+			reg = <0x02>;
+		};
+		led5@5 {
+			label = "ProdRed";
+			reg = <0x05>;
+		};
+		led6@6 {
+			label = "ProdOrange";
+			reg = <0x06>;
+		};
+		led7@7 {
+			label = "ProdGreen";
+			reg = <0x07>;
+		};
+		led8@8 {
+			label = "PairBlue";
+			reg = <0x08>;
+		};
+		led9@9 {
+			label = "PairRed";
+			reg = <0x09>;
+		};
+	};
+
+	// buttons, line-in sense
+	input {
+		compatible = "beo,beo-hh1-input";
+
+		buttons {
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			onoff {
+				label = "On/Off";
+				reg = <0x0011>;
+				linux,code = <0x74>;		// KEY_POWER
+			};
+			bluetooth {
+				label = "Bluetooth";
+				reg = <0x0012>;
+				linux,code = <0xed>;		// KEY_BLUETOOTH
+			};
+			setup {
+				label = "Setup";
+				reg = <0x014>;
+				linux,code = <0x8d>;		// KEY_SETUP
+			};
+			reset {
+				label = "Reset";
+				reg = <0x015>;
+				linux,code = <0x163>;		// KEY_CLEAR
+			};
+			linein {
+				label = "Line-in sense";
+				reg = <0x100>;
+				type = "switch";
+				linux,code = <0x0d>;		// SW_LINEIN_INSERT
+			};
+			// IE-EYE extension buttons
+			play {
+				label = "PlaySilence";
+				reg = <0x22>;
+				linux,code = <0xC8>;            //KEY_PLAYCD
+			};
+			join {
+				label = "Join";
+				reg = <0x21>;
+				linux,code = <0xD5>;            //KEY_SOUND
+			};
+			volume_up {
+				label = "Volume up";
+				reg = <0x23>;
+				linux,code = <0x73>;            //KEY_VOLUMEUP
+			};
+			volume_down {
+				label = "Volume down";
+				reg = <0x24>;
+				linux,code = <0x72>;            //KEY_VOLUMEDOWN
+			};
+		};
+	};
+};
+
+&beo_power {
+	supply0@5 {
+		label = "PLLINK";
+		reg = <0x05>;
+	};
+};
+

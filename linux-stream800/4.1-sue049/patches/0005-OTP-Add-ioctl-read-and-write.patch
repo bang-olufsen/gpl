@@ -1,0 +1,387 @@
+From 39286c8392c6d5215fa33216d4bdbb67e73e6aa0 Mon Sep 17 00:00:00 2001
+From: Martin Geier <martin.geier@streamunlimited.com>
+Date: Tue, 1 Jul 2014 10:22:32 +0200
+Subject: [PATCH] OTP: Add ioctl read and write
+
+Signed-off-by: Martin Geier <martin.geier@streamunlimited.com>
+---
+ drivers/mtd/mtdchar.c        |  95 +++++++++++++++++++++
+ drivers/mtd/nand/Kconfig     |   5 ++
+ drivers/mtd/nand/nand_base.c | 195 +++++++++++++++++++++++++++++++++++++++++++
+ include/linux/mtd/nand.h     |   3 +
+ include/uapi/mtd/mtd-abi.h   |   5 ++
+ 5 files changed, 303 insertions(+)
+
+diff --git a/drivers/mtd/mtdchar.c b/drivers/mtd/mtdchar.c
+index 55fa27e..62bf907 100644
+--- a/drivers/mtd/mtdchar.c
++++ b/drivers/mtd/mtdchar.c
+@@ -41,6 +41,8 @@
+ 
+ #include "mtdcore.h"
+ 
++#define OTP_PAGE_SIZE		2048
++
+ static DEFINE_MUTEX(mtd_mutex);
+ 
+ /*
+@@ -912,6 +914,99 @@ static int mtdchar_ioctl(struct file *file, u_int cmd, u_long arg)
+ 		break;
+ 	}
+ 
++	case OTPREAD:
++	{
++		struct mtd_info *mtd = mfi->mtd;
++		size_t retlen;
++		size_t total_retlen=0;
++		size_t count = OTP_PAGE_SIZE;
++		char *kbuf;
++		loff_t ppos = 0;
++		char *buf = argp;
++
++		pr_debug("OTP_read\n");
++
++		kbuf = mtd_kmalloc_up_to(mtd, &count);
++		if (!kbuf)
++			return -ENOMEM;
++
++		while (count) {
++			ret = mtd_read_user_prot_reg(mtd, ppos, count, &retlen, kbuf);
++
++			if (!ret || mtd_is_bitflip_or_eccerr(ret)) {
++				ppos += retlen;
++				if (copy_to_user(buf, kbuf, retlen)) {
++					kfree(kbuf);
++					return -EFAULT;
++				}
++				else
++					total_retlen += retlen;
++
++				count -= retlen;
++				buf += retlen;
++				if (retlen == 0)
++					count = 0;
++			}
++			else {
++				kfree(kbuf);
++				return ret;
++			}
++		}
++
++		kfree(kbuf);
++		return total_retlen;
++	}
++
++	case OTPWRITE:
++	{
++		struct mtd_info *mtd = mfi->mtd;
++		loff_t ppos = 0;
++		char *kbuf;
++		char *buf = argp;
++		size_t count = OTP_PAGE_SIZE;
++		size_t retlen;
++		size_t total_retlen=0;
++
++		pr_debug("OTP_write\n");
++
++		if (ppos == mtd->size)
++			return -ENOSPC;
++
++		if (ppos + count > mtd->size)
++			count = mtd->size - ppos;
++
++		if (!count)
++			return 0;
++
++		kbuf = mtd_kmalloc_up_to(mtd, &count);
++		if (!kbuf)
++			return -ENOMEM;
++
++		while (count) {
++			if (copy_from_user(kbuf, buf, count)) {
++				kfree(kbuf);
++				return -EFAULT;
++			}
++
++			ret = mtd_write_user_prot_reg(mtd, ppos, count,
++							  &retlen, kbuf);
++
++			if (!ret) {
++				ppos += retlen;
++				total_retlen += retlen;
++				count -= retlen;
++				buf += retlen;
++			}
++			else {
++				kfree(kbuf);
++				return ret;
++			}
++		}
++
++		kfree(kbuf);
++		return total_retlen;
++	}
++
+ 	/* This ioctl is being deprecated - it truncates the ECC layout */
+ 	case ECCGETLAYOUT:
+ 	{
+diff --git a/drivers/mtd/nand/Kconfig b/drivers/mtd/nand/Kconfig
+index 5897d8d..f2fc939 100644
+--- a/drivers/mtd/nand/Kconfig
++++ b/drivers/mtd/nand/Kconfig
+@@ -530,4 +530,9 @@ config MTD_NAND_HISI504
+ 	help
+ 	  Enables support for NAND controller on Hisilicon SoC Hip04.
+ 
++config MTD_NAND_OTP
++	tristate "Support for NAND OTP handling"
++	help
++	  Enable access to otp flash area
++
+ endif # MTD_NAND
+diff --git a/drivers/mtd/nand/nand_base.c b/drivers/mtd/nand/nand_base.c
+index c2e1232..7adc824 100644
+--- a/drivers/mtd/nand/nand_base.c
++++ b/drivers/mtd/nand/nand_base.c
+@@ -3798,6 +3798,192 @@ ident_done:
+ 	return type;
+ }
+ 
++#ifdef CONFIG_MTD_NAND_OTP
++
++/* Internal OTP operation */
++typedef int (*otp_op_t)(struct mtd_info *mtd, loff_t form, size_t len,
++		size_t *retlen, u_char *buf);
++
++/**
++ * do_otp_read - [DEFAULT] Read OTP block area
++ * @param mtd		MTD device structure
++ * @param from		The offset to read
++ * @param len		number of bytes to read
++ * @param retlen	pointer to variable to store the number of readbytes
++ * @param buf		the databuffer to put/get data
++ *
++ * Read OTP block area.
++ */
++static int do_otp_read(struct mtd_info *mtd, loff_t from, size_t len,
++		size_t *retlen, u_char *buf)
++{
++	struct nand_chip *this = mtd->priv;
++	struct mtd_oob_ops ops = {
++		.len	= len,
++		.ooblen	= 0,
++		.datbuf	= buf,
++		.oobbuf	= NULL,
++	};
++	int ret;
++
++	/* Enter OTP access mode */
++	this->cmdfunc(mtd, (NAND_CMD_OTP_ACCESS >> 24) & 0xff, -1, -1);
++	this->cmdfunc(mtd, (NAND_CMD_OTP_ACCESS >> 16) & 0xff, -1, -1);
++	this->cmdfunc(mtd, (NAND_CMD_OTP_ACCESS >> 8) & 0xff, -1, -1);
++	this->cmdfunc(mtd, (NAND_CMD_OTP_ACCESS >> 0) & 0xff, -1, -1);
++
++	this->waitfunc(mtd, this);
++
++	ret = nand_do_read_ops(mtd, from, &ops);
++	*retlen = ops.retlen;
++
++	/* Exit OTP access mode */
++	this->cmdfunc(mtd, NAND_CMD_RESET, -1, -1);
++	this->waitfunc(mtd, this);
++
++	return ret;
++}
++
++/**
++ * do_otp_write - [DEFAULT] Write OTP block area
++ * @param mtd		MTD device structure
++ * @param to		The offset to write
++ * @param len		number of bytes to write
++ * @param retlen	pointer to variable to store the number of write bytes
++ * @param buf		the databuffer to put/get data
++ *
++ * Write OTP block area.
++ */
++static int do_otp_write(struct mtd_info *mtd, loff_t to, size_t len,
++		size_t *retlen, u_char *buf)
++{
++	struct nand_chip *this = mtd->priv;
++	unsigned char *pbuf = buf;
++	int ret;
++	struct mtd_oob_ops ops;
++
++	/* Enter OTP access mode */
++	this->cmdfunc(mtd, (NAND_CMD_OTP_ACCESS >> 24) & 0xff, -1, -1);
++	this->cmdfunc(mtd, (NAND_CMD_OTP_ACCESS >> 16) & 0xff, -1, -1);
++	this->cmdfunc(mtd, (NAND_CMD_OTP_ACCESS >> 8) & 0xff, -1, -1);
++	this->cmdfunc(mtd, (NAND_CMD_OTP_ACCESS >> 0) & 0xff, -1, -1);
++
++	this->waitfunc(mtd, this);
++
++	ops.len = len;
++	ops.ooblen = 0;
++	ops.datbuf = pbuf;
++	ops.oobbuf = NULL;
++	ret = nand_do_write_ops(mtd, to, &ops);
++	*retlen = ops.retlen;
++
++	/* Exit OTP access mode */
++	this->cmdfunc(mtd, NAND_CMD_RESET, -1, -1);
++	this->waitfunc(mtd, this);
++
++	return ret;
++}
++
++/**
++ * nand_otp_walk - [DEFAULT] Handle OTP operation
++ * @param mtd		MTD device structure
++ * @param from		The offset to read/write
++ * @param len		number of bytes to read/write
++ * @param retlen	pointer to variable to store the number of read bytes
++ * @param buf		the databuffer to put/get data
++ * @param action	do given action
++ * @param mode		specify user and factory
++ *
++ * Handle OTP operation.
++ */
++static int nand_otp_walk(struct mtd_info *mtd, loff_t from, size_t len,
++			size_t *retlen, u_char *buf,
++			otp_op_t action, int mode)
++{
++	struct nand_chip *this = mtd->priv;
++	int otp_pages = 1;
++	int ret = 0;
++
++	*retlen = 0;
++
++	/* Check User/Factory boundary */
++	if (mode == MTD_OTP_USER) {
++		if (mtd->writesize * otp_pages < from + len)
++			return 0;
++	} else {
++		if (mtd->writesize * otp_pages <  len)
++			return 0;
++	}
++
++	nand_get_device(mtd, FL_OTPING);
++	while (len > 0 && otp_pages > 0) {
++		size_t tmp_retlen;
++
++		ret = action(mtd, from, len, &tmp_retlen, buf);
++
++		buf += tmp_retlen;
++		len -= tmp_retlen;
++		*retlen += tmp_retlen;
++
++		if (ret)
++			break;
++	otp_pages--;
++	}
++	nand_release_device(mtd);
++
++	return ret;
++}
++
++/**
++ * nand_read_user_prot_reg - [MTD Interface] Read user OTP area
++ * @param mtd		MTD device structure
++ * @param from		The offset to read
++ * @param len		number of bytes to read
++ * @param retlen	pointer to variable to store the number of read bytes
++ * @param buf		the databuffer to put/get data
++ *
++ * Read user OTP area.
++ */
++static int nand_read_user_prot_reg(struct mtd_info *mtd, loff_t from,
++			size_t len, size_t *retlen, u_char *buf)
++{
++	return nand_otp_walk(mtd, from, len, retlen, buf, do_otp_read, MTD_OTP_USER);
++}
++
++/**
++ * nand_write_user_prot_reg - [MTD Interface] Write user OTP area
++ * @param mtd		MTD device structure
++ * @param from		The offset to write
++ * @param len		number of bytes to write
++ * @param retlen	pointer to variable to store the number of write bytes
++ * @param buf		the databuffer to put/get data
++ *
++ * Write user OTP area.
++ */
++static int nand_write_user_prot_reg(struct mtd_info *mtd, loff_t from,
++			size_t len, size_t *retlen, u_char *buf)
++{
++	return nand_otp_walk(mtd, from, len, retlen, buf, do_otp_write, MTD_OTP_USER);
++}
++
++/**
++ * nand_read_fact_prot_reg - [MTD Interface] Dummy function
++ * @param mtd		MTD device structure
++ * @param from		The offset to write
++ * @param len		number of bytes to write
++ * @param retlen	pointer to variable to store the number of write bytes
++ * @param buf		the databuffer to put/get data
++ *
++ *
++ */
++static int nand_read_fact_prot_reg(struct mtd_info *mtd, loff_t from,
++			size_t len, size_t *retlen, u_char *buf)
++{
++	return 0;
++}
++
++#endif	/* CONFIG_MTD_NAND_OTP */
++
+ /**
+  * nand_scan_ident - [NAND Interface] Scan for the NAND device
+  * @mtd: MTD device structure
+@@ -4180,6 +4366,15 @@ int nand_scan_tail(struct mtd_info *mtd)
+ 	mtd->_block_isbad = nand_block_isbad;
+ 	mtd->_block_markbad = nand_block_markbad;
+ 	mtd->writebufsize = mtd->writesize;
++#ifdef CONFIG_MTD_NAND_OTP
++	mtd->_get_fact_prot_info = NULL;
++	mtd->_read_fact_prot_reg = nand_read_fact_prot_reg;
++	mtd->_get_user_prot_info = NULL;
++	mtd->_read_user_prot_reg = nand_read_user_prot_reg;
++	mtd->_write_user_prot_reg = nand_write_user_prot_reg;
++	mtd->_lock_user_prot_reg = NULL;
++
++#endif
+ 
+ 	/* propagate ecc info to mtd_info */
+ 	mtd->ecclayout = ecc->layout;
+diff --git a/include/linux/mtd/nand.h b/include/linux/mtd/nand.h
+index 12b75f3..e5307b6 100644
+--- a/include/linux/mtd/nand.h
++++ b/include/linux/mtd/nand.h
+@@ -96,6 +96,9 @@ extern int nand_unlock(struct mtd_info *mtd, loff_t ofs, uint64_t len);
+ #define NAND_CMD_RNDOUTSTART	0xE0
+ #define NAND_CMD_CACHEDPROG	0x15
+ 
++
++#define NAND_CMD_OTP_ACCESS	0x29170419
++
+ #define NAND_CMD_NONE		-1
+ 
+ /* Status bits */
+diff --git a/include/uapi/mtd/mtd-abi.h b/include/uapi/mtd/mtd-abi.h
+index 763bb69..1dc8639 100644
+--- a/include/uapi/mtd/mtd-abi.h
++++ b/include/uapi/mtd/mtd-abi.h
+@@ -204,6 +204,11 @@ struct otp_info {
+  */
+ #define MEMWRITE		_IOWR('M', 24, struct mtd_write_req)
+ 
++/* Read OTP (One-Time Programmable) 2048b page */
++#define OTPREAD			_IOR('M', 25, int)
++/* Write OTP (One-Time Programmable)  2048b page */
++#define OTPWRITE		_IOR('M', 26, int)
++
+ /*
+  * Obsolete legacy interface. Keep it in order not to break userspace
+  * interfaces
+-- 
+1.9.1
+

@@ -1,0 +1,16 @@
+get-caps-from-src-pad-when-query-caps.patch -p1
+0003-ssaparse-enhance-SSA-text-lines-parsing.patch -p1
+make-gio_unix_2_0-dependency-configurable.patch -p1
+0001-introspection.m4-prefix-pkgconfig-paths-with-PKG_CON.patch -p1
+0002-Makefile.am-prefix-calls-to-pkg-config-with-PKG_CONF.patch -p1
+0003-riff-add-missing-include-directories-when-calling-in.patch -p1
+0004-rtsp-drop-incorrect-reference-to-gstreamer-sdp-in-Ma.patch -p1
+0005-viv-fb-Make-sure-config.h-is-included.patch -p1
+0009-glimagesink-Downrank-to-marginal.patch -p1
+0001-gstreamer-gl.pc.in-don-t-append-GL_CFLAGS-to-CFLAGS.patch -p1
+link-with-libvchostif.patch -p1
+0001-GstAudioRate-upper-tolerance.patch -p1
+0002-decodebin3-Reduced-logging-level-of-messages.patch -p1
+0003-uridecodebin3-Fixed-defauts-not-being-set-on-initial.patch -p1
+0004-GstAudioVolume-poly-softclip.patch -p1
+gtk-doc-tweaks.patch -p1

@@ -1,0 +1,97 @@
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ */
+
+/dts-v1/;
+
+#include "am33xx-beo-ase-0.dtsi"
+
+/ {
+	model = "Bang&Olufsen ASE_S47 (AM33xx)";
+};
+
+&fep {
+	// no leds for s47 model
+	leds {
+		compatible = "beo,beo-hh1-leds";
+		#address-cells = <1>;
+		#size-cells = <0>;
+	};
+
+	// buttons, line-in sense, touch wheel, IR, ..
+	input {
+		compatible = "beo,beo-hh1-input";
+
+		buttons {
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			longPressGo {
+				label = "Long press Go";
+				reg = <0x105>;
+				linux,code = <0x77>;		// KEY_PAUSE
+			};
+			go {
+				label = "Go";
+				reg = <0x104>;
+				linux,code = <0xA4>;		// KEY_PLAYPAUSE
+			};
+			prev {
+				label = "Prev";
+				reg = <0x106>;
+				linux,code = <0xa5>;		// KEY_PREVIOUSSONG
+			};
+			next {
+				label = "Next";
+				reg = <0x107>;
+				linux,code = <0xa3>;		// KEY_NEXTSONG
+			};
+			linein {
+				label = "Line-in sense";
+				reg = <0x100>;
+				type = "switch";
+				linux,code = <0x0d>;		// SW_LINEIN_INSERT
+			};
+			volume {
+				label = "Volume slider";
+				reg = <0x103>;
+				type = "relative";
+				linux,code = <0x06>;		// REL_HWHEEL
+			};
+			volumeTouch {
+				label = "Volume slider touch";
+				reg = <0x109>;
+				linux,code = <0x213>;		// KEY_TOUCHPAD_ON
+			};
+			mute {
+				label = "Mute";
+				reg = <0x10a>;
+				linux,code = <0x71>;		// KEY_MUTE
+			};
+			allstandby {
+				label = "All standby";
+				reg = <0x10b>;
+				linux,code = <0x164>;		// KEY_POWER2
+			};
+			toslink {
+				label = "Toslink sense";
+				reg = <0x108>;
+				type = "switch";
+				linux,code = <0x07>;		// SW_JACK_PHYSICAL_INSERT
+			};
+			longPressLeft {
+				label = "Prev-long";
+				reg = <0x10C>;
+				linux,code = <0x69>;		// KEY_LEFT
+			};
+			longPressRight {
+				label = "Next-long";
+				reg = <0x10D>;
+				linux,code = <0x6a>;		// KEY_RIGHT
+			};
+		};
+	};
+};
+

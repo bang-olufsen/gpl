@@ -1,0 +1,3 @@
+makefile.patch -p1
+libtool-mode.patch -p1
+ldflags.patch -p1

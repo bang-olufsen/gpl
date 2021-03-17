@@ -1,0 +1,131 @@
+From 45cfd780137cabce7d8ee7e6e85a2ff2e260583a Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@gmail.com>
+Date: Tue, 6 May 2014 11:15:35 +0200
+Subject: [PATCH] mtd: nand: Fix address cycle problem with NAND_CMD_RNDOUT
+
+On some NAND devices (e.g. Hynix H27U2G8F2CTR-BI on Siemens DXR2 /
+Draco boards) the NAND subsystem (SPL & U-Boot drivers) issues the following
+bit-flip error messages:
+
+nand: bit-flip corrected @oob=0
+...
+
+NAND_CMD_RNDOUT (05h-E0h) needs only two cycles of column address to access data
+from different column within the same page. So expected sequence on NAND data-bus is
+     <05h> <column-addr-byte1> <column-address-byte2> <E0h>
+
+References in datasheets of parts from different NAND vendors
++--------+------------------------+---------------------------------------------
+|Vendor  | Datasheet/Part#        |  Reference
++--------+------------------------+---------------------------------------------
+|Spansion| S34ML{01|02|04}G2      | Figure 6.12 Random Data Output In a Page
+|Micron  | MT29F{16|32|64|128}G08A| Figure 47: CHANGE READ COLUMN (05h-E0h) Operation
+|Macronix| MX30LF1G08AA           | Figure 10. AC Waveforms for Random Data Output
+|Toshiba | TC58NVG1S3ETAI0        | Figure Column Address Change in Read Cycle Timing
+|        |                        | Diagram (2/2)
++--------+------------------------+---------------------------------------------
+
+Though most NAND Devices mentioned above tend to work even if extra cycles of
+page-address is issued between <05h> .... <E0h> command. But Spansion devices
+break on this non-compliance.
+This patch fixes chip->cmdfunc() for all devices, as datasheet of all mentioned
+vendor expect same sequence.
+
+The same issue has been reported by Bacem Daassi:
+
+http://e2e.ti.com/support/arm/sitara_arm/f/791/t/259699.aspx
+
+"
+The issue is mainly due to a NAND protocol violation in the omap driver since
+the Random Data Output command (05h-E0h) expects to see only the column address
+that should be addressed within the already loaded read page into the read
+buffer. Only 2 address cycles with ALE active should be provided between the
+05h and E0h commands. The Page read command expects the full address footprint
+(2bytes for column address + 3bytes for row address), but once the page is
+loaded into the read buffer, Random Data Output should be used with only 2bytes
+for column address.
+"
+
+Signed-off-by: Marek Belisko <marek.belisko@gmail.com>
+Signed-off-by: Stefan Roese <sr@denx.de>
+Tested-by: Samuel Egli <samuel.egli@siemens.com>
+Cc: Pekon Gupta <pekon@ti.com>
+Cc: Scott Wood <scottwood@freescale.com>
+---
+ drivers/mtd/nand/am335x_spl_bch.c  | 12 ++++++++----
+ drivers/mtd/nand/nand_base.c       |  2 +-
+ drivers/mtd/nand/nand_spl_simple.c | 12 ++++++++----
+ 3 files changed, 17 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/mtd/nand/am335x_spl_bch.c b/drivers/mtd/nand/am335x_spl_bch.c
+index c84851b..9b547ce 100644
+--- a/drivers/mtd/nand/am335x_spl_bch.c
++++ b/drivers/mtd/nand/am335x_spl_bch.c
+@@ -63,15 +63,19 @@ static int nand_command(int block, int page, uint32_t offs,
+ 	hwctrl(&mtd, offs & 0xff,
+ 		       NAND_CTRL_ALE | NAND_CTRL_CHANGE); /* A[7:0] */
+ 	hwctrl(&mtd, (offs >> 8) & 0xff, NAND_CTRL_ALE); /* A[11:9] */
++
+ 	/* Row address */
+-	hwctrl(&mtd, (page_addr & 0xff), NAND_CTRL_ALE); /* A[19:12] */
+-	hwctrl(&mtd, ((page_addr >> 8) & 0xff),
++	if (cmd != NAND_CMD_RNDOUT) {
++		hwctrl(&mtd, (page_addr & 0xff), NAND_CTRL_ALE); /* A[19:12] */
++		hwctrl(&mtd, ((page_addr >> 8) & 0xff),
+ 		       NAND_CTRL_ALE); /* A[27:20] */
+ #ifdef CONFIG_SYS_NAND_5_ADDR_CYCLE
+-	/* One more address cycle for devices > 128MiB */
+-	hwctrl(&mtd, (page_addr >> 16) & 0x0f,
++		/* One more address cycle for devices > 128MiB */
++		hwctrl(&mtd, (page_addr >> 16) & 0x0f,
+ 		       NAND_CTRL_ALE); /* A[31:28] */
+ #endif
++	}
++
+ 	hwctrl(&mtd, NAND_CMD_NONE, NAND_NCE | NAND_CTRL_CHANGE);
+ 
+ 	if (cmd == NAND_CMD_READ0) {
+diff --git a/drivers/mtd/nand/nand_base.c b/drivers/mtd/nand/nand_base.c
+index 1ce55fd..f11fce4 100644
+--- a/drivers/mtd/nand/nand_base.c
++++ b/drivers/mtd/nand/nand_base.c
+@@ -674,7 +674,7 @@ static void nand_command_lp(struct mtd_info *mtd, unsigned int command,
+ 			ctrl &= ~NAND_CTRL_CHANGE;
+ 			chip->cmd_ctrl(mtd, column >> 8, ctrl);
+ 		}
+-		if (page_addr != -1) {
++		if (page_addr != -1 && command != NAND_CMD_RNDOUT) {
+ 			chip->cmd_ctrl(mtd, page_addr, ctrl);
+ 			chip->cmd_ctrl(mtd, page_addr >> 8,
+ 				       NAND_NCE | NAND_ALE);
+diff --git a/drivers/mtd/nand/nand_spl_simple.c b/drivers/mtd/nand/nand_spl_simple.c
+index cead4b5..f45aa21 100644
+--- a/drivers/mtd/nand/nand_spl_simple.c
++++ b/drivers/mtd/nand/nand_spl_simple.c
+@@ -88,15 +88,19 @@ static int nand_command(int block, int page, uint32_t offs,
+ 	hwctrl(&mtd, offs & 0xff,
+ 		       NAND_CTRL_ALE | NAND_CTRL_CHANGE); /* A[7:0] */
+ 	hwctrl(&mtd, (offs >> 8) & 0xff, NAND_CTRL_ALE); /* A[11:9] */
++
+ 	/* Row address */
+-	hwctrl(&mtd, (page_addr & 0xff), NAND_CTRL_ALE); /* A[19:12] */
+-	hwctrl(&mtd, ((page_addr >> 8) & 0xff),
++	if (cmd != NAND_CMD_RNDOUT) {
++		hwctrl(&mtd, (page_addr & 0xff), NAND_CTRL_ALE); /* A[19:12] */
++		hwctrl(&mtd, ((page_addr >> 8) & 0xff),
+ 		       NAND_CTRL_ALE); /* A[27:20] */
+ #ifdef CONFIG_SYS_NAND_5_ADDR_CYCLE
+-	/* One more address cycle for devices > 128MiB */
+-	hwctrl(&mtd, (page_addr >> 16) & 0x0f,
++		/* One more address cycle for devices > 128MiB */
++		hwctrl(&mtd, (page_addr >> 16) & 0x0f,
+ 		       NAND_CTRL_ALE); /* A[31:28] */
+ #endif
++	}
++
+ 	/* Latch in address */
+ 	hwctrl(&mtd, NAND_CMD_READSTART,
+ 		       NAND_CTRL_CLE | NAND_CTRL_CHANGE);
+-- 
+2.7.4
+

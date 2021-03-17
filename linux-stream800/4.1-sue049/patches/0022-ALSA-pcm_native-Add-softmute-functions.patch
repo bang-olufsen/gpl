@@ -1,0 +1,288 @@
+From 161187fa30209a3678dc2ae6ebff10ebca26edd4 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Thu, 15 Dec 2016 11:43:52 +0100
+Subject: [PATCH] ALSA: pcm_native: Add softmute functions
+
+- add fade in to start
+- add fade out to stop
+
+Fade in and out functions do direct data modification in DMA buffer.
+Buffer must be enough big, because fading manimpulates with 10-20ms size
+of data.
+
+Signed-off-by: Jozef Maslik <jozef.maslik@streamunlimited.com>
+
+Added ms_div variable to specify fade in/out durations
+Increased fade in duration to 15 ms
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ sound/core/pcm_native.c | 226 +++++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 225 insertions(+), 1 deletion(-)
+
+diff --git a/sound/core/pcm_native.c b/sound/core/pcm_native.c
+index 91bfb36..cba1319 100644
+--- a/sound/core/pcm_native.c
++++ b/sound/core/pcm_native.c
+@@ -35,6 +35,7 @@
+ #include <sound/timer.h>
+ #include <sound/minors.h>
+ #include <linux/uio.h>
++#include <linux/delay.h>
+ 
+ /*
+  *  Compatibility
+@@ -1018,10 +1019,215 @@ static int snd_pcm_pre_start(struct snd_pcm_substream *substream, int state)
+ 	return 0;
+ }
+ 
++/*
++ * create fadein in audio buffer - calculate fadein effect at the begining of
++ * buffer
++ */
++static int snd_pcm_fade_in(struct snd_pcm_substream *substream)
++{
++	struct snd_pcm_runtime *runtime = substream->runtime;
++
++	unsigned char *samples;
++	unsigned int chnl, buf_size;
++	int count, i, step, smpl, ms_div;
++	uint32_t sample_mask;
++
++	buf_size = snd_pcm_lib_buffer_bytes(substream);
++
++	/* specify fady in duration by fraction to avoid overflow */
++	ms_div = 1000 / 15 /* duration in ms */;
++	/* how many frames is in the time window */
++	count = runtime->rate / ms_div;
++	/* step between samples */
++	step = runtime->byte_align / runtime->channels;
++	/* start pointer in buffer */
++	samples = runtime->dma_buffer_p->area;
++	/* sample mask */
++	sample_mask = (1 << runtime->sample_bits) - 1;
++
++	/* Fadein calculation - change signal value from 0% to 100% in 15ms
++	 * sample = sample * ratio
++	 * Ratio is calculated from frame number(count) in fadein part of buffer.
++	 */
++	for (i = 0; i < count; i++) {
++		for (chnl = 0; chnl < runtime->channels; chnl++) {
++			switch (runtime->sample_bits) {
++			case 16:
++				/* sample size is 16b */
++				/* prevent calculation overflow 32b number when
++				 * sample rate is greater than 48kHz */
++				if (runtime->rate > 48000) {
++					*((int16_t*)samples) = (*((int16_t*)samples)
++						* i / (int)runtime->rate) * ms_div;
++				}
++				else {
++					*((int16_t*)samples) = *((int16_t*)samples)
++						* ms_div * i / (int)runtime->rate;
++				}
++				break;
++			case 24:
++			case 32:
++				smpl = (*(int32_t*)samples) & sample_mask;
++				/* extend signed value - in case of 24b sample,
++				 * mumber must be extended to 32b because we
++				 * do not want lost sign */
++				smpl = (smpl ^ (1U << (runtime->sample_bits - 1)))
++					- (1U << (runtime->sample_bits - 1));
++
++				smpl = (int)smpl / (int)runtime->rate * ms_div * i;
++
++				*(int32_t*)samples = (*(int32_t*)samples & ~sample_mask)
++					| (smpl & sample_mask);
++				break;
++			default:
++				printk("%s unsuported sample size!\n", __func__);
++				return -1;
++			}
++			samples += step;
++
++			if (samples > runtime->dma_buffer_p->area + buf_size)
++				samples = runtime->dma_buffer_p->area;
++		}
++	}
++
++	return 0;
++}
++
++/*
++ * create fadeout in audio buffer - calculate fadeout effect at the end of
++ * buffered data
++ * @substream: the PCM substream instance
++ *
++ * @drain: change behavior depend on caller - stop after drain (1) or stop without drain (0)
++ */
++static int snd_pcm_fade_out(struct snd_pcm_substream *substream, int drain)
++{
++	struct snd_pcm_runtime *runtime = substream->runtime;
++
++	unsigned char *samples;
++	unsigned int pos, chnl, buf_size;
++	int count, i, step, smpl, ms_div;
++	uint32_t sample_mask;
++
++	buf_size = snd_pcm_lib_buffer_bytes(substream);
++
++	/* specify fade_out duration by fraction to avoid overflow */
++	ms_div = 1000 / 10 /* duration in ms */;
++	/* how many frames is in the 10ms */
++	count = runtime->rate / ms_div;
++	/* step between samples */
++	step = runtime->byte_align / runtime->channels;
++	/* current buffer possition in frames */
++	pos = substream->ops->pointer(substream);
++	/* sample mask */
++	sample_mask = (1 << runtime->sample_bits) - 1;
++
++	if (drain) {
++		/* Calculate end pointer in buffer, fade effect need 10ms from
++		 * buffer and possition is aligned. Buffer is filled from end.
++		 *
++		 * begin_of_buffer + (current_possition_frames
++		 *	+ buffer_size_frames - free_space_in_buf_frames)
++		 *	* frame_size_bytes
++		 *
++		 * Data after modification will looks like this:
++		 * ...org_data | fadeout | zeroes |
++		 *             ^  +10ms  ^  +1ms  ^ (STOP)
++		 */
++		samples = (unsigned char*)(((uint32_t)(runtime->dma_buffer_p->area)
++			+ (pos + (buf_size / (runtime->frame_bits / 8))
++			- snd_pcm_playback_avail(runtime)) * runtime->frame_bits / 8));
++	}
++	else {
++		/* Calculate end pointer in buffer, fade effect need 10ms from
++		 * buffer and possition is aligned. Buffer is filled from end.
++		 *
++		 * begin_of_buffer + (current_possition_frames + 10ms_frames
++		 *	+ 7ms_frames) * frame_size_bytes
++		 * Start possition is shifted +10ms and (+5ms +2ms) after current
++		 * possition -  7ms because we want reserve time for prepare
++		 * fadeout and silence.
++		 *
++		 * Data after modification will looks like this:
++		 * ...org_data | fadeout | zeroes |
++		 *     ^ + 2ms ^  +10ms  ^  +5ms  ^ (STOP)
++		 */
++		samples = (unsigned char*)(((uint32_t)(runtime->dma_buffer_p->area)
++			+ (pos + count + 7 * count / 10) * runtime->frame_bits / 8));
++	}
++	if (samples > runtime->dma_buffer_p->area + buf_size)
++		samples = samples - buf_size;
++
++
++	/* Fill buffer with zeroes - silent
++	 * drain needs 1ms of silence, stop without drain needs 5ms - we do not
++	 * want accidentaly play anything after fadeout if processing(delay)
++	 * will be little bit longer (if cpu is very busy) */
++	for (i = 0; i < ((drain) ? 1 : 5) * count / 10; i++) {
++		for (chnl = 0; chnl < runtime->channels; chnl++) {
++			*((int32_t*)samples) &= ~sample_mask;
++
++			samples -= step;
++
++			if (samples < runtime->dma_buffer_p->area)
++				samples = runtime->dma_buffer_p->area
++					+ buf_size - step;
++		}
++	}
++
++	/* prepare fadeout */
++	for (i = 0; i < count; i++) {
++		for (chnl = 0; chnl < runtime->channels; chnl++) {
++			switch (runtime->sample_bits) {
++			case 16:
++				/* sample size is 16b */
++				/* prevent calculation overflow 32b number when
++				 * sample rate is greater than 48kHz */
++				if (runtime->rate > 48000) {
++					*((int16_t*)samples) = (*((int16_t*)samples)
++						* i / (int)runtime->rate) * ms_div;
++				}
++				else {
++					*((int16_t*)samples) = *((int16_t*)samples)
++						* ms_div * i / (int)runtime->rate;
++				}
++				break;
++			case 24:
++			case 32:
++				smpl = (*(int32_t*)samples) & sample_mask;
++				/* extend signed value - in case of 24b sample,
++				 * mumber must be extended to 32b because we
++				 * do not want lost sign */
++				smpl = (smpl ^ (1U << (runtime->sample_bits - 1)))
++					- (1U << (runtime->sample_bits - 1));
++
++				smpl = (int)smpl / (int)runtime->rate * ms_div * i;
++
++				*(int32_t*)samples = (*(int32_t*)samples & ~sample_mask)
++					| (smpl & sample_mask);
++				break;
++			default:
++				printk("%s unsuported sample size!\n", __func__);
++				return -1;
++			}
++
++			samples -= step;
++
++			if (samples < runtime->dma_buffer_p->area)
++				samples = runtime->dma_buffer_p->area + buf_size - step;
++		}
++	}
++
++	return 0;
++}
++
+ static int snd_pcm_do_start(struct snd_pcm_substream *substream, int state)
+ {
+ 	if (substream->runtime->trigger_master != substream)
+ 		return 0;
++
++	snd_pcm_fade_in(substream);
++
+ 	return substream->ops->trigger(substream, SNDRV_PCM_TRIGGER_START);
+ }
+ 
+@@ -1081,8 +1287,23 @@ static int snd_pcm_pre_stop(struct snd_pcm_substream *substream, int state)
+ static int snd_pcm_do_stop(struct snd_pcm_substream *substream, int state)
+ {
+ 	if (substream->runtime->trigger_master == substream &&
+-	    snd_pcm_running(substream))
++	    snd_pcm_running(substream)) {
++		if (snd_pcm_playback_avail(substream->runtime) <
++			(snd_pcm_lib_buffer_bytes(substream)
++			 / (substream->runtime->frame_bits / 8))) {
++			/* Call fadeout only if buffer contain some data
++			 * - stop without drain */
++			snd_pcm_fade_out(substream, 0);
++			/* Wait until HW play fadeout modified data. Fadeout
++			 * function modify buffer:
++			 * ...org_data | fadeout | zeroes | (STOP)
++			 *     ^ + 2ms ^  +10ms  ^  +5ms  ^
++			 *
++			 * must be mdelay because stop is atomic */
++			mdelay(15);
++		}
+ 		substream->ops->trigger(substream, SNDRV_PCM_TRIGGER_STOP);
++	}
+ 	return 0; /* unconditonally stop all substreams */
+ }
+ 
+@@ -1677,6 +1898,9 @@ static int snd_pcm_drain(struct snd_pcm_substream *substream,
+ 	result = snd_pcm_action(&snd_pcm_action_drain_init, substream, 0);
+ 	if (result < 0)
+ 		goto unlock;
++
++	snd_pcm_fade_out(substream, 1);
++
+ 	/* in non-blocking, we don't wait in ioctl but let caller poll */
+ 	if (nonblock) {
+ 		result = -EAGAIN;
+-- 
+2.7.4
+

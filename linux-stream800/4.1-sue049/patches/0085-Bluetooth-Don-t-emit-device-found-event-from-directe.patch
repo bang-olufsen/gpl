@@ -1,0 +1,35 @@
+From c75d501f1e8eb9417a63212c6e33ce5e0baef83b Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Mon, 13 Nov 2017 16:30:19 +0100
+Subject: [PATCH] Bluetooth: Don't emit device found event from directed
+ advertisements
+
+Event device found is only useful when we are pairing devices, which we
+cannot if advertisements are directed.
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ net/bluetooth/hci_event.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+index 43918b8..499a274 100644
+--- a/net/bluetooth/hci_event.c
++++ b/net/bluetooth/hci_event.c
+@@ -4791,6 +4791,13 @@ static void process_adv_report(struct hci_dev *hdev, u8 type, bdaddr_t *bdaddr,
+ 		conn->le_adv_data_len = len;
+ 	}
+ 
++	/* Don't emit device found event from directed advertisements:
++	 * Event device found is only useful when we are pairing
++	 * devices, which we cannot if advertisements are directed.
++	 */
++	if (type == LE_ADV_DIRECT_IND)
++		return;
++
+ 	/* Passive scanning shouldn't trigger any device found events,
+ 	 * except for devices marked as CONN_REPORT for which we do send
+ 	 * device found events.
+-- 
+2.7.4
+

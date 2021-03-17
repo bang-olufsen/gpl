@@ -1,0 +1,28 @@
+From 3f052cd68190911a552eb5f5106753817db56621 Mon Sep 17 00:00:00 2001
+From: Daniel Mack <zonque@gmail.com>
+Date: Mon, 10 Dec 2012 12:50:46 +0100
+Subject: [PATCH] ALSA: ASoC: McASP: keep XCLKRST in DAVINCI_MCASP_GBLCTLX_REG
+ on stream stop
+
+Signed-off-by: Daniel Mack <zonque@gmail.com>
+Signed-off-by: Pascal Huerst <pascal.huerst@gmail.com>
+---
+ sound/soc/davinci/davinci-mcasp.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/sound/soc/davinci/davinci-mcasp.c b/sound/soc/davinci/davinci-mcasp.c
+index 23c91fa..b03d6a1 100644
+--- a/sound/soc/davinci/davinci-mcasp.c
++++ b/sound/soc/davinci/davinci-mcasp.c
+@@ -283,6 +283,8 @@ static void mcasp_stop_tx(struct davinci_mcasp *mcasp)
+ 	if (mcasp_is_synchronous(mcasp) && mcasp->streams)
+ 		val =  TXHCLKRST | TXCLKRST | TXFSRST;
+ 
++	val |= TXCLKRST;
++
+ 	mcasp_set_reg(mcasp, DAVINCI_MCASP_GBLCTLX_REG, val);
+ 	mcasp_set_reg(mcasp, DAVINCI_MCASP_TXSTAT_REG, 0xFFFFFFFF);
+ 
+-- 
+1.9.1
+

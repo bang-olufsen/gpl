@@ -1,0 +1,78 @@
+From 1db364ea89a3b913c8597d76ec88e890964965cd Mon Sep 17 00:00:00 2001
+From: Vladimir Koutny <vladimir.koutny@streamunlimited.com>
+Date: Tue, 4 Dec 2018 13:25:49 +0100
+Subject: [PATCH] pcm: Add force_silence option
+
+Signed-off-by: Vladimir Koutny <vladimir.koutny@streamunlimited.com>
+[Patch rebased to alsa-lib-1.1.6]
+Signed-off-by: Andriy Danylovskyy <andriy.danylovskyy@streamunlimited.com>
+
+%% original patch: 1001-force-silence.patch
+---
+ src/pcm/pcm_hw.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
+
+diff --git a/src/pcm/pcm_hw.c b/src/pcm/pcm_hw.c
+index 65b198c..aec5b2f 100644
+--- a/src/pcm/pcm_hw.c
++++ b/src/pcm/pcm_hw.c
+@@ -109,6 +109,7 @@ typedef struct {
+ 	/* for chmap */
+ 	unsigned int chmap_caps;
+ 	snd_pcm_chmap_query_t **chmap_override;
++	int force_silence;
+ } snd_pcm_hw_t;
+ 
+ #define SNDRV_FILE_PCM_STREAM_PLAYBACK		ALSA_DEVICE_DIRECTORY "pcmC%iD%ip"
+@@ -520,6 +521,10 @@ static int snd_pcm_hw_sw_params(snd_pcm_t *pcm, snd_pcm_sw_params_t * params)
+ 		SYSMSG("Kernel doesn't support SND_PCM_TSTAMP_TYPE_MONOTONIC");
+ 		return -EINVAL;
+ 	}
++	if (hw->force_silence) {
++		params->silence_threshold = 0;
++		params->silence_size = params->boundary;
++	}
+ 	if (ioctl(fd, SNDRV_PCM_IOCTL_SW_PARAMS, params) < 0) {
+ 		err = -errno;
+ 		SYSMSG("SNDRV_PCM_IOCTL_SW_PARAMS failed (%i)", err);
+@@ -1754,6 +1759,7 @@ pcm.name {
+ 	[channels INT]		# Restrict only to the given channels
+ 	[rate INT]		# Restrict only to the given rate
+ 	[chmap MAP]		# Override channel maps; MAP is a string array
++	[force_silence BOOL]	# Force silence-fill of audio buffers (silence_size=boundary, silence_threshold=0)
+ }
+ \endcode
+ 
+@@ -1790,6 +1796,7 @@ int _snd_pcm_hw_open(snd_pcm_t **pcmp, const char *name,
+ 	snd_pcm_format_t format = SND_PCM_FORMAT_UNKNOWN;
+ 	snd_config_t *n;
+ 	int nonblock = 1; /* non-block per default */
++	int force_silence = 0;
+ 	snd_pcm_chmap_query_t **chmap = NULL;
+ 	snd_pcm_hw_t *hw;
+ 
+@@ -1893,6 +1900,13 @@ int _snd_pcm_hw_open(snd_pcm_t **pcmp, const char *name,
+ 			}
+ 			continue;
+ 		}
++		if (strcmp(id, "force_silence") == 0) {
++			err = snd_config_get_bool(n);
++			if (err < 0)
++				continue;
++			force_silence = err;
++			continue;
++		}
+ 		SNDERR("Unknown field %s", id);
+ 		err = -EINVAL;
+ 		goto fail;
+@@ -1928,6 +1942,7 @@ int _snd_pcm_hw_open(snd_pcm_t **pcmp, const char *name,
+ 		hw->rate = rate;
+ 	if (chmap)
+ 		hw->chmap_override = chmap;
++	hw->force_silence = force_silence;
+ 
+ 	return 0;
+ 
+-- 
+2.7.4
+

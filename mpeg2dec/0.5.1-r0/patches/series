@@ -1,0 +1,3 @@
+altivec_h_needed.patch -p1
+0001-check-for-available-arm-optimizations.patch -p1
+0002-Set-visibility-of-global-symbols-used-in-ARM-specifi.patch -p1

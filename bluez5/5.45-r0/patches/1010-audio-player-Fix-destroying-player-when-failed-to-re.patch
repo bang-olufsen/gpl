@@ -1,0 +1,30 @@
+From ec90ea91c80843c303132a7ebb90d0ee6e921669 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Wed, 24 May 2017 13:24:01 +0200
+Subject: [PATCH] audio/player: Fix destroying player when failed to register
+ on dbus
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ profiles/audio/player.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/profiles/audio/player.c b/profiles/audio/player.c
+index 84e488a..2a5eed8 100644
+--- a/profiles/audio/player.c
++++ b/profiles/audio/player.c
+@@ -1237,6 +1237,11 @@ struct media_player *media_player_controller_create(const char *path,
+ 					media_player_signals,
+ 					media_player_properties, mp, NULL)) {
+ 		error("D-Bus failed to register %s path", mp->path);
++
++		// Don't deregister D-Bus object because this can deregister different MediaPlayer
++		g_free(mp->path);
++		mp->path = NULL;
++
+ 		media_player_destroy(mp);
+ 		return NULL;
+ 	}
+-- 
+2.7.4
+

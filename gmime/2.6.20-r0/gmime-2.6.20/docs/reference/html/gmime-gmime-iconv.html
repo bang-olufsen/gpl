@@ -1,0 +1,258 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>gmime-iconv</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="GMime 2.6 Reference Manual">
+<link rel="up" href="core.html" title="Part III. GMime Core Reference">
+<link rel="prev" href="gmime-gmime-charset.html" title="gmime-charset">
+<link rel="next" href="gmime-gmime-iconv-utils.html" title="gmime-iconv-utils">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="gmime-gmime-charset.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="core.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">GMime 2.6 Reference Manual</th>
+<td><a accesskey="n" href="gmime-gmime-iconv-utils.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#gmime-gmime-iconv.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#gmime-gmime-iconv.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="gmime-gmime-iconv"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="gmime-gmime-iconv.top_of_page"></a>gmime-iconv</span></h2>
+<p>gmime-iconv — Low-level routines for converting text from one charset to another</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="gmime-gmime-iconv.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis"><span class="returnvalue">void</span>                <a class="link" href="gmime-gmime-iconv.html#g-mime-iconv-init" title="g_mime_iconv_init ()">g_mime_iconv_init</a>                   (<em class="parameter"><code><span class="type">void</span></code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="gmime-gmime-iconv.html#g-mime-iconv-shutdown" title="g_mime_iconv_shutdown ()">g_mime_iconv_shutdown</a>               (<em class="parameter"><code><span class="type">void</span></code></em>);
+<span class="returnvalue">iconv_t</span>             <a class="link" href="gmime-gmime-iconv.html#g-mime-iconv-open" title="g_mime_iconv_open ()">g_mime_iconv_open</a>                   (<em class="parameter"><code>const <span class="type">char</span> *to</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *from</code></em>);
+#define             <a class="link" href="gmime-gmime-iconv.html#g-mime-iconv" title="g_mime_iconv()">g_mime_iconv</a>                        (cd,
+                                                         inbuf,
+                                                         inleft,
+                                                         outbuf,
+                                                         outleft)
+<span class="returnvalue">int</span>                 <a class="link" href="gmime-gmime-iconv.html#g-mime-iconv-close" title="g_mime_iconv_close ()">g_mime_iconv_close</a>                  (<em class="parameter"><code><span class="type">iconv_t</span> cd</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="gmime-gmime-iconv.description"></a><h2>Description</h2>
+<p>
+These functions are wrappers around the system iconv(3)
+routines. The purpose of these wrappers are two-fold:
+</p>
+<p>
+1. Cache iconv_t descriptors for you in order to optimize
+opening/closing many descriptors frequently
+</p>
+<p>
+and
+</p>
+<p>
+2. To use the appropriate system charset alias for the MIME charset
+names given as arguments.
+</p>
+</div>
+<div class="refsect1">
+<a name="gmime-gmime-iconv.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="g-mime-iconv-init"></a><h3>g_mime_iconv_init ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_iconv_init                   (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>
+Initialize GMime's iconv cache. This *MUST* be called before any
+gmime-iconv interfaces will work correctly.
+</p>
+<p>
+Note: this function is called for you by <a class="link" href="gmime-gmime.html#g-mime-init" title="g_mime_init ()"><code class="function">g_mime_init()</code></a>.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-iconv-shutdown"></a><h3>g_mime_iconv_shutdown ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_iconv_shutdown               (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>
+Frees internal iconv caches created in <a class="link" href="gmime-gmime-iconv.html#g-mime-iconv-init" title="g_mime_iconv_init ()"><code class="function">g_mime_iconv_init()</code></a>.
+</p>
+<p>
+Note: this function is called for you by <a class="link" href="gmime-gmime.html#g-mime-shutdown" title="g_mime_shutdown ()"><code class="function">g_mime_shutdown()</code></a>.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-iconv-open"></a><h3>g_mime_iconv_open ()</h3>
+<pre class="programlisting"><span class="returnvalue">iconv_t</span>             g_mime_iconv_open                   (<em class="parameter"><code>const <span class="type">char</span> *to</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *from</code></em>);</pre>
+<p>
+Allocates a coversion descriptor suitable for converting byte
+sequences from charset <em class="parameter"><code>from</code></em> to charset <em class="parameter"><code>to</code></em>. The resulting
+descriptor can be used with <code class="function">iconv()</code> (or the <a class="link" href="gmime-gmime-iconv.html#g-mime-iconv" title="g_mime_iconv()"><code class="function">g_mime_iconv()</code></a> wrapper) any
+number of times until closed using <a class="link" href="gmime-gmime-iconv.html#g-mime-iconv-close" title="g_mime_iconv_close ()"><code class="function">g_mime_iconv_close()</code></a>.
+</p>
+<p>
+See the manual page for iconv_open(3) for further details.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>to</code></em> :</span></p></td>
+<td>charset to convert to</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>from</code></em> :</span></p></td>
+<td>charset to convert from</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new conversion descriptor for use with <a class="link" href="gmime-gmime-iconv.html#g-mime-iconv" title="g_mime_iconv()"><code class="function">g_mime_iconv()</code></a> on
+success or (iconv_t) <code class="literal">-1</code> on fail as well as setting an appropriate
+errno value.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-iconv"></a><h3>g_mime_iconv()</h3>
+<pre class="programlisting">#define             g_mime_iconv(cd,inbuf,inleft,outbuf,outleft)</pre>
+<p>
+The argument <em class="parameter"><code>cd</code></em> must be a conversion descriptor created using the
+function <a class="link" href="gmime-gmime-iconv.html#g-mime-iconv-open" title="g_mime_iconv_open ()"><span class="type">g_mime_iconv_open</span></a>.
+</p>
+<p>
+The main case is when <em class="parameter"><code>inbuf</code></em> is not <code class="literal">NULL</code> and *inbuf is not
+<code class="literal">NULL</code>. In this case, the <a class="link" href="gmime-gmime-iconv.html#g-mime-iconv" title="g_mime_iconv()"><span class="type">g_mime_iconv</span></a> function converts the
+multibyte sequence starting at *inbuf to a multibyte sequence
+starting at *outbuf. At most *inleft bytes, starting at *inbuf,
+will be read. At most *outleft bytes, starting at *outbuf, will
+be written.
+</p>
+<p>
+The <a class="link" href="gmime-gmime-iconv.html#g-mime-iconv" title="g_mime_iconv()"><span class="type">g_mime_iconv</span></a> function converts one multibyte character at a
+time, and for each character conversion it increments *inbuf and
+decrements *inleft by the number of converted input bytes, it
+increments *outbuf and decrements *outleft by the number of
+converted output bytes, and it updates the conversion state
+contained in <em class="parameter"><code>cd</code></em>. The conversion can stop for four reasons:
+</p>
+<p>
+1. An invalid multibyte sequence is encountered in the input. In
+this case it sets errno to <code class="literal">EILSEQ</code> and returns (size_t)(-1).
+*inbuf is left pointing to the beginning of the invalid multibyte
+sequence.
+</p>
+<p>
+2. The input byte sequence has been entirely converted, i.e.
+*inleft has gone down to <code class="literal">0</code>. In this case <a class="link" href="gmime-gmime-iconv.html#g-mime-iconv" title="g_mime_iconv()"><span class="type">g_mime_iconv</span></a> returns
+the number of non-reversible conversions performed during this
+call.
+</p>
+<p>
+3. An incomplete multibyte sequence is encountered in the input,
+and the input byte sequence terminates after it. In this case it
+sets errno to <code class="literal">EINVAL</code> and returns (size_t)(-1). *inbuf is left
+pointing to the beginning of the incomplete multibyte sequence.
+</p>
+<p>
+4. The output buffer has no more room for the next converted
+character. In this case it sets errno to <code class="literal">E2BIG</code> and returns
+(size_t)(-1).
+</p>
+<p>
+A different case is when <em class="parameter"><code>inbuf</code></em> is <code class="literal">NULL</code> or *inbuf is <code class="literal">NULL</code>, but
+<em class="parameter"><code>outbuf</code></em> is not <code class="literal">NULL</code> and *outbuf is not <code class="literal">NULL</code>. In this case, the
+<a class="link" href="gmime-gmime-iconv.html#g-mime-iconv" title="g_mime_iconv()"><span class="type">g_mime_iconv</span></a> function attempts to set <em class="parameter"><code>cd</code></em>'s conversion state to
+the initial state and store a corresponding shift sequence at
+*outbuf.  At most *outleft bytes, starting at *outbuf, will be
+written.  If the output buffer has no more room for this reset
+sequence, it sets errno to <code class="literal">E2BIG</code> and returns (size_t)(-1).
+Otherwise it increments *outbuf and decrements *outleft by the
+number of bytes written.
+</p>
+<p>
+A third case is when <em class="parameter"><code>inbuf</code></em> is <code class="literal">NULL</code> or *inbuf is <code class="literal">NULL</code>, and
+<em class="parameter"><code>outbuf</code></em> is <code class="literal">NULL</code> or *outbuf is <code class="literal">NULL</code>. In this case, the
+<a class="link" href="gmime-gmime-iconv.html#g-mime-iconv" title="g_mime_iconv()"><span class="type">g_mime_iconv</span></a> function sets <em class="parameter"><code>cd</code></em>'s conversion state to the initial
+state.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>cd</code></em> :</span></p></td>
+<td>iconv_t conversion descriptor</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>inbuf</code></em> :</span></p></td>
+<td>input buffer</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>inleft</code></em> :</span></p></td>
+<td>number of bytes left in <em class="parameter"><code>inbuf</code></em>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>outbuf</code></em> :</span></p></td>
+<td>output buffer</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>outleft</code></em> :</span></p></td>
+<td>number of bytes left in <em class="parameter"><code>outbuf</code></em>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the number of characters converted in a nonreversible way
+during this call; reversible conversions are not counted. In case
+of error, it sets errno and returns (size_t)(-1).</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-iconv-close"></a><h3>g_mime_iconv_close ()</h3>
+<pre class="programlisting"><span class="returnvalue">int</span>                 g_mime_iconv_close                  (<em class="parameter"><code><span class="type">iconv_t</span> cd</code></em>);</pre>
+<p>
+Closes the iconv descriptor <em class="parameter"><code>cd</code></em>.
+</p>
+<p>
+See the manual page for iconv_close(3) for further details.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>cd</code></em> :</span></p></td>
+<td>iconv conversion descriptor</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>
+<code class="literal">0</code> on success or <code class="literal">-1</code> on fail as well as setting an
+appropriate errno value.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

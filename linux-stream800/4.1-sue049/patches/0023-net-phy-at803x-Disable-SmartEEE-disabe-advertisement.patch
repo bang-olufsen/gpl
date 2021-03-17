@@ -1,0 +1,110 @@
+From e02f914274c7d1358b7dfac5afdd4ad0b977bcf7 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Thu, 16 Apr 2015 16:01:23 +0200
+Subject: [PATCH] net: phy: at803x: Disable SmartEEE + disabe advertisements
+
+Ar803x phy SmartEEE feature cause link status generates glitch,
+which cause ethernet link down/up issue, so disable SmartEEE
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+[ported from kernel 3.9 to 3.19]
+Signed-off-by: Radek Dostal <radek.dostal@streamunlimited.com>
+---
+ drivers/net/phy/at803x.c | 45 +++++++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 41 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
+index fabf11d..916168a 100644
+--- a/drivers/net/phy/at803x.c
++++ b/drivers/net/phy/at803x.c
+@@ -24,13 +24,16 @@
+ #define AT803X_SMART_SPEED			0x14
+ #define AT803X_LED_CONTROL			0x18
+ #define AT803X_WOL_ENABLE			0x01
+-#define AT803X_DEVICE_ADDR			0x03
++#define AT803X_DEVICE_ADDR3			0x03
++#define AT803X_DEVICE_ADDR7			0x07
+ #define AT803X_LOC_MAC_ADDR_0_15_OFFSET		0x804C
+ #define AT803X_LOC_MAC_ADDR_16_31_OFFSET	0x804B
+ #define AT803X_LOC_MAC_ADDR_32_47_OFFSET	0x804A
++#define AT803X_SMART_EEE_CONTROL3		0x805D
++#define AT803x_EEE_ADVERTISEMENT		0x3C
+ #define AT803X_MMD_ACCESS_CONTROL		0x0D
+ #define AT803X_MMD_ACCESS_CONTROL_DATA		0x0E
+-#define AT803X_FUNC_DATA			0x4003
++#define AT803X_FUNC_DATA			0x4000
+ #define AT803X_INER				0x0012
+ #define AT803X_INER_INIT			0xec00
+ #define AT803X_INSR				0x0013
+@@ -61,6 +64,34 @@ struct at803x_context {
+ 	u16 led_control;
+ };
+ 
++
++/*
++ * Ar803x phy SmartEEE feature cause link status generates glitch,
++ * which cause ethernet link down/up issue, so disable SmartEEE
++ */
++static int disable_smarteee(struct phy_device *phydev)
++{
++	int val;
++
++	/* disable smarteee */
++	phy_write(phydev, AT803X_MMD_ACCESS_CONTROL, AT803X_DEVICE_ADDR3);
++	phy_write(phydev, AT803X_MMD_ACCESS_CONTROL_DATA, AT803X_SMART_EEE_CONTROL3);
++	phy_write(phydev, AT803X_MMD_ACCESS_CONTROL, AT803X_FUNC_DATA | AT803X_DEVICE_ADDR3);
++	val = phy_read(phydev, AT803X_MMD_ACCESS_CONTROL_DATA);
++	val &= ~(BIT(8));
++	phy_write(phydev, AT803X_MMD_ACCESS_CONTROL_DATA, val);
++
++	/* disable eee advertisement */
++	phy_write(phydev, AT803X_MMD_ACCESS_CONTROL, AT803X_DEVICE_ADDR7);
++	phy_write(phydev, AT803X_MMD_ACCESS_CONTROL_DATA, AT803x_EEE_ADVERTISEMENT);
++	phy_write(phydev, AT803X_MMD_ACCESS_CONTROL, AT803X_FUNC_DATA | AT803X_DEVICE_ADDR7);
++	val = phy_read(phydev, AT803X_MMD_ACCESS_CONTROL_DATA);
++	val &= ~(BIT(1) | BIT(2));
++	phy_write(phydev, AT803X_MMD_ACCESS_CONTROL_DATA, val);
++
++	return 0;
++}
++
+ /* save relevant PHY registers to private copy */
+ static void at803x_context_save(struct phy_device *phydev,
+ 				struct at803x_context *context)
+@@ -109,11 +140,11 @@ static int at803x_set_wol(struct phy_device *phydev,
+ 
+ 		for (i = 0; i < 3; i++) {
+ 			phy_write(phydev, AT803X_MMD_ACCESS_CONTROL,
+-				  AT803X_DEVICE_ADDR);
++				  AT803X_DEVICE_ADDR3);
+ 			phy_write(phydev, AT803X_MMD_ACCESS_CONTROL_DATA,
+ 				  offsets[i]);
+ 			phy_write(phydev, AT803X_MMD_ACCESS_CONTROL,
+-				  AT803X_FUNC_DATA);
++				  AT803X_FUNC_DATA | AT803X_DEVICE_ADDR3);
+ 			phy_write(phydev, AT803X_MMD_ACCESS_CONTROL_DATA,
+ 				  mac[(i * 2) + 1] | (mac[(i * 2)] << 8));
+ 		}
+@@ -228,6 +259,9 @@ static int at803x_config_init(struct phy_device *phydev)
+ 			return ret;
+ 	}
+ 
++	/* disable smarteee */
++	disable_smarteee(phydev);
++
+ 	return 0;
+ }
+ 
+@@ -281,6 +315,9 @@ static void at803x_link_change_notify(struct phy_device *phydev)
+ 
+ 				at803x_context_restore(phydev, &context);
+ 
++				/* disable smarteee */
++				disable_smarteee(phydev);
++
+ 				dev_dbg(&phydev->dev, "%s(): phy was reset\n",
+ 					__func__);
+ 				priv->phy_reset = true;
+-- 
+1.9.1
+

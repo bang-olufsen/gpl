@@ -1,0 +1,36 @@
+diff --git a/profiles/audio/a2dp.c b/profiles/audio/a2dp.c
+index af190db3b..542d01017 100644
+--- a/profiles/audio/a2dp.c
++++ b/profiles/audio/a2dp.c
+@@ -913,6 +913,9 @@ static gboolean suspend_ind(struct avdtp *session, struct avdtp_local_sep *sep,
+ 	if (a2dp_sep->suspend_timer) {
+ 		g_source_remove(a2dp_sep->suspend_timer);
+ 		a2dp_sep->suspend_timer = 0;
++	}
++
++	if (a2dp_sep->session) {
+ 		avdtp_unref(a2dp_sep->session);
+ 		a2dp_sep->session = NULL;
+ 	}
+@@ -2113,11 +2116,16 @@ unsigned int a2dp_resume(struct avdtp *session, struct a2dp_sep *sep,
+ 		sep->starting = TRUE;
+ 		break;
+ 	case AVDTP_STATE_STREAMING:
+-		if (!sep->suspending && sep->suspend_timer) {
+-			g_source_remove(sep->suspend_timer);
+-			sep->suspend_timer = 0;
+-			avdtp_unref(sep->session);
+-			sep->session = NULL;
++		if (!sep->suspending) {
++			if (sep->suspend_timer) {
++				g_source_remove(sep->suspend_timer);
++				sep->suspend_timer = 0;
++			}
++
++			if (sep->session) {
++				avdtp_unref(sep->session);
++				sep->session = NULL;
++			}
+ 		}
+ 		if (sep->suspending)
+ 			setup->start = TRUE;

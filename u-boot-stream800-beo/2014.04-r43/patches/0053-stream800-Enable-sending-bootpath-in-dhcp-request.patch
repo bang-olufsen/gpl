@@ -1,0 +1,25 @@
+From fa175f50572b5b3d83aad03dc651775608bfc33e Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Wed, 27 Nov 2013 15:17:51 +0100
+Subject: [PATCH] stream800: Enable sending bootpath in dhcp request.
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ include/configs/stream800.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/include/configs/stream800.h b/include/configs/stream800.h
+index 56b00e3..ebb8cb8 100644
+--- a/include/configs/stream800.h
++++ b/include/configs/stream800.h
+@@ -1130,6 +1130,7 @@
+ #define CONFIG_BOOTP_SEND_HOSTNAME
+ #define CONFIG_BOOTP_GATEWAY
+ #define CONFIG_BOOTP_SUBNETMASK
++#define CONFIG_BOOTP_BOOTPATH
+ #define CONFIG_NET_RETRY_COUNT         10
+ #define CONFIG_NET_MULTI
+ #define CONFIG_PHY_GIGE
+-- 
+2.7.4
+

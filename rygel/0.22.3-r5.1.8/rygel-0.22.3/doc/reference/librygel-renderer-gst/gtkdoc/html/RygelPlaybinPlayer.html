@@ -1,0 +1,478 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>librygel-renderer-gst Reference Manual: RygelPlaybinPlayer</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="index.html" title="librygel-renderer-gst Reference Manual">
+<link rel="up" href="api-main-list.html" title="librygel-renderer-gst API Reference">
+<link rel="prev" href="RygelPlaybinRenderer.html" title="RygelPlaybinRenderer">
+<link rel="next" href="object-tree.html" title="Object Hierarchy">
+<meta name="generator" content="GTK-Doc V1.20.1 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#RygelPlaybinPlayer.description" class="shortcut">Description</a></span><span id="nav_hierarchy">  <span class="dim">|</span> 
+                  <a href="#RygelPlaybinPlayer.object-hierarchy" class="shortcut">Object Hierarchy</a></span><span id="nav_interfaces">  <span class="dim">|</span> 
+                  <a href="#RygelPlaybinPlayer.implemented-interfaces" class="shortcut">Implemented Interfaces</a></span><span id="nav_properties">  <span class="dim">|</span> 
+                  <a href="#RygelPlaybinPlayer.properties" class="shortcut">Properties</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="api-main-list.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="RygelPlaybinRenderer.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="object-tree.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry">
+<a name="RygelPlaybinPlayer"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="RygelPlaybinPlayer.top_of_page"></a>RygelPlaybinPlayer</span></h2>
+<p>RygelPlaybinPlayer — Implementation of RygelMediaPlayer for GStreamer.</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1">
+<a name="RygelPlaybinPlayer.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="functions_return">
+<col class="functions_name">
+</colgroup>
+<tbody>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a class="link" href="RygelPlaybinPlayer.html#RYGEL-PLAYBIN-TYPE-PLAYER:CAPS" title="RYGEL_PLAYBIN_TYPE_PLAYER">RYGEL_PLAYBIN_TYPE_PLAYER</a></td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="RygelPlaybinPlayer.html" title="RygelPlaybinPlayer"><span class="returnvalue">RygelPlaybinPlayer</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="RygelPlaybinPlayer.html#rygel-playbin-player-new-wrap" title="rygel_playbin_player_new_wrap ()">rygel_playbin_player_new_wrap</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a href="../gstreamer-1.0/GstElement.html"><span class="returnvalue">GstElement</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="RygelPlaybinPlayer.html#rygel-playbin-player-get-playbin" title="rygel_playbin_player_get_playbin ()">rygel_playbin_player_get_playbin</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="returnvalue">GList</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="RygelPlaybinPlayer.html#rygel-playbin-player-get-supported-profiles" title="rygel_playbin_player_get_supported_profiles ()">rygel_playbin_player_get_supported_profiles</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="RygelPlaybinPlayer.html" title="RygelPlaybinPlayer"><span class="returnvalue">RygelPlaybinPlayer</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="RygelPlaybinPlayer.html#rygel-playbin-player-get-default" title="rygel_playbin_player_get_default ()">rygel_playbin_player_get_default</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="RygelPlaybinPlayer.properties"></a><h2>Properties</h2>
+<div class="informaltable"><table border="0">
+<colgroup>
+<col width="150px" class="properties_type">
+<col width="300px" class="properties_name">
+<col width="200px" class="properties_flags">
+</colgroup>
+<tbody>
+<tr>
+<td class="property_type"><a href="../gobject/gobject-Boxed-Types.html#GStrv"><span class="type">GStrv</span></a></td>
+<td class="property_name"><a class="link" href="RygelPlaybinPlayer.html#RygelPlaybinPlayer--allowed-playback-speeds" title="The “allowed-playback-speeds” property">allowed-playback-speeds</a></td>
+<td class="property_flags">Read</td>
+</tr>
+<tr>
+<td class="property_type"><a href="../glib/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a></td>
+<td class="property_name"><a class="link" href="RygelPlaybinPlayer.html#RygelPlaybinPlayer--byte-position" title="The “byte-position” property">byte-position</a></td>
+<td class="property_flags">Read</td>
+</tr>
+<tr>
+<td class="property_type"><a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a></td>
+<td class="property_name"><a class="link" href="RygelPlaybinPlayer.html#RygelPlaybinPlayer--can-seek" title="The “can-seek” property">can-seek</a></td>
+<td class="property_flags">Read</td>
+</tr>
+<tr>
+<td class="property_type"><a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a></td>
+<td class="property_name"><a class="link" href="RygelPlaybinPlayer.html#RygelPlaybinPlayer--can-seek-bytes" title="The “can-seek-bytes” property">can-seek-bytes</a></td>
+<td class="property_flags">Read</td>
+</tr>
+<tr>
+<td class="property_type">
+<a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *</td>
+<td class="property_name"><a class="link" href="RygelPlaybinPlayer.html#RygelPlaybinPlayer--content-features" title="The “content-features” property">content-features</a></td>
+<td class="property_flags">Read / Write</td>
+</tr>
+<tr>
+<td class="property_type"><a href="../glib/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a></td>
+<td class="property_name"><a class="link" href="RygelPlaybinPlayer.html#RygelPlaybinPlayer--duration" title="The “duration” property">duration</a></td>
+<td class="property_flags">Read</td>
+</tr>
+<tr>
+<td class="property_type">
+<a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *</td>
+<td class="property_name"><a class="link" href="RygelPlaybinPlayer.html#RygelPlaybinPlayer--metadata" title="The “metadata” property">metadata</a></td>
+<td class="property_flags">Read / Write</td>
+</tr>
+<tr>
+<td class="property_type">
+<a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *</td>
+<td class="property_name"><a class="link" href="RygelPlaybinPlayer.html#RygelPlaybinPlayer--mime-type" title="The “mime-type” property">mime-type</a></td>
+<td class="property_flags">Read / Write</td>
+</tr>
+<tr>
+<td class="property_type">
+<a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *</td>
+<td class="property_name"><a class="link" href="RygelPlaybinPlayer.html#RygelPlaybinPlayer--playback-speed" title="The “playback-speed” property">playback-speed</a></td>
+<td class="property_flags">Read / Write</td>
+</tr>
+<tr>
+<td class="property_type">
+<a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *</td>
+<td class="property_name"><a class="link" href="RygelPlaybinPlayer.html#RygelPlaybinPlayer--playback-state" title="The “playback-state” property">playback-state</a></td>
+<td class="property_flags">Read / Write</td>
+</tr>
+<tr>
+<td class="property_type">
+<a href="../gstreamer-1.0/GstElement.html"><span class="type">GstElement</span></a> *</td>
+<td class="property_name"><a class="link" href="RygelPlaybinPlayer.html#RygelPlaybinPlayer--playbin" title="The “playbin” property">playbin</a></td>
+<td class="property_flags">Read</td>
+</tr>
+<tr>
+<td class="property_type"><a href="../glib/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a></td>
+<td class="property_name"><a class="link" href="RygelPlaybinPlayer.html#RygelPlaybinPlayer--position" title="The “position” property">position</a></td>
+<td class="property_flags">Read</td>
+</tr>
+<tr>
+<td class="property_type"><a href="../glib/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a></td>
+<td class="property_name"><a class="link" href="RygelPlaybinPlayer.html#RygelPlaybinPlayer--size" title="The “size” property">size</a></td>
+<td class="property_flags">Read</td>
+</tr>
+<tr>
+<td class="property_type"><a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a></td>
+<td class="property_name"><a class="link" href="RygelPlaybinPlayer.html#RygelPlaybinPlayer--supported-profiles" title="The “supported-profiles” property">supported-profiles</a></td>
+<td class="property_flags">Read</td>
+</tr>
+<tr>
+<td class="property_type">
+<a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *</td>
+<td class="property_name"><a class="link" href="RygelPlaybinPlayer.html#RygelPlaybinPlayer--uri" title="The “uri” property">uri</a></td>
+<td class="property_flags">Read / Write</td>
+</tr>
+<tr>
+<td class="property_type"><a href="../glib/glib-Basic-Types.html#gdouble"><span class="type">gdouble</span></a></td>
+<td class="property_name"><a class="link" href="RygelPlaybinPlayer.html#RygelPlaybinPlayer--volume" title="The “volume” property">volume</a></td>
+<td class="property_flags">Read / Write</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="RygelPlaybinPlayer.other"></a><h2>Types and Values</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="name">
+<col class="description">
+</colgroup>
+<tbody>
+<tr>
+<td class="datatype_keyword">struct</td>
+<td class="function_name"><a class="link" href="RygelPlaybinPlayer.html#RygelPlaybinPlayer-struct" title="struct RygelPlaybinPlayer">RygelPlaybinPlayer</a></td>
+</tr>
+<tr>
+<td class="datatype_keyword">struct</td>
+<td class="function_name"><a class="link" href="RygelPlaybinPlayer.html#RygelPlaybinPlayerClass" title="struct RygelPlaybinPlayerClass">RygelPlaybinPlayerClass</a></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="RygelPlaybinPlayer.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="screen">    <a href="../gobject/gobject-The-Base-Object-Type.html#GObject">GObject</a>
+    <span class="lineart">╰──</span> RygelPlaybinPlayer
+</pre>
+</div>
+<div class="refsect1">
+<a name="RygelPlaybinPlayer.implemented-interfaces"></a><h2>Implemented Interfaces</h2>
+<p>
+RygelPlaybinPlayer implements
+ <a href="../librygel-renderer/RygelMediaPlayer.html">RygelMediaPlayer</a>.</p>
+</div>
+<div class="refsect1">
+<a name="RygelPlaybinPlayer.description"></a><h2>Description</h2>
+<p>This class is useful only when implementing Rygel plugins.</p>
+</div>
+<div class="refsect1">
+<a name="RygelPlaybinPlayer.functions_details"></a><h2>Functions</h2>
+<div class="refsect2">
+<a name="RYGEL-PLAYBIN-TYPE-PLAYER:CAPS"></a><h3>RYGEL_PLAYBIN_TYPE_PLAYER</h3>
+<pre class="programlisting">#define RYGEL_PLAYBIN_TYPE_PLAYER (rygel_playbin_player_get_type ())
+</pre>
+<p>The type for <a class="link" href="RygelPlaybinPlayer.html" title="RygelPlaybinPlayer"><span class="type">RygelPlaybinPlayer</span></a>.</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-playbin-player-new-wrap"></a><h3>rygel_playbin_player_new_wrap ()</h3>
+<pre class="programlisting"><a class="link" href="RygelPlaybinPlayer.html" title="RygelPlaybinPlayer"><span class="returnvalue">RygelPlaybinPlayer</span></a> *
+rygel_playbin_player_new_wrap (<em class="parameter"><code><a href="../gstreamer-1.0/GstElement.html"><span class="type">GstElement</span></a> *playbin</code></em>);</pre>
+<div class="warning">
+<p><code class="literal">rygel_playbin_player_new_wrap</code> has been deprecated since version 0.21.5 and should not be used in newly-written code.</p>
+<p>No replacement specified.</p>
+</div>
+<div class="refsect3">
+<a name="id-1.4.3.9.3.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>playbin</p></td>
+<td class="parameter_description"><p> </p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-playbin-player-get-playbin"></a><h3>rygel_playbin_player_get_playbin ()</h3>
+<pre class="programlisting"><a href="../gstreamer-1.0/GstElement.html"><span class="returnvalue">GstElement</span></a> *
+rygel_playbin_player_get_playbin (<em class="parameter"><code><a class="link" href="RygelPlaybinPlayer.html" title="RygelPlaybinPlayer"><span class="type">RygelPlaybinPlayer</span></a> *self</code></em>);</pre>
+<p>Get and return the current value of the <a class="link" href="RygelPlaybinPlayer.html#RygelPlaybinPlayer--playbin" title="The “playbin” property"><span class="type">"playbin"</span></a> property.</p>
+<div class="refsect3">
+<a name="id-1.4.3.9.4.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelPlaybinPlayer.html" title="RygelPlaybinPlayer"><span class="type">RygelPlaybinPlayer</span></a> instance to query</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.4.3.9.4.6"></a><h4>Returns</h4>
+<p> the value of the <a class="link" href="RygelPlaybinPlayer.html#RygelPlaybinPlayer--playbin" title="The “playbin” property"><span class="type">"playbin"</span></a> property</p>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-playbin-player-get-supported-profiles"></a><h3>rygel_playbin_player_get_supported_profiles ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="returnvalue">GList</span></a> *
+rygel_playbin_player_get_supported_profiles
+                               (<em class="parameter"><code><a class="link" href="RygelPlaybinPlayer.html" title="RygelPlaybinPlayer"><span class="type">RygelPlaybinPlayer</span></a> *self</code></em>);</pre>
+<p>Get and return the current value of the <a class="link" href="RygelPlaybinPlayer.html#RygelPlaybinPlayer--supported-profiles" title="The “supported-profiles” property"><span class="type">"supported-profiles"</span></a> property.</p>
+<div class="refsect3">
+<a name="id-1.4.3.9.5.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelPlaybinPlayer.html" title="RygelPlaybinPlayer"><span class="type">RygelPlaybinPlayer</span></a> instance to query</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.4.3.9.5.6"></a><h4>Returns</h4>
+<p> the value of the <a class="link" href="RygelPlaybinPlayer.html#RygelPlaybinPlayer--supported-profiles" title="The “supported-profiles” property"><span class="type">"supported-profiles"</span></a> property</p>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-playbin-player-get-default"></a><h3>rygel_playbin_player_get_default ()</h3>
+<pre class="programlisting"><a class="link" href="RygelPlaybinPlayer.html" title="RygelPlaybinPlayer"><span class="returnvalue">RygelPlaybinPlayer</span></a> *
+rygel_playbin_player_get_default (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+</div>
+</div>
+<div class="refsect1">
+<a name="RygelPlaybinPlayer.other_details"></a><h2>Types and Values</h2>
+<div class="refsect2">
+<a name="RygelPlaybinPlayer-struct"></a><h3>struct RygelPlaybinPlayer</h3>
+<pre class="programlisting">struct RygelPlaybinPlayer;</pre>
+<p>Implementation of RygelMediaPlayer for GStreamer.</p>
+<p>This class is useful only when implementing Rygel plugins.</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelPlaybinPlayerClass"></a><h3>struct RygelPlaybinPlayerClass</h3>
+<pre class="programlisting">struct RygelPlaybinPlayerClass {
+	GObjectClass parent_class;
+};
+</pre>
+<p>The class structure for <a class="link" href="RygelPlaybinPlayer.html#RYGEL-PLAYBIN-TYPE-PLAYER:CAPS" title="RYGEL_PLAYBIN_TYPE_PLAYER"><code class="literal">RYGEL_PLAYBIN_TYPE_PLAYER</code></a>. All the fields in this structure are private and should never be accessed directly.</p>
+<div class="refsect3">
+<a name="id-1.4.3.10.3.5"></a><h4>Members</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="300px" class="struct_members_name">
+<col class="struct_members_description">
+<col width="200px" class="struct_members_annotations">
+</colgroup>
+<tbody><tr>
+<td class="struct_member_name"><p><a href="../gobject/gobject-The-Base-Object-Type.html#GObjectClass"><span class="type">GObjectClass</span></a> <em class="structfield"><code><a name="RygelPlaybinPlayerClass.parent-class"></a>parent_class</code></em>;</p></td>
+<td class="struct_member_description"><p>the parent class structure</p></td>
+<td class="struct_member_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="refsect1">
+<a name="RygelPlaybinPlayer.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="RygelPlaybinPlayer--allowed-playback-speeds"></a><h3>The <code class="literal">“allowed-playback-speeds”</code> property</h3>
+<pre class="programlisting">  “allowed-playback-speeds”  <a href="../gobject/gobject-Boxed-Types.html#GStrv"><span class="type">GStrv</span></a></pre>
+<p>allowed-playback-speeds.</p>
+<p>Flags: Read</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelPlaybinPlayer--byte-position"></a><h3>The <code class="literal">“byte-position”</code> property</h3>
+<pre class="programlisting">  “byte-position”            <a href="../glib/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a></pre>
+<p>byte-position.</p>
+<p>Flags: Read</p>
+<p>Default value: 0</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelPlaybinPlayer--can-seek"></a><h3>The <code class="literal">“can-seek”</code> property</h3>
+<pre class="programlisting">  “can-seek”                 <a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a></pre>
+<p>can-seek.</p>
+<p>Flags: Read</p>
+<p>Default value: FALSE</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelPlaybinPlayer--can-seek-bytes"></a><h3>The <code class="literal">“can-seek-bytes”</code> property</h3>
+<pre class="programlisting">  “can-seek-bytes”           <a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a></pre>
+<p>can-seek-bytes.</p>
+<p>Flags: Read</p>
+<p>Default value: FALSE</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelPlaybinPlayer--content-features"></a><h3>The <code class="literal">“content-features”</code> property</h3>
+<pre class="programlisting">  “content-features”         <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *</pre>
+<p>content-features.</p>
+<p>Flags: Read / Write</p>
+<p>Default value: NULL</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelPlaybinPlayer--duration"></a><h3>The <code class="literal">“duration”</code> property</h3>
+<pre class="programlisting">  “duration”                 <a href="../glib/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a></pre>
+<p>duration.</p>
+<p>Flags: Read</p>
+<p>Default value: 0</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelPlaybinPlayer--metadata"></a><h3>The <code class="literal">“metadata”</code> property</h3>
+<pre class="programlisting">  “metadata”                 <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *</pre>
+<p>metadata.</p>
+<p>Flags: Read / Write</p>
+<p>Default value: NULL</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelPlaybinPlayer--mime-type"></a><h3>The <code class="literal">“mime-type”</code> property</h3>
+<pre class="programlisting">  “mime-type”                <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *</pre>
+<p>mime-type.</p>
+<p>Flags: Read / Write</p>
+<p>Default value: NULL</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelPlaybinPlayer--playback-speed"></a><h3>The <code class="literal">“playback-speed”</code> property</h3>
+<pre class="programlisting">  “playback-speed”           <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *</pre>
+<p>playback-speed.</p>
+<p>Flags: Read / Write</p>
+<p>Default value: NULL</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelPlaybinPlayer--playback-state"></a><h3>The <code class="literal">“playback-state”</code> property</h3>
+<pre class="programlisting">  “playback-state”           <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *</pre>
+<p>playback-state.</p>
+<p>Flags: Read / Write</p>
+<p>Default value: NULL</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelPlaybinPlayer--playbin"></a><h3>The <code class="literal">“playbin”</code> property</h3>
+<pre class="programlisting">  “playbin”                  <a href="../gstreamer-1.0/GstElement.html"><span class="type">GstElement</span></a> *</pre>
+<p>playbin.</p>
+<p>Flags: Read</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelPlaybinPlayer--position"></a><h3>The <code class="literal">“position”</code> property</h3>
+<pre class="programlisting">  “position”                 <a href="../glib/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a></pre>
+<p>position.</p>
+<p>Flags: Read</p>
+<p>Default value: 0</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelPlaybinPlayer--size"></a><h3>The <code class="literal">“size”</code> property</h3>
+<pre class="programlisting">  “size”                     <a href="../glib/glib-Basic-Types.html#gint64"><span class="type">gint64</span></a></pre>
+<p>size.</p>
+<p>Flags: Read</p>
+<p>Default value: 0</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelPlaybinPlayer--supported-profiles"></a><h3>The <code class="literal">“supported-profiles”</code> property</h3>
+<pre class="programlisting">  “supported-profiles”       <a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a></pre>
+<p>supported-profiles.</p>
+<p>Flags: Read</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelPlaybinPlayer--uri"></a><h3>The <code class="literal">“uri”</code> property</h3>
+<pre class="programlisting">  “uri”                      <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *</pre>
+<p>uri.</p>
+<p>Flags: Read / Write</p>
+<p>Default value: NULL</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelPlaybinPlayer--volume"></a><h3>The <code class="literal">“volume”</code> property</h3>
+<pre class="programlisting">  “volume”                   <a href="../glib/glib-Basic-Types.html#gdouble"><span class="type">gdouble</span></a></pre>
+<p>volume.</p>
+<p>Flags: Read / Write</p>
+<p>Default value: 0</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.20.1</div>
+</body>
+</html>

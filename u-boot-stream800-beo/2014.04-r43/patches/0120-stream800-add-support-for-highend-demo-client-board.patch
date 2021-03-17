@@ -1,0 +1,122 @@
+From e06652ff2a247c5d2ff384640e001876c27ac613 Mon Sep 17 00:00:00 2001
+From: Radek Dostal <radek.dostal@streamunlimited.com>
+Date: Mon, 4 May 2015 11:41:19 +0200
+Subject: [PATCH] stream800: add support for highend demo client board
+
+Highend demo client board is demo client board with DSD dac attached to
+it and changed ADC resistors for proper detection.
+
+Signed-off-by: Radek Dostal <radek.dostal@streamunlimited.com>
+---
+ .../stream800/board-sue_demo_client_board.c         | 21 ++++++++++++++++++---
+ board/streamunlimited/stream800/board.c             |  4 ++++
+ board/streamunlimited/stream800/board_defines.c     |  2 ++
+ board/streamunlimited/stream800/board_defines.h     |  1 +
+ 4 files changed, 25 insertions(+), 3 deletions(-)
+
+diff --git a/board/streamunlimited/stream800/board-sue_demo_client_board.c b/board/streamunlimited/stream800/board-sue_demo_client_board.c
+index b68930b..3ee612b 100755
+--- a/board/streamunlimited/stream800/board-sue_demo_client_board.c
++++ b/board/streamunlimited/stream800/board-sue_demo_client_board.c
+@@ -40,10 +40,25 @@ static struct module_pin_mux fw_update_button_pin_mux[] = {
+ 		{-1},
+ 	};
+ 
++static bool demo_client__check_board(const struct Stream800Board *board)
++{
++	if (!board)
++		return false;
++
++	switch (board->carrierBoardType) {
++	case CBT_SueDemoClientBoard:
++	case CBT_SueHighendDemoClientBoard:
++	case CBT_unknown:
++		return true;
++	default:
++		return false;
++	}
++}
++
+ // "SUE demo client" board initialization
+ void demo_client__init(const struct Stream800Board *board)
+ {
+-	if (!board || (board->carrierBoardType != CBT_SueDemoClientBoard && board->carrierBoardType != CBT_unknown))
++	if (!demo_client__check_board(board))
+ 		BUG();
+ 
+ 	configure_module_pin_mux(fw_update_button_pin_mux);
+@@ -56,7 +71,7 @@ void demo_client__init(const struct Stream800Board *board)
+ // "SUE demo client" board late initialization
+ void demo_client__late_init(const struct Stream800Board *board)
+ {
+-	if (!board || (board->carrierBoardType != CBT_SueDemoClientBoard && board->carrierBoardType != CBT_unknown))
++	if (!demo_client__check_board(board))
+ 		BUG();
+ 
+ 	printf("TODO: 'SUE demo client' board late initialization.\n");
+@@ -74,7 +89,7 @@ static struct cpsw_slave_data cpsw_slaves[] = {
+ 
+ void demo_client__cpsw_eth_init(const struct Stream800Board *board, struct cpsw_platform_data *cpsw_data)
+ {
+-	if (!board || (board->carrierBoardType != CBT_SueDemoClientBoard && board->carrierBoardType != CBT_unknown))
++	if (!demo_client__check_board(board))
+ 		BUG();
+ 
+ 	cpsw_data->slaves = 1;
+diff --git a/board/streamunlimited/stream800/board.c b/board/streamunlimited/stream800/board.c
+index b775d91..090cd29 100755
+--- a/board/streamunlimited/stream800/board.c
++++ b/board/streamunlimited/stream800/board.c
+@@ -148,6 +148,7 @@ int board_init(void)
+ 
+ 	switch (get_carrier_board_type()) {
+ 		case CBT_SueDemoClientBoard:
++		case CBT_SueHighendDemoClientBoard:
+ 			demo_client__set_board_interface();
+ 			break;
+ 		case CBT_SueFirstCarrierBoard:
+@@ -375,6 +376,9 @@ int board_late_init(void)
+ 		case CBT_SueDemoClientBoard:
+ 			setenv("cramfsdir", "sue_demo_client_board");
+ 			break;
++		case CBT_SueHighendDemoClientBoard:
++			setenv("cramfsdir", "sue_highend_demo_client_board");
++			break;
+ 		case CBT_SueFirstCarrierBoard:
+ 			setenv("cramfsdir", "sue_first_carrier_board");
+ 			break;
+diff --git a/board/streamunlimited/stream800/board_defines.c b/board/streamunlimited/stream800/board_defines.c
+index 6b8d3a5..0eff4ab 100644
+--- a/board/streamunlimited/stream800/board_defines.c
++++ b/board/streamunlimited/stream800/board_defines.c
+@@ -14,6 +14,7 @@ const char *stream800CarrierBoardTypeStrings[] = {
+ 	[CBT_SueFactoryTestBoard]	= "SUE factory test board",
+ 	[CBT_SueFirstCarrierBoard]	= "SUE first carrier board",
+ 	[CBT_SueDemoClientBoard]	= "SUE demo client board",
++	[CBT_SueHighendDemoClientBoard]	= "SUE highend demo client board",
+ };
+ 
+ const char *boardStateStrings[] = {
+@@ -61,6 +62,7 @@ static struct SupportedCarrierBoards {
+ 	{CBT_SueDemoClientBoard,	0xF76,	0xFFF,	0x000,	0x088},
+ 	{CBT_SueFactoryTestBoard,	0x000,	0x088,	0x000,	0x088},		// L0
+ 	{CBT_SueFactoryTestBoard,	0x6EE,	0x777,	0x000,	0x088},		// L1
++	{CBT_SueHighendDemoClientBoard,	0xF76,	0xFFF,	0xF76,	0xFFF},		// demo client with DSD dac attached
+ 	// CUSTOMIZE: add your board here
+ };
+ 
+diff --git a/board/streamunlimited/stream800/board_defines.h b/board/streamunlimited/stream800/board_defines.h
+index 24165cc..39c8f69 100644
+--- a/board/streamunlimited/stream800/board_defines.h
++++ b/board/streamunlimited/stream800/board_defines.h
+@@ -24,6 +24,7 @@ typedef enum {
+ 	CBT_SueFactoryTestBoard,		///< SUE factory test board
+ 	CBT_SueFirstCarrierBoard,		///< SUE Carrier Board
+ 	CBT_SueDemoClientBoard,			///< SUE demo client
++	CBT_SueHighendDemoClientBoard,		///< SUE highend demo client
+ } Stream800CarrierBoardType;
+ 
+ extern const char *stream800CarrierBoardTypeStrings[];
+-- 
+2.7.4
+

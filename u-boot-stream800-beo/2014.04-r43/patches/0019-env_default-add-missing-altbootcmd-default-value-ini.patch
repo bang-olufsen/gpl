@@ -1,0 +1,28 @@
+From a99a38d9b2e507aa588b3e2513c6591df3c1e54d Mon Sep 17 00:00:00 2001
+From: Martin Flaska <martin.flaska@streamunlimited.com>
+Date: Wed, 30 Jan 2013 09:21:17 +0100
+Subject: [PATCH] env_default: add missing 'altbootcmd' default value
+ initialization
+
+Signed-off-by: Martin Flaska <martin.flaska@streamunlimited.com>
+---
+ include/env_default.h | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/include/env_default.h b/include/env_default.h
+index 90431be..8c677c2 100644
+--- a/include/env_default.h
++++ b/include/env_default.h
+@@ -34,6 +34,9 @@ const uchar default_environment[] = {
+ #ifdef	CONFIG_BOOTCOMMAND
+ 	"bootcmd="	CONFIG_BOOTCOMMAND		"\0"
+ #endif
++#ifdef	CONFIG_BOOTCOMMAND
++	"altbootcmd="	CONFIG_ALTBOOTCOMMAND		"\0"
++#endif
+ #ifdef	CONFIG_RAMBOOTCOMMAND
+ 	"ramboot="	CONFIG_RAMBOOTCOMMAND		"\0"
+ #endif
+-- 
+2.7.4
+

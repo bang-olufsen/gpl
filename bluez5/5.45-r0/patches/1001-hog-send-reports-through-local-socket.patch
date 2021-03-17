@@ -1,0 +1,138 @@
+From 36fe2acadc8440749c131b84ccfc502493df0c3a Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Tue, 9 May 2017 09:45:33 +0200
+Subject: [PATCH] hog: send reports through local socket
+
+Signed-off-by: Bernhard Miller <bernhard.miller@streamunlimited.com>
+
+Migrated from bluez4
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ profiles/input/hog-lib.c | 69 ++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 69 insertions(+)
+
+diff --git a/profiles/input/hog-lib.c b/profiles/input/hog-lib.c
+index dab385f..464aaae 100644
+--- a/profiles/input/hog-lib.c
++++ b/profiles/input/hog-lib.c
+@@ -34,6 +34,8 @@
+ #include <unistd.h>
+ #include <sys/types.h>
+ #include <sys/stat.h>
++#include <sys/socket.h>
++#include <sys/un.h>
+ #include <fcntl.h>
+ 
+ #include <glib.h>
+@@ -80,6 +82,8 @@
+ #define HID_INFO_SIZE			4
+ #define ATT_NOTIFICATION_HEADER_SIZE	3
+ 
++#define STREAMSDK_HOG_SOCKET   "/tmp/streamsdk_hog"
++
+ struct bt_hog {
+ 	int			ref_count;
+ 	char			*name;
+@@ -108,6 +112,8 @@ struct bt_hog {
+ 	struct queue		*bas;
+ 	GSList			*instances;
+ 	struct queue		*gatt_op;
++	int				streamsdk_fd;
++	unsigned int	streamsdk_att;
+ };
+ 
+ struct report {
+@@ -129,6 +135,62 @@ struct gatt_request {
+ 	void *user_data;
+ };
+ 
++static void disconnect_streamsdk_socket(struct bt_hog *hog)
++{
++	if (hog->streamsdk_fd >= 0) {
++		DBG("Close StreamSDK socket (fd=%d)", hog->streamsdk_fd);
++		close(hog->streamsdk_fd);
++	}
++	hog->streamsdk_fd = -1;
++}
++
++static gboolean connect_streamsdk_socket(struct bt_hog *hog)
++{
++	if (hog->streamsdk_fd > 0)
++		return;
++
++	hog->streamsdk_fd = socket(AF_UNIX, SOCK_STREAM, 0);
++	if (hog->streamsdk_fd < 0) {
++		error("Failed to create StreamSDK HoG socket: %s (%d)", strerror(errno), errno);
++		hog->streamsdk_fd = -1;
++		return FALSE;
++	}
++
++	struct sockaddr_un addr;
++	memset(&addr, 0, sizeof(addr));
++	addr.sun_family = AF_UNIX;
++	strncpy(addr.sun_path, STREAMSDK_HOG_SOCKET, sizeof(addr.sun_path)-1);
++	if (connect(hog->streamsdk_fd, (const struct sockaddr *)&addr, sizeof(addr)) < 0) {
++		error("Failed to connect to StreamSDK HoG socket: %s (%d)", strerror(errno), errno);
++		disconnect_streamsdk_socket(hog);
++		return FALSE;
++	}
++
++	DBG("StreamSDK socket created (fd=%d)", hog->streamsdk_fd);
++	return TRUE;
++}
++
++static void notif_streamsdk_cb(const guint8 *pdu, guint16 len, gpointer user_data)
++{
++	// Discard invalid ATT notifications
++	if (len != ATT_NOTIFICATION_HEADER_SIZE + 2)
++		return;
++
++	struct bt_hog *hog = user_data;
++
++	pdu += ATT_NOTIFICATION_HEADER_SIZE;
++	len -= ATT_NOTIFICATION_HEADER_SIZE;
++
++	gboolean streamsdk_connected = hog->streamsdk_fd >= 0;
++	if (!streamsdk_connected)
++		streamsdk_connected = connect_streamsdk_socket(hog);
++
++	if (streamsdk_connected && write(hog->streamsdk_fd, &pdu[0], len) < 0) {
++		error("StreamSDK HoG report forward failed: %s (%d)", strerror(errno), errno);
++		disconnect_streamsdk_socket(hog);
++	}
++}
++
+ static struct gatt_request *create_request(struct bt_hog *hog,
+ 							void *user_data)
+ {
+@@ -1342,6 +1404,7 @@ static struct bt_hog *hog_new(int fd, const char *name, uint16_t vendor,
+ 	hog->product = product;
+ 	hog->version = version;
+ 	hog->attr = attr;
++	hog->streamsdk_fd = -1;
+ 
+ 	return hog;
+ }
+@@ -1573,6 +1636,10 @@ bool bt_hog_attach(struct bt_hog *hog, void *gatt)
+ 		return false;
+ 
+ 	hog->attrib = g_attrib_ref(gatt);
++	hog->streamsdk_att = g_attrib_register(hog->attrib,
++				ATT_OP_HANDLE_NOTIFY,
++				GATTRIB_ALL_HANDLES,
++				notif_streamsdk_cb, hog, NULL);
+ 
+ 	if (!hog->attr && !hog->primary) {
+ 		discover_primary(hog, hog->attrib, NULL, primary_cb, hog);
+@@ -1625,6 +1692,8 @@ void bt_hog_detach(struct bt_hog *hog)
+ 	if (!hog->attrib)
+ 		return;
+ 
++	g_attrib_unregister(hog->attrib, hog->streamsdk_att);
++
+ 	queue_foreach(hog->bas, (void *) bt_bas_detach, NULL);
+ 
+ 	for (l = hog->instances; l; l = l->next) {
+-- 
+2.7.4
+

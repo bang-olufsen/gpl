@@ -1,0 +1,39 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>librygel-server Reference Manual: Implementing Server Plugins: Full Example</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="index.html" title="librygel-server Reference Manual">
+<link rel="up" href="implementing-server-plugins.html" title="Implementing Rygel Server Plugins">
+<link rel="prev" href="implementing-server-plugins-simple-example.html" title="Implementing Server Plugins: Simple Example">
+<link rel="next" href="implementing-media-engines.html" title="Implementing Rygel Media Engines">
+<meta name="generator" content="GTK-Doc V1.20.1 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts"></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="implementing-server-plugins.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="implementing-server-plugins-simple-example.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="implementing-media-engines.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="section">
+<div class="titlepage"><div><div><h2 class="title" style="clear: both">
+<a name="implementing-server-plugins-full-example"></a>Implementing Server Plugins: Full Example</h2></div></div></div>
+<p>In addition, the external <a class="ulink" href="http://git.gnome.org/browse/rygel-gst-0-10-plugins" target="_top">rygel-gst-0-10-plugins</a> project provides a Rygel Server plugin that uses an older GStreamer version and is an example of an external Rygel Server plugin implemented in C. Its <a class="ulink" href="http://git.gnome.org/browse/rygel-gst-0-10-plugins/tree/src/media-export" target="_top">media-export</a> plugin exposes the contents of a directory via UPnP.</p>
+<p>The <code class="function">module_init</code> function first checks that the plugin has not been disabled and then creates an instance of its <code class="classname">RygelMediaExportPlugin</code>, which it adds to the provided <code class="classname">RygelPluginLoader</code> instance.</p>
+<p>The <code class="classname">RygelMediaExportPlugin</code> class, derived from <a class="link" href="RygelMediaServerPlugin.html" title="RygelMediaServerPlugin">RygelMediaServerPlugin</a>, simply instantiates its <code class="classname">RygelMediaExportRootContainer</code> class, derived from <a class="link" href="RygelMediaContainer.html" title="RygelMediaContainer">RygelMediaContainer</a>, providing it to the base class as the root container.</p>
+<p>The <code class="classname">RygelMediaExportRootContainer</code> creates an instance of a <code class="classname">RygelMediaExportMediaCache</code> class and a <code class="classname">RygelMediaExportHarvester</code> class. The harvester finds files on the filesystem, and stores them in the media cache, which uses SQLite to keep track of them.</p>
+<p><code class="classname">RygelMediaExportRootContainer</code> informs the media cache that it should have a child container for the media content as organised on the filesystem, and additionally some virtual folders for Music, Pictures, Video and Playlists, with further sub-divisions under these, for instance by publication year. These containers are added to the media cache via instances of the <code class="classname">RygelMediaExportNullContainer</code> class, but that is just to simplify the media cache API and these instances then serve no further purpose. The virtual folders are re-added whenever the filesystem's container is updated, so that they can show the updated 
+content, though that is not particularly efficient.</p>
+<p><code class="classname">RygelMediaExportRootContainer</code> then delegates its <code class="classname">RygelMediaContainer</code> virtual function implementations to this media cache, which in turn uses the <code class="classname">RygelMediaExportObjectFactory</code> to instantiate new containers for each request based on their ID. For instance, it returns a <code class="classname">RygelMediaExportDBContainer</code> if the requested ID indicates a virtual container, using the definition in the rest of the ID to build a suitable SQL query.</p>
+<p>The root container derives from <code class="classname">TrackableDbContainer</code>, which in turn implements the <a class="link" href="RygelTrackableContainer.html" title="RygelTrackableContainer">RygelTrackableContainer</a> interface, to implement the change tracking profile of the UPnP ContentDirectory:3 specification. Therefore, whenever the root container, or its child items, have changed, we call the <code class="function">rygel_trackable_container_updated()</code> function.</p>
+<p>Any filesystem folders are implemented as UPnP containers via the <code class="classname">RygelMediaExportWritableDbContainer</code> class, which implements the <a class="link" href="RygelWritableContainer.html" title="RygelWritableContainer">RygelWritableContainer</a> interface to allow new files to be uploaded to the filesystem via UPnP.</p>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.20.1</div>
+</body>
+</html>

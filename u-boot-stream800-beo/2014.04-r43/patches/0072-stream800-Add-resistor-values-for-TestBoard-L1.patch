@@ -1,0 +1,27 @@
+From c6969c578adf1cbd7206f4136947a9ca59f6c903 Mon Sep 17 00:00:00 2001
+From: Vladimir Koutny <vladimir.koutny@streamunlimited.com>
+Date: Mon, 17 Feb 2014 11:44:10 +0100
+Subject: [PATCH] stream800: Add resistor values for TestBoard L1
+
+Signed-off-by: Vladimir Koutny <vladimir.koutny@streamunlimited.com>
+---
+ board/streamunlimited/stream800/board.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/board/streamunlimited/stream800/board.c b/board/streamunlimited/stream800/board.c
+index 9ee1f94..9116974 100755
+--- a/board/streamunlimited/stream800/board.c
++++ b/board/streamunlimited/stream800/board.c
+@@ -216,7 +216,8 @@ static struct SupportedCarrierBoards {
+ 	unsigned lsb_max;
+ } supportedCarrierBoards[] = {
+ 	{CBT_SueDemoClientBoard,	0xF76,	0xFFF,	0x000,	0x088},
+-	{CBT_SueFactoryTestBoard,	0x000,	0x088,	0x000,	0x088},
++	{CBT_SueFactoryTestBoard,	0x000,	0x088,	0x000,	0x088},		// L0
++	{CBT_SueFactoryTestBoard,	0x6EE,	0x777,	0x000,	0x088},		// L1
+ 	// CUSTOMIZE: add your board here
+ };
+ 
+-- 
+2.7.4
+

@@ -1,0 +1,204 @@
+From b2b94df5ffc48e5d24001f57d5ca711fb299185f Mon Sep 17 00:00:00 2001
+From: Matus Ujhelyi <matus.ujhelyi@streamunlimited.com>
+Date: Thu, 28 Feb 2013 07:44:55 +0100
+Subject: [PATCH] stream800: add ADC functions
+
+adc.c:
+ Daniel Mack <zonque@gmail.com>
+
+Signed-off-by: Martin Flaska <martin.flaska@streamunlimited.com>
+---
+ board/streamunlimited/stream800/Makefile |   2 +-
+ board/streamunlimited/stream800/adc.c    | 136 +++++++++++++++++++++++++++++++
+ board/streamunlimited/stream800/adc.h    |  23 ++++++
+ 3 files changed, 160 insertions(+), 1 deletion(-)
+ create mode 100644 board/streamunlimited/stream800/adc.c
+ create mode 100644 board/streamunlimited/stream800/adc.h
+
+diff --git a/board/streamunlimited/stream800/Makefile b/board/streamunlimited/stream800/Makefile
+index 67a87a1..d41e556 100644
+--- a/board/streamunlimited/stream800/Makefile
++++ b/board/streamunlimited/stream800/Makefile
+@@ -22,7 +22,7 @@ ifdef CONFIG_SPL_BUILD
+ COBJS	:= mux.o
+ endif
+ 
+-COBJS	+= board.o
++COBJS	+= board.o adc.o
+ SRCS	:= $(SOBJS:.o=.S) $(COBJS:.o=.c)
+ OBJS	:= $(addprefix $(obj),$(COBJS))
+ SOBJS	:= $(addprefix $(obj),$(SOBJS))
+diff --git a/board/streamunlimited/stream800/adc.c b/board/streamunlimited/stream800/adc.c
+new file mode 100644
+index 0000000..c35db30
+--- /dev/null
++++ b/board/streamunlimited/stream800/adc.c
+@@ -0,0 +1,136 @@
++/*
++ * adc.c
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation; either version 2 of
++ * the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR /PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++#include "adc.h"
++
++/*
++ * ADC functions for AM33xx touchscreen controller
++ */
++
++#include <common.h>
++#include <asm/io.h>
++#include <asm/arch/clock.h>
++#include <asm/arch/hardware.h>
++
++#define PRCM_MOD_EN             0x2
++
++#define TSC_ADC_SS_REG_BASE		0x44E0D000
++
++#define REG_REVISION			(0x00)
++#define REG_SYSCONFIG			(0x10)
++#define REG_IRQSTATUS_RAW		(0x24)
++#define REG_IRQSTATUS			(0x28)
++#define REG_IRQENABLE_SET 		(0x2c)
++#define REG_IRQENABLE_CLR 		(0x30)
++#define REG_IRQWAKEUP			(0x34)
++#define REG_DMAENABLE_SET		(0x38)
++#define REG_DMAENABLE_CLR		(0x3c)
++#define REG_CTRL				(0x40)
++#define REG_ADCSTAT				(0x44)
++#define REG_ADCRANGE			(0x48)
++#define REG_ADC_CLKDIV			(0x4c)
++#define REG_ADC_MISC			(0x50)
++#define REG_STEPENABLE			(0x54)
++#define REG_IDLECONFIG			(0x58)
++#define REG_TS_CHARGE_STEPCONFIG	(0x5c)
++#define REG_TS_CHARGE_DELAY		(0x60)
++
++#define REG_STEPCONFIG(X)		(0x64	+ ((X) * 8))
++#define REG_STEPCONFIG_FIFO_SEL			(1 << 26)
++#define REG_STEPCONFIG_DIFF_CNTRL		(1 << 25)
++#define REG_STEPCONFIG_SEL_RFM_SWC_1_0(X)	(X << 23)
++#define REG_STEPCONFIG_SEL_INP_SWC_3_0(X)	(X << 19)
++#define REG_STEPCONFIG_SEL_INM_SWC_3_0(X)	(X << 15)
++#define REG_STEPCONFIG_SEL_RFP_SWC_2_0(X)	(X << 12)
++#define REG_STEPCONFIG_WPNSW_SWC		(1 << 11)
++#define REG_STEPCONFIG_YPNSW_SWC		(1 << 11)
++#define REG_STEPCONFIG_XNPSW_SWC		(1 << 11)
++#define REG_STEPCONFIG_YPNSW_SWC		(1 << 11)
++#define REG_STEPCONFIG_YNNSW_SWC		(1 << 11)
++#define REG_STEPCONFIG_YPPSW_SWC		(1 << 11)
++#define REG_STEPCONFIG_XNNSW_SWC		(1 << 11)
++#define REG_STEPCONFIG_XPPSW_SWC		(1 << 11)
++#define REG_STEPCONFIG_AVG_0			(0 << 2)
++#define REG_STEPCONFIG_AVG_2			(1 << 2)
++#define REG_STEPCONFIG_AVG_4			(2 << 2)
++#define REG_STEPCONFIG_AVG_8			(3 << 2)
++#define REG_STEPCONFIG_AVG_16			(4 << 2)
++#define REG_STEPCONFIG_MODE_SW_ONESHOT	(0)
++#define REG_STEPCONFIG_MODE_SW_CONT		(1)
++#define REG_STEPCONFIG_MODE_HW_ONESHOT	(2)
++#define REG_STEPCONFIG_MODE_HW_CONT		(3)
++
++#define REG_STEPDELAY(X)		(0x86	+ ((X) * 8))
++#define REG_FIFOCOUNT(X)		(0xe4 	+ ((X) * 0xc))
++#define REG_FIFOTHRESHOLD(X)	(0xe8	+ ((X) * 0xc))
++#define REG_DMAREQ(X)			(0xec	+ ((X) * 0xc))
++#define REG_FIFODATA(X)			(0x100	+ ((X) * 0x100))
++
++#define CM_PER_ADC_TSC_CLKCTRL		(CM_WKUP + 0xBC) /* ADC_TSC */
++
++static unsigned long int adc_readl(unsigned long reg)
++{
++	return readl(TSC_ADC_SS_REG_BASE + reg);
++}
++
++static void adc_writel(unsigned long val, unsigned long reg)
++{
++	writel(val, TSC_ADC_SS_REG_BASE + reg);
++}
++
++int init_adc(void)
++{
++	/* enable hardware module */
++	writel(PRCM_MOD_EN, CM_PER_ADC_TSC_CLKCTRL);
++	while (readl(CM_PER_ADC_TSC_CLKCTRL) != PRCM_MOD_EN);
++
++	printf("%s(): HW revision 0x%08x\n", __func__, adc_readl(REG_REVISION));
++
++	return 0;
++}
++
++
++int read_adc_channel(int channel)
++{
++	unsigned long reg;
++	unsigned timeout = 1000;
++
++	/* make step config regs writeable */
++	adc_writel(1 << 2, REG_CTRL);
++
++	/* use step #1 only */
++	adc_writel(REG_STEPCONFIG_AVG_16 |
++		   REG_STEPCONFIG_FIFO_SEL |
++		   REG_STEPCONFIG_MODE_SW_ONESHOT |
++		   REG_STEPCONFIG_SEL_INP_SWC_3_0(channel),
++		   REG_STEPCONFIG(0));
++
++	/* enable charge and step1 */
++	adc_writel(1 << 1, REG_STEPENABLE);
++
++	/* GO! */
++	adc_writel(1 << 0, REG_CTRL);
++
++	while (timeout-- > 0) {
++		int fifo;
++
++		for (fifo = 0; fifo < 2; fifo++)
++			if ((adc_readl(REG_FIFOCOUNT(fifo)) > 0))
++				return adc_readl(REG_FIFODATA(fifo)) % 0xfff;
++
++		//printf("waiting ... state %08x\n", adc_readl(REG_ADCSTAT));
++	}
++
++	return -1UL;
++}
+diff --git a/board/streamunlimited/stream800/adc.h b/board/streamunlimited/stream800/adc.h
+new file mode 100644
+index 0000000..f7f6497
+--- /dev/null
++++ b/board/streamunlimited/stream800/adc.h
+@@ -0,0 +1,23 @@
++/*
++ * adc.h
++ *
++ * Copyright (C) 2012, StreamUnlimited Engineering GmbH, http://www.streamunlimited.com/
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation; either version 2 of
++ * the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR /PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++#ifndef __ADC_H
++#define __ADC_H
++
++int init_adc(void);
++int read_adc_channel(int channel);
++
++#endif	// __ADC_H
+-- 
+2.7.4
+

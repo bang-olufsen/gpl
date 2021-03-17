@@ -1,0 +1,25 @@
+From a3a921988de8644e2c160a44922a48ff1787f123 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Tue, 5 Aug 2014 15:11:58 +0200
+Subject: [PATCH] stream800: Enable bootfile retrieving from dhcp server
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ include/configs/stream800.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/include/configs/stream800.h b/include/configs/stream800.h
+index ebcfa47..ca164a9 100644
+--- a/include/configs/stream800.h
++++ b/include/configs/stream800.h
+@@ -1104,6 +1104,7 @@
+ #define CONFIG_BOOTP_BOOTPATH
+ #define CONFIG_BOOTP_SERVER_IP
+ #define CONFIG_BOOTP_MAY_FAIL
++#define CONFIG_BOOTP_BOOTILE
+ #define CONFIG_NET_RETRY_COUNT         10
+ #define CONFIG_NET_MULTI
+ #define CONFIG_PHY_GIGE
+-- 
+2.7.4
+

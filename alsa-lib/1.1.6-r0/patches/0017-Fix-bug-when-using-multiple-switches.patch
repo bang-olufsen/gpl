@@ -1,0 +1,55 @@
+From 820f0bb97080a384d84eb2b014e2412d80d3160d Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Thu, 26 Jul 2018 09:34:52 +0200
+Subject: [PATCH] Fix bug when using multiple switches
+
+switch_ctl_async_handler can be called from multiple threads
+resulting that needs_update variable is changed more times than
+it should.
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+
+%% original patch: 0017-Fix-bug-when-using-multiple-switches.patch
+---
+ src/pcm/pcm_switch.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/src/pcm/pcm_switch.c b/src/pcm/pcm_switch.c
+index ff18a4a..3cff816 100644
+--- a/src/pcm/pcm_switch.c
++++ b/src/pcm/pcm_switch.c
+@@ -8,6 +8,7 @@
+ 
+ #include <time.h>
+ #include <stdio.h>
++#include <pthread.h>
+ 
+ #include "pcm_local.h"
+ #include "pcm_generic.h"
+@@ -35,6 +36,7 @@ enum {
+ 
+ static void apply_switch_value(snd_pcm_t *pcm);
+ static const char *const _switch_ctl_names[] = { "Off", "On" };
++static pthread_mutex_t _switch_ctl_lock = PTHREAD_MUTEX_INITIALIZER;
+ 
+ static snd_pcm_sframes_t snd_pcm_switch_writei(snd_pcm_t *pcm, const void *buffer, snd_pcm_uframes_t size);
+ 
+@@ -1260,10 +1262,15 @@ static void switch_ctl_async_handler(snd_async_handler_t *handler)
+ 	pcm = snd_async_handler_get_callback_private(handler);
+ 	swtch = pcm->private_data;
+ 
++	// async handler can be called from multiple threads
++	pthread_mutex_lock(&_switch_ctl_lock);
++
+ 	old_value = swtch->cur_switch;
+ 	update_switch_value(swtch);
+ 	new_value = swtch->cur_switch;
+ 
++	pthread_mutex_unlock(&_switch_ctl_lock);
++
+ 	if (old_value != new_value) {
+ 		DEBUG("~~~ Switch changed (needs_update=%d)", swtch->needs_update);
+ 		if (snd_pcm_switch_state(pcm) == SND_PCM_STATE_RUNNING)
+-- 
+2.7.4
+

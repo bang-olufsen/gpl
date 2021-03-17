@@ -1,0 +1,46 @@
+diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+index bcb422b..967e273 100644
+--- a/net/bluetooth/hci_event.c
++++ b/net/bluetooth/hci_event.c
+@@ -4726,6 +4726,17 @@ static bool beoremote_one_adv_report(u8 *data, u8 len) {
+ 	return false;
+ }
+ 
++#define BEOREMOTE_HALO_ADV_REPORT_MIN 31
++const char BEOREMOTE_HALO_ADV_REPORT_NAME[] = "Halo-";
++
++static bool beoremote_halo_adv_report(u8 *data, u8 len) {
++	if (len >= BEOREMOTE_HALO_ADV_REPORT_MIN) {
++		return (memcmp(&data[5], BEOREMOTE_HALO_ADV_REPORT_NAME, strlen(BEOREMOTE_HALO_ADV_REPORT_NAME)) == 0);
++	}
++
++	return false;
++}
++
+ static void process_adv_report(struct hci_dev *hdev, u8 type, bdaddr_t *bdaddr,
+ 			       u8 bdaddr_type, bdaddr_t *direct_addr,
+ 			       u8 direct_addr_type, s8 rssi, u8 *data, u8 len)
+@@ -4779,6 +4790,23 @@ static void process_adv_report(struct hci_dev *hdev, u8 type, bdaddr_t *bdaddr,
+ 		}
+ 	}
+ 
++	/* Check BeoRemote HALO advertisements if they are meant for our device
++	 * if yes change advertisements to directed connectable advertisements
++	 */
++	if (beoremote_halo_adv_report(data, len)) {
++		bdaddr_t *addr = (bdaddr_t *) &data[25];
++		if (!bacmp(addr, &hdev->bdaddr)) {
++			/* Advertisement is meant for our device - transform to directed */
++			type = LE_ADV_DIRECT_IND;
++		} else {
++			if (bacmp(addr, BDADDR_NONE)) {
++				/* Advertisement is meant for other device - drop */
++				return;
++			}
++			/* BeoRemote emits pairing advertisements - do nothing */
++		}
++	}
++
+ 	/* Check if we need to convert to identity address */
+ 	irk = hci_get_irk(hdev, bdaddr, bdaddr_type);
+ 	if (irk) {

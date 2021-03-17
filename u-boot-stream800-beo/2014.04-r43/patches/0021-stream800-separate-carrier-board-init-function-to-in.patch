@@ -1,0 +1,200 @@
+From 4ae5048d604d4d0815a2bd10ee2aa9caec154f20 Mon Sep 17 00:00:00 2001
+From: Matus Ujhelyi <matus.ujhelyi@streamunlimited.com>
+Date: Thu, 28 Feb 2013 15:34:25 +0100
+Subject: [PATCH] stream800: separate carrier board init function to 'init' and
+ 'late_init'
+
+Signed-off-by: Martin Flaska <martin.flaska@streamunlimited.com>
+---
+ .../stream800/board-lan_dock_board.c                | 19 +++++++++++++++++++
+ .../stream800/board-lan_dock_board.h                |  8 +++-----
+ .../stream800/board-sue_demo_client_board.c         |  9 +++++++++
+ .../stream800/board-sue_demo_client_board.h         |  3 +++
+ .../stream800/board-sue_first_carrier_board.c       | 11 ++++++++++-
+ .../stream800/board-sue_first_carrier_board.h       |  3 +++
+ board/streamunlimited/stream800/board.c             | 21 ++++++++++++++++++---
+ 7 files changed, 65 insertions(+), 9 deletions(-)
+
+diff --git a/board/streamunlimited/stream800/board-lan_dock_board.c b/board/streamunlimited/stream800/board-lan_dock_board.c
+index 168e3a8..6af23e2 100644
+--- a/board/streamunlimited/stream800/board-lan_dock_board.c
++++ b/board/streamunlimited/stream800/board-lan_dock_board.c
+@@ -50,6 +50,14 @@ static struct ctrl_dev *cdev = (struct ctrl_dev *)CTRL_DEVICE_BASE;
+ #define LED2_G_ON	gpio_set_value(LED2_G_GPIO, 0)
+ #define LED2_G_OFF	gpio_set_value(LED2_G_GPIO, 1)
+ 
++static struct module_pin_mux leds_pin_mux[] = {
++		{OFFSET(spi0_sclk), (MODE(7))},	/* LED2 R (D12) gpio0_2, conflict: uart2_pin_mux, spi0_pin_mux */
++		{OFFSET(spi0_d0), (MODE(7))},	/* LED1 R (D13) gpio0_3, conflict: uart2_pin_mux, spi0_pin_mux */
++		{OFFSET(spi0_d1), (MODE(7))},	/* LED1 G (D13) gpio0_4  conflict: i2c1_pin_mux, spi0_pin_mux */
++		{OFFSET(uart0_ctsn), (MODE(7))},/* LED2 G (D12) gpio1_8 */
++		{-1},
++	};
++
+ // "Dictations LAN dock" board initialization
+ void lan_dock__init(const struct Stream800Board *board)
+ {
+@@ -63,6 +71,11 @@ void lan_dock__init(const struct Stream800Board *board)
+ 	 * Note: active in low
+ 	 */
+ 
++	/* Additional board pin mux
++	 * Must be set after SI5351 initialization due conflict with i2c1_pin_mux.
++	 */
++	configure_module_pin_mux(leds_pin_mux);
++
+ 	if (gpio_request(LED1_R_GPIO, "D1 R"))
+ 		printf("error: cannot request GPIO %d\n", LED1_R_GPIO);
+ 	gpio_direction_output(LED1_R_GPIO, 1);
+@@ -78,6 +91,12 @@ void lan_dock__init(const struct Stream800Board *board)
+ 	if (gpio_request(LED2_G_GPIO, "D1 G"))
+ 		printf("error: cannot request GPIO %d\n", LED2_G_GPIO);
+ 	gpio_direction_output(LED2_G_GPIO, 1);
++}
++
++void lan_dock__late_init(const struct Stream800Board *board)
++{
++	if (!board || board->carrierBoardType != CBT_LanDockBoard)
++		BUG();
+ 
+ 	printf("TODO: 'Dictations LAN dock' board initialization.\n");
+ }
+diff --git a/board/streamunlimited/stream800/board-lan_dock_board.h b/board/streamunlimited/stream800/board-lan_dock_board.h
+index 3936a7a..cc0313a 100644
+--- a/board/streamunlimited/stream800/board-lan_dock_board.h
++++ b/board/streamunlimited/stream800/board-lan_dock_board.h
+@@ -24,15 +24,13 @@
+ // "Dictations LAN dock" board initialization
+ void lan_dock__init(const struct Stream800Board *board);
+ 
++/* "Dictations LAN dock" board late initialization */
++void lan_dock__late_init(const struct Stream800Board *board);
++
+ #ifdef CONFIG_DRIVER_TI_CPSW
+ void lan_dock__cpsw_eth_init(const struct Stream800Board *board, struct cpsw_platform_data *cpsw_data);
+ #endif
+ 
+-/* Additional board pin mux
+- * Must be set after SI5351 initialization due conflict with i2c1_pin_mux.
+- */
+-void lan_dock__pin_mux_post_init(void);
+-
+ void lan_dock__on_board_state_changed(const struct Stream800Board *board, BoardState state);
+ 
+ #endif	// __BOARD_LAN_DOCK_BOARD_H
+diff --git a/board/streamunlimited/stream800/board-sue_demo_client_board.c b/board/streamunlimited/stream800/board-sue_demo_client_board.c
+index 4a7ae6d..0fb9399 100644
+--- a/board/streamunlimited/stream800/board-sue_demo_client_board.c
++++ b/board/streamunlimited/stream800/board-sue_demo_client_board.c
+@@ -38,6 +38,15 @@ void demo_client__init(const struct Stream800Board *board)
+ 	printf("TODO: 'SUE demo client' board initialization.\n");
+ }
+ 
++// "SUE demo client" board late initialization
++void demo_client__late_init(const struct Stream800Board *board)
++{
++	if (!board || board->carrierBoardType != CBT_SueDemoClientBoard)
++		BUG();
++
++	printf("TODO: 'SUE demo client' board late initialization.\n");
++}
++
+ #ifdef CONFIG_DRIVER_TI_CPSW
+ static struct cpsw_slave_data cpsw_slaves[] = {
+ 	{
+diff --git a/board/streamunlimited/stream800/board-sue_demo_client_board.h b/board/streamunlimited/stream800/board-sue_demo_client_board.h
+index ad4b398..02ef72b 100644
+--- a/board/streamunlimited/stream800/board-sue_demo_client_board.h
++++ b/board/streamunlimited/stream800/board-sue_demo_client_board.h
+@@ -24,6 +24,9 @@
+ // "SUE demo client" board initialization
+ void demo_client__init(const struct Stream800Board *board);
+ 
++// "SUE demo client" board late initialization
++void demo_client__late_init(const struct Stream800Board *board);
++
+ #ifdef CONFIG_DRIVER_TI_CPSW
+ void demo_client__cpsw_eth_init(const struct Stream800Board *board, struct cpsw_platform_data *cpsw_data);
+ #endif
+diff --git a/board/streamunlimited/stream800/board-sue_first_carrier_board.c b/board/streamunlimited/stream800/board-sue_first_carrier_board.c
+index 5ab9489..20b5e52 100644
+--- a/board/streamunlimited/stream800/board-sue_first_carrier_board.c
++++ b/board/streamunlimited/stream800/board-sue_first_carrier_board.c
+@@ -35,7 +35,16 @@ void first_carrier__init(const struct Stream800Board *board)
+ 	if (!board || board->carrierBoardType != CBT_SueFirstCarrierBoard)
+ 		BUG();
+ 
+-	printf("TODO: 'SUE First Carrier Board' initialization.\n");
++	printf("TODO: 'SUE First Carrier' initialization.\n");
++}
++
++// "SUE First Carrier Board" board late initialization
++void first_carrier__late_init(const struct Stream800Board *board)
++{
++	if (!board || board->carrierBoardType != CBT_SueFirstCarrierBoard)
++		BUG();
++
++	printf("TODO: 'SUE First Carrier' board late initialization.\n");
+ }
+ 
+ #ifdef CONFIG_DRIVER_TI_CPSW
+diff --git a/board/streamunlimited/stream800/board-sue_first_carrier_board.h b/board/streamunlimited/stream800/board-sue_first_carrier_board.h
+index 002f380..d0749e3 100644
+--- a/board/streamunlimited/stream800/board-sue_first_carrier_board.h
++++ b/board/streamunlimited/stream800/board-sue_first_carrier_board.h
+@@ -24,6 +24,9 @@
+ // "SUE Carrier Board" board initialization
+ void first_carrier__init(const struct Stream800Board *board);
+ 
++// "SUE Carrier Board" board late initialization
++void first_carrier__late_init(const struct Stream800Board *board);
++
+ #ifdef CONFIG_DRIVER_TI_CPSW
+ void first_carrier__cpsw_eth_init(const struct Stream800Board *board, struct cpsw_platform_data *cpsw_data);
+ #endif
+diff --git a/board/streamunlimited/stream800/board.c b/board/streamunlimited/stream800/board.c
+index ea49d57..600232c 100644
+--- a/board/streamunlimited/stream800/board.c
++++ b/board/streamunlimited/stream800/board.c
+@@ -119,6 +119,21 @@ int board_init(void)
+ 	i2c_init(CONFIG_SYS_I2C_SPEED, CONFIG_SYS_I2C_SLAVE);
+ 	init_si5351x();
+ 
++	switch (get_carrier_board_type()) {
++		case CBT_LanDockBoard:
++			lan_dock__init(&board);
++			break;
++		case CBT_SueDemoClientBoard:
++			demo_client__init(&board);
++			break;
++		case CBT_SueFirstCarrierBoard:
++			first_carrier__init(&board);
++			break;
++		default:
++			printf("board_late_init: Not supported board!\n");
++			//panic("Not supported board!");
++	}
++
+ 	/* LANDock board mux post init - must be done after SI5351 initialization due to conflict with i2c1_pin_mux */
+ 	if (get_carrier_board_type() == CBT_LanDockBoard)
+ 		lan_dock__pin_mux_post_init();
+@@ -321,13 +336,13 @@ int board_late_init(void)
+ 
+ 	switch (get_carrier_board_type()) {
+ 		case CBT_LanDockBoard:
+-			lan_dock__init(&board);
++			lan_dock__late_init(&board);
+ 			break;
+ 		case CBT_SueDemoClientBoard:
+-			demo_client__init(&board);
++			demo_client__late_init(&board);
+ 			break;
+ 		case CBT_SueFirstCarrierBoard:
+-			first_carrier__init(&board);
++			first_carrier__late_init(&board);
+ 			break;
+ 		default:
+ 			printf("board_late_init: Not supported board!\n");
+-- 
+2.7.4
+

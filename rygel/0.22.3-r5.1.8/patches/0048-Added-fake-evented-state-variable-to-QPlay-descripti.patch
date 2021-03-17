@@ -1,0 +1,31 @@
+From 44e0a2be5f37e286ae19ad0a5c4f7962c5bed842 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Tue, 28 Apr 2015 15:27:53 +0200
+Subject: [PATCH] Added fake evented state variable to QPlay description XML
+
+This fixes UPnP test case UDA-2.1.2:
+If we have no evented state variable element <eventSubURI> must be present
+but MUST be empty.
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ data/xml/QPlayDescription.xml.in | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/data/xml/QPlayDescription.xml.in b/data/xml/QPlayDescription.xml.in
+index e76507f..60fc54e 100644
+--- a/data/xml/QPlayDescription.xml.in
++++ b/data/xml/QPlayDescription.xml.in
+@@ -211,5 +211,9 @@
+             <name>A_ARG_TYPE_TracksMetaData</name>
+             <dataType>string</dataType>
+         </stateVariable>
++        <stateVariable sendEvents="yes">
++          <name>FakeState</name>
++          <dataType>ui4</dataType>
++        </stateVariable>
+     </serviceStateTable>
+ </scpd>
+-- 
+1.9.1
+

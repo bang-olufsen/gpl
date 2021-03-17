@@ -1,0 +1,127 @@
+From c44587b60355806afc5cf319fac2899a52125b9b Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Wed, 7 Aug 2013 13:36:45 +0200
+Subject: [PATCH] musb: Fix problems with hcd instances.
+
+With rework to support multiple instances we have issues when trying to have
+one port occupied with non-storage in port 1and one with usb storage device in port 0.
+
+Last hcd remain from host 1 scan but cannot communicate with storage which
+was on port 0 because of wrong instance pointer. Add more instances of hcd
+to avoid such problems.
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ drivers/usb/musb-new/musb_uboot.c | 46 +++++++++++++++++++++++++++++++++++----
+ 1 file changed, 42 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/usb/musb-new/musb_uboot.c b/drivers/usb/musb-new/musb_uboot.c
+index d7d7947..68876c9 100644
+--- a/drivers/usb/musb-new/musb_uboot.c
++++ b/drivers/usb/musb-new/musb_uboot.c
+@@ -15,6 +15,8 @@
+ #ifdef CONFIG_MUSB_HOST
+ static struct musb *host[CONFIG_USB_MAX_CONTROLLER_COUNT] = { NULL, NULL };
+ static struct usb_hcd hcd;
++static struct usb_hcd hcd_active[CONFIG_USB_MAX_CONTROLLER_COUNT];
++static int hcd_activated = 0;
+ static enum usb_device_speed host_speed;
+ 
+ static void musb_host_complete_urb(struct urb *urb)
+@@ -82,6 +84,37 @@ static int submit_urb(struct usb_hcd *hcd, struct urb *urb)
+ 	return urb->status;
+ }
+ 
++static struct hcd *get_hcd(struct usb_device *dev)
++{
++	int hcd_index;
++	struct usb_hcd *ret = NULL;
++
++	/* This algorithm trying to get correct hcd instance when making device scan
++	 * and also when usb storage is calling common functions.
++	 */
++	if (dev->devnum > 0) {
++		if (hcd_activated > 1) {
++			ret = &hcd_active[dev->devnum - 1];
++		} else {
++			int i;
++			for (i = 0; i < CONFIG_USB_MAX_CONTROLLER_COUNT; i++) {
++				if (hcd_active[i].hcd_priv != NULL) {
++					ret = &hcd_active[i];
++					break;
++				}
++			}
++		}
++	} else {
++		ret = &hcd;
++	}
++
++	/* panic check */
++	if (ret == NULL)
++		BUG();
++
++	return ret;
++}
++
+ int submit_control_msg(struct usb_device *dev, unsigned long pipe,
+ 			void *buffer, int len, struct devrequest *setup)
+ {
+@@ -92,7 +125,7 @@ int submit_control_msg(struct usb_device *dev, unsigned long pipe,
+ 	if (!dev->parent)
+ 		dev->speed = host_speed;
+ 
+-	return submit_urb(&hcd, urb);
++	return submit_urb(get_hcd(dev), urb);
+ }
+ 
+ 
+@@ -101,7 +134,7 @@ int submit_bulk_msg(struct usb_device *dev, unsigned long pipe,
+ {
+ 	struct urb *urb = construct_urb(dev, USB_ENDPOINT_XFER_BULK, pipe,
+ 					buffer, len, NULL, 0);
+-	return submit_urb(&hcd, urb);
++	return submit_urb(get_hcd(dev), urb);
+ }
+ 
+ int submit_int_msg(struct usb_device *dev, unsigned long pipe,
+@@ -109,7 +142,7 @@ int submit_int_msg(struct usb_device *dev, unsigned long pipe,
+ {
+ 	struct urb *urb = construct_urb(dev, USB_ENDPOINT_XFER_INT, pipe,
+ 					buffer, len, NULL, interval);
+-	return submit_urb(&hcd, urb);
++	return submit_urb(get_hcd(dev), urb);
+ }
+ 
+ int usb_lowlevel_init(int index, enum usb_init_type init, void **controller)
+@@ -129,8 +162,10 @@ int usb_lowlevel_init(int index, enum usb_init_type init, void **controller)
+ 		if (musb_readb(mbase, MUSB_DEVCTL) & MUSB_DEVCTL_HM)
+ 			break;
+ 	} while (--timeout);
+-	if (!timeout)
++	if (!timeout) {
++		hcd_active[index].hcd_priv = NULL;
+ 		return -ENODEV;
++	}
+ 
+ 	power = musb_readb(mbase, MUSB_POWER);
+ 	musb_writeb(mbase, MUSB_POWER, MUSB_POWER_RESET | power);
+@@ -144,6 +179,8 @@ int usb_lowlevel_init(int index, enum usb_init_type init, void **controller)
+ 			USB_SPEED_FULL : USB_SPEED_LOW;
+ 	host[index]->is_active = 1;
+ 	hcd.hcd_priv = host[index];
++	hcd_active[index].hcd_priv = host[index];
++	hcd_activated++;
+ 
+ 	return 0;
+ }
+@@ -156,6 +193,7 @@ int usb_lowlevel_stop(int index)
+ 	}
+ 
+ 	musb_stop(host[index]);
++	hcd_activated = 0;
+ 	return 0;
+ }
+ #endif /* CONFIG_MUSB_HOST */
+-- 
+2.7.4
+

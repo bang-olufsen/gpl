@@ -1,0 +1,36 @@
+From 1ee459ed23fe942ff06ef5ecebff34c07e142144 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Fri, 6 Nov 2020 13:05:18 +0100
+Subject: [PATCH] Export gst_debug_print_object symbol
+
+---
+ gst/gstinfo.c | 2 +-
+ gst/gstinfo.h | 2 ++
+ 2 files changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/gst/gstinfo.c b/gst/gstinfo.c
+index fa3adc0..2ca7533 100644
+--- a/gst/gstinfo.c
++++ b/gst/gstinfo.c
+@@ -806,7 +806,7 @@ gst_info_describe_stream_collection (GstStreamCollection * collection)
+   return ret;
+ }
+ 
+-static gchar *
++gchar *
+ gst_debug_print_object (gpointer ptr)
+ {
+   GObject *object = (GObject *) ptr;
+diff --git a/gst/gstinfo.h b/gst/gstinfo.h
+index 2016d4e..24cae3a 100644
+--- a/gst/gstinfo.h
++++ b/gst/gstinfo.h
+@@ -1752,6 +1752,8 @@ GST_API
+ void                  gst_debug_remove_ring_buffer_logger   (void);
+ GST_API
+ gchar **              gst_debug_ring_buffer_logger_get_logs (void);
++GST_API
++gchar* gst_debug_print_object (gpointer ptr);
+ 
+ G_END_DECLS
+ 

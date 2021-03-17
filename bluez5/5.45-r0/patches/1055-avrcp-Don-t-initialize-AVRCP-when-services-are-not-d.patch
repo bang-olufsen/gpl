@@ -1,0 +1,73 @@
+From 97c394edbe724ac796802a62767c6e8c3a98e2c7 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Mon, 16 Sep 2019 15:03:40 +0200
+Subject: [PATCH] avrcp: Don't initialize AVRCP when services are not
+ discovered
+
+---
+ profiles/audio/avrcp.c | 11 +++++++++--
+ src/device.c           |  4 ++++
+ 2 files changed, 13 insertions(+), 2 deletions(-)
+
+diff --git a/profiles/audio/avrcp.c b/profiles/audio/avrcp.c
+index 74f9f90..f2b3725 100644
+--- a/profiles/audio/avrcp.c
++++ b/profiles/audio/avrcp.c
+@@ -290,6 +290,7 @@ struct avrcp {
+ 	gboolean position_notification_supported;
+ 	guint position_polling_timeout;
+ 	struct pending_pdu *pending_pdu;
++	guint sdp_complete_id;
+ };
+ 
+ struct passthrough_handler {
+@@ -4201,8 +4202,11 @@ static void controller_init(struct avrcp *session)
+ 		return;
+ }
+ 
+-static void session_init_control(struct avrcp *session)
++static void session_init_sdp_cb(struct btd_device *dev, int err, void *user_data)
+ {
++	struct avrcp *session = user_data;
++	session->sdp_complete_id = 0;
++
+ 	session->passthrough_id = avctp_register_passthrough_handler(
+ 							session->conn,
+ 							handle_passthrough,
+@@ -4256,6 +4260,9 @@ static void session_destroy(struct avrcp *session, int err)
+ 
+ 	session_abort_pending_pdu(session);
+ 
++	if (session->sdp_complete_id)
++		device_remove_svc_complete_callback(session->dev, session->sdp_complete_id);
++
+ 	service = btd_device_get_service(session->dev, AVRCP_TARGET_UUID);
+ 	if (service != NULL) {
+ 		if (session->control_id == 0)
+@@ -4343,7 +4350,7 @@ static void state_changed(struct btd_device *device, avctp_state_t old_state,
+ 		if (session == NULL || session->control_id > 0)
+ 			break;
+ 
+-		session_init_control(session);
++		session->sdp_complete_id = device_wait_for_svc_complete(device, session_init_sdp_cb, session);
+ 
+ 		break;
+ 	case AVCTP_STATE_BROWSING_CONNECTED:
+diff --git a/src/device.c b/src/device.c
+index 01bc831..18e17ff 100644
+--- a/src/device.c
++++ b/src/device.c
+@@ -2363,6 +2363,10 @@ static void device_svc_resolved(struct btd_device *dev, uint8_t browse_type,
+ 
+ 	DBG("%s err %d", dev->path, err);
+ 
++	// ignore ATT over BR/EDR browse requests
++	if (browse_type == BROWSE_GATT && bdaddr_type == BDADDR_BREDR)
++		return;
++
+ 	state->svc_resolved = true;
+ 
+ 	/* Disconnection notification can happen before this function
+-- 
+2.7.4
+

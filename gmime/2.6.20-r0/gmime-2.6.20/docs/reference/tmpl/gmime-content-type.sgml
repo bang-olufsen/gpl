@@ -1,0 +1,141 @@
+<!-- ##### SECTION Title ##### -->
+gmime-content-type
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GMimeContentType ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION g_mime_content_type_new ##### -->
+<para>
+
+</para>
+
+@type: 
+@subtype: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_content_type_new_from_string ##### -->
+<para>
+
+</para>
+
+@str: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_content_type_to_string ##### -->
+<para>
+
+</para>
+
+@mime_type: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_content_type_is_type ##### -->
+<para>
+
+</para>
+
+@mime_type: 
+@type: 
+@subtype: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_content_type_get_media_type ##### -->
+<para>
+
+</para>
+
+@mime_type: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_content_type_set_media_type ##### -->
+<para>
+
+</para>
+
+@mime_type: 
+@type: 
+
+
+<!-- ##### FUNCTION g_mime_content_type_get_media_subtype ##### -->
+<para>
+
+</para>
+
+@mime_type: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_content_type_set_media_subtype ##### -->
+<para>
+
+</para>
+
+@mime_type: 
+@subtype: 
+
+
+<!-- ##### FUNCTION g_mime_content_type_get_params ##### -->
+<para>
+
+</para>
+
+@mime_type: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_content_type_set_params ##### -->
+<para>
+
+</para>
+
+@mime_type: 
+@params: 
+
+
+<!-- ##### FUNCTION g_mime_content_type_get_parameter ##### -->
+<para>
+
+</para>
+
+@mime_type: 
+@attribute: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_content_type_set_parameter ##### -->
+<para>
+
+</para>
+
+@mime_type: 
+@attribute: 
+@value: 
+
+

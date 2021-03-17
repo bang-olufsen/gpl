@@ -1,0 +1,240 @@
+<!-- ##### SECTION Title ##### -->
+gmime-utils
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GMimeReferences ##### -->
+<para>
+
+</para>
+
+@next: 
+@msgid: 
+
+<!-- ##### FUNCTION g_mime_utils_header_decode_date ##### -->
+<para>
+
+</para>
+
+@str: 
+@tz_offset: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_utils_header_format_date ##### -->
+<para>
+
+</para>
+
+@date: 
+@tz_offset: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_utils_generate_message_id ##### -->
+<para>
+
+</para>
+
+@fqdn: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_utils_decode_message_id ##### -->
+<para>
+
+</para>
+
+@message_id: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_references_get_message_id ##### -->
+<para>
+
+</para>
+
+@ref: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_references_get_next ##### -->
+<para>
+
+</para>
+
+@ref: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_references_decode ##### -->
+<para>
+
+</para>
+
+@text: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_references_append ##### -->
+<para>
+
+</para>
+
+@refs: 
+@msgid: 
+
+
+<!-- ##### FUNCTION g_mime_references_clear ##### -->
+<para>
+
+</para>
+
+@refs: 
+
+
+<!-- ##### FUNCTION g_mime_references_free ##### -->
+<para>
+
+</para>
+
+@refs: 
+
+
+<!-- ##### FUNCTION g_mime_utils_header_fold ##### -->
+<para>
+
+</para>
+
+@header: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_utils_header_printf ##### -->
+<para>
+
+</para>
+
+@format: 
+@...: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_utils_quote_string ##### -->
+<para>
+
+</para>
+
+@str: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_utils_unquote_string ##### -->
+<para>
+
+</para>
+
+@str: 
+
+
+<!-- ##### FUNCTION g_mime_utils_text_is_8bit ##### -->
+<para>
+
+</para>
+
+@text: 
+@len: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_utils_best_encoding ##### -->
+<para>
+
+</para>
+
+@text: 
+@len: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_utils_decode_8bit ##### -->
+<para>
+
+</para>
+
+@text: 
+@len: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_utils_header_decode_text ##### -->
+<para>
+
+</para>
+
+@text: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_utils_header_encode_text ##### -->
+<para>
+
+</para>
+
+@text: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_utils_header_decode_phrase ##### -->
+<para>
+
+</para>
+
+@phrase: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_utils_header_encode_phrase ##### -->
+<para>
+
+</para>
+
+@phrase: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_utils_structured_header_fold ##### -->
+<para>
+
+</para>
+
+@header: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_utils_unstructured_header_fold ##### -->
+<para>
+
+</para>
+
+@header: 
+@Returns: 
+
+

@@ -1,0 +1,82 @@
+From 092b8b63ff1fbfad73ec9f7b329be6abef3cec3c Mon Sep 17 00:00:00 2001
+From: Xia Zhou <xia.zhou@streamunlimited.com>
+Date: Wed, 13 Aug 2014 13:45:20 +0200
+Subject: [PATCH] set Connection header to close and fix dlna test case
+ 7.4.20.4
+
+Signed-off-by: Xia Zhou <xia.zhou@streamunlimited.com>
+---
+ src/librygel-renderer/rygel-av-transport.c    | 33 +++++++++++++++------------
+ src/librygel-renderer/rygel-av-transport.vala |  1 +
+ 2 files changed, 20 insertions(+), 14 deletions(-)
+
+diff --git a/src/librygel-renderer/rygel-av-transport.c b/src/librygel-renderer/rygel-av-transport.c
+index a5e4d34..33de7cc 100644
+--- a/src/librygel-renderer/rygel-av-transport.c
++++ b/src/librygel-renderer/rygel-av-transport.c
+@@ -2777,31 +2777,36 @@ static void rygel_av_transport_handle_new_transport_uri (RygelAVTransport* self,
+ 		SoupMessage* _tmp13_ = NULL;
+ 		SoupMessageHeaders* _tmp14_ = NULL;
+ 		SoupMessage* _tmp15_ = NULL;
+-		SoupSession* _tmp16_ = NULL;
++		SoupMessageHeaders* _tmp16_ = NULL;
+ 		SoupMessage* _tmp17_ = NULL;
+-		SoupMessage* _tmp18_ = NULL;
++		SoupSession* _tmp18_ = NULL;
++		SoupMessage* _tmp19_ = NULL;
++		SoupMessage* _tmp20_ = NULL;
+ 		_tmp11_ = _data3_->uri;
+ 		_tmp12_ = soup_message_new ("HEAD", _tmp11_);
+ 		message = _tmp12_;
+ 		_tmp13_ = message;
+ 		_tmp14_ = _tmp13_->request_headers;
+ 		soup_message_headers_append (_tmp14_, "getContentFeatures.dlna.org", "1");
+-		self->priv->head_faked = FALSE;
+ 		_tmp15_ = message;
+-		g_signal_connect_data (_tmp15_, "finished", (GCallback) ____lambda6__soup_message_finished, block3_data_ref (_data3_), (GClosureNotify) block3_data_unref, 0);
+-		_tmp16_ = self->priv->session;
++		_tmp16_ = _tmp15_->request_headers;
++		soup_message_headers_append (_tmp16_, "Connection", "close");
++		self->priv->head_faked = FALSE;
+ 		_tmp17_ = message;
+-		_tmp18_ = _g_object_ref0 (_tmp17_);
+-		soup_session_queue_message (_tmp16_, _tmp18_, NULL, NULL);
++		g_signal_connect_data (_tmp17_, "finished", (GCallback) ____lambda6__soup_message_finished, block3_data_ref (_data3_), (GClosureNotify) block3_data_unref, 0);
++		_tmp18_ = self->priv->session;
++		_tmp19_ = message;
++		_tmp20_ = _g_object_ref0 (_tmp19_);
++		soup_session_queue_message (_tmp18_, _tmp20_, NULL, NULL);
+ 		_g_object_unref0 (message);
+ 	} else {
+-		GUPnPServiceAction* _tmp19_ = NULL;
+-		const gchar* _tmp20_ = NULL;
+-		const gchar* _tmp21_ = NULL;
+-		_tmp19_ = _data3_->action;
+-		_tmp20_ = _data3_->uri;
+-		_tmp21_ = _data3_->metadata;
+-		rygel_av_transport_set_single_play_uri (self, _tmp19_, _tmp20_, _tmp21_, NULL, NULL);
++		GUPnPServiceAction* _tmp21_ = NULL;
++		const gchar* _tmp22_ = NULL;
++		const gchar* _tmp23_ = NULL;
++		_tmp21_ = _data3_->action;
++		_tmp22_ = _data3_->uri;
++		_tmp23_ = _data3_->metadata;
++		rygel_av_transport_set_single_play_uri (self, _tmp21_, _tmp22_, _tmp23_, NULL, NULL);
+ 	}
+ 	block3_data_unref (_data3_);
+ 	_data3_ = NULL;
+diff --git a/src/librygel-renderer/rygel-av-transport.vala b/src/librygel-renderer/rygel-av-transport.vala
+index 3a96277..eff864a 100644
+--- a/src/librygel-renderer/rygel-av-transport.vala
++++ b/src/librygel-renderer/rygel-av-transport.vala
+@@ -805,6 +805,7 @@ internal class Rygel.AVTransport : Service {
+             var message = new Message ("HEAD", uri);
+             message.request_headers.append ("getContentFeatures.dlna.org",
+                                             "1");
++            message.request_headers.append ("Connection", "close");
+             this.head_faked = false;
+             message.finished.connect ((msg) => {
+                 this.check_resource (msg, uri, metadata, action);
+-- 
+1.9.1
+

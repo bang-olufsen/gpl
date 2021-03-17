@@ -1,0 +1,325 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GMimeParam</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="GMime 2.6 Reference Manual">
+<link rel="up" href="Headers.html" title="Message and MIME Headers">
+<link rel="prev" href="GMimeContentDisposition.html" title="GMimeContentDisposition">
+<link rel="next" href="InternetAddresses.html" title="Internet Addresses">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="GMimeContentDisposition.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="Headers.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">GMime 2.6 Reference Manual</th>
+<td><a accesskey="n" href="InternetAddresses.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#gmime-GMimeParam.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#gmime-GMimeParam.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="gmime-GMimeParam"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="gmime-GMimeParam.top_of_page"></a>GMimeParam</span></h2>
+<p>GMimeParam — Content-Type and Content-Disposition parameters</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="gmime-GMimeParam.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">struct              <a class="link" href="gmime-GMimeParam.html#GMimeParam" title="struct GMimeParam">GMimeParam</a>;
+<a class="link" href="gmime-GMimeParam.html#GMimeParam" title="struct GMimeParam"><span class="returnvalue">GMimeParam</span></a> *        <a class="link" href="gmime-GMimeParam.html#g-mime-param-new" title="g_mime_param_new ()">g_mime_param_new</a>                    (<em class="parameter"><code>const <span class="type">char</span> *name</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *value</code></em>);
+<a class="link" href="gmime-GMimeParam.html#GMimeParam" title="struct GMimeParam"><span class="returnvalue">GMimeParam</span></a> *        <a class="link" href="gmime-GMimeParam.html#g-mime-param-new-from-string" title="g_mime_param_new_from_string ()">g_mime_param_new_from_string</a>        (<em class="parameter"><code>const <span class="type">char</span> *str</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="gmime-GMimeParam.html#g-mime-param-destroy" title="g_mime_param_destroy ()">g_mime_param_destroy</a>                (<em class="parameter"><code><a class="link" href="gmime-GMimeParam.html#GMimeParam" title="struct GMimeParam"><span class="type">GMimeParam</span></a> *param</code></em>);
+const <a class="link" href="gmime-GMimeParam.html#GMimeParam" title="struct GMimeParam"><span class="returnvalue">GMimeParam</span></a> *  <a class="link" href="gmime-GMimeParam.html#g-mime-param-next" title="g_mime_param_next ()">g_mime_param_next</a>                   (<em class="parameter"><code>const <a class="link" href="gmime-GMimeParam.html#GMimeParam" title="struct GMimeParam"><span class="type">GMimeParam</span></a> *param</code></em>);
+const <span class="returnvalue">char</span> *        <a class="link" href="gmime-GMimeParam.html#g-mime-param-get-name" title="g_mime_param_get_name ()">g_mime_param_get_name</a>               (<em class="parameter"><code>const <a class="link" href="gmime-GMimeParam.html#GMimeParam" title="struct GMimeParam"><span class="type">GMimeParam</span></a> *param</code></em>);
+const <span class="returnvalue">char</span> *        <a class="link" href="gmime-GMimeParam.html#g-mime-param-get-value" title="g_mime_param_get_value ()">g_mime_param_get_value</a>              (<em class="parameter"><code>const <a class="link" href="gmime-GMimeParam.html#GMimeParam" title="struct GMimeParam"><span class="type">GMimeParam</span></a> *param</code></em>);
+<a class="link" href="gmime-GMimeParam.html#GMimeParam" title="struct GMimeParam"><span class="returnvalue">GMimeParam</span></a> *        <a class="link" href="gmime-GMimeParam.html#g-mime-param-append" title="g_mime_param_append ()">g_mime_param_append</a>                 (<em class="parameter"><code><a class="link" href="gmime-GMimeParam.html#GMimeParam" title="struct GMimeParam"><span class="type">GMimeParam</span></a> *params</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *name</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *value</code></em>);
+<a class="link" href="gmime-GMimeParam.html#GMimeParam" title="struct GMimeParam"><span class="returnvalue">GMimeParam</span></a> *        <a class="link" href="gmime-GMimeParam.html#g-mime-param-append-param" title="g_mime_param_append_param ()">g_mime_param_append_param</a>           (<em class="parameter"><code><a class="link" href="gmime-GMimeParam.html#GMimeParam" title="struct GMimeParam"><span class="type">GMimeParam</span></a> *params</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="gmime-GMimeParam.html#GMimeParam" title="struct GMimeParam"><span class="type">GMimeParam</span></a> *param</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="gmime-GMimeParam.html#g-mime-param-write-to-string" title="g_mime_param_write_to_string ()">g_mime_param_write_to_string</a>        (<em class="parameter"><code>const <a class="link" href="gmime-GMimeParam.html#GMimeParam" title="struct GMimeParam"><span class="type">GMimeParam</span></a> *param</code></em>,
+                                                         <em class="parameter"><code><span class="type">gboolean</span> fold</code></em>,
+                                                         <em class="parameter"><code><span class="type">GString</span> *str</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="gmime-GMimeParam.description"></a><h2>Description</h2>
+<p>
+A <a class="link" href="gmime-GMimeParam.html#GMimeParam" title="struct GMimeParam"><span class="type">GMimeParam</span></a> is a parameter name/value pair as found on MIME
+header fields such as Content-Type and Content-Disposition.
+</p>
+</div>
+<div class="refsect1">
+<a name="gmime-GMimeParam.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="GMimeParam"></a><h3>struct GMimeParam</h3>
+<pre class="programlisting">struct GMimeParam {
+	GMimeParam *next;
+	char *name;
+	char *value;
+};
+</pre>
+<p>
+A parameter name/value pair as used for some Content header fields.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><a class="link" href="gmime-GMimeParam.html#GMimeParam" title="struct GMimeParam"><span class="type">GMimeParam</span></a> *<em class="structfield"><code><a name="GMimeParam.next"></a>next</code></em>;</span></p></td>
+<td>Pointer to the next param.</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">char</span> *<em class="structfield"><code><a name="GMimeParam.name"></a>name</code></em>;</span></p></td>
+<td>Parameter name.</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">char</span> *<em class="structfield"><code><a name="GMimeParam.value"></a>value</code></em>;</span></p></td>
+<td>Parameter value.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-param-new"></a><h3>g_mime_param_new ()</h3>
+<pre class="programlisting"><a class="link" href="gmime-GMimeParam.html#GMimeParam" title="struct GMimeParam"><span class="returnvalue">GMimeParam</span></a> *        g_mime_param_new                    (<em class="parameter"><code>const <span class="type">char</span> *name</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *value</code></em>);</pre>
+<p>
+Creates a new <a class="link" href="gmime-GMimeParam.html#GMimeParam" title="struct GMimeParam"><span class="type">GMimeParam</span></a> node with name <em class="parameter"><code>name</code></em> and value <em class="parameter"><code>value</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>name</code></em> :</span></p></td>
+<td>parameter name</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>value</code></em> :</span></p></td>
+<td>parameter value</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new paramter structure.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-param-new-from-string"></a><h3>g_mime_param_new_from_string ()</h3>
+<pre class="programlisting"><a class="link" href="gmime-GMimeParam.html#GMimeParam" title="struct GMimeParam"><span class="returnvalue">GMimeParam</span></a> *        g_mime_param_new_from_string        (<em class="parameter"><code>const <span class="type">char</span> *str</code></em>);</pre>
+<p>
+Creates a parameter list based on the input string.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>str</code></em> :</span></p></td>
+<td>input string</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a <a class="link" href="gmime-GMimeParam.html#GMimeParam" title="struct GMimeParam"><span class="type">GMimeParam</span></a> structure based on <em class="parameter"><code>string</code></em>.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-param-destroy"></a><h3>g_mime_param_destroy ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_param_destroy                (<em class="parameter"><code><a class="link" href="gmime-GMimeParam.html#GMimeParam" title="struct GMimeParam"><span class="type">GMimeParam</span></a> *param</code></em>);</pre>
+<p>
+Releases all memory used by this mime param back to the Operating
+System.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><em class="parameter"><code>param</code></em> :</span></p></td>
+<td>Mime param list to destroy</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-param-next"></a><h3>g_mime_param_next ()</h3>
+<pre class="programlisting">const <a class="link" href="gmime-GMimeParam.html#GMimeParam" title="struct GMimeParam"><span class="returnvalue">GMimeParam</span></a> *  g_mime_param_next                   (<em class="parameter"><code>const <a class="link" href="gmime-GMimeParam.html#GMimeParam" title="struct GMimeParam"><span class="type">GMimeParam</span></a> *param</code></em>);</pre>
+<p>
+Gets the next <a class="link" href="gmime-GMimeParam.html#GMimeParam" title="struct GMimeParam"><span class="type">GMimeParam</span></a> node in the list.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>param</code></em> :</span></p></td>
+<td>a <a class="link" href="gmime-GMimeParam.html#GMimeParam" title="struct GMimeParam"><span class="type">GMimeParam</span></a> node</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the next <a class="link" href="gmime-GMimeParam.html#GMimeParam" title="struct GMimeParam"><span class="type">GMimeParam</span></a> node in the list.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-param-get-name"></a><h3>g_mime_param_get_name ()</h3>
+<pre class="programlisting">const <span class="returnvalue">char</span> *        g_mime_param_get_name               (<em class="parameter"><code>const <a class="link" href="gmime-GMimeParam.html#GMimeParam" title="struct GMimeParam"><span class="type">GMimeParam</span></a> *param</code></em>);</pre>
+<p>
+Gets the name of the parameter.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>param</code></em> :</span></p></td>
+<td>a <a class="link" href="gmime-GMimeParam.html#GMimeParam" title="struct GMimeParam"><span class="type">GMimeParam</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the name of the parameter.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-param-get-value"></a><h3>g_mime_param_get_value ()</h3>
+<pre class="programlisting">const <span class="returnvalue">char</span> *        g_mime_param_get_value              (<em class="parameter"><code>const <a class="link" href="gmime-GMimeParam.html#GMimeParam" title="struct GMimeParam"><span class="type">GMimeParam</span></a> *param</code></em>);</pre>
+<p>
+Gets the value of the parameter.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>param</code></em> :</span></p></td>
+<td>a <a class="link" href="gmime-GMimeParam.html#GMimeParam" title="struct GMimeParam"><span class="type">GMimeParam</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the value of the parameter.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-param-append"></a><h3>g_mime_param_append ()</h3>
+<pre class="programlisting"><a class="link" href="gmime-GMimeParam.html#GMimeParam" title="struct GMimeParam"><span class="returnvalue">GMimeParam</span></a> *        g_mime_param_append                 (<em class="parameter"><code><a class="link" href="gmime-GMimeParam.html#GMimeParam" title="struct GMimeParam"><span class="type">GMimeParam</span></a> *params</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *name</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *value</code></em>);</pre>
+<p>
+Appends a new parameter with name <em class="parameter"><code>name</code></em> and value <em class="parameter"><code>value</code></em> to the
+parameter list <em class="parameter"><code>params</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>params</code></em> :</span></p></td>
+<td>param list</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>name</code></em> :</span></p></td>
+<td>new param name</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>value</code></em> :</span></p></td>
+<td>new param value</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a param list with the new param of name <em class="parameter"><code>name</code></em> and value
+<em class="parameter"><code>value</code></em> appended to the list of params <em class="parameter"><code>params</code></em>.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-param-append-param"></a><h3>g_mime_param_append_param ()</h3>
+<pre class="programlisting"><a class="link" href="gmime-GMimeParam.html#GMimeParam" title="struct GMimeParam"><span class="returnvalue">GMimeParam</span></a> *        g_mime_param_append_param           (<em class="parameter"><code><a class="link" href="gmime-GMimeParam.html#GMimeParam" title="struct GMimeParam"><span class="type">GMimeParam</span></a> *params</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="gmime-GMimeParam.html#GMimeParam" title="struct GMimeParam"><span class="type">GMimeParam</span></a> *param</code></em>);</pre>
+<p>
+Appends <em class="parameter"><code>param</code></em> to the param list <em class="parameter"><code>params</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>params</code></em> :</span></p></td>
+<td>param list</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>param</code></em> :</span></p></td>
+<td>param to append</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a param list with the new param <em class="parameter"><code>param</code></em> appended to the list
+of params <em class="parameter"><code>params</code></em>.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-param-write-to-string"></a><h3>g_mime_param_write_to_string ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_param_write_to_string        (<em class="parameter"><code>const <a class="link" href="gmime-GMimeParam.html#GMimeParam" title="struct GMimeParam"><span class="type">GMimeParam</span></a> *param</code></em>,
+                                                         <em class="parameter"><code><span class="type">gboolean</span> fold</code></em>,
+                                                         <em class="parameter"><code><span class="type">GString</span> *str</code></em>);</pre>
+<p>
+Assumes the output string contains only the Content-* header and
+it's immediate value.
+</p>
+<p>
+Writes the params out to the string <em class="parameter"><code>string</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>param</code></em> :</span></p></td>
+<td>MIME Param list</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>fold</code></em> :</span></p></td>
+<td>specifies whether or not to fold headers</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>str</code></em> :</span></p></td>
+<td>output string</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<div class="refsect1">
+<a name="gmime-GMimeParam.see-also"></a><h2>See Also</h2>
+<a class="link" href="GMimeContentType.html" title="GMimeContentType"><span class="type">GMimeContentType</span></a>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

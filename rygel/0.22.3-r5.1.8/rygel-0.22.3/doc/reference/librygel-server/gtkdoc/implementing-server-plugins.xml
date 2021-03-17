@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd" [
+<!ENTITY % local.common.attrib "xmlns:xi  CDATA  #FIXED 'http://www.w3.org/2003/XInclude'">
+<!ENTITY url_git_browse_base_src "http://git.gnome.org/browse/rygel/tree/src/">
+]>
+
+<chapter id="implementing-server-plugins">
+<title>Implementing Rygel Server Plugins</title>
+
+<section id="implementing-server-plugins-overview">
+<title>Implementing Server Plugins: Overview</title>
+
+<para>
+This library may be used to create Rygel server plugins by 
+implementing the <link linkend="RygelMediaServerPlugin">RygelMediaServerPlugin</link> class.</para>
+
+<para>The <link linkend="RygelMediaServerPlugin">RygelMediaServerPlugin</link> reference documentation 
+and these examples explain how to implement these plugins.
+</para>
+
+</section>
+
+<section id="implementing-server-plugins-simple-example">
+<title>Implementing Server Plugins: Simple Example</title>
+
+<!-- TODO: Find a way to mention this C example code in the RygelMediaServer valadoc comments instead. -->
+<para>
+This example source code shows how to implement a Rygel Server plugin.</para>
+
+<para>This example implements a root <link linkend="RygelMediaContainer">RygelMediaContainer</link> by
+deriving from <link linkend="RygelSimpleContainer">RygelSimpleContainer</link> and adding some
+hard-coded items. A real Rygel server plugin's root container, or its child items, would typically
+populate themselves dynamically. For instance, they might add and remove items based on some source
+such as a file system or database. See, for instance, the 
+<ulink url="&url_git_browse_base_src;plugins/tracker">Rygel Tracker Plugin</ulink> or the
+<ulink url="&url_git_browse_base_src;plugins/media-export">Rygel MediaExport Plugin</ulink> plugins,
+implemented in Vala.
+</para>
+
+<!-- Do not indent the xi:include node. That puts spaces at the start of the code. -->
+<programlisting role="C">
+<xi:include  href="../../../../examples/server-plugins/C/example-server-plugin.h"
+    parse="text"
+    xmlns:xi="http://www.w3.org/2001/XInclude"/>
+</programlisting>
+<programlisting role="C">
+<xi:include  href="../../../../examples/server-plugins/C/example-server-plugin.c"
+    parse="text"
+    xmlns:xi="http://www.w3.org/2001/XInclude"/>
+</programlisting>
+<programlisting role="C">
+<xi:include  href="../../../../examples/server-plugins/C/example-root-container.h"
+    parse="text"
+    xmlns:xi="http://www.w3.org/2001/XInclude"/>
+</programlisting>
+<programlisting role="C">
+<xi:include  href="../../../../examples/server-plugins/C/example-root-container.c"
+    parse="text"
+    xmlns:xi="http://www.w3.org/2001/XInclude"/>
+</programlisting>
+
+</section>
+
+<section id="implementing-server-plugins-full-example">
+<title>Implementing Server Plugins: Full Example</title>
+
+<para>In addition, the external <ulink url="http://git.gnome.org/browse/rygel-gst-0-10-plugins">rygel-gst-0-10-plugins</ulink> project provides a Rygel Server plugin that uses an older GStreamer version and is an example of an external Rygel Server plugin implemented in C. Its <ulink url="http://git.gnome.org/browse/rygel-gst-0-10-plugins/tree/src/media-export">media-export</ulink> plugin exposes the contents of a directory via UPnP.</para>
+
+<para>The <function>module_init</function> function first checks that the plugin has not been disabled and then creates an instance of its <classname>RygelMediaExportPlugin</classname>, which it adds to the provided <classname>RygelPluginLoader</classname> instance.</para>
+
+<para>The <classname>RygelMediaExportPlugin</classname> class, derived from <link linkend="RygelMediaServerPlugin">RygelMediaServerPlugin</link>, simply instantiates its <classname>RygelMediaExportRootContainer</classname> class, derived from <link linkend="RygelMediaContainer">RygelMediaContainer</link>, providing it to the base class as the root container.</para>
+
+<para>The <classname>RygelMediaExportRootContainer</classname> creates an instance of a <classname>RygelMediaExportMediaCache</classname> class and a <classname>RygelMediaExportHarvester</classname> class. The harvester finds files on the filesystem, and stores them in the media cache, which uses SQLite to keep track of them.</para>
+
+<para><classname>RygelMediaExportRootContainer</classname> informs the media cache that it should have a child container for the media content as organised on the filesystem, and additionally some virtual folders for Music, Pictures, Video and Playlists, with further sub-divisions under these, for instance by publication year. These containers are added to the media cache via instances of the <classname>RygelMediaExportNullContainer</classname> class, but that is just to simplify the media cache API and these instances then serve no further purpose. The virtual folders are re-added whenever the filesystem's container is updated, so that they can show the updated 
+content, though that is not particularly efficient.</para>
+
+<para><classname>RygelMediaExportRootContainer</classname> then delegates its <classname>RygelMediaContainer</classname> virtual function implementations to this media cache, which in turn uses the <classname>RygelMediaExportObjectFactory</classname> to instantiate new containers for each request based on their ID. For instance, it returns a <classname>RygelMediaExportDBContainer</classname> if the requested ID indicates a virtual container, using the definition in the rest of the ID to build a suitable SQL query.</para>
+
+<para>The root container derives from <classname>TrackableDbContainer</classname>, which in turn implements the <link linkend="RygelTrackableContainer">RygelTrackableContainer</link> interface, to implement the change tracking profile of the UPnP ContentDirectory:3 specification. Therefore, whenever the root container, or its child items, have changed, we call the <function>rygel_trackable_container_updated()</function> function.</para>
+
+<para>Any filesystem folders are implemented as UPnP containers via the <classname>RygelMediaExportWritableDbContainer</classname> class, which implements the <link linkend="RygelWritableContainer">RygelWritableContainer</link> interface to allow new files to be uploaded to the filesystem via UPnP.</para>
+
+<!-- TODO: Simplify the class hierarchy in the example. -->
+
+</section>
+
+</chapter>

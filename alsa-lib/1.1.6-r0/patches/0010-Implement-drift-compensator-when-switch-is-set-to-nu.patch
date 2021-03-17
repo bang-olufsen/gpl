@@ -1,0 +1,97 @@
+From 548d9e4218c02224df56019ff54cac190f963d9d Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Thu, 28 Jul 2016 13:06:49 +0200
+Subject: [PATCH] Implement drift compensator when switch is set to null
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+
+%% original patch: 0010-Implement-drift-compensator-when-switch-is-set-to-nu.patch
+---
+ src/pcm/pcm_switch.c | 48 ++++++++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 46 insertions(+), 2 deletions(-)
+
+diff --git a/src/pcm/pcm_switch.c b/src/pcm/pcm_switch.c
+index c8c0f41..2866c0d 100644
+--- a/src/pcm/pcm_switch.c
++++ b/src/pcm/pcm_switch.c
+@@ -41,6 +41,7 @@ typedef struct {
+ 	snd_pcm_generic_t gen;
+ 	snd_ctl_t *ctl;
+ 	snd_ctl_elem_value_t elem;
++	snd_ctl_elem_value_t drift_elem;
+ 	int cchannels;
+ 	int cur_switch;
+ 	int active_switch;
+@@ -76,9 +77,16 @@ static void update_softvare_clock(snd_pcm_t *pcm)
+ 
+ 	if (!swtch->gen.slave && swtch->clock.tv_sec > 0) {
+ 		u_int64_t forward_usec, diff_nsec, forward;
++		signed long long comp, drift;
+ 
++		/* Handle drift compensator <-5000, 5000> */
++		snd_ctl_elem_read(swtch->ctl, &swtch->drift_elem);
++		drift = swtch->drift_elem.value.integer.value[0];
++		comp = (((signed long long) pcm->rate) * drift ) / 1000000;
++
++		/* Calculate software clock */
+ 		diff_nsec = 1000000000ULL * (clock.tv_sec - swtch->clock.tv_sec) + (clock.tv_nsec - swtch->clock.tv_nsec);
+-		forward_usec = ((pcm->rate * diff_nsec) / 1000ULL) + swtch->clock_diff_usec;
++		forward_usec = (((pcm->rate + comp) * diff_nsec) / 1000ULL) + swtch->clock_diff_usec;
+ 		forward = forward_usec / 1000000ULL;
+ 		swtch->clock_diff_usec = forward_usec % 1000000ULL;
+ 
+@@ -1168,7 +1176,9 @@ static int switch_load_control(snd_pcm_t *pcm, snd_pcm_switch_t *swtch,
+ 	char tmp_name[32];
+ 	snd_pcm_info_t *info;
+ 	snd_ctl_elem_info_t *cinfo;
+-	int err;
++	snd_ctl_elem_id_t *drift_ctl_id;
++	snd_ctl_elem_list_t *elem_list;
++	int err, numid = -1, n;
+ 
+ 	if (ctl_card < 0) {
+ 		snd_pcm_info_alloca(&info);
+@@ -1236,6 +1246,40 @@ static int switch_load_control(snd_pcm_t *pcm, snd_pcm_switch_t *swtch,
+ 		return err;
+ 	}
+ 
++	/* Get drift compensator element */
++	snd_ctl_elem_list_alloca(&elem_list);
++	snd_ctl_elem_list_alloc_space(elem_list, 1);
++
++	for (n = 0, elem_list->count = 1; n < snd_ctl_elem_list_get_count(elem_list); ++n) {
++		snd_ctl_elem_list(swtch->ctl, elem_list);
++		if (snd_ctl_elem_list_get_used(elem_list) &&
++		    !strcmp(snd_ctl_elem_list_get_name(elem_list, 0), "Drift compensator")) {
++			numid = snd_ctl_elem_list_get_numid(elem_list, 0);
++			break;
++		}
++		++elem_list->offset;
++	}
++
++	snd_ctl_elem_list_free_space(elem_list);
++
++	if (numid < 0) {
++		SNDERR("Drift compensator element not found");
++		return numid;
++	}
++
++	snd_ctl_elem_id_alloca(&drift_ctl_id);
++	snd_ctl_elem_id_set_numid(drift_ctl_id, numid);
++
++	snd_ctl_elem_info_alloca(&cinfo);
++	snd_ctl_elem_info_set_id(cinfo, drift_ctl_id);
++
++	err = snd_ctl_elem_info(swtch->ctl, cinfo);
++	if (err < 0) {
++		SNDERR("Cannot open drift compensator element");
++		return err;
++	}
++	swtch->drift_elem.id = *drift_ctl_id;
++
+ 	return 0;
+ }
+ 
+-- 
+2.7.4
+

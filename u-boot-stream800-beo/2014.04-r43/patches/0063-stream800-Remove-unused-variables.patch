@@ -1,0 +1,43 @@
+From 63a2cf979a886dc00999e3657ecd61ae3797d8ab Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Wed, 4 Dec 2013 13:57:29 +0100
+Subject: [PATCH] stream800: Remove unused variables.
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ include/configs/stream800.h | 19 -------------------
+ 1 file changed, 19 deletions(-)
+
+diff --git a/include/configs/stream800.h b/include/configs/stream800.h
+index 4a27bad..7eb1feb 100644
+--- a/include/configs/stream800.h
++++ b/include/configs/stream800.h
+@@ -256,25 +256,6 @@
+ 	"bootargs_defaults=setenv bootargs " \
+ 		"console=${console} " \
+ 		"optargs=${optargs}\0" \
+-    "smsc95xx_args=smsc95xx.turbo_mode=N\0" \
+-    "partMloBase=" _str(CONFIG_MLO_BASE) "\0" \
+-    "partMloSize=" _str(CONFIG_MLO_SIZE) "\0" \
+-    "partUbootBase=" _str(CONFIG_UBOOT_BASE) "\0" \
+-    "partUbootSize=" _str(CONFIG_UBOOT_SIZE) "\0" \
+-    "partUbootEnvBase=" _str(CONFIG_UBOOTENV_BASE) "\0" \
+-    "partUbootEnvSize=" _str(CONFIG_UBOOTENV_SIZE) "\0" \
+-    "partConstantsBase=" _str(CONFIG_CONSTANTS_BASE) "\0" \
+-    "partConstantsSize=" _str(CONFIG_CONSTPART_SIZE) "\0" \
+-    "partSettingsBase=" _str(CONFIG_SETTINGS_BASE) "\0" \
+-    "partSettingsSize=" _str(CONFIG_SETTINGS_SIZE) "\0" \
+-    "partDtsBase=" _str(CONFIG_DTS_BASE) "\0" \
+-    "partDtsSize=" _str(CONFIG_DTS_SIZE) "\0" \
+-    "partuImageBase=" _str(CONFIG_UIMAGE_BASE) "\0" \
+-    "partuImageSize=" _str(CONFIG_UIMAGE_SIZE) "\0" \
+-    "partRfsBase=" _str(CONFIG_RFS_BASE) "\0" \
+-    "partRfsSize=" _str(CONFIG_RFS_SIZE) "\0" \
+-    "partDownloadBase=" _str(CONFIG_DOWNLOAD_BASE) "\0" \
+-    "partDownloadSize=" _str(CONFIG_DOWNLOAD_SIZE) "\0" \
+     "eraseSettings=" \
+         "if nand erase.part settings; " \
+             "then " \
+-- 
+2.7.4
+

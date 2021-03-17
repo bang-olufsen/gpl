@@ -1,0 +1,35 @@
+From 6b42e6fa39549defdeb06aeeb7cf7fd4bc43112c Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Tue, 14 Nov 2017 14:24:29 +0100
+Subject: [PATCH] Device: Don't disable autoconnect when disconnecting LE
+ device
+
+To disable auto connect user needs to unpair device
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ src/device.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/src/device.c b/src/device.c
+index 9a6a249..5b2330d 100644
+--- a/src/device.c
++++ b/src/device.c
+@@ -1513,10 +1513,14 @@ static DBusMessage *dev_disconnect(DBusConnection *conn, DBusMessage *msg,
+ 	 * Disable connections through passive scanning until
+ 	 * Device1.Connect is called
+ 	 */
++	/* We want to do just disconnect don't disable auto connect
++	 * To disable auto connect user needs to unpair device
++	 *
+ 	if (device->auto_connect) {
+ 		device->disable_auto_connect = TRUE;
+ 		device_set_auto_connect(device, FALSE);
+ 	}
++	*/
+ 
+ 	device_request_disconnect(device, msg);
+ 
+-- 
+2.7.4
+

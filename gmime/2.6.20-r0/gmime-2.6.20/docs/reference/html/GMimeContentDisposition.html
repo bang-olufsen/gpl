@@ -1,0 +1,336 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GMimeContentDisposition</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="GMime 2.6 Reference Manual">
+<link rel="up" href="Headers.html" title="Message and MIME Headers">
+<link rel="prev" href="GMimeContentType.html" title="GMimeContentType">
+<link rel="next" href="gmime-GMimeParam.html" title="GMimeParam">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="GMimeContentType.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="Headers.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">GMime 2.6 Reference Manual</th>
+<td><a accesskey="n" href="gmime-GMimeParam.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#GMimeContentDisposition.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#GMimeContentDisposition.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#GMimeContentDisposition.object-hierarchy" class="shortcut">Object Hierarchy</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="GMimeContentDisposition"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="GMimeContentDisposition.top_of_page"></a>GMimeContentDisposition</span></h2>
+<p>GMimeContentDisposition — Content-Disposition fields</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="GMimeContentDisposition.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">#define             <a class="link" href="GMimeContentDisposition.html#GMIME-DISPOSITION-ATTACHMENT:CAPS" title="GMIME_DISPOSITION_ATTACHMENT">GMIME_DISPOSITION_ATTACHMENT</a>
+#define             <a class="link" href="GMimeContentDisposition.html#GMIME-DISPOSITION-INLINE:CAPS" title="GMIME_DISPOSITION_INLINE">GMIME_DISPOSITION_INLINE</a>
+struct              <a class="link" href="GMimeContentDisposition.html#GMimeContentDisposition-struct" title="struct GMimeContentDisposition">GMimeContentDisposition</a>;
+<a class="link" href="GMimeContentDisposition.html" title="GMimeContentDisposition"><span class="returnvalue">GMimeContentDisposition</span></a> * <a class="link" href="GMimeContentDisposition.html#g-mime-content-disposition-new" title="g_mime_content_disposition_new ()">g_mime_content_disposition_new</a>
+                                                        (<em class="parameter"><code><span class="type">void</span></code></em>);
+<a class="link" href="GMimeContentDisposition.html" title="GMimeContentDisposition"><span class="returnvalue">GMimeContentDisposition</span></a> * <a class="link" href="GMimeContentDisposition.html#g-mime-content-disposition-new-from-string" title="g_mime_content_disposition_new_from_string ()">g_mime_content_disposition_new_from_string</a>
+                                                        (<em class="parameter"><code>const <span class="type">char</span> *str</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimeContentDisposition.html#g-mime-content-disposition-set-disposition" title="g_mime_content_disposition_set_disposition ()">g_mime_content_disposition_set_disposition</a>
+                                                        (<em class="parameter"><code><a class="link" href="GMimeContentDisposition.html" title="GMimeContentDisposition"><span class="type">GMimeContentDisposition</span></a> *disposition</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *value</code></em>);
+const <span class="returnvalue">char</span> *        <a class="link" href="GMimeContentDisposition.html#g-mime-content-disposition-get-disposition" title="g_mime_content_disposition_get_disposition ()">g_mime_content_disposition_get_disposition</a>
+                                                        (<em class="parameter"><code><a class="link" href="GMimeContentDisposition.html" title="GMimeContentDisposition"><span class="type">GMimeContentDisposition</span></a> *disposition</code></em>);
+const <a class="link" href="gmime-GMimeParam.html#GMimeParam" title="struct GMimeParam"><span class="returnvalue">GMimeParam</span></a> *  <a class="link" href="GMimeContentDisposition.html#g-mime-content-disposition-get-params" title="g_mime_content_disposition_get_params ()">g_mime_content_disposition_get_params</a>
+                                                        (<em class="parameter"><code><a class="link" href="GMimeContentDisposition.html" title="GMimeContentDisposition"><span class="type">GMimeContentDisposition</span></a> *disposition</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimeContentDisposition.html#g-mime-content-disposition-set-params" title="g_mime_content_disposition_set_params ()">g_mime_content_disposition_set_params</a>
+                                                        (<em class="parameter"><code><a class="link" href="GMimeContentDisposition.html" title="GMimeContentDisposition"><span class="type">GMimeContentDisposition</span></a> *disposition</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="gmime-GMimeParam.html#GMimeParam" title="struct GMimeParam"><span class="type">GMimeParam</span></a> *params</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimeContentDisposition.html#g-mime-content-disposition-set-parameter" title="g_mime_content_disposition_set_parameter ()">g_mime_content_disposition_set_parameter</a>
+                                                        (<em class="parameter"><code><a class="link" href="GMimeContentDisposition.html" title="GMimeContentDisposition"><span class="type">GMimeContentDisposition</span></a> *disposition</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *attribute</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *value</code></em>);
+const <span class="returnvalue">char</span> *        <a class="link" href="GMimeContentDisposition.html#g-mime-content-disposition-get-parameter" title="g_mime_content_disposition_get_parameter ()">g_mime_content_disposition_get_parameter</a>
+                                                        (<em class="parameter"><code><a class="link" href="GMimeContentDisposition.html" title="GMimeContentDisposition"><span class="type">GMimeContentDisposition</span></a> *disposition</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *attribute</code></em>);
+<span class="returnvalue">char</span> *              <a class="link" href="GMimeContentDisposition.html#g-mime-content-disposition-to-string" title="g_mime_content_disposition_to_string ()">g_mime_content_disposition_to_string</a>
+                                                        (<em class="parameter"><code><a class="link" href="GMimeContentDisposition.html" title="GMimeContentDisposition"><span class="type">GMimeContentDisposition</span></a> *disposition</code></em>,
+                                                         <em class="parameter"><code><span class="type">gboolean</span> fold</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="GMimeContentDisposition.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  GObject
+   +----GMimeContentDisposition
+</pre>
+</div>
+<div class="refsect1">
+<a name="GMimeContentDisposition.description"></a><h2>Description</h2>
+<p>
+A <a class="link" href="GMimeContentDisposition.html" title="GMimeContentDisposition"><span class="type">GMimeContentDisposition</span></a> represents the pre-parsed contents of a
+Content-Disposition header field.
+</p>
+</div>
+<div class="refsect1">
+<a name="GMimeContentDisposition.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="GMIME-DISPOSITION-ATTACHMENT:CAPS"></a><h3>GMIME_DISPOSITION_ATTACHMENT</h3>
+<pre class="programlisting">#define GMIME_DISPOSITION_ATTACHMENT "attachment"
+</pre>
+<p>
+Standard attachment disposition.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GMIME-DISPOSITION-INLINE:CAPS"></a><h3>GMIME_DISPOSITION_INLINE</h3>
+<pre class="programlisting">#define GMIME_DISPOSITION_INLINE     "inline"
+</pre>
+<p>
+Standard inline disposition.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GMimeContentDisposition-struct"></a><h3>struct GMimeContentDisposition</h3>
+<pre class="programlisting">struct GMimeContentDisposition;</pre>
+<p>
+A data structure representing a Content-Disposition.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-content-disposition-new"></a><h3>g_mime_content_disposition_new ()</h3>
+<pre class="programlisting"><a class="link" href="GMimeContentDisposition.html" title="GMimeContentDisposition"><span class="returnvalue">GMimeContentDisposition</span></a> * g_mime_content_disposition_new
+                                                        (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>
+Creates a new <a class="link" href="GMimeContentDisposition.html" title="GMimeContentDisposition"><span class="type">GMimeContentDisposition</span></a> object.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new <a class="link" href="GMimeContentDisposition.html" title="GMimeContentDisposition"><span class="type">GMimeContentDisposition</span></a> object.</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-content-disposition-new-from-string"></a><h3>g_mime_content_disposition_new_from_string ()</h3>
+<pre class="programlisting"><a class="link" href="GMimeContentDisposition.html" title="GMimeContentDisposition"><span class="returnvalue">GMimeContentDisposition</span></a> * g_mime_content_disposition_new_from_string
+                                                        (<em class="parameter"><code>const <span class="type">char</span> *str</code></em>);</pre>
+<p>
+Creates a new <a class="link" href="GMimeContentDisposition.html" title="GMimeContentDisposition"><span class="type">GMimeContentDisposition</span></a> object.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>str</code></em> :</span></p></td>
+<td>Content-Disposition field value or <code class="literal">NULL</code>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new <a class="link" href="GMimeContentDisposition.html" title="GMimeContentDisposition"><span class="type">GMimeContentDisposition</span></a> object.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-content-disposition-set-disposition"></a><h3>g_mime_content_disposition_set_disposition ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_content_disposition_set_disposition
+                                                        (<em class="parameter"><code><a class="link" href="GMimeContentDisposition.html" title="GMimeContentDisposition"><span class="type">GMimeContentDisposition</span></a> *disposition</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *value</code></em>);</pre>
+<p>
+Sets the disposition to <em class="parameter"><code>value</code></em> which may be one of
+<a class="link" href="GMimeContentDisposition.html#GMIME-DISPOSITION-ATTACHMENT:CAPS" title="GMIME_DISPOSITION_ATTACHMENT"><span class="type">GMIME_DISPOSITION_ATTACHMENT</span></a> or <a class="link" href="GMimeContentDisposition.html#GMIME-DISPOSITION-INLINE:CAPS" title="GMIME_DISPOSITION_INLINE"><span class="type">GMIME_DISPOSITION_INLINE</span></a> or, by
+your choice, any other string which would indicate how the MIME
+part should be displayed by the MUA.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>disposition</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeContentDisposition.html" title="GMimeContentDisposition"><span class="type">GMimeContentDisposition</span></a> object</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>value</code></em> :</span></p></td>
+<td>disposition value</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-content-disposition-get-disposition"></a><h3>g_mime_content_disposition_get_disposition ()</h3>
+<pre class="programlisting">const <span class="returnvalue">char</span> *        g_mime_content_disposition_get_disposition
+                                                        (<em class="parameter"><code><a class="link" href="GMimeContentDisposition.html" title="GMimeContentDisposition"><span class="type">GMimeContentDisposition</span></a> *disposition</code></em>);</pre>
+<p>
+Gets the disposition or <code class="literal">NULL</code> on fail.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>disposition</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeContentDisposition.html" title="GMimeContentDisposition"><span class="type">GMimeContentDisposition</span></a> object</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the disposition string which is probably one of
+<a class="link" href="GMimeContentDisposition.html#GMIME-DISPOSITION-ATTACHMENT:CAPS" title="GMIME_DISPOSITION_ATTACHMENT"><span class="type">GMIME_DISPOSITION_ATTACHMENT</span></a> or <a class="link" href="GMimeContentDisposition.html#GMIME-DISPOSITION-INLINE:CAPS" title="GMIME_DISPOSITION_INLINE"><span class="type">GMIME_DISPOSITION_INLINE</span></a>.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-content-disposition-get-params"></a><h3>g_mime_content_disposition_get_params ()</h3>
+<pre class="programlisting">const <a class="link" href="gmime-GMimeParam.html#GMimeParam" title="struct GMimeParam"><span class="returnvalue">GMimeParam</span></a> *  g_mime_content_disposition_get_params
+                                                        (<em class="parameter"><code><a class="link" href="GMimeContentDisposition.html" title="GMimeContentDisposition"><span class="type">GMimeContentDisposition</span></a> *disposition</code></em>);</pre>
+<p>
+Gets the Content-Disposition parameter list.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>disposition</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeContentDisposition.html" title="GMimeContentDisposition"><span class="type">GMimeContentDisposition</span></a> object</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the list of <a class="link" href="gmime-GMimeParam.html#GMimeParam" title="struct GMimeParam"><span class="type">GMimeParam</span></a>'s set on <em class="parameter"><code>disposition</code></em>.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-content-disposition-set-params"></a><h3>g_mime_content_disposition_set_params ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_content_disposition_set_params
+                                                        (<em class="parameter"><code><a class="link" href="GMimeContentDisposition.html" title="GMimeContentDisposition"><span class="type">GMimeContentDisposition</span></a> *disposition</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="gmime-GMimeParam.html#GMimeParam" title="struct GMimeParam"><span class="type">GMimeParam</span></a> *params</code></em>);</pre>
+<p>
+Sets the Content-Disposition's parameter list.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>disposition</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeContentDisposition.html" title="GMimeContentDisposition"><span class="type">GMimeContentDisposition</span></a> object</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>params</code></em> :</span></p></td>
+<td>a list of <a class="link" href="gmime-GMimeParam.html#GMimeParam" title="struct GMimeParam"><span class="type">GMimeParam</span></a> objects</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-content-disposition-set-parameter"></a><h3>g_mime_content_disposition_set_parameter ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_content_disposition_set_parameter
+                                                        (<em class="parameter"><code><a class="link" href="GMimeContentDisposition.html" title="GMimeContentDisposition"><span class="type">GMimeContentDisposition</span></a> *disposition</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *attribute</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *value</code></em>);</pre>
+<p>
+Sets a parameter on the Content-Disposition.
+</p>
+<p>
+Note: The <em class="parameter"><code>name</code></em> should be in US-ASCII while the <em class="parameter"><code>value</code></em> should be in
+UTF-8.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>disposition</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeContentDisposition.html" title="GMimeContentDisposition"><span class="type">GMimeContentDisposition</span></a> object</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>value</code></em> :</span></p></td>
+<td>parameter value</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-content-disposition-get-parameter"></a><h3>g_mime_content_disposition_get_parameter ()</h3>
+<pre class="programlisting">const <span class="returnvalue">char</span> *        g_mime_content_disposition_get_parameter
+                                                        (<em class="parameter"><code><a class="link" href="GMimeContentDisposition.html" title="GMimeContentDisposition"><span class="type">GMimeContentDisposition</span></a> *disposition</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *attribute</code></em>);</pre>
+<p>
+Gets the parameter value specified by <em class="parameter"><code>name</code></em> if it's available.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>disposition</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeContentDisposition.html" title="GMimeContentDisposition"><span class="type">GMimeContentDisposition</span></a> object</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the value of the requested parameter or <code class="literal">NULL</code> if the
+parameter is not set. If the parameter is set, the returned string
+will be in UTF-8.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-content-disposition-to-string"></a><h3>g_mime_content_disposition_to_string ()</h3>
+<pre class="programlisting"><span class="returnvalue">char</span> *              g_mime_content_disposition_to_string
+                                                        (<em class="parameter"><code><a class="link" href="GMimeContentDisposition.html" title="GMimeContentDisposition"><span class="type">GMimeContentDisposition</span></a> *disposition</code></em>,
+                                                         <em class="parameter"><code><span class="type">gboolean</span> fold</code></em>);</pre>
+<p>
+Allocates a string buffer containing the Content-Disposition header
+represented by the disposition object <em class="parameter"><code>disposition</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>disposition</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeContentDisposition.html" title="GMimeContentDisposition"><span class="type">GMimeContentDisposition</span></a> object</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>fold</code></em> :</span></p></td>
+<td>fold header if needed</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a string containing the disposition header</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

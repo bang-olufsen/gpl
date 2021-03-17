@@ -1,0 +1,65 @@
+From cbc7c5bc136f11cdc2b7b3123858e22f557163a4 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@gmail.com>
+Date: Thu, 8 Oct 2015 08:56:24 +0200
+Subject: [PATCH] beo_ase: Add handling for phy reset
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ board/streamunlimited/stream800/board-beo_ase_board.c | 7 +++++++
+ board/streamunlimited/stream800/board.c               | 4 ++--
+ 2 files changed, 9 insertions(+), 2 deletions(-)
+
+diff --git a/board/streamunlimited/stream800/board-beo_ase_board.c b/board/streamunlimited/stream800/board-beo_ase_board.c
+index ece6799..c254292 100644
+--- a/board/streamunlimited/stream800/board-beo_ase_board.c
++++ b/board/streamunlimited/stream800/board-beo_ase_board.c
+@@ -36,10 +36,13 @@ static struct ctrl_dev *cdev = (struct ctrl_dev *)CTRL_DEVICE_BASE;
+ static struct spi_slave *spi_mcu;
+ static int update_flag = 0;
+ 
++#define GPIO_PHY_RESET (60) /* gpio1_28 */
++
+ static struct module_pin_mux gpio_pin_mux[] = {
+ 	{OFFSET(xdma_event_intr1), MODE(7)},
+ 	{OFFSET(xdma_event_intr0), MODE(7)},
+ 	{OFFSET(gpmc_ad8),  (MODE(7) & (~RXACTIVE))},
++	{OFFSET(gpmc_be1n), MODE(7)},
+ 	{-1},
+ };
+ 
+@@ -74,6 +77,10 @@ void beo_ase__cpsw_eth_init(const struct Stream800Board *board, struct cpsw_plat
+ 	if (!board || board->carrierBoardType != CBT_BeoASEBoard)
+ 		BUG();
+ 
++	/* setup phy reset direction and level (reset active - HIGH) */
++	gpio_direction_output(GPIO_PHY_RESET, 0);
++	udelay(10000);
++
+ 	cpsw_data->slaves = 1;
+ 	cpsw_data->slave_data = cpsw_slaves;
+ 
+diff --git a/board/streamunlimited/stream800/board.c b/board/streamunlimited/stream800/board.c
+index 3287308..580d3e3 100755
+--- a/board/streamunlimited/stream800/board.c
++++ b/board/streamunlimited/stream800/board.c
+@@ -186,7 +186,7 @@ int board_init(void)
+ 	if ((board_interface != NULL) && (board_interface->init != NULL))
+ 		board_interface->init(&board);
+ 
+-
++	/* ASE- disabled
+ 	configure_module_pin_mux(eth_phy_reset_pin);
+ 	if (gpio_request(ETH_PHY_RESET_GPIO, "Eth phy"))
+ 		printf("error: cannot request GPIO %d\n", ETH_PHY_RESET_GPIO);
+@@ -194,7 +194,7 @@ int board_init(void)
+ 
+ 	udelay(2000);
+ 	gpio_set_value(ETH_PHY_RESET_GPIO, 1);
+-
++	*/
+ 	set_board_state(BS_Normal);
+ 
+ 	gd->bd->bi_boot_params = CONFIG_SYS_SDRAM_BASE + 0x100;
+-- 
+2.7.4
+

@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE book PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "">
+<book xmlns="http://www.devhelp.net/book" title="librygel-core Reference Manual" link="index.html" author="" name="librygel-core" version="2" language="c">
+  <chapters>
+    <sub name="Overview" link="overview.html">
+      <sub name="" link="overview.html#overview">
+        <sub name="Basic Usage" link="overview.html#id-1.2.2.4"/>
+      </sub>
+    </sub>
+    <sub name="librygel-core API Reference" link="api-main-list-c.html">
+      <sub name="RygelConnectionManager" link="RygelConnectionManager.html"/>
+      <sub name="RygelConfiguration" link="RygelConfiguration.html"/>
+      <sub name="RygelLogHandler" link="RygelLogHandler.html"/>
+      <sub name="RygelResourceInfo" link="RygelResourceInfo.html"/>
+      <sub name="RygelDBusInterface" link="RygelDBusInterface.html"/>
+      <sub name="RygelDescriptionFile" link="RygelDescriptionFile.html"/>
+      <sub name="RygelPluginLoader" link="RygelPluginLoader.html"/>
+      <sub name="RygelPluginInformation" link="RygelPluginInformation.html"/>
+      <sub name="RygelIconInfo" link="RygelIconInfo.html"/>
+      <sub name="RygelRecursiveModuleLoader" link="RygelRecursiveModuleLoader.html"/>
+      <sub name="RygelRootDevice" link="RygelRootDevice.html"/>
+      <sub name="RygelPlugin" link="RygelPlugin.html"/>
+      <sub name="RygelMediaDevice" link="RygelMediaDevice.html"/>
+      <sub name="RygelBaseConfiguration" link="RygelBaseConfiguration.html"/>
+      <sub name="RygelRootDeviceFactory" link="RygelRootDeviceFactory.html"/>
+      <sub name="RygelMetaConfig" link="RygelMetaConfig.html"/>
+      <sub name="RygelXMLUtils" link="RygelXMLUtils.html"/>
+      <sub name="RygelStateMachine" link="RygelStateMachine.html"/>
+      <sub name="RygelDLNAProfile" link="RygelDLNAProfile.html"/>
+      <sub name="RygelV1Hacks" link="RygelV1Hacks.html"/>
+    </sub>
+    <sub name="librygel-core extra UPnP devices and services" link="api-main-list-upnp-services.html">
+      <sub name="RygelBasicManagement" link="RygelBasicManagement.html"/>
+    </sub>
+    <sub name="librygel-core D-Bus API Reference" link="api-main-list-dbus.html">
+      <sub name="org.gnome.Rygel1" link="docs-org-gnome-Rygel1.html"/>
+    </sub>
+    <sub name="Object Hierarchy" link="object-tree.html"/>
+    <sub name="API Index" link="api-index-full.html"/>
+    <sub name="Index of deprecated API" link="deprecated-api-index.html"/>
+    <sub name="Annotation Glossary" link="annotation-glossary.html"/>
+  </chapters>
+  <functions>
+    <keyword type="macro" name="RYGEL_TYPE_CONNECTION_MANAGER" link="RygelConnectionManager.html#RYGEL-TYPE-CONNECTION-MANAGER:CAPS"/>
+    <keyword type="function" name="rygel_connection_manager_get_current_protocol_info ()" link="RygelConnectionManager.html#rygel-connection-manager-get-current-protocol-info"/>
+    <keyword type="function" name="rygel_connection_manager_new ()" link="RygelConnectionManager.html#rygel-connection-manager-new"/>
+    <keyword type="macro" name="RYGEL_CONNECTION_MANAGER_UPNP_ID" link="RygelConnectionManager.html#RYGEL-CONNECTION-MANAGER-UPNP-ID:CAPS"/>
+    <keyword type="macro" name="RYGEL_CONNECTION_MANAGER_UPNP_TYPE" link="RygelConnectionManager.html#RYGEL-CONNECTION-MANAGER-UPNP-TYPE:CAPS"/>
+    <keyword type="macro" name="RYGEL_CONNECTION_MANAGER_DESCRIPTION_PATH" link="RygelConnectionManager.html#RYGEL-CONNECTION-MANAGER-DESCRIPTION-PATH:CAPS"/>
+    <keyword type="struct" name="struct RygelConnectionManager" link="RygelConnectionManager.html#RygelConnectionManager-struct"/>
+    <keyword type="struct" name="struct RygelConnectionManagerClass" link="RygelConnectionManager.html#RygelConnectionManagerClass"/>
+    <keyword type="function" name="rygel_configuration_get_upnp_enabled ()" link="RygelConfiguration.html#rygel-configuration-get-upnp-enabled"/>
+    <keyword type="function" name="rygel_configuration_get_interface ()" link="RygelConfiguration.html#rygel-configuration-get-interface" deprecated="0.19.2: Replaced by rygel_configuration_get_interfaces ()."/>
+    <keyword type="function" name="rygel_configuration_get_interfaces ()" link="RygelConfiguration.html#rygel-configuration-get-interfaces"/>
+    <keyword type="function" name="rygel_configuration_get_port ()" link="RygelConfiguration.html#rygel-configuration-get-port"/>
+    <keyword type="function" name="rygel_configuration_get_transcoding ()" link="RygelConfiguration.html#rygel-configuration-get-transcoding"/>
+    <keyword type="function" name="rygel_configuration_get_allow_upload ()" link="RygelConfiguration.html#rygel-configuration-get-allow-upload"/>
+    <keyword type="function" name="rygel_configuration_get_allow_deletion ()" link="RygelConfiguration.html#rygel-configuration-get-allow-deletion"/>
+    <keyword type="function" name="rygel_configuration_get_log_levels ()" link="RygelConfiguration.html#rygel-configuration-get-log-levels"/>
+    <keyword type="function" name="rygel_configuration_get_plugin_path ()" link="RygelConfiguration.html#rygel-configuration-get-plugin-path"/>
+    <keyword type="function" name="rygel_configuration_get_engine_path ()" link="RygelConfiguration.html#rygel-configuration-get-engine-path"/>
+    <keyword type="function" name="rygel_configuration_get_media_engine ()" link="RygelConfiguration.html#rygel-configuration-get-media-engine"/>
+    <keyword type="function" name="rygel_configuration_get_video_upload_folder ()" link="RygelConfiguration.html#rygel-configuration-get-video-upload-folder"/>
+    <keyword type="function" name="rygel_configuration_get_music_upload_folder ()" link="RygelConfiguration.html#rygel-configuration-get-music-upload-folder"/>
+    <keyword type="function" name="rygel_configuration_get_picture_upload_folder ()" link="RygelConfiguration.html#rygel-configuration-get-picture-upload-folder"/>
+    <keyword type="function" name="rygel_configuration_get_enabled ()" link="RygelConfiguration.html#rygel-configuration-get-enabled"/>
+    <keyword type="function" name="rygel_configuration_get_title ()" link="RygelConfiguration.html#rygel-configuration-get-title"/>
+    <keyword type="function" name="rygel_configuration_get_string ()" link="RygelConfiguration.html#rygel-configuration-get-string"/>
+    <keyword type="function" name="rygel_configuration_get_string_list ()" link="RygelConfiguration.html#rygel-configuration-get-string-list"/>
+    <keyword type="function" name="rygel_configuration_get_int ()" link="RygelConfiguration.html#rygel-configuration-get-int"/>
+    <keyword type="function" name="rygel_configuration_get_int_list ()" link="RygelConfiguration.html#rygel-configuration-get-int-list"/>
+    <keyword type="function" name="rygel_configuration_get_bool ()" link="RygelConfiguration.html#rygel-configuration-get-bool"/>
+    <keyword type="enum" name="enum RygelConfigurationEntry" link="RygelConfiguration.html#RygelConfigurationEntry"/>
+    <keyword type="enum" name="enum RygelSectionEntry" link="RygelConfiguration.html#RygelSectionEntry"/>
+    <keyword type="enum" name="enum RygelConfigurationError" link="RygelConfiguration.html#RygelConfigurationError"/>
+    <keyword type="struct" name="RygelConfiguration" link="RygelConfiguration.html#RygelConfiguration-struct"/>
+    <keyword type="struct" name="struct RygelConfigurationIface" link="RygelConfiguration.html#RygelConfigurationIface"/>
+    <keyword type="signal" name="The “configuration-changed” signal" link="RygelConfiguration.html#RygelConfiguration-configuration-changed"/>
+    <keyword type="signal" name="The “section-changed” signal" link="RygelConfiguration.html#RygelConfiguration-section-changed"/>
+    <keyword type="signal" name="The “setting-changed” signal" link="RygelConfiguration.html#RygelConfiguration-setting-changed"/>
+    <keyword type="macro" name="RYGEL_TYPE_LOG_HANDLER" link="RygelLogHandler.html#RYGEL-TYPE-LOG-HANDLER:CAPS"/>
+    <keyword type="function" name="rygel_log_handler_get_default ()" link="RygelLogHandler.html#rygel-log-handler-get-default"/>
+    <keyword type="struct" name="struct RygelLogHandler" link="RygelLogHandler.html#RygelLogHandler-struct"/>
+    <keyword type="struct" name="struct RygelLogHandlerClass" link="RygelLogHandler.html#RygelLogHandlerClass"/>
+    <keyword type="enum" name="enum RygelLogLevel" link="RygelLogHandler.html#RygelLogLevel"/>
+    <keyword type="macro" name="RYGEL_TYPE_RESOURCE_INFO" link="RygelResourceInfo.html#RYGEL-TYPE-RESOURCE-INFO:CAPS"/>
+    <keyword type="function" name="rygel_resource_info_new ()" link="RygelResourceInfo.html#rygel-resource-info-new"/>
+    <keyword type="function" name="rygel_resource_info_ref ()" link="RygelResourceInfo.html#rygel-resource-info-ref"/>
+    <keyword type="function" name="rygel_resource_info_unref ()" link="RygelResourceInfo.html#rygel-resource-info-unref"/>
+    <keyword type="function" name="rygel_param_spec_resource_info ()" link="RygelResourceInfo.html#rygel-param-spec-resource-info"/>
+    <keyword type="function" name="rygel_value_set_resource_info ()" link="RygelResourceInfo.html#rygel-value-set-resource-info"/>
+    <keyword type="function" name="rygel_value_get_resource_info ()" link="RygelResourceInfo.html#rygel-value-get-resource-info"/>
+    <keyword type="function" name="rygel_value_take_resource_info ()" link="RygelResourceInfo.html#rygel-value-take-resource-info"/>
+    <keyword type="struct" name="struct RygelResourceInfo" link="RygelResourceInfo.html#RygelResourceInfo-struct"/>
+    <keyword type="struct" name="struct RygelResourceInfoClass" link="RygelResourceInfo.html#RygelResourceInfoClass"/>
+    <keyword type="function" name="rygel_dbus_interface_shutdown ()" link="RygelDBusInterface.html#rygel-dbus-interface-shutdown"/>
+    <keyword type="macro" name="RYGEL_DBUS_INTERFACE_SERVICE_NAME" link="RygelDBusInterface.html#RYGEL-DBUS-INTERFACE-SERVICE-NAME:CAPS"/>
+    <keyword type="macro" name="RYGEL_DBUS_INTERFACE_OBJECT_PATH" link="RygelDBusInterface.html#RYGEL-DBUS-INTERFACE-OBJECT-PATH:CAPS"/>
+    <keyword type="struct" name="RygelDBusInterface" link="RygelDBusInterface.html#RygelDBusInterface-struct"/>
+    <keyword type="struct" name="struct RygelDBusInterfaceIface" link="RygelDBusInterface.html#RygelDBusInterfaceIface"/>
+    <keyword type="macro" name="RYGEL_TYPE_DESCRIPTION_FILE" link="RygelDescriptionFile.html#RYGEL-TYPE-DESCRIPTION-FILE:CAPS"/>
+    <keyword type="function" name="rygel_description_file_set_device_type ()" link="RygelDescriptionFile.html#rygel-description-file-set-device-type"/>
+    <keyword type="function" name="rygel_description_file_set_model_description ()" link="RygelDescriptionFile.html#rygel-description-file-set-model-description"/>
+    <keyword type="function" name="rygel_description_file_set_model_name ()" link="RygelDescriptionFile.html#rygel-description-file-set-model-name"/>
+    <keyword type="function" name="rygel_description_file_set_model_number ()" link="RygelDescriptionFile.html#rygel-description-file-set-model-number"/>
+    <keyword type="function" name="rygel_description_file_set_friendly_name ()" link="RygelDescriptionFile.html#rygel-description-file-set-friendly-name"/>
+    <keyword type="function" name="rygel_description_file_get_friendly_name ()" link="RygelDescriptionFile.html#rygel-description-file-get-friendly-name"/>
+    <keyword type="function" name="rygel_description_file_set_udn ()" link="RygelDescriptionFile.html#rygel-description-file-set-udn"/>
+    <keyword type="function" name="rygel_description_file_get_udn ()" link="RygelDescriptionFile.html#rygel-description-file-get-udn"/>
+    <keyword type="function" name="rygel_description_file_set_dlna_caps ()" link="RygelDescriptionFile.html#rygel-description-file-set-dlna-caps"/>
+    <keyword type="function" name="rygel_description_file_clear_service_list ()" link="RygelDescriptionFile.html#rygel-description-file-clear-service-list"/>
+    <keyword type="function" name="rygel_description_file_add_service ()" link="RygelDescriptionFile.html#rygel-description-file-add-service"/>
+    <keyword type="function" name="rygel_description_file_clear_icon_list ()" link="RygelDescriptionFile.html#rygel-description-file-clear-icon-list"/>
+    <keyword type="function" name="rygel_description_file_add_icon ()" link="RygelDescriptionFile.html#rygel-description-file-add-icon"/>
+    <keyword type="function" name="rygel_description_file_modify_service_type ()" link="RygelDescriptionFile.html#rygel-description-file-modify-service-type"/>
+    <keyword type="function" name="rygel_description_file_save ()" link="RygelDescriptionFile.html#rygel-description-file-save"/>
+    <keyword type="function" name="rygel_description_file_new ()" link="RygelDescriptionFile.html#rygel-description-file-new"/>
+    <keyword type="function" name="rygel_description_file_new_from_xml_document ()" link="RygelDescriptionFile.html#rygel-description-file-new-from-xml-document"/>
+    <keyword type="struct" name="struct RygelDescriptionFile" link="RygelDescriptionFile.html#RygelDescriptionFile-struct"/>
+    <keyword type="struct" name="struct RygelDescriptionFileClass" link="RygelDescriptionFile.html#RygelDescriptionFileClass"/>
+    <keyword type="macro" name="RYGEL_TYPE_PLUGIN_LOADER" link="RygelPluginLoader.html#RYGEL-TYPE-PLUGIN-LOADER:CAPS"/>
+    <keyword type="function" name="rygel_plugin_loader_plugin_disabled ()" link="RygelPluginLoader.html#rygel-plugin-loader-plugin-disabled"/>
+    <keyword type="function" name="rygel_plugin_loader_add_plugin ()" link="RygelPluginLoader.html#rygel-plugin-loader-add-plugin"/>
+    <keyword type="function" name="rygel_plugin_loader_get_plugin_by_name ()" link="RygelPluginLoader.html#rygel-plugin-loader-get-plugin-by-name"/>
+    <keyword type="function" name="rygel_plugin_loader_list_plugins ()" link="RygelPluginLoader.html#rygel-plugin-loader-list-plugins"/>
+    <keyword type="function" name="rygel_plugin_loader_new ()" link="RygelPluginLoader.html#rygel-plugin-loader-new"/>
+    <keyword type="struct" name="struct RygelPluginLoader" link="RygelPluginLoader.html#RygelPluginLoader-struct"/>
+    <keyword type="struct" name="struct RygelPluginLoaderClass" link="RygelPluginLoader.html#RygelPluginLoaderClass"/>
+    <keyword type="signal" name="The “plugin-available” signal" link="RygelPluginLoader.html#RygelPluginLoader-plugin-available"/>
+    <keyword type="macro" name="RYGEL_TYPE_PLUGIN_INFORMATION" link="RygelPluginInformation.html#RYGEL-TYPE-PLUGIN-INFORMATION:CAPS"/>
+    <keyword type="function" name="rygel_plugin_information_get_module_path ()" link="RygelPluginInformation.html#rygel-plugin-information-get-module-path"/>
+    <keyword type="function" name="rygel_plugin_information_get_name ()" link="RygelPluginInformation.html#rygel-plugin-information-get-name"/>
+    <keyword type="function" name="rygel_plugin_information_new_from_file ()" link="RygelPluginInformation.html#rygel-plugin-information-new-from-file"/>
+    <keyword type="struct" name="struct RygelPluginInformation" link="RygelPluginInformation.html#RygelPluginInformation-struct"/>
+    <keyword type="struct" name="struct RygelPluginInformationClass" link="RygelPluginInformation.html#RygelPluginInformationClass"/>
+    <keyword type="property" name="The “module-path” property" link="RygelPluginInformation.html#RygelPluginInformation--module-path"/>
+    <keyword type="property" name="The “name” property" link="RygelPluginInformation.html#RygelPluginInformation--name"/>
+    <keyword type="macro" name="RYGEL_TYPE_ICON_INFO" link="RygelIconInfo.html#RYGEL-TYPE-ICON-INFO:CAPS"/>
+    <keyword type="function" name="rygel_icon_info_new ()" link="RygelIconInfo.html#rygel-icon-info-new"/>
+    <keyword type="function" name="rygel_icon_info_ref ()" link="RygelIconInfo.html#rygel-icon-info-ref"/>
+    <keyword type="function" name="rygel_icon_info_unref ()" link="RygelIconInfo.html#rygel-icon-info-unref"/>
+    <keyword type="function" name="rygel_param_spec_icon_info ()" link="RygelIconInfo.html#rygel-param-spec-icon-info"/>
+    <keyword type="function" name="rygel_value_set_icon_info ()" link="RygelIconInfo.html#rygel-value-set-icon-info"/>
+    <keyword type="function" name="rygel_value_get_icon_info ()" link="RygelIconInfo.html#rygel-value-get-icon-info"/>
+    <keyword type="function" name="rygel_value_take_icon_info ()" link="RygelIconInfo.html#rygel-value-take-icon-info"/>
+    <keyword type="struct" name="struct RygelIconInfo" link="RygelIconInfo.html#RygelIconInfo-struct"/>
+    <keyword type="struct" name="struct RygelIconInfoClass" link="RygelIconInfo.html#RygelIconInfoClass"/>
+    <keyword type="macro" name="RYGEL_TYPE_RECURSIVE_MODULE_LOADER" link="RygelRecursiveModuleLoader.html#RYGEL-TYPE-RECURSIVE-MODULE-LOADER:CAPS"/>
+    <keyword type="function" name="rygel_recursive_module_loader_load_modules ()" link="RygelRecursiveModuleLoader.html#rygel-recursive-module-loader-load-modules"/>
+    <keyword type="function" name="rygel_recursive_module_loader_load_modules_sync ()" link="RygelRecursiveModuleLoader.html#rygel-recursive-module-loader-load-modules-sync"/>
+    <keyword type="function" name="rygel_recursive_module_loader_load_module_from_file ()" link="RygelRecursiveModuleLoader.html#rygel-recursive-module-loader-load-module-from-file"/>
+    <keyword type="function" name="rygel_recursive_module_loader_load_module_from_info ()" link="RygelRecursiveModuleLoader.html#rygel-recursive-module-loader-load-module-from-info"/>
+    <keyword type="function" name="rygel_recursive_module_loader_get_base_path ()" link="RygelRecursiveModuleLoader.html#rygel-recursive-module-loader-get-base-path"/>
+    <keyword type="function" name="rygel_recursive_module_loader_set_base_path ()" link="RygelRecursiveModuleLoader.html#rygel-recursive-module-loader-set-base-path"/>
+    <keyword type="struct" name="struct RygelRecursiveModuleLoader" link="RygelRecursiveModuleLoader.html#RygelRecursiveModuleLoader-struct"/>
+    <keyword type="struct" name="struct RygelRecursiveModuleLoaderClass" link="RygelRecursiveModuleLoader.html#RygelRecursiveModuleLoaderClass"/>
+    <keyword type="property" name="The “base-path” property" link="RygelRecursiveModuleLoader.html#RygelRecursiveModuleLoader--base-path"/>
+    <keyword type="macro" name="RYGEL_TYPE_ROOT_DEVICE" link="RygelRootDevice.html#RYGEL-TYPE-ROOT-DEVICE:CAPS"/>
+    <keyword type="function" name="rygel_root_device_new ()" link="RygelRootDevice.html#rygel-root-device-new"/>
+    <keyword type="function" name="rygel_root_device_get_services ()" link="RygelRootDevice.html#rygel-root-device-get-services"/>
+    <keyword type="struct" name="struct RygelRootDevice" link="RygelRootDevice.html#RygelRootDevice-struct"/>
+    <keyword type="struct" name="struct RygelRootDeviceClass" link="RygelRootDevice.html#RygelRootDeviceClass"/>
+    <keyword type="property" name="The “services” property" link="RygelRootDevice.html#RygelRootDevice--services"/>
+    <keyword type="macro" name="RYGEL_TYPE_PLUGIN" link="RygelPlugin.html#RYGEL-TYPE-PLUGIN:CAPS"/>
+    <keyword type="function" name="rygel_plugin_add_resource ()" link="RygelPlugin.html#rygel-plugin-add-resource"/>
+    <keyword type="function" name="rygel_plugin_add_icon ()" link="RygelPlugin.html#rygel-plugin-add-icon"/>
+    <keyword type="function" name="rygel_plugin_apply_hacks ()" link="RygelPlugin.html#rygel-plugin-apply-hacks"/>
+    <keyword type="function" name="rygel_plugin_new ()" link="RygelPlugin.html#rygel-plugin-new"/>
+    <keyword type="function" name="rygel_plugin_get_capabilities ()" link="RygelPlugin.html#rygel-plugin-get-capabilities"/>
+    <keyword type="function" name="rygel_plugin_set_capabilities ()" link="RygelPlugin.html#rygel-plugin-set-capabilities"/>
+    <keyword type="function" name="rygel_plugin_get_name ()" link="RygelPlugin.html#rygel-plugin-get-name"/>
+    <keyword type="function" name="rygel_plugin_get_title ()" link="RygelPlugin.html#rygel-plugin-get-title"/>
+    <keyword type="function" name="rygel_plugin_set_title ()" link="RygelPlugin.html#rygel-plugin-set-title"/>
+    <keyword type="function" name="rygel_plugin_get_description ()" link="RygelPlugin.html#rygel-plugin-get-description"/>
+    <keyword type="function" name="rygel_plugin_get_desc_path ()" link="RygelPlugin.html#rygel-plugin-get-desc-path"/>
+    <keyword type="function" name="rygel_plugin_get_active ()" link="RygelPlugin.html#rygel-plugin-get-active"/>
+    <keyword type="function" name="rygel_plugin_set_active ()" link="RygelPlugin.html#rygel-plugin-set-active"/>
+    <keyword type="function" name="rygel_plugin_get_resource_infos ()" link="RygelPlugin.html#rygel-plugin-get-resource-infos"/>
+    <keyword type="function" name="rygel_plugin_get_icon_infos ()" link="RygelPlugin.html#rygel-plugin-get-icon-infos"/>
+    <keyword type="function" name="rygel_plugin_get_default_icons ()" link="RygelPlugin.html#rygel-plugin-get-default-icons"/>
+    <keyword type="struct" name="struct RygelPlugin" link="RygelPlugin.html#RygelPlugin-struct"/>
+    <keyword type="struct" name="struct RygelPluginClass" link="RygelPlugin.html#RygelPluginClass"/>
+    <keyword type="enum" name="enum RygelPluginCapabilities" link="RygelPlugin.html#RygelPluginCapabilities"/>
+    <keyword type="property" name="The “active” property" link="RygelPlugin.html#RygelPlugin--active"/>
+    <keyword type="property" name="The “capabilities” property" link="RygelPlugin.html#RygelPlugin--capabilities"/>
+    <keyword type="property" name="The “default-icons” property" link="RygelPlugin.html#RygelPlugin--default-icons"/>
+    <keyword type="property" name="The “desc-path” property" link="RygelPlugin.html#RygelPlugin--desc-path"/>
+    <keyword type="property" name="The “description” property" link="RygelPlugin.html#RygelPlugin--description"/>
+    <keyword type="property" name="The “icon-infos” property" link="RygelPlugin.html#RygelPlugin--icon-infos"/>
+    <keyword type="property" name="The “name” property" link="RygelPlugin.html#RygelPlugin--name"/>
+    <keyword type="property" name="The “resource-infos” property" link="RygelPlugin.html#RygelPlugin--resource-infos"/>
+    <keyword type="property" name="The “title” property" link="RygelPlugin.html#RygelPlugin--title"/>
+    <keyword type="macro" name="RYGEL_TYPE_MEDIA_DEVICE" link="RygelMediaDevice.html#RYGEL-TYPE-MEDIA-DEVICE:CAPS"/>
+    <keyword type="function" name="rygel_media_device_add_interface ()" link="RygelMediaDevice.html#rygel-media-device-add-interface"/>
+    <keyword type="function" name="rygel_media_device_remove_interface ()" link="RygelMediaDevice.html#rygel-media-device-remove-interface"/>
+    <keyword type="function" name="rygel_media_device_get_interfaces ()" link="RygelMediaDevice.html#rygel-media-device-get-interfaces"/>
+    <keyword type="function" name="rygel_media_device_get_plugin ()" link="RygelMediaDevice.html#rygel-media-device-get-plugin"/>
+    <keyword type="function" name="rygel_media_device_set_plugin ()" link="RygelMediaDevice.html#rygel-media-device-set-plugin"/>
+    <keyword type="function" name="rygel_media_device_get_title ()" link="RygelMediaDevice.html#rygel-media-device-get-title"/>
+    <keyword type="function" name="rygel_media_device_get_capabilities ()" link="RygelMediaDevice.html#rygel-media-device-get-capabilities"/>
+    <keyword type="struct" name="struct RygelMediaDevice" link="RygelMediaDevice.html#RygelMediaDevice-struct"/>
+    <keyword type="struct" name="struct RygelMediaDeviceClass" link="RygelMediaDevice.html#RygelMediaDeviceClass"/>
+    <keyword type="property" name="The “capabilities” property" link="RygelMediaDevice.html#RygelMediaDevice--capabilities"/>
+    <keyword type="property" name="The “plugin” property" link="RygelMediaDevice.html#RygelMediaDevice--plugin"/>
+    <keyword type="property" name="The “title” property" link="RygelMediaDevice.html#RygelMediaDevice--title"/>
+    <keyword type="macro" name="RYGEL_TYPE_BASE_CONFIGURATION" link="RygelBaseConfiguration.html#RYGEL-TYPE-BASE-CONFIGURATION:CAPS"/>
+    <keyword type="function" name="rygel_base_configuration_get_upnp_enabled ()" link="RygelBaseConfiguration.html#rygel-base-configuration-get-upnp-enabled"/>
+    <keyword type="function" name="rygel_base_configuration_get_interface ()" link="RygelBaseConfiguration.html#rygel-base-configuration-get-interface"/>
+    <keyword type="function" name="rygel_base_configuration_get_interfaces ()" link="RygelBaseConfiguration.html#rygel-base-configuration-get-interfaces"/>
+    <keyword type="function" name="rygel_base_configuration_get_port ()" link="RygelBaseConfiguration.html#rygel-base-configuration-get-port"/>
+    <keyword type="function" name="rygel_base_configuration_get_transcoding ()" link="RygelBaseConfiguration.html#rygel-base-configuration-get-transcoding"/>
+    <keyword type="function" name="rygel_base_configuration_get_allow_upload ()" link="RygelBaseConfiguration.html#rygel-base-configuration-get-allow-upload"/>
+    <keyword type="function" name="rygel_base_configuration_get_allow_deletion ()" link="RygelBaseConfiguration.html#rygel-base-configuration-get-allow-deletion"/>
+    <keyword type="function" name="rygel_base_configuration_get_log_levels ()" link="RygelBaseConfiguration.html#rygel-base-configuration-get-log-levels"/>
+    <keyword type="function" name="rygel_base_configuration_get_plugin_path ()" link="RygelBaseConfiguration.html#rygel-base-configuration-get-plugin-path"/>
+    <keyword type="function" name="rygel_base_configuration_get_engine_path ()" link="RygelBaseConfiguration.html#rygel-base-configuration-get-engine-path"/>
+    <keyword type="function" name="rygel_base_configuration_get_media_engine ()" link="RygelBaseConfiguration.html#rygel-base-configuration-get-media-engine"/>
+    <keyword type="function" name="rygel_base_configuration_get_video_upload_folder ()" link="RygelBaseConfiguration.html#rygel-base-configuration-get-video-upload-folder"/>
+    <keyword type="function" name="rygel_base_configuration_get_music_upload_folder ()" link="RygelBaseConfiguration.html#rygel-base-configuration-get-music-upload-folder"/>
+    <keyword type="function" name="rygel_base_configuration_get_picture_upload_folder ()" link="RygelBaseConfiguration.html#rygel-base-configuration-get-picture-upload-folder"/>
+    <keyword type="function" name="rygel_base_configuration_get_enabled ()" link="RygelBaseConfiguration.html#rygel-base-configuration-get-enabled"/>
+    <keyword type="function" name="rygel_base_configuration_get_title ()" link="RygelBaseConfiguration.html#rygel-base-configuration-get-title"/>
+    <keyword type="function" name="rygel_base_configuration_get_string ()" link="RygelBaseConfiguration.html#rygel-base-configuration-get-string"/>
+    <keyword type="function" name="rygel_base_configuration_get_string_list ()" link="RygelBaseConfiguration.html#rygel-base-configuration-get-string-list"/>
+    <keyword type="function" name="rygel_base_configuration_get_int ()" link="RygelBaseConfiguration.html#rygel-base-configuration-get-int"/>
+    <keyword type="function" name="rygel_base_configuration_get_int_list ()" link="RygelBaseConfiguration.html#rygel-base-configuration-get-int-list"/>
+    <keyword type="function" name="rygel_base_configuration_get_bool ()" link="RygelBaseConfiguration.html#rygel-base-configuration-get-bool"/>
+    <keyword type="function" name="rygel_base_configuration_new ()" link="RygelBaseConfiguration.html#rygel-base-configuration-new"/>
+    <keyword type="struct" name="struct RygelBaseConfiguration" link="RygelBaseConfiguration.html#RygelBaseConfiguration-struct"/>
+    <keyword type="struct" name="struct RygelBaseConfigurationClass" link="RygelBaseConfiguration.html#RygelBaseConfigurationClass"/>
+    <keyword type="macro" name="RYGEL_TYPE_ROOT_DEVICE_FACTORY" link="RygelRootDeviceFactory.html#RYGEL-TYPE-ROOT-DEVICE-FACTORY:CAPS"/>
+    <keyword type="function" name="rygel_root_device_factory_create ()" link="RygelRootDeviceFactory.html#rygel-root-device-factory-create"/>
+    <keyword type="function" name="rygel_root_device_factory_new ()" link="RygelRootDeviceFactory.html#rygel-root-device-factory-new"/>
+    <keyword type="function" name="rygel_root_device_factory_get_context ()" link="RygelRootDeviceFactory.html#rygel-root-device-factory-get-context"/>
+    <keyword type="function" name="rygel_get_pretty_host_name ()" link="RygelRootDeviceFactory.html#rygel-get-pretty-host-name"/>
+    <keyword type="struct" name="struct RygelRootDeviceFactory" link="RygelRootDeviceFactory.html#RygelRootDeviceFactory-struct"/>
+    <keyword type="struct" name="struct RygelRootDeviceFactoryClass" link="RygelRootDeviceFactory.html#RygelRootDeviceFactoryClass"/>
+    <keyword type="enum" name="enum RootDeviceFactoryError" link="RygelRootDeviceFactory.html#RootDeviceFactoryError"/>
+    <keyword type="property" name="The “context” property" link="RygelRootDeviceFactory.html#RygelRootDeviceFactory--context"/>
+    <keyword type="macro" name="RYGEL_TYPE_META_CONFIG" link="RygelMetaConfig.html#RYGEL-TYPE-META-CONFIG:CAPS"/>
+    <keyword type="function" name="rygel_meta_config_new ()" link="RygelMetaConfig.html#rygel-meta-config-new"/>
+    <keyword type="function" name="rygel_meta_config_get_default ()" link="RygelMetaConfig.html#rygel-meta-config-get-default"/>
+    <keyword type="function" name="rygel_meta_config_register_configuration ()" link="RygelMetaConfig.html#rygel-meta-config-register-configuration"/>
+    <keyword type="struct" name="struct RygelMetaConfig" link="RygelMetaConfig.html#RygelMetaConfig-struct"/>
+    <keyword type="struct" name="struct RygelMetaConfigClass" link="RygelMetaConfig.html#RygelMetaConfigClass"/>
+    <keyword type="macro" name="RYGEL_TYPE_XML_UTILS" link="RygelXMLUtils.html#RYGEL-TYPE-XML-UTILS:CAPS"/>
+    <keyword type="function" name="rygel_xml_utils_new ()" link="RygelXMLUtils.html#rygel-xml-utils-new"/>
+    <keyword type="function" name="rygel_xml_utils_get_element ()" link="RygelXMLUtils.html#rygel-xml-utils-get-element"/>
+    <keyword type="function" name="rygel_xml_utils_ref ()" link="RygelXMLUtils.html#rygel-xml-utils-ref"/>
+    <keyword type="function" name="rygel_xml_utils_unref ()" link="RygelXMLUtils.html#rygel-xml-utils-unref"/>
+    <keyword type="function" name="rygel_param_spec_xml_utils ()" link="RygelXMLUtils.html#rygel-param-spec-xml-utils"/>
+    <keyword type="function" name="rygel_value_set_xml_utils ()" link="RygelXMLUtils.html#rygel-value-set-xml-utils"/>
+    <keyword type="function" name="rygel_value_get_xml_utils ()" link="RygelXMLUtils.html#rygel-value-get-xml-utils"/>
+    <keyword type="function" name="rygel_value_take_xml_utils ()" link="RygelXMLUtils.html#rygel-value-take-xml-utils"/>
+    <keyword type="struct" name="struct RygelXMLUtils" link="RygelXMLUtils.html#RygelXMLUtils-struct"/>
+    <keyword type="struct" name="struct RygelXMLUtilsClass" link="RygelXMLUtils.html#RygelXMLUtilsClass"/>
+    <keyword type="function" name="rygel_state_machine_run ()" link="RygelStateMachine.html#rygel-state-machine-run"/>
+    <keyword type="function" name="rygel_state_machine_run_finish ()" link="RygelStateMachine.html#rygel-state-machine-run-finish"/>
+    <keyword type="function" name="rygel_state_machine_get_cancellable ()" link="RygelStateMachine.html#rygel-state-machine-get-cancellable"/>
+    <keyword type="function" name="rygel_state_machine_set_cancellable ()" link="RygelStateMachine.html#rygel-state-machine-set-cancellable"/>
+    <keyword type="struct" name="RygelStateMachine" link="RygelStateMachine.html#RygelStateMachine-struct"/>
+    <keyword type="struct" name="struct RygelStateMachineIface" link="RygelStateMachine.html#RygelStateMachineIface"/>
+    <keyword type="property" name="The “cancellable” property" link="RygelStateMachine.html#RygelStateMachine--cancellable"/>
+    <keyword type="signal" name="The “completed” signal" link="RygelStateMachine.html#RygelStateMachine-completed"/>
+    <keyword type="macro" name="RYGEL_TYPE_DLNA_PROFILE" link="RygelDLNAProfile.html#RYGEL-TYPE-DLNA-PROFILE:CAPS"/>
+    <keyword type="function" name="rygel_dlna_profile_new ()" link="RygelDLNAProfile.html#rygel-dlna-profile-new"/>
+    <keyword type="function" name="rygel_dlna_profile_compare_by_name ()" link="RygelDLNAProfile.html#rygel-dlna-profile-compare-by-name"/>
+    <keyword type="function" name="rygel_dlna_profile_ref ()" link="RygelDLNAProfile.html#rygel-dlna-profile-ref"/>
+    <keyword type="function" name="rygel_dlna_profile_unref ()" link="RygelDLNAProfile.html#rygel-dlna-profile-unref"/>
+    <keyword type="function" name="rygel_param_spec_dlna_profile ()" link="RygelDLNAProfile.html#rygel-param-spec-dlna-profile"/>
+    <keyword type="function" name="rygel_value_set_dlna_profile ()" link="RygelDLNAProfile.html#rygel-value-set-dlna-profile"/>
+    <keyword type="function" name="rygel_value_get_dlna_profile ()" link="RygelDLNAProfile.html#rygel-value-get-dlna-profile"/>
+    <keyword type="function" name="rygel_value_take_dlna_profile ()" link="RygelDLNAProfile.html#rygel-value-take-dlna-profile"/>
+    <keyword type="struct" name="struct RygelDLNAProfile" link="RygelDLNAProfile.html#RygelDLNAProfile-struct"/>
+    <keyword type="struct" name="struct RygelDLNAProfileClass" link="RygelDLNAProfile.html#RygelDLNAProfileClass"/>
+    <keyword type="macro" name="RYGEL_TYPE_V1_HACKS" link="RygelV1Hacks.html#RYGEL-TYPE-V1-HACKS:CAPS"/>
+    <keyword type="function" name="rygel_v1_hacks_apply_on_device ()" link="RygelV1Hacks.html#rygel-v1-hacks-apply-on-device"/>
+    <keyword type="function" name="rygel_v1_hacks_new ()" link="RygelV1Hacks.html#rygel-v1-hacks-new"/>
+    <keyword type="function" name="rygel_v1_hacks_get_device_type ()" link="RygelV1Hacks.html#rygel-v1-hacks-get-device-type"/>
+    <keyword type="function" name="rygel_v1_hacks_set_device_type ()" link="RygelV1Hacks.html#rygel-v1-hacks-set-device-type"/>
+    <keyword type="function" name="rygel_v1_hacks_get_service_types ()" link="RygelV1Hacks.html#rygel-v1-hacks-get-service-types"/>
+    <keyword type="struct" name="struct RygelV1Hacks" link="RygelV1Hacks.html#RygelV1Hacks-struct"/>
+    <keyword type="struct" name="struct RygelV1HacksClass" link="RygelV1Hacks.html#RygelV1HacksClass"/>
+    <keyword type="property" name="The “device-type” property" link="RygelV1Hacks.html#RygelV1Hacks--device-type"/>
+    <keyword type="property" name="The “service-types” property" link="RygelV1Hacks.html#RygelV1Hacks--service-types"/>
+    <keyword type="macro" name="RYGEL_TYPE_BASIC_MANAGEMENT" link="RygelBasicManagement.html#RYGEL-TYPE-BASIC-MANAGEMENT:CAPS"/>
+    <keyword type="function" name="rygel_basic_management_new ()" link="RygelBasicManagement.html#rygel-basic-management-new"/>
+    <keyword type="function" name="rygel_basic_management_get_max_history_size ()" link="RygelBasicManagement.html#rygel-basic-management-get-max-history-size"/>
+    <keyword type="function" name="rygel_basic_management_set_max_history_size ()" link="RygelBasicManagement.html#rygel-basic-management-set-max-history-size"/>
+    <keyword type="macro" name="RYGEL_BASIC_MANAGEMENT_UPNP_ID" link="RygelBasicManagement.html#RYGEL-BASIC-MANAGEMENT-UPNP-ID:CAPS"/>
+    <keyword type="macro" name="RYGEL_BASIC_MANAGEMENT_UPNP_TYPE" link="RygelBasicManagement.html#RYGEL-BASIC-MANAGEMENT-UPNP-TYPE:CAPS"/>
+    <keyword type="macro" name="RYGEL_BASIC_MANAGEMENT_DESCRIPTION_PATH" link="RygelBasicManagement.html#RYGEL-BASIC-MANAGEMENT-DESCRIPTION-PATH:CAPS"/>
+    <keyword type="struct" name="struct RygelBasicManagement" link="RygelBasicManagement.html#RygelBasicManagement-struct"/>
+    <keyword type="struct" name="struct RygelBasicManagementClass" link="RygelBasicManagement.html#RygelBasicManagementClass"/>
+    <keyword type="property" name="The “max-history-size” property" link="RygelBasicManagement.html#RygelBasicManagement--max-history-size"/>
+    <keyword type="function" name="Shutdown ()" link="docs-org-gnome-Rygel1.html#org-gnome-Rygel1-Shutdown"/>
+  </functions>
+</book>

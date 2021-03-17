@@ -1,0 +1,76 @@
+<!-- ##### SECTION Title ##### -->
+gmime-stream-file
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GMimeStreamFile ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION g_mime_stream_file_new ##### -->
+<para>
+
+</para>
+
+@fp: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_stream_file_new_with_bounds ##### -->
+<para>
+
+</para>
+
+@fp: 
+@start: 
+@end: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_stream_file_new_for_path ##### -->
+<para>
+
+</para>
+
+@path: 
+@mode: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_stream_file_get_owner ##### -->
+<para>
+
+</para>
+
+@stream: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_stream_file_set_owner ##### -->
+<para>
+
+</para>
+
+@stream: 
+@owner: 
+
+

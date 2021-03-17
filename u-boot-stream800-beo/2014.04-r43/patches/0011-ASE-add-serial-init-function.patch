@@ -1,0 +1,50 @@
+From ff5ccc13242e5d56cefb310c910075d696bcd022 Mon Sep 17 00:00:00 2001
+From: Martin Geier <martin.geier@streamunlimited.com>
+Date: Fri, 2 May 2014 16:02:09 +0200
+Subject: [PATCH] ASE: add serial init function
+
+Signed-off-by: Martin Geier <martin.geier@streamunlimited.com>
+---
+ drivers/serial/serial_ns16550.c | 13 +++++++++++++
+ include/common.h                |  1 +
+ 2 files changed, 14 insertions(+)
+
+diff --git a/drivers/serial/serial_ns16550.c b/drivers/serial/serial_ns16550.c
+index ba68d46..61bb85b 100644
+--- a/drivers/serial/serial_ns16550.c
++++ b/drivers/serial/serial_ns16550.c
+@@ -190,6 +190,19 @@ _serial_setbrg (const int port)
+ 	NS16550_reinit(PORT, clock_divisor);
+ }
+ 
++void
++_serial_init (const int port, const int baudrate)
++{
++	int clock_divisor;
++	int tmp_baudrate = gd->baudrate;
++
++	gd->baudrate = baudrate;
++	clock_divisor = calc_divisor(PORT);
++	gd->baudrate = tmp_baudrate;
++
++	NS16550_init(PORT, clock_divisor);
++}
++
+ static inline void
+ serial_putc_dev(unsigned int dev_index,const char c)
+ {
+diff --git a/include/common.h b/include/common.h
+index e267c1a..be51e47 100644
+--- a/include/common.h
++++ b/include/common.h
+@@ -663,6 +663,7 @@ void	serial_puts   (const char *);
+ int	serial_getc   (void);
+ int	serial_tstc   (void);
+ 
++void	_serial_init (const int port, const int baudrate);
+ void	_serial_setbrg (const int);
+ void	_serial_putc   (const char, const int);
+ void	_serial_putc_raw(const char, const int);
+-- 
+2.7.4
+

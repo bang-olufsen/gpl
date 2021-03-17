@@ -1,0 +1,119 @@
+From aa372b95e4f77b55eda8cd3b931596dc34918eec Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Fri, 6 Nov 2020 13:08:56 +0100
+Subject: [PATCH] Allow empty strings in the gst_structure title field
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ gst/gststructure.c | 17 ++++++++++++-----
+ gst/gsttaglist.c   | 56 ++++++++++++++++++++++++++++++++++++++++++++++++++++--
+ 2 files changed, 66 insertions(+), 7 deletions(-)
+
+diff --git a/gst/gststructure.c b/gst/gststructure.c
+index ee60ce0..5eb821d 100644
+--- a/gst/gststructure.c
++++ b/gst/gststructure.c
+@@ -817,11 +817,18 @@ gst_structure_set_field (GstStructure * structure, GstStructureField * field)
+         g_value_unset (&field->value);
+         return;
+       } else {
+-        /* empty strings never make sense */
+-        GIT_G_WARNING ("Trying to set empty string on taglist field '%s'. "
+-            "Please file a bug.", g_quark_to_string (field->name));
+-        g_value_unset (&field->value);
+-        return;
++        /* TTE:
++         * We want to allow empty strings in the titles */
++        if (!g_strcmp0 (g_quark_to_string (field->name), GST_TAG_TITLE)) {
++         /* No UTF8 checks needed here, empty is empty in all formats */
++        }
++        else {
++          /* empty strings never make sense for anything but title */
++          GIT_G_WARNING ("Trying to set empty string on taglist field '%s'. "
++                         "Please file a bug.", g_quark_to_string (field->name));
++          g_value_unset (&field->value);
++          return;
++        }
+       }
+     } else if (G_UNLIKELY (s != NULL && !g_utf8_validate (s, -1, NULL))) {
+       g_warning ("Trying to set string on %s field '%s', but string is not "
+diff --git a/gst/gsttaglist.c b/gst/gsttaglist.c
+index 56e6a46..c3fa7c6 100644
+--- a/gst/gsttaglist.c
++++ b/gst/gsttaglist.c
+@@ -1800,13 +1800,50 @@ _gst_strdup0 (const gchar * s)
+  *
+  * The resulting string in @value will be in UTF-8 encoding and should be
+  * freed by the caller using g_free when no longer needed. The
+- * returned string is also guaranteed to be non-%NULL and non-empty.
++ * returned string is also guaranteed to be non-%NULL and non-empty, unless
++ * it is the title tag we are parsing, in that case an empty str is allowed.
+  *
+  * Free-function: g_free
+  *
+  * Returns: %TRUE, if a value was copied, %FALSE if the tag didn't exist in the
+  *              given list.
+  */
++gboolean
++gst_tag_list_get_string (const GstTagList *list, const gchar *tag,
++                           gchar ** value)
++{
++  GValue v = { 0, };
++
++  g_return_val_if_fail (GST_IS_TAG_LIST (list), FALSE);
++  g_return_val_if_fail (tag != NULL, FALSE);
++  g_return_val_if_fail (value != NULL, FALSE);
++
++  if (!gst_tag_list_copy_value (&v, list, tag)) {
++    return FALSE;
++  }
++
++  /* TTE: For titles we want to allow empty strings */
++  if (!g_strcmp0 (tag, GST_TAG_TITLE)) {
++
++    const gchar *str_tag = g_value_get_string (&v);
++
++    /* TTE: Check for missing, but not for empty string */
++    if (str_tag == NULL) {
++      value = NULL;
++    }
++    else {
++      *value = g_strdup (str_tag);
++    }
++  }
++  /* TTE: If it's not the title do the standard thing */
++  else {
++    *value = COPY_FUNC (g_value_get_string (&v));
++  }
++
++  g_value_unset (&v);
++  return TRUE;
++}
++
+ /**
+  * gst_tag_list_get_string_index:
+  * @list: a #GstTagList to get the tag from
+@@ -1826,7 +1863,22 @@ _gst_strdup0 (const gchar * s)
+  * Returns: %TRUE, if a value was copied, %FALSE if the tag didn't exist in the
+  *              given list.
+  */
+-TAG_MERGE_FUNCS (string, gchar *, (*value != NULL));
++gboolean
++gst_tag_list_get_string_index (const GstTagList *list,
++                                     const gchar *tag,
++                                     guint index, gchar **value)
++{
++  const GValue *v;
++  g_return_val_if_fail (GST_IS_TAG_LIST (list), FALSE);
++  g_return_val_if_fail (tag != NULL, FALSE);
++  g_return_val_if_fail (value != NULL, FALSE);
++
++  if ((v = gst_tag_list_get_value_index (list, tag, index)) == NULL) {
++    return FALSE;
++  }
++  *value = COPY_FUNC (g_value_get_string (v));
++  return TRUE;
++}
+ 
+ /*
+  *FIXME 2.0: Instead of _peek (non-copy) and _get (copy), we could have

@@ -1,0 +1,192 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GMimeFilterHTML</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="GMime 2.6 Reference Manual">
+<link rel="up" href="Filters.html" title="Stream Filters">
+<link rel="prev" href="GMimeFilterGZip.html" title="GMimeFilterGZip">
+<link rel="next" href="GMimeFilterMd5.html" title="GMimeFilterMd5">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="GMimeFilterGZip.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="Filters.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">GMime 2.6 Reference Manual</th>
+<td><a accesskey="n" href="GMimeFilterMd5.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#GMimeFilterHTML.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#GMimeFilterHTML.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#GMimeFilterHTML.object-hierarchy" class="shortcut">Object Hierarchy</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="GMimeFilterHTML"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="GMimeFilterHTML.top_of_page"></a>GMimeFilterHTML</span></h2>
+<p>GMimeFilterHTML — Convert plain text into HTML</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="GMimeFilterHTML.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">struct              <a class="link" href="GMimeFilterHTML.html#GMimeFilterHTML-struct" title="struct GMimeFilterHTML">GMimeFilterHTML</a>;
+#define             <a class="link" href="GMimeFilterHTML.html#GMIME-FILTER-HTML-PRE:CAPS" title="GMIME_FILTER_HTML_PRE">GMIME_FILTER_HTML_PRE</a>
+#define             <a class="link" href="GMimeFilterHTML.html#GMIME-FILTER-HTML-CONVERT-NL:CAPS" title="GMIME_FILTER_HTML_CONVERT_NL">GMIME_FILTER_HTML_CONVERT_NL</a>
+#define             <a class="link" href="GMimeFilterHTML.html#GMIME-FILTER-HTML-CONVERT-SPACES:CAPS" title="GMIME_FILTER_HTML_CONVERT_SPACES">GMIME_FILTER_HTML_CONVERT_SPACES</a>
+#define             <a class="link" href="GMimeFilterHTML.html#GMIME-FILTER-HTML-CONVERT-URLS:CAPS" title="GMIME_FILTER_HTML_CONVERT_URLS">GMIME_FILTER_HTML_CONVERT_URLS</a>
+#define             <a class="link" href="GMimeFilterHTML.html#GMIME-FILTER-HTML-MARK-CITATION:CAPS" title="GMIME_FILTER_HTML_MARK_CITATION">GMIME_FILTER_HTML_MARK_CITATION</a>
+#define             <a class="link" href="GMimeFilterHTML.html#GMIME-FILTER-HTML-CONVERT-ADDRESSES:CAPS" title="GMIME_FILTER_HTML_CONVERT_ADDRESSES">GMIME_FILTER_HTML_CONVERT_ADDRESSES</a>
+#define             <a class="link" href="GMimeFilterHTML.html#GMIME-FILTER-HTML-ESCAPE-8BIT:CAPS" title="GMIME_FILTER_HTML_ESCAPE_8BIT">GMIME_FILTER_HTML_ESCAPE_8BIT</a>
+#define             <a class="link" href="GMimeFilterHTML.html#GMIME-FILTER-HTML-CITE:CAPS" title="GMIME_FILTER_HTML_CITE">GMIME_FILTER_HTML_CITE</a>
+<a class="link" href="GMimeFilter.html" title="GMimeFilter"><span class="returnvalue">GMimeFilter</span></a> *       <a class="link" href="GMimeFilterHTML.html#g-mime-filter-html-new" title="g_mime_filter_html_new ()">g_mime_filter_html_new</a>              (<em class="parameter"><code><span class="type">guint32</span> flags</code></em>,
+                                                         <em class="parameter"><code><span class="type">guint32</span> colour</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="GMimeFilterHTML.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  GObject
+   +----<a class="link" href="GMimeFilter.html" title="GMimeFilter">GMimeFilter</a>
+         +----GMimeFilterHTML
+</pre>
+</div>
+<div class="refsect1">
+<a name="GMimeFilterHTML.description"></a><h2>Description</h2>
+<p>
+A <a class="link" href="GMimeFilter.html" title="GMimeFilter"><span class="type">GMimeFilter</span></a> used for converting plain text into HTML.
+</p>
+</div>
+<div class="refsect1">
+<a name="GMimeFilterHTML.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="GMimeFilterHTML-struct"></a><h3>struct GMimeFilterHTML</h3>
+<pre class="programlisting">struct GMimeFilterHTML;</pre>
+<p>
+A filter for converting text/plain into text/html.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GMIME-FILTER-HTML-PRE:CAPS"></a><h3>GMIME_FILTER_HTML_PRE</h3>
+<pre class="programlisting">#define GMIME_FILTER_HTML_PRE               (1 &lt;&lt; 0)
+</pre>
+<p>
+Wrap stream in &lt;pre&gt; tags.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GMIME-FILTER-HTML-CONVERT-NL:CAPS"></a><h3>GMIME_FILTER_HTML_CONVERT_NL</h3>
+<pre class="programlisting">#define GMIME_FILTER_HTML_CONVERT_NL        (1 &lt;&lt; 1)
+</pre>
+<p>
+Convert new-lines ('\n') into &lt;br&gt; tags.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GMIME-FILTER-HTML-CONVERT-SPACES:CAPS"></a><h3>GMIME_FILTER_HTML_CONVERT_SPACES</h3>
+<pre class="programlisting">#define GMIME_FILTER_HTML_CONVERT_SPACES    (1 &lt;&lt; 2)
+</pre>
+<p>
+Preserve whitespace by converting spaces into their appropriate
+html entities.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GMIME-FILTER-HTML-CONVERT-URLS:CAPS"></a><h3>GMIME_FILTER_HTML_CONVERT_URLS</h3>
+<pre class="programlisting">#define GMIME_FILTER_HTML_CONVERT_URLS      (1 &lt;&lt; 3)
+</pre>
+<p>
+Wrap detected URLs in &lt;a href=...&gt; tags.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GMIME-FILTER-HTML-MARK-CITATION:CAPS"></a><h3>GMIME_FILTER_HTML_MARK_CITATION</h3>
+<pre class="programlisting">#define GMIME_FILTER_HTML_MARK_CITATION     (1 &lt;&lt; 4)
+</pre>
+<p>
+Change the colour of citation text.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GMIME-FILTER-HTML-CONVERT-ADDRESSES:CAPS"></a><h3>GMIME_FILTER_HTML_CONVERT_ADDRESSES</h3>
+<pre class="programlisting">#define GMIME_FILTER_HTML_CONVERT_ADDRESSES (1 &lt;&lt; 5)
+</pre>
+<p>
+Wrap email addresses in "mailto:" href tags.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GMIME-FILTER-HTML-ESCAPE-8BIT:CAPS"></a><h3>GMIME_FILTER_HTML_ESCAPE_8BIT</h3>
+<pre class="programlisting">#define GMIME_FILTER_HTML_ESCAPE_8BIT       (1 &lt;&lt; 6)
+</pre>
+<p>
+Converts 8bit characters to '?'.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GMIME-FILTER-HTML-CITE:CAPS"></a><h3>GMIME_FILTER_HTML_CITE</h3>
+<pre class="programlisting">#define GMIME_FILTER_HTML_CITE              (1 &lt;&lt; 7)
+</pre>
+<p>
+Cites text by prepending "&gt; " to each cited line.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-filter-html-new"></a><h3>g_mime_filter_html_new ()</h3>
+<pre class="programlisting"><a class="link" href="GMimeFilter.html" title="GMimeFilter"><span class="returnvalue">GMimeFilter</span></a> *       g_mime_filter_html_new              (<em class="parameter"><code><span class="type">guint32</span> flags</code></em>,
+                                                         <em class="parameter"><code><span class="type">guint32</span> colour</code></em>);</pre>
+<p>
+Creates a new GMimeFilterHTML filter which can be used to convert a
+plain UTF-8 text stream into an html stream.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>flags</code></em> :</span></p></td>
+<td>html flags</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>colour</code></em> :</span></p></td>
+<td>citation colour</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new html filter.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<div class="refsect1">
+<a name="GMimeFilterHTML.see-also"></a><h2>See Also</h2>
+<a class="link" href="GMimeFilter.html" title="GMimeFilter"><span class="type">GMimeFilter</span></a>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

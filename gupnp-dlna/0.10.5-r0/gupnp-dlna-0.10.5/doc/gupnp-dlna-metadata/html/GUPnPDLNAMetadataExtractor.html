@@ -1,0 +1,396 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GUPnPDLNAMetadataExtractor: GUPnP DLNA Reference Manual</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
+<link rel="home" href="index.html" title="GUPnP DLNA Reference Manual">
+<link rel="up" href="ch01.html" title="GUPnP DLNA Metadata">
+<link rel="prev" href="ch01.html" title="GUPnP DLNA Metadata">
+<link rel="next" href="annotation-glossary.html" title="Annotation Glossary">
+<meta name="generator" content="GTK-Doc V1.25.1 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#GUPnPDLNAMetadataExtractor.description" class="shortcut">Description</a></span><span id="nav_hierarchy">  <span class="dim">|</span> 
+                  <a href="#GUPnPDLNAMetadataExtractor.object-hierarchy" class="shortcut">Object Hierarchy</a></span><span id="nav_signals">  <span class="dim">|</span> 
+                  <a href="#GUPnPDLNAMetadataExtractor.signals" class="shortcut">Signals</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="ch01.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="annotation-glossary.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry">
+<a name="GUPnPDLNAMetadataExtractor"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="GUPnPDLNAMetadataExtractor.top_of_page"></a>GUPnPDLNAMetadataExtractor</span></h2>
+<p>GUPnPDLNAMetadataExtractor — Base class for extracting metadata for given
+media.</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1">
+<a name="GUPnPDLNAMetadataExtractor.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="functions_return">
+<col class="functions_name">
+</colgroup>
+<tbody>
+<tr>
+<td class="function_type">
+<span class="returnvalue">gboolean</span>
+</td>
+<td class="function_name">
+<a class="link" href="GUPnPDLNAMetadataExtractor.html#gupnp-dlna-metadata-extractor-extract-async" title="gupnp_dlna_metadata_extractor_extract_async ()">gupnp_dlna_metadata_extractor_extract_async</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">GUPnPDLNAInformation</span> *
+</td>
+<td class="function_name">
+<a class="link" href="GUPnPDLNAMetadataExtractor.html#gupnp-dlna-metadata-extractor-extract-sync" title="gupnp_dlna_metadata_extractor_extract_sync ()">gupnp_dlna_metadata_extractor_extract_sync</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="GUPnPDLNAMetadataExtractor.html#gupnp-dlna-metadata-extractor-emit-done" title="gupnp_dlna_metadata_extractor_emit_done ()">gupnp_dlna_metadata_extractor_emit_done</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="GUPnPDLNAMetadataExtractor.signals"></a><h2>Signals</h2>
+<div class="informaltable"><table class="informaltable" border="0">
+<colgroup>
+<col width="150px" class="signals_return">
+<col width="300px" class="signals_name">
+<col width="200px" class="signals_flags">
+</colgroup>
+<tbody><tr>
+<td class="signal_type"><span class="returnvalue">void</span></td>
+<td class="signal_name"><a class="link" href="GUPnPDLNAMetadataExtractor.html#GUPnPDLNAMetadataExtractor-done" title="The “done” signal">done</a></td>
+<td class="signal_flags">Run Last</td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="GUPnPDLNAMetadataExtractor.other"></a><h2>Types and Values</h2>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="name">
+<col class="description">
+</colgroup>
+<tbody>
+<tr>
+<td class="datatype_keyword"> </td>
+<td class="function_name"><a class="link" href="GUPnPDLNAMetadataExtractor.html#GUPnPDLNAMetadataExtractor-struct" title="GUPnPDLNAMetadataExtractor">GUPnPDLNAMetadataExtractor</a></td>
+</tr>
+<tr>
+<td class="datatype_keyword"> </td>
+<td class="function_name"><a class="link" href="GUPnPDLNAMetadataExtractor.html#GUPnPDLNAMetadataExtractorClass" title="GUPnPDLNAMetadataExtractorClass">GUPnPDLNAMetadataExtractorClass</a></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="GUPnPDLNAMetadataExtractor.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="screen">    GObject
+    <span class="lineart">╰──</span> GUPnPDLNAMetadataExtractor
+</pre>
+</div>
+<div class="refsect1">
+<a name="GUPnPDLNAMetadataExtractor.description"></a><h2>Description</h2>
+<p><a class="link" href="GUPnPDLNAMetadataExtractor.html" title="GUPnPDLNAMetadataExtractor"><span class="type">GUPnPDLNAMetadataExtractor</span></a> is used by <a href="../html/GUPnPDLNAProfileGuesser.html#GUPnPDLNAProfileGuesser-struct"><span class="type">GUPnPDLNAProfileGuesser</span></a> to
+get needed metadata for profile matching. This class itself does
+not implement any metadata extraction features. For that it is
+expected to provide a plugin which:</p>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
+<li class="listitem"><p>Provides a <a class="link" href="GUPnPDLNAMetadataExtractor.html" title="GUPnPDLNAMetadataExtractor"><span class="type">GUPnPDLNAMetadataExtractor</span></a> subclass implementation.</p></li>
+<li class="listitem"><p>Exports a <code class="function">gupnp_dlna_get_default_extractor</code>() which
+takes no parameters and returns a <a class="link" href="GUPnPDLNAMetadataExtractor.html" title="GUPnPDLNAMetadataExtractor"><span class="type">GUPnPDLNAMetadataExtractor</span></a>.</p></li>
+</ul></div>
+<p><span class="type">GModule</span> is used for loading the plugin, so <span class="type">GModule</span>'s features can
+be used also (like exporting <code class="function">g_module_check_init</code>() to
+initialize the multimedia framework used for extracting metadata).</p>
+<p>Default plugin directory and default plugin file is set during
+configuration stage, but it can be overriden during runtime by
+setting respectively <code class="envar">GUPNP_DLNA_METADATA_BACKEND</code> and
+<code class="envar">GUPNP_DLNA_METADATA_BACKEND_DIR</code> environment variables before
+the plugin is loaded (i.e. before <a href="../html/GUPnPDLNAProfileGuesser.html#GUPnPDLNAProfileGuesser-struct"><span class="type">GUPnPDLNAProfileGuesser</span></a> is used for
+guessing profile).</p>
+<p>The <code class="envar">GUPNP_DLNA_METADATA_BACKEND</code> environment variable should
+hold a name like <strong class="userinput"><code>"gstreamer"</code></strong>, so
+<code class="filename">libgstreamer.so</code> will be loaded. For determining a
+plugin filename <code class="function">g_module_build_path()</code> is used.</p>
+<p>If subclassing <a class="link" href="GUPnPDLNAMetadataExtractor.html" title="GUPnPDLNAMetadataExtractor"><span class="type">GUPnPDLNAMetadataExtractor</span></a> then also
+<span class="type">GUPnPDLNAInformation</span>, <span class="type">GUPnPDLNAAudioInformation</span>,
+<span class="type">GUPnPDLNAContainerInformation</span>, <span class="type">GUPnPDLNAImageInformation</span> and
+<span class="type">GUPnPDLNAVideoInformation</span> have to be subclassed as well.</p>
+</div>
+<div class="refsect1">
+<a name="GUPnPDLNAMetadataExtractor.functions_details"></a><h2>Functions</h2>
+<div class="refsect2">
+<a name="gupnp-dlna-metadata-extractor-extract-async"></a><h3>gupnp_dlna_metadata_extractor_extract_async ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>
+gupnp_dlna_metadata_extractor_extract_async
+                               (<em class="parameter"><code><a class="link" href="GUPnPDLNAMetadataExtractor.html" title="GUPnPDLNAMetadataExtractor"><span class="type">GUPnPDLNAMetadataExtractor</span></a> *extractor</code></em>,
+                                <em class="parameter"><code>const <span class="type">gchar</span> *uri</code></em>,
+                                <em class="parameter"><code><span class="type">guint</span> timeout_in_ms</code></em>,
+                                <em class="parameter"><code><span class="type">GError</span> **error</code></em>);</pre>
+<p>Queues <em class="parameter"><code>uri</code></em>
+ for metadata discovery. When discovery is completed,
+the ::done signal is emitted on <em class="parameter"><code>extractor</code></em>
+.</p>
+<div class="refsect3">
+<a name="gupnp-dlna-metadata-extractor-extract-async.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>extractor</p></td>
+<td class="parameter_description"><p><a class="link" href="GUPnPDLNAMetadataExtractor.html" title="GUPnPDLNAMetadataExtractor"><span class="type">GUPnPDLNAMetadataExtractor</span></a> object to use for discovery</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>uri</p></td>
+<td class="parameter_description"><p>URI to gather metadata for</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>timeout_in_ms</p></td>
+<td class="parameter_description"><p>Timeout in miliseconds.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>error</p></td>
+<td class="parameter_description"><p>A <span class="type">GError</span>.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="gupnp-dlna-metadata-extractor-extract-async.returns"></a><h4>Returns</h4>
+<p> <code class="literal">TRUE</code> if <em class="parameter"><code>uri</code></em>
+was successfully queued, <code class="literal">FALSE</code> otherwise.</p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="gupnp-dlna-metadata-extractor-extract-sync"></a><h3>gupnp_dlna_metadata_extractor_extract_sync ()</h3>
+<pre class="programlisting"><span class="returnvalue">GUPnPDLNAInformation</span> *
+gupnp_dlna_metadata_extractor_extract_sync
+                               (<em class="parameter"><code><a class="link" href="GUPnPDLNAMetadataExtractor.html" title="GUPnPDLNAMetadataExtractor"><span class="type">GUPnPDLNAMetadataExtractor</span></a> *extractor</code></em>,
+                                <em class="parameter"><code>const <span class="type">gchar</span> *uri</code></em>,
+                                <em class="parameter"><code><span class="type">guint</span> timeout_in_ms</code></em>,
+                                <em class="parameter"><code><span class="type">GError</span> **error</code></em>);</pre>
+<p>Discovers synchronously metadata of given <em class="parameter"><code>uri</code></em>
+.</p>
+<div class="refsect3">
+<a name="gupnp-dlna-metadata-extractor-extract-sync.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>extractor</p></td>
+<td class="parameter_description"><p><a class="link" href="GUPnPDLNAMetadataExtractor.html" title="GUPnPDLNAMetadataExtractor"><span class="type">GUPnPDLNAMetadataExtractor</span></a> object to use for discovery</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>uri</p></td>
+<td class="parameter_description"><p>URI to gather metadata for</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>timeout_in_ms</p></td>
+<td class="parameter_description"><p>Timeout in miliseconds.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>error</p></td>
+<td class="parameter_description"><p>A <span class="type">GError</span>.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="gupnp-dlna-metadata-extractor-extract-sync.returns"></a><h4>Returns</h4>
+<p> A <span class="type">GUPnPDLNAInformation</span> object if discovery succeeded,
+otherwise <code class="literal">NULL</code>.</p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="gupnp-dlna-metadata-extractor-emit-done"></a><h3>gupnp_dlna_metadata_extractor_emit_done ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+gupnp_dlna_metadata_extractor_emit_done
+                               (<em class="parameter"><code><a class="link" href="GUPnPDLNAMetadataExtractor.html" title="GUPnPDLNAMetadataExtractor"><span class="type">GUPnPDLNAMetadataExtractor</span></a> *extractor</code></em>,
+                                <em class="parameter"><code><span class="type">GUPnPDLNAInformation</span> *info</code></em>,
+                                <em class="parameter"><code><span class="type">GError</span> *error</code></em>);</pre>
+<p>Emits ::done signal. This function is intended to be used by
+subclasses of <a class="link" href="GUPnPDLNAMetadataExtractor.html" title="GUPnPDLNAMetadataExtractor"><span class="type">GUPnPDLNAMetadataExtractor</span></a>. It is required to always
+pass a meaningful <em class="parameter"><code>info</code></em>
+, even in case of error. That way a receiver
+of this signal can know which URI discovery failed by using
+<a href="../html/GUPnPDLNAInformation.html#gupnp-dlna-information-get-uri"><code class="function">gupnp_dlna_information_get_uri()</code></a>.</p>
+<div class="refsect3">
+<a name="gupnp-dlna-metadata-extractor-emit-done.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>extractor</p></td>
+<td class="parameter_description"><p>A <a class="link" href="GUPnPDLNAMetadataExtractor.html" title="GUPnPDLNAMetadataExtractor"><span class="type">GUPnPDLNAMetadataExtractor</span></a> object.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p> A <span class="type">GUPnPDLNAInformation</span> about discovered URI. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>error</p></td>
+<td class="parameter_description"><p> A <span class="type">GError</span>. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="NULL is OK, both for passing and for returning."><span class="acronym">allow-none</span></acronym>][<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="refsect1">
+<a name="GUPnPDLNAMetadataExtractor.other_details"></a><h2>Types and Values</h2>
+<div class="refsect2">
+<a name="GUPnPDLNAMetadataExtractor-struct"></a><h3>GUPnPDLNAMetadataExtractor</h3>
+<pre class="programlisting">typedef struct _GUPnPDLNAMetadataExtractor GUPnPDLNAMetadataExtractor;</pre>
+<p>The top-level object used to for metadata extraction.</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GUPnPDLNAMetadataExtractorClass"></a><h3>GUPnPDLNAMetadataExtractorClass</h3>
+<pre class="programlisting">typedef struct {
+        GObjectClass parent_class;
+
+        /* virtuals */
+        gboolean
+        (* extract_async) (GUPnPDLNAMetadataExtractor  *extractor,
+                           const gchar                 *uri,
+                           guint                        timeout_in_ms,
+                           GError                     **error);
+
+        GUPnPDLNAInformation *
+        (* extract_sync) (GUPnPDLNAMetadataExtractor  *extractor,
+                          const gchar                 *uri,
+                          guint                        timeout_in_ms,
+                          GError                     **error);
+
+        gpointer _reserved[12];
+} GUPnPDLNAMetadataExtractorClass;
+</pre>
+<div class="refsect3">
+<a name="GUPnPDLNAMetadataExtractorClass.members"></a><h4>Members</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="300px" class="struct_members_name">
+<col class="struct_members_description">
+<col width="200px" class="struct_members_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="struct_member_name"><p><em class="structfield"><code><a name="GUPnPDLNAMetadataExtractorClass.extract-async"></a>extract_async</code></em> ()</p></td>
+<td class="struct_member_description"><p>This is called by <a href="../html/GUPnPDLNAProfileGuesser.html#GUPnPDLNAProfileGuesser-struct"><span class="type">GUPnPDLNAProfileGuesser</span></a> to get a
+information about media file asynchronously.</p></td>
+<td class="struct_member_annotations"> </td>
+</tr>
+<tr>
+<td class="struct_member_name"><p><em class="structfield"><code><a name="GUPnPDLNAMetadataExtractorClass.extract-sync"></a>extract_sync</code></em> ()</p></td>
+<td class="struct_member_description"><p>This is called by <a href="../html/GUPnPDLNAProfileGuesser.html#GUPnPDLNAProfileGuesser-struct"><span class="type">GUPnPDLNAProfileGuesser</span></a> to get a
+information about media file synchronously.</p></td>
+<td class="struct_member_annotations"> </td>
+</tr>
+<tr>
+<td class="struct_member_name"><p><span class="type">gpointer</span> <em class="structfield"><code><a name="GUPnPDLNAMetadataExtractorClass.-reserved"></a>_reserved</code></em>[12];</p></td>
+<td class="struct_member_description"><p>Padding. Ignore it.</p></td>
+<td class="struct_member_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="refsect1">
+<a name="GUPnPDLNAMetadataExtractor.signal-details"></a><h2>Signal Details</h2>
+<div class="refsect2">
+<a name="GUPnPDLNAMetadataExtractor-done"></a><h3>The <code class="literal">“done”</code> signal</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+user_function (<a class="link" href="GUPnPDLNAMetadataExtractor.html" title="GUPnPDLNAMetadataExtractor"><span class="type">GUPnPDLNAMetadataExtractor</span></a> *extractor,
+               <span class="type">GUPnPDLNAInformation</span>       *info,
+               <span class="type">GError</span>                     *error,
+               <span class="type">gpointer</span>                    user_data)</pre>
+<p>Will be emitted when all information on a URI could be
+discovered.</p>
+<div class="refsect3">
+<a name="GUPnPDLNAMetadataExtractor-done.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>extractor</p></td>
+<td class="parameter_description"><p>The <a class="link" href="GUPnPDLNAMetadataExtractor.html" title="GUPnPDLNAMetadataExtractor"><span class="type">GUPnPDLNAMetadataExtractor</span></a>.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p> The results as <span class="type">GUPnPDLNAInformation</span>. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>error</p></td>
+<td class="parameter_description"><p> Contains details of
+the error if discovery fails, otherwise is <code class="literal">NULL</code>. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="NULL is OK, both for passing and for returning."><span class="acronym">allow-none</span></acronym>][<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>user_data</p></td>
+<td class="parameter_description"><p>user data set when the signal handler was connected.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p>Flags: Run Last</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>Generated by GTK-Doc V1.25.1</div>
+</body>
+</html>

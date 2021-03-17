@@ -1,0 +1,113 @@
+From 4ddd51699df28d79995997b498cbb296f53f1682 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Mon, 13 Nov 2017 16:41:52 +0100
+Subject: [PATCH] device: Implement disconnect reason property
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ src/adapter.c |  4 ++++
+ src/device.c  | 24 ++++++++++++++++++++++++
+ src/device.h  |  2 ++
+ 3 files changed, 30 insertions(+)
+
+diff --git a/src/adapter.c b/src/adapter.c
+index b93aaa4..3dfd68c 100644
+--- a/src/adapter.c
++++ b/src/adapter.c
+@@ -6857,6 +6857,8 @@ static void dev_disconnected(struct btd_adapter *adapter,
+ 
+ 	device = btd_adapter_find_device(adapter, &addr->bdaddr, addr->type);
+ 	if (device) {
++		btd_device_set_disconnect_reason(device, reason);
++
+ 		adapter_remove_connection(adapter, device, addr->type);
+ 		disconnect_notify(device, reason);
+ 	}
+@@ -7766,6 +7768,8 @@ static void connected_callback(uint16_t index, uint16_t length,
+ 	if (eir_data.class != 0)
+ 		device_set_class(device, eir_data.class);
+ 
++	btd_device_set_disconnect_reason(device, MGMT_DEV_DISCONN_UNKNOWN);
++
+ 	adapter_add_connection(adapter, device, ev->addr.type);
+ 
+ 	name_known = device_name_known(device);
+diff --git a/src/device.c b/src/device.c
+index 25a4576..27cceef 100644
+--- a/src/device.c
++++ b/src/device.c
+@@ -255,6 +255,7 @@ struct btd_device {
+ 	guint		store_id;
+ 	
+ 	time_t		last_used;
++	uint8_t		disconnect_reason;
+ };
+ 
+ static const uint16_t uuid_list[] = {
+@@ -1013,6 +1014,17 @@ static gboolean dev_property_get_last_used(const GDBusPropertyTable *property,
+ 	return TRUE;
+ }
+ 
++static gboolean dev_property_get_disconnect_reason(const GDBusPropertyTable *property,
++					DBusMessageIter *iter, void *data)
++{
++	struct btd_device *device = data;
++	uint8_t val = device->disconnect_reason;
++
++	dbus_message_iter_append_basic(iter, DBUS_TYPE_BYTE, &val);
++
++	return TRUE;
++}
++
+ static void dev_property_set_trusted(const GDBusPropertyTable *property,
+ 					DBusMessageIter *value,
+ 					GDBusPendingPropertySet id, void *data)
+@@ -2634,6 +2646,7 @@ static const GDBusPropertyTable device_properties[] = {
+ 					dev_property_flags_exist,
+ 					G_DBUS_PROPERTY_FLAG_EXPERIMENTAL},
+ 	{ "LastUsed", "i", dev_property_get_last_used },
++	{ "DisconnectReason", "y", dev_property_get_disconnect_reason },
+ 
+ 	{ }
+ };
+@@ -6167,6 +6180,17 @@ void btd_device_set_serial_number(struct btd_device *device, const char *serial_
+ 	store_device_info(device);
+ }
+ 
++void btd_device_set_disconnect_reason(struct btd_device *device, uint8_t reason)
++{
++	if (device->disconnect_reason == reason)
++		return;
++
++	device->disconnect_reason = reason;
++
++	g_dbus_emit_property_changed(dbus_conn, device->path,
++						DEVICE_INTERFACE, "DisconnectReason");
++}
++
+ static void service_state_changed(struct btd_service *service,
+ 						btd_service_state_t old_state,
+ 						btd_service_state_t new_state,
+diff --git a/src/device.h b/src/device.h
+index ca90442..ddb3f19 100644
+--- a/src/device.h
++++ b/src/device.h
+@@ -90,6 +90,7 @@ gboolean device_is_trusted(struct btd_device *device);
+ void device_set_paired(struct btd_device *dev, uint8_t bdaddr_type);
+ void device_set_unpaired(struct btd_device *dev, uint8_t bdaddr_type);
+ void btd_device_set_temporary(struct btd_device *device, bool temporary);
++void device_set_disconnect_reason(struct btd_device *device, int reason);
+ void btd_device_set_trusted(struct btd_device *device, gboolean trusted);
+ void device_set_bonded(struct btd_device *device, uint8_t bdaddr_type);
+ void device_set_legacy(struct btd_device *device, bool legacy);
+@@ -144,6 +145,7 @@ int device_unblock(struct btd_device *device, gboolean silent,
+ void btd_device_set_pnpid(struct btd_device *device, uint16_t source,
+ 			uint16_t vendor, uint16_t product, uint16_t version);
+ void btd_device_set_serial_number(struct btd_device *device, const char *serial_number);
++void btd_device_set_disconnect_reason(struct btd_device *device, uint8_t reason);
+ 
+ int device_connect_le(struct btd_device *dev);
+ 
+-- 
+2.7.4
+

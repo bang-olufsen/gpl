@@ -1,0 +1,81 @@
+<!-- ##### SECTION Title ##### -->
+gmime-iconv-utils
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### FUNCTION g_mime_iconv_strdup ##### -->
+<para>
+
+</para>
+
+@cd: 
+@str: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_iconv_strndup ##### -->
+<para>
+
+</para>
+
+@cd: 
+@str: 
+@n: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_iconv_utf8_to_locale ##### -->
+<para>
+
+</para>
+
+@str: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_iconv_utf8_to_locale_length ##### -->
+<para>
+
+</para>
+
+@str: 
+@n: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_iconv_locale_to_utf8 ##### -->
+<para>
+
+</para>
+
+@str: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_iconv_locale_to_utf8_length ##### -->
+<para>
+
+</para>
+
+@str: 
+@n: 
+@Returns: 
+
+

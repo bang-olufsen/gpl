@@ -1,0 +1,37 @@
+From 671602b09ca8dc95b7c81928c13b852ec8c589b0 Mon Sep 17 00:00:00 2001
+From: Johan Hedberg <johan.hedberg@intel.com>
+Date: Thu, 18 Jun 2015 20:50:08 +0300
+Subject: [PATCH] Bluetooth: Use zalloc when possible
+
+Use zallog for adv_instance allocation instead of kmalloc + memset.
+This also fixes the following coccinelle warning:
+
+>> net/bluetooth/hci_core.c:2693:17-24: WARNING: kzalloc should be
+used for adv_instance, instead of kmalloc/memset
+
+Signed-off-by: Johan Hedberg <johan.hedberg@intel.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+---
+ net/bluetooth/hci_core.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
+index bee8c49..55f3bbb 100644
+--- a/net/bluetooth/hci_core.c
++++ b/net/bluetooth/hci_core.c
+@@ -2720,11 +2720,10 @@ int hci_add_adv_instance(struct hci_dev *hdev, u8 instance, u32 flags,
+ 		    instance < 1 || instance > HCI_MAX_ADV_INSTANCES)
+ 			return -EOVERFLOW;
+ 
+-		adv_instance = kmalloc(sizeof(*adv_instance), GFP_KERNEL);
++		adv_instance = kzalloc(sizeof(*adv_instance), GFP_KERNEL);
+ 		if (!adv_instance)
+ 			return -ENOMEM;
+ 
+-		memset(adv_instance, 0, sizeof(*adv_instance));
+ 		adv_instance->pending = true;
+ 		adv_instance->instance = instance;
+ 		list_add(&adv_instance->list, &hdev->adv_instances);
+-- 
+2.7.4
+

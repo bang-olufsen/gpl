@@ -1,0 +1,28 @@
+From b4eb75dbe287a0813388c02297e2fc464c80f4a7 Mon Sep 17 00:00:00 2001
+From: Lee Page <lee.page@streamunlimited.com>
+Date: Fri, 13 Mar 2015 11:52:05 +0100
+Subject: [PATCH] ASoC: add soc dai format definition for digital audio
+ interfaces DIT
+
+Signed-off-by: Miroslav Rudisin <miero@seznam.cz>
+Signed-off-by: Lee Page <lee.page@streamunlimited.com>
+---
+ include/sound/soc-dai.h | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/include/sound/soc-dai.h b/include/sound/soc-dai.h
+index b0de9b2..06971da 100644
+--- a/include/sound/soc-dai.h
++++ b/include/sound/soc-dai.h
+@@ -33,6 +33,8 @@ struct snd_compr_stream;
+ #define SND_SOC_DAIFMT_DSP_B		5 /* L data MSB during FRM LRC */
+ #define SND_SOC_DAIFMT_AC97		6 /* AC97 */
+ #define SND_SOC_DAIFMT_PDM		7 /* Pulse density modulation */
++#define SND_SOC_DAIFMT_DIT		8 /* Digital Audio Interface Transmit
++									 (S/PDIF, AES-3, or IEC-60958 format) */
+ 
+ /* left and right justified also known as MSB and LSB respectively */
+ #define SND_SOC_DAIFMT_MSB		SND_SOC_DAIFMT_LEFT_J
+-- 
+1.9.1
+

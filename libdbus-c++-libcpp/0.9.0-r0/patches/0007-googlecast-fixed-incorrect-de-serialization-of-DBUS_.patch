@@ -1,0 +1,43 @@
+From 2d92739045c67860e15982fdca67f99768563f66 Mon Sep 17 00:00:00 2001
+From: Stanislav Ruzani <stanislav.ruzani@streamunlimited.com>
+Date: Mon, 5 Jun 2017 06:15:25 +0200
+Subject: [PATCH 01/11] googlecast: fixed incorrect de-serialization of
+ DBUS_TYPE_DICT_ENTRY in libdbus-c++
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Signed-off-by: Stanislav Ružáni <stanislav.ruzani@streamunlimited.com>
+---
+ .../googleCast/castDBus/libdbus-c++/src/message.cpp       | 15 ++++++++-------
+ 1 file changed, 8 insertions(+), 7 deletions(-)
+
+diff --git a/src/message.cpp b/src/message.cpp
+index 3f0cac4..c8ef68d 100644
+--- a/src/message.cpp
++++ b/src/message.cpp
+@@ -346,13 +346,14 @@ void MessageIter::copy_data(MessageIter &to)
+       debug_log("copying compound type: %c[%s]", from.type(), sig);
+ 
+       MessageIter to_container(to.msg());
+-      dbus_message_iter_open_container
+-      (
+-        (DBusMessageIter *) & (to._iter),
+-        from.type(),
+-        from.type() == DBUS_TYPE_VARIANT ? NULL : sig,
+-        (DBusMessageIter *) & (to_container._iter)
+-      );
++
++	  dbus_message_iter_open_container
++	  (
++		(DBusMessageIter *) & (to._iter),
++		from.type(),
++		from.type() == DBUS_TYPE_DICT_ENTRY ? NULL : sig,
++		(DBusMessageIter *) & (to_container._iter)
++	  );
+ 
+       from_container.copy_data(to_container);
+       to.close_container(to_container);
+-- 
+2.7.4
+

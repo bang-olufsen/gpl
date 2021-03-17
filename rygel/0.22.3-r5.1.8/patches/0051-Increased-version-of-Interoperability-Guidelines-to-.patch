@@ -1,0 +1,32 @@
+From 7f3a4488407127ca268c17d7dd086b1b54d8f9ee Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Wed, 20 May 2015 09:46:25 +0200
+Subject: [PATCH] Increased version of Interoperability Guidelines to 1.51
+
+Version number implies limitations to XML document element values. We don't
+check any lengths of any elements so we must specify more benevolent
+version number.
+
+This fixes DLNA test case 7.3.17.4.
+See DLNA guidlines: QP334 A3LXJ 8CA7M
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ data/xml/MediaRenderer2.xml.in.in | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/data/xml/MediaRenderer2.xml.in.in b/data/xml/MediaRenderer2.xml.in.in
+index d545adc..ca1c144 100644
+--- a/data/xml/MediaRenderer2.xml.in.in
++++ b/data/xml/MediaRenderer2.xml.in.in
+@@ -16,6 +16,6 @@
+     <UDN></UDN>
+     <serviceList>
+     </serviceList>
+-    <dlna:X_DLNADOC>DMR-1.50</dlna:X_DLNADOC>
++    <dlna:X_DLNADOC>DMR-1.51</dlna:X_DLNADOC>
+   </device>
+ </root>
+-- 
+1.9.1
+

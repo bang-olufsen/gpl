@@ -1,0 +1,54 @@
+From b24f5599c1d7f545bb087e0625f70f3237a4e671 Mon Sep 17 00:00:00 2001
+From: Johan Hedberg <johan.hedberg@intel.com>
+Date: Mon, 2 Nov 2015 14:39:15 +0200
+Subject: [PATCH] Bluetooth: L2CAP: Fix returning correct LE CoC response codes
+
+The core spec defines specific response codes for situations when the
+received CID is incorrect. Add the defines for these and return them
+as appropriate from the LE Connect Request handler function.
+
+Signed-off-by: Johan Hedberg <johan.hedberg@intel.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+---
+ include/net/bluetooth/l2cap.h | 2 ++
+ net/bluetooth/l2cap_core.c    | 9 ++++++++-
+ 2 files changed, 10 insertions(+), 1 deletion(-)
+
+diff --git a/include/net/bluetooth/l2cap.h b/include/net/bluetooth/l2cap.h
+index 2239a37..08c28ac 100644
+--- a/include/net/bluetooth/l2cap.h
++++ b/include/net/bluetooth/l2cap.h
+@@ -273,6 +273,8 @@ struct l2cap_conn_rsp {
+ #define L2CAP_CR_AUTHORIZATION	0x0006
+ #define L2CAP_CR_BAD_KEY_SIZE	0x0007
+ #define L2CAP_CR_ENCRYPTION	0x0008
++#define L2CAP_CR_INVALID_SCID	0x0009
++#define L2CAP_CR_SCID_IN_USE	0x0010
+ 
+ /* connect/create channel status */
+ #define L2CAP_CS_NO_INFO	0x0000
+diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
+index 3232cc2..f3d3445 100644
+--- a/net/bluetooth/l2cap_core.c
++++ b/net/bluetooth/l2cap_core.c
+@@ -5451,9 +5451,16 @@ static int l2cap_le_connect_req(struct l2cap_conn *conn,
+ 		goto response_unlock;
+ 	}
+ 
++	/* Check for valid dynamic CID range */
++	if (scid < L2CAP_CID_DYN_START || scid > L2CAP_CID_LE_DYN_END) {
++		result = L2CAP_CR_INVALID_SCID;
++		chan = NULL;
++		goto response_unlock;
++	}
++
+ 	/* Check if we already have channel with that dcid */
+ 	if (__l2cap_get_chan_by_dcid(conn, scid)) {
+-		result = L2CAP_CR_NO_MEM;
++		result = L2CAP_CR_SCID_IN_USE;
+ 		chan = NULL;
+ 		goto response_unlock;
+ 	}
+-- 
+2.7.4
+

@@ -1,0 +1,5 @@
+<SECTION>
+<FILE>gupnp-dlna-gst-utils</FILE>
+gupnp_dlna_gst_utils_information_from_discoverer_info
+</SECTION>
+

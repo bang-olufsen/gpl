@@ -1,0 +1,85 @@
+From ae35856eeb36245d5fb43af32867d0b68eb054ca Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Wed, 28 Mar 2018 13:38:20 +0200
+Subject: [PATCH] device: Pause LE auto connect for 2 seconds after permission
+ denied error
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ src/device.c | 25 +++++++++++++++++++++++++
+ 1 file changed, 25 insertions(+)
+
+diff --git a/src/device.c b/src/device.c
+index 1bf568b..5ded78e 100644
+--- a/src/device.c
++++ b/src/device.c
+@@ -83,6 +83,8 @@
+ #define DISCOVERY_TIMER		1
+ #define INVALID_FLAGS		0xff
+ 
++#define ENABLE_AUTO_CONNECT_TIMER 2
++
+ #ifndef MIN
+ #define MIN(a, b) ((a) < (b) ? (a) : (b))
+ #endif
+@@ -257,6 +259,7 @@ struct btd_device {
+ 	
+ 	time_t		last_used;
+ 	uint8_t		disconnect_reason;
++	guint		enable_auto_connect_timer;
+ };
+ 
+ static const uint16_t uuid_list[] = {
+@@ -650,6 +653,9 @@ static void device_free(gpointer user_data)
+ 	if (device->discov_timer)
+ 		g_source_remove(device->discov_timer);
+ 
++	if (device->enable_auto_connect_timer)
++		g_source_remove(device->enable_auto_connect_timer);
++
+ 	if (device->connect)
+ 		dbus_message_unref(device->connect);
+ 
+@@ -1474,6 +1480,11 @@ static void device_set_auto_connect(struct btd_device *device, gboolean enable)
+ {
+ 	char addr[18];
+ 
++	if (device->enable_auto_connect_timer) {
++		g_source_remove(device->enable_auto_connect_timer);
++		device->enable_auto_connect_timer = 0;
++	}
++
+ 	if (!device || !device->le)
+ 		return;
+ 
+@@ -4702,6 +4713,12 @@ static void disconnect_gatt_service(gpointer data, gpointer user_data)
+ 	btd_service_disconnect(service);
+ }
+ 
++static gboolean enable_auto_connect(gpointer user_data)
++{
++	device_set_auto_connect(user_data, TRUE);
++	return FALSE;
++}
++
+ static void att_disconnected_cb(int err, void *user_data)
+ {
+ 	struct btd_device *device = user_data;
+@@ -4717,6 +4734,14 @@ static void att_disconnected_cb(int err, void *user_data)
+ 
+ 	btd_gatt_client_disconnected(device->client_dbus);
+ 
++	if (err == EACCES && device->auto_connect && !device->disable_auto_connect) {
++		device_set_auto_connect(device, FALSE);
++		device->enable_auto_connect_timer = g_timeout_add_seconds(
++								ENABLE_AUTO_CONNECT_TIMER,
++								enable_auto_connect,
++								device);
++	}
++
+ 	if (!device_get_auto_connect(device)) {
+ 		DBG("Automatic connection disabled");
+ 		goto done;
+-- 
+2.7.4
+

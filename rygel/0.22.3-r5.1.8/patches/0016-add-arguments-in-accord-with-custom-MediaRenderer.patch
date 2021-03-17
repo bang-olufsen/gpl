@@ -1,0 +1,35 @@
+From 3d2bce7d15f1a5a0a2bb96c0e818798ab92e9892 Mon Sep 17 00:00:00 2001
+From: Xia Zhou <xia.zhou@streamunlimited.com>
+Date: Wed, 20 Aug 2014 12:11:50 +0200
+Subject: [PATCH] add arguments in accord with custom MediaRenderer
+
+Signed-off-by: Xia Zhou <xia.zhou@streamunlimited.com>
+---
+ src/plugins/mpris/rygel-mpris-plugin.vala | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/src/plugins/mpris/rygel-mpris-plugin.vala b/src/plugins/mpris/rygel-mpris-plugin.vala
+index 19e628e..f509bde 100644
+--- a/src/plugins/mpris/rygel-mpris-plugin.vala
++++ b/src/plugins/mpris/rygel-mpris-plugin.vala
+@@ -36,13 +36,14 @@ public class Rygel.MPRIS.Plugin : Rygel.MediaRendererPlugin {
+     public string[]? protocols;
+ 
+     public Plugin (string      service_name,
+-                   PlayerProxy actual_player) {
++                   PlayerProxy actual_player,
++                   Rygel.PluginCapabilities? capabilities = null,
++                   Rygel.PlayerControllerInterface?  controller = null) {
+         var title = actual_player.identity;
+         if (title == null) {
+             title = service_name;
+         }
+-
+-        base (service_name, title, null);
++        base (service_name, title, null, capabilities, controller);
+ 
+         this.actual_player = actual_player;
+         this.mime_types = actual_player.supported_mime_types;
+-- 
+1.9.1
+

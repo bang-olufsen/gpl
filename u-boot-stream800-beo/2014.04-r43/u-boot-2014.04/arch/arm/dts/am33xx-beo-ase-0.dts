@@ -1,0 +1,29 @@
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ */
+
+/dts-v1/;
+
+#include "am33xx.dtsi"
+
+/ {
+	model = "Bang&Olufsen ASE (AM33xx)";
+	compatible = "ti,am335x-beo-hh1", "ti,am33xx";
+
+	chosen {
+		bootargs = "console=ttyO0,115200n8";
+	};
+
+	memory {
+		device_type = "memory";
+		reg = <0x80000000 0x10000000>; /* 256 MB */
+	};
+
+	ocp {
+		uart0: serial@44e09000 {
+			status = "okay";
+		};
+	};
+};

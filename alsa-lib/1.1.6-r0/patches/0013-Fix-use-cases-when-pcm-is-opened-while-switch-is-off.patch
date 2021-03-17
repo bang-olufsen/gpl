@@ -1,0 +1,250 @@
+From 9c1a08581ff98405ed799b6462046573c536afaf Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Thu, 6 Apr 2017 15:23:26 +0200
+Subject: [PATCH] Fix use cases when pcm is opened while switch is off
+
+We will persist hw_params to "/tmp" and then restore it when hw pcm is busy
+We will not open, close slave pcm when opening switch.
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+
+%% original patch: 0013-Fix-use-cases-when-pcm-is-opened-while-switch-is-off.patch
+---
+ src/pcm/pcm_switch.c | 127 +++++++++++++++++++++++++++++++++++++++++----------
+ 1 file changed, 104 insertions(+), 23 deletions(-)
+
+diff --git a/src/pcm/pcm_switch.c b/src/pcm/pcm_switch.c
+index c0f119d..1d5712f 100644
+--- a/src/pcm/pcm_switch.c
++++ b/src/pcm/pcm_switch.c
+@@ -7,6 +7,7 @@
+  */
+ 
+ #include <time.h>
++#include <stdio.h>
+ 
+ #include "pcm_local.h"
+ #include "pcm_generic.h"
+@@ -51,6 +52,8 @@ typedef struct {
+ 	snd_pcm_sw_params_t sw_params;
+ 	int has_hw_params;
+ 	snd_pcm_hw_params_t hw_params;
++	int has_hw_params_any;
++	snd_pcm_hw_params_t hw_params_any;
+ 	snd_config_t *root;
+ 	snd_pcm_stream_t stream;
+ 	snd_config_t *conf;
+@@ -219,12 +222,18 @@ static int snd_pcm_switch_info(snd_pcm_t *pcm, snd_pcm_info_t * info)
+ 	}
+ }
+ 
++#define hw_param_mask(params,var) \
++	&((params)->masks[(var) - SND_PCM_HW_PARAM_FIRST_MASK])
++
++#define hw_param_interval(params,var) \
++	&((params)->intervals[(var) - SND_PCM_HW_PARAM_FIRST_INTERVAL])
++
+ static int snd_pcm_switch_hw_refine(snd_pcm_t *pcm, snd_pcm_hw_params_t *params)
+ {
+-	DEBUG("");
+ 	snd_pcm_switch_t *swtch = pcm->private_data;
+ 
+ 	if (swtch->gen.slave) {
++		DEBUG("copy");
+ 		return snd_pcm_hw_refine_slave(pcm, params,
+ 		                               snd_pcm_switch_hw_refine_cprepare,
+ 		                               snd_pcm_switch_hw_refine_cchange,
+@@ -233,10 +242,43 @@ static int snd_pcm_switch_hw_refine(snd_pcm_t *pcm, snd_pcm_hw_params_t *params)
+ 		                               snd_pcm_generic_hw_refine);
+ 	}
+ 	else {
+-		int err = snd_pcm_hw_refine_soft(pcm, params);
+-		params->info = SND_PCM_INFO_MMAP | SND_PCM_INFO_MMAP_VALID |
+-		               SND_PCM_INFO_RESUME | SND_PCM_INFO_PAUSE;
+-		params->fifo_size = 0;
++		DEBUG("null");
++
++		int err = 0;
++		unsigned int k;
++
++		// If we have stored real hw params refine desired hw params also according to them
++		if (swtch->has_hw_params_any) {
++
++			for (k = SND_PCM_HW_PARAM_FIRST_MASK; k <= SND_PCM_HW_PARAM_LAST_MASK && err >= 0; k++) {
++				if (!(params->rmask & (1 << k)))
++					continue;
++				err = snd_mask_refine(hw_param_mask(params, k), hw_param_mask(&swtch->hw_params_any, k));
++				if (err) // error has negative values, change has positive value
++					params->cmask |= 1 << k;
++			}
++
++			for (k = SND_PCM_HW_PARAM_FIRST_INTERVAL; k <= SND_PCM_HW_PARAM_LAST_INTERVAL && err >= 0; k++) {
++				if (!(params->rmask & (1 << k)))
++					continue;
++				err = snd_interval_refine(hw_param_interval(params, k), hw_param_interval(&swtch->hw_params_any, k));
++				if (err) // error has negative values, change has positive value
++					params->cmask |= 1 << k;
++			}
++
++			if (err >= 0) {
++				err = snd_pcm_hw_refine_soft(pcm, params);
++
++				params->info = swtch->hw_params_any.info;
++				params->fifo_size = swtch->hw_params_any.fifo_size;
++			}
++
++		} else {
++			err = snd_pcm_hw_refine_soft(pcm, params);
++			params->info = SND_PCM_INFO_MMAP | SND_PCM_INFO_MMAP_VALID |
++						   SND_PCM_INFO_RESUME | SND_PCM_INFO_PAUSE;
++			params->fifo_size = 0;
++		}
+ 		return err;
+ 	}
+ }
+@@ -784,6 +826,11 @@ static void apply_switch_value(snd_pcm_t *pcm)
+ 		slave = swtch->gen.slave;
+ 		swtch->gen.slave = NULL;
+ 		swtch->state = SND_PCM_STATE_OPEN;
++
++		if (!swtch->has_hw_params_any &&
++			snd_pcm_hw_params_any(slave, &swtch->hw_params_any) >= 0) {
++			swtch->has_hw_params_any = 1;
++		}
+ 	}
+ 
+ 	if (pcm_state == SND_PCM_STATE_PREPARED ||
+@@ -1353,8 +1400,6 @@ static const snd_pcm_fast_ops_t snd_pcm_switch_fast_ops = {
+  * \param stream Stream type
+  * \param ctl_card card index of the control
+  * \param ctl_id The control element
+- * \param slave Slave PCM handle
+- * \param close_slave When set, the slave PCM handle is closed with copy PCM
+  * \retval zero on success otherwise a negative error code
+  * \warning Using of this function might be dangerous in the sense
+  *          of compatibility reasons. The prototype might be freely
+@@ -1363,8 +1408,7 @@ static const snd_pcm_fast_ops_t snd_pcm_switch_fast_ops = {
+ int snd_pcm_switch_open(snd_pcm_t **pcmp, const char *name,
+                         snd_pcm_stream_t stream, int mode ATTRIBUTE_UNUSED,
+                         int ctl_card, snd_ctl_elem_id_t *ctl_id,
+-                        int cchannels,
+-                        snd_pcm_t *slave, int close_slave)
++                        int cchannels)
+ {
+ 	DEBUG("");
+ 	snd_pcm_t *pcm;
+@@ -1373,7 +1417,6 @@ int snd_pcm_switch_open(snd_pcm_t **pcmp, const char *name,
+ 	int err;
+ 
+ 	assert(pcmp);
+-	assert(slave);
+ 
+ 	if (stream != SND_PCM_STREAM_PLAYBACK) {
+ 		SYSERR("Only PLAYBACK mode is supported");
+@@ -1391,15 +1434,12 @@ int snd_pcm_switch_open(snd_pcm_t **pcmp, const char *name,
+ 		return -ENOMEM;
+ 	}
+ 	swtch->state = SND_PCM_STATE_OPEN;
+-	swtch->cur_switch = SWITCH_CTL_ON;
+ 	swtch->active_switch = swtch->cur_switch;
+ 	swtch->cchannels = cchannels;
+-	swtch->gen.slave = slave;
+-	swtch->gen.close_slave = close_slave;
+ 	swtch->poll_fd = fd;
+ 
+ 	err = snd_pcm_new(&pcm, SND_PCM_TYPE_SWITCH, name,
+-	                  slave->stream, slave->mode);
++	                  stream, mode);
+ 	if (err < 0) {
+ 		switch_free(swtch);
+ 		return err;
+@@ -1407,8 +1447,8 @@ int snd_pcm_switch_open(snd_pcm_t **pcmp, const char *name,
+ 	pcm->ops = &snd_pcm_switch_ops;
+ 	pcm->fast_ops = &snd_pcm_switch_fast_ops;
+ 	pcm->private_data = swtch;
+-	pcm->poll_events = slave->poll_events;
+-	pcm->tstamp_type = slave->tstamp_type;
++	pcm->poll_events = POLLOUT;
++	pcm->tstamp_type = SND_PCM_TSTAMP_TYPE_MONOTONIC_RAW; // TODO: check if correct
+ 
+ 	err = switch_load_control(pcm, swtch, ctl_card, ctl_id);
+ 	if (err < 0) {
+@@ -1532,16 +1572,12 @@ int _snd_pcm_switch_open(snd_pcm_t **pcmp, const char *name,
+ 	if (err < 0)
+ 		goto failed_open;
+ 
+-	err = snd_pcm_open_slave(&spcm, root, sconf, stream, mode, conf);
+-	if (err < 0)
+-		goto failed_open;
+-
+ 	snd_ctl_elem_id_alloca(&ctl_id);
+ 	err = snd_pcm_parse_control_id(control, ctl_id, &ctl_card, &cchannels, NULL);
+ 	if (err < 0)
+ 		goto failed_open;
+ 
+-	err = snd_pcm_switch_open(pcmp, name, stream, mode, ctl_card, ctl_id, cchannels, spcm, 1);
++	err = snd_pcm_switch_open(pcmp, name, stream, mode, ctl_card, ctl_id, cchannels);
+ 	if (err < 0)
+ 		goto failed_open;
+ 
+@@ -1551,10 +1587,55 @@ int _snd_pcm_switch_open(snd_pcm_t **pcmp, const char *name,
+ 	swtch->sconf = sconf;
+ 	swtch->stream = stream;
+ 	swtch->stream_mode = mode;
++	swtch->active_switch = swtch->cur_switch;
++	swtch->needs_update = 0;
++	swtch->gen.close_slave = 1;
+ 
+-	DEBUG("Switch opened");
++	/* Store hw configuration to handle use cases when we are opening
++	 * swith plugin while it is disabled.
++	 */
++	const char *hw_params_path = "/tmp/alsa_switch_hw_params";
++
++	if (swtch->cur_switch == SWITCH_CTL_ON) {
++		/* open slave if switch is enabled */
++		err = snd_pcm_open_slave(&spcm, root, sconf, stream, mode, conf);
++		if (err < 0)
++			goto failed_open;
++
++		swtch->gen.slave = spcm;
++
++		/* save hw_params to file */
++		FILE * pFile;
++		if (access(hw_params_path, 0)) {
++			DEBUG("Write hw params %s", name);
++			pFile = fopen(hw_params_path, "w");
++			if (pFile != NULL) {
++				err = snd_pcm_hw_params_any(spcm, &swtch->hw_params_any);
++				if (err >= 0) {
++					swtch->has_hw_params_any = 1;
++					fwrite(&swtch->hw_params_any, sizeof(snd_pcm_hw_params_t), 1, pFile);
++				}
++				fclose (pFile);
++			}
++		} else {
++			DEBUG("Have hw params");
++		}
++
++	} else {
++		swtch->gen.slave = NULL;
+ 
+-	apply_switch_value(*pcmp);
++		/* read hw_params from file */
++		FILE * pFile;
++		pFile = fopen (hw_params_path, "r");
++		if (pFile != NULL) {
++			DEBUG("Read hw params");
++			swtch->has_hw_params_any = 1;
++			fread(&swtch->hw_params_any, sizeof(snd_pcm_hw_params_t), 1, pFile);
++			fclose (pFile);
++		}
++	}
++
++	DEBUG("Switch opened");
+ 
+ 	return 0;
+ 
+-- 
+2.7.4
+

@@ -1,0 +1,28 @@
+From 12c243571a1ab33457c941da4184cd5dd0ebdff0 Mon Sep 17 00:00:00 2001
+From: Radek Dostal <radek.dostal@streamunlimited.com>
+Date: Mon, 12 Jan 2015 16:25:11 +0100
+Subject: [PATCH] conf: stream800: Reduce watchdog timeout from 10 to 5 minutes
+
+based on discussion with Marek Belisko
+
+Signed-off-by: Radek Dostal <radek.dostal@streamunlimited.com>
+---
+ include/configs/stream800.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/configs/stream800.h b/include/configs/stream800.h
+index 1f0ee40..f47b00a 100644
+--- a/include/configs/stream800.h
++++ b/include/configs/stream800.h
+@@ -214,7 +214,7 @@
+     "sfu_load_addr=0x80200000\0" \
+     "cramfsaddr=0x80200000\0" \
+     "dtb_load_addr=0x80800000\0" \
+-    "wdtargs=omap_wdt.timer_margin=600 omap_wdt.early_disable=0\0" \
++    "wdtargs=omap_wdt.timer_margin=300 omap_wdt.early_disable=0\0" \
+ 	"bootargs_defaults=setenv bootargs " \
+ 		"console=${console} " \
+ 		"${wdtargs} " \
+-- 
+2.7.4
+

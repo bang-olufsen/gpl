@@ -1,0 +1,3111 @@
+From 3ef456f65ca595240833d34695a188eb1d8aabf6 Mon Sep 17 00:00:00 2001
+From: Radek Dostal <radek.dostal@streamunlimited.com>
+Date: Thu, 14 Mar 2013 14:23:53 +0100
+Subject: [PATCH] stream800: import fw update, use only one RTC register for
+ update, add DTS update support
+
+Signed-off-by: Martin Flaska <martin.flaska@streamunlimited.com>
+Signed-off-by: Matus Ujhelyi <matus.ujhelyi@streamunlimited.com>
+Signed-off-by: Radek Dostal <radek.dostal@streamunlimited.com>
+---
+ board/streamunlimited/stream800/Makefile     |    2 +-
+ board/streamunlimited/stream800/adc.c        |    2 +-
+ board/streamunlimited/stream800/board.c      |  128 ++-
+ board/streamunlimited/stream800/board.h      |    7 +
+ board/streamunlimited/stream800/fwupdate.c   |  566 ++++++++++++++
+ board/streamunlimited/stream800/fwupdate.h   |   35 +
+ board/streamunlimited/stream800/sfu_parser.c | 1084 ++++++++++++++++++++++++++
+ board/streamunlimited/stream800/sfu_parser.h |  213 +++++
+ include/configs/stream800.h                  |  857 ++++++++++++++++++--
+ 9 files changed, 2835 insertions(+), 59 deletions(-)
+ create mode 100644 board/streamunlimited/stream800/fwupdate.c
+ create mode 100644 board/streamunlimited/stream800/fwupdate.h
+ create mode 100644 board/streamunlimited/stream800/sfu_parser.c
+ create mode 100644 board/streamunlimited/stream800/sfu_parser.h
+
+diff --git a/board/streamunlimited/stream800/Makefile b/board/streamunlimited/stream800/Makefile
+index ecda854..ec3835c 100644
+--- a/board/streamunlimited/stream800/Makefile
++++ b/board/streamunlimited/stream800/Makefile
+@@ -21,7 +21,7 @@ LIB	= $(obj)lib$(BOARD).o
+ ifdef CONFIG_SPL_BUILD
+ COBJS	:= board-spl.o mux.o
+ else
+-COBJS	:= board.o mux.o adc.o board-sue_demo_client_board.o board-lan_dock_board.o board-sue_first_carrier_board.o
++COBJS	:= board.o mux.o adc.o board-sue_demo_client_board.o board-lan_dock_board.o board-sue_first_carrier_board.o fwupdate.o sfu_parser.o
+ endif
+ 
+ SRCS	:= $(SOBJS:.o=.S) $(COBJS:.o=.c)
+diff --git a/board/streamunlimited/stream800/adc.c b/board/streamunlimited/stream800/adc.c
+index 39cfac3..bf9d31c 100644
+--- a/board/streamunlimited/stream800/adc.c
++++ b/board/streamunlimited/stream800/adc.c
+@@ -97,7 +97,7 @@ int init_adc(void)
+ 	writel(PRCM_MOD_EN, &cmwkup->wkup_adc_tsc_ctrl);
+ 	while (readl(&cmwkup->wkup_adc_tsc_ctrl) != PRCM_MOD_EN);
+ 
+-	printf("%s(): HW revision 0x%08x\n", __func__, adc_readl(REG_REVISION));
++	printf("%s(): HW revision 0x%08lx\n", __func__, adc_readl(REG_REVISION));
+ 
+ 	return 0;
+ }
+diff --git a/board/streamunlimited/stream800/board.c b/board/streamunlimited/stream800/board.c
+index bdc3718..8f85a8b 100644
+--- a/board/streamunlimited/stream800/board.c
++++ b/board/streamunlimited/stream800/board.c
+@@ -33,17 +33,33 @@
+ #include <i2c.h>
+ #include <miiphy.h>
+ #include <cpsw.h>
++#include <os.h>
++#include <nand.h>
+ #include "board.h"
+ #include "mux.h"
+ #include "board-lan_dock_board.h"
+ #include "board-sue_demo_client_board.h"
+ #include "board-sue_first_carrier_board.h"
+ #include "adc.h"
++#include "fwupdate.h"
+ 
+ #ifdef CONFIG_SPL_BUILD
+ #error This file should not be built for SPL
+ #endif
+ 
++#ifndef STREAM_UBOOT_VERSION
++#define STREAM_UBOOT_VERSION "00000000.00000000.00000000.00000000"
++#warning Using default value for u-boot version: "00000000.00000000.00000000.00000000"
++#endif // STREAM_UBOOT_VERSION
++
++#define DB_PART_NAME            "settings"
++#define DB_PART_VID_HDR_OFFSET  "2048"
++#define DB_VOLUME_NAME          "stream800-settings"
++
++extern int ubi_part(const char* part_name, const char* vid_header_offset);
++extern int ubi_create(char* vol_name);
++extern int ubi_remove(char* vol_name);
++
+ DECLARE_GLOBAL_DATA_PTR;
+ 
+ static struct wd_timer *wdtimer = (struct wd_timer *)WDT_BASE;
+@@ -63,7 +79,7 @@ Stream800CarrierBoardType get_carrier_board_type(void)
+ 	return board.carrierBoardType;
+ }
+ 
+-static void board_printf_info()
++static void board_printf_info(void)
+ {
+ 	printf("Detected module: '%s', carrier board: '%s'\n",
+ 		   stream800ModuleVersionStrings[board.moduleVersion],
+@@ -91,6 +107,17 @@ int board_init(void)
+ 	board_printf_info();
+ 	enable_board_pin_mux(&board);
+ 
++#ifdef DEBUG
++	{
++		uint32_t rstst = readl(PRM_RSTST);
++		debug("rstst: 0x%X\n", rstst);
++	}
++	{
++		uint32_t rstctrl = readl(PRM_RSTCTRL);
++		debug("rstctrl: 0x%X\n", rstctrl);
++	}
++#endif /* DEBUG */
++
+ 	gd->bd->bi_boot_params = PHYS_DRAM_1 + 0x100;
+ 	gd->bd->bi_arch_number = MACH_TYPE_TIAM335EVM;
+ 
+@@ -122,6 +149,30 @@ static struct SupportedCarrierBoards {
+ 	// TODO: add another boards here
+ };
+ 
++#ifdef CONFIG_BOOTCOUNT_LIMIT
++void bootcount_store (ulong a)
++{
++	int status = fwupdate_setBootCount((uint32_t)a);
++
++	if (0 != status)
++		printf("ERROR: fwupdate_setBootCount() failed!\n");
++	else
++		printf("BOOTCOUNT is %ld\n", a);
++}
++
++ulong bootcount_load (void)
++{
++	uint8_t bootcount = 0xFF;
++
++	int status = fwupdate_getBootCount(&bootcount);
++
++	if (0 != status)
++		printf("ERROR: getBootCount() failed!\n");
++
++	return bootcount;
++}
++#endif /* CONFIG_BOOTCOUNT_LIMIT */
++
+ static void board_detect(struct Stream800Board *board)
+ {
+ 	if (!board) {
+@@ -160,7 +211,7 @@ static void board_detect(struct Stream800Board *board)
+ 		// Try to check if we run some of obsolete revision of stream800 module
+ 		// L1 has not correctly implemented board detection support in HW, values used for detection are only experimental
+ 		if (board->moduleVersion == MV_unknown || board->carrierBoardType == CBT_unknown) {
+-			if (MV_MSB >= 0xCD0 && MV_MSB <= 0xDC0 && MV_LSB >= 0xB00 && MV_LSB <= 0xBC8
++			if (MV_MSB >= 0xCD0 && MV_MSB <= 0xE80 && MV_LSB >= 0xB00 && MV_LSB <= 0xBD0
+ 				&& CBT_MSB >= 0x078 && CBT_MSB <= 0x0B8 && CBT_LSB >= 0x050 && CBT_LSB <= 0x080) {
+ 				board->moduleVersion = MV_L1;
+ 				board->carrierBoardType = CBT_LanDockBoard;
+@@ -179,13 +230,53 @@ static void board_detect(struct Stream800Board *board)
+ 				board->carrierBoardType = CBT_SueFirstCarrierBoard;
+ 			}
+ 		}
++
++		if (board->moduleVersion == MV_unknown || board->carrierBoardType == CBT_unknown) {
++			printf("MV_MSB: 0x%03X, MV_LSB: 0x%03X, CBT_MSB: 0x%03X, CBT_LSB: 0x%03X\n",
++				MV_MSB, MV_LSB, CBT_MSB, CBT_LSB);
++		}
+ 	}
+ }
+ 
++static int erase_database(void)
++{
++	nand_erase_options_t nand_erase_options;
++
++	nand_erase_options.length = CONFIG_SETTINGS_SIZE;
++	nand_erase_options.quiet = 0;
++	nand_erase_options.jffs2 = 0;
++	nand_erase_options.scrub = 0;
++	nand_erase_options.offset = CONFIG_SETTINGS_BASE;
++
++	puts("Erasing Nand Settings Partition...\n");
++	if (nand_erase_opts(&nand_info[0], &nand_erase_options))
++		return 1;
++
++	puts("done\n");
++
++	return 0;
++}
++
++static void factory_reset(void) {
++	// erase database partition in NAND
++	if (erase_database()) {
++		printf("ERROR: Database erase failed!\n");
++	} else if (0 == ubi_part(DB_PART_NAME, DB_PART_VID_HDR_OFFSET)) {
++		// partition is good/valid
++		// create new database volumel
++		if (0 != ubi_create(DB_VOLUME_NAME)) {
++			printf("ERROR: Database UBI create volume failed!\n");
++		}
++	} else {
++		printf("ERROR: Database UBI partition invalid!\n");
++	}
++	udelay(2000000);
++}
++
+ #ifdef CONFIG_BOARD_LATE_INIT
+ int board_late_init(void)
+ {
+-#ifdef CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG
++
+ 	setenv("board_name", "stream800");
+ 	switch (get_module_version()) {
+ 		case MV_L0: setenv("board_rev", "L0"); break;
+@@ -197,7 +288,6 @@ int board_late_init(void)
+ 			setenv("bootcmd", "");
+ 			break;
+ 	}
+-#endif
+ 
+ 	switch (get_carrier_board_type()) {
+ 		case CBT_LanDockBoard:
+@@ -214,6 +304,18 @@ int board_late_init(void)
+ 			//panic("Not supported board!");
+ 	}
+ 
++    setenv("buildtime_uboot_version", STREAM_UBOOT_VERSION);
++
++#ifdef CONFIG_CMD_SFU_PARSER
++
++	if (0 > fwupdate_init()) {
++		printf("ERROR: fwupdate_init() call failed!\n");
++	}
++#endif // CONFIG_CMD_SFU_PARSER
++
++	/* TODO Check on gpio to go to factory defaults*/
++	/* factory_reset(); */
++
+ 	return 0;
+ }
+ #endif
+@@ -314,6 +416,7 @@ try_usbether:
+ 
+ 	return n;
+ }
++#endif	// CONFIG_DRIVER_TI_CPSW) || (CONFIG_USB_ETHER && CONFIG_MUSB_GADGET)
+ 
+ static int do_wreset(cmd_tbl_t * cmdtp, int flag, int argc, char * const argv[])
+ {
+@@ -339,4 +442,19 @@ U_BOOT_CMD(
+ 	""
+ );
+ 
+-#endif	// CONFIG_DRIVER_TI_CPSW) || (CONFIG_USB_ETHER && CONFIG_MUSB_GADGET)
++/* change/get board status */
++static int do_bstate(cmd_tbl_t * cmdtp, int flag, int argc, char * const argv[])
++{
++	// TODO: do_bstate (handle differently for each boar type)
++	return 0;
++}
++
++U_BOOT_CMD(
++	bstate, 2, 1,  do_bstate,
++	"set/get board state",
++	"bstate [state]\n" \
++	"    state: board state to set\n"\
++	"            normal - initial state, running\n"\
++	"        dontunplug - do not power off or unplug device (FW update, ...)\n"\
++	"       hardfailure - non recoverable error state\n"
++);
+diff --git a/board/streamunlimited/stream800/board.h b/board/streamunlimited/stream800/board.h
+index 6304e4e..8b06a72 100644
+--- a/board/streamunlimited/stream800/board.h
++++ b/board/streamunlimited/stream800/board.h
+@@ -64,6 +64,13 @@ struct Stream800Board {
+ 	Stream800CarrierBoardType carrierBoardType;
+ };
+ 
++typedef enum {
++	BS_Off = 0,
++	BS_Normal,
++	BS_DontUnplug,		/* flashing new FW, ... */
++	BS_HardFailure,		/* cannot boot, ... */
++} BoardState;
++
+ Stream800ModuleVersion get_module_version(void);
+ Stream800CarrierBoardType get_carrier_board_type(void);
+ 
+diff --git a/board/streamunlimited/stream800/fwupdate.c b/board/streamunlimited/stream800/fwupdate.c
+new file mode 100644
+index 0000000..3ad08e2
+--- /dev/null
++++ b/board/streamunlimited/stream800/fwupdate.c
+@@ -0,0 +1,566 @@
++/*
++ * Copyright 2011 Attero Tech, LLC
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * Version 2 as published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
++ * MA 02111-1307 USA
++ */
++
++/*
++ * Firmware Update Functions and Commands
++ */
++
++#include "fwupdate.h"
++
++#include <common.h>
++#include <hush.h>
++#include <asm/arch/cpu.h>
++#include <asm/arch/hardware.h>
++#include <asm/io.h>
++
++#ifdef CONFIG_CMD_SFU_PARSER
++#include "sfu_parser.h"
++#endif
++
++static struct rtc_regs *rtcregs = (struct rtc_regs *)AM335X_RTC_BASE;
++
++/* offset indexes in RTC scratch0 register for each flag */
++#define UPDATE_FLAG_INDEX	0
++#define FAIL_FLAG_INDEX		2
++#define BOOT_COUNT_FLAG_INDEX	3
++
++/*
++ * Modify selected flag by its index.
++ */
++static int flag_write( uint8_t index, uint8_t data)
++{
++	uint32_t valb = 0;
++	uint32_t addr = (uint32_t)&rtcregs->scratch0;
++
++	assert(index <= 3);
++
++	if (index > 3)
++		return 1;
++
++	valb = readl(addr);
++
++	/*
++	 * Modify selected byte in RTC register.
++	 * 0: (uint8*)addr + 0;    1: (uint8*)addr + 1; ..
++	 */
++	((uint8_t *)&valb)[index] = data;
++
++	writel(valb, addr);
++
++	return 0;
++}
++
++/*
++ * Read selected flag by its index.
++ */
++static int flag_read(uint8_t index, uint8_t *data)
++{
++	uint32_t valb = 0;
++	uint32_t addr = (uint32_t)&rtcregs->scratch0;
++
++	assert(index <= 3);
++
++	if (index > 3)
++		return 1;
++
++	valb = readl(addr);
++
++	/*
++	 * Read selected byte in RTC register.
++	 * 0: (uint8*)addr + 0;    1: (uint8*)addr + 1; ..
++	 */
++	*data = ((uint8_t *)&valb)[index];
++
++	return 0;
++}
++
++
++int fwupdate_init(void)
++{
++	int status = 0;
++	char* bootlimit;
++
++	bootlimit = getenv("bootlimit");
++	if (NULL == bootlimit) {
++		char buf[16];
++		sprintf(buf, "%lu", MAX_BOOT_COUNT);
++		setenv("bootlimit", buf);
++	}
++
++	return status;
++}
++
++int fwupdate_getUpdateFlag(uint8_t *pUpdateFlag)
++{
++	return flag_read(UPDATE_FLAG_INDEX, pUpdateFlag);
++}
++
++int fwupdate_setUpdateFlag(uint8_t updateFlag)
++{
++	return flag_write(UPDATE_FLAG_INDEX, updateFlag);
++}
++
++int fwupdate_getFailFlag(uint8_t* pFailFlag)
++{
++	return flag_read(FAIL_FLAG_INDEX, pFailFlag);
++}
++
++int fwupdate_setFailFlag(uint8_t failFlag)
++{
++	return flag_write(FAIL_FLAG_INDEX, failFlag);
++}
++
++int fwupdate_getBootCount(uint8_t* pBootCnt)
++{
++	return flag_read(BOOT_COUNT_FLAG_INDEX, pBootCnt);
++}
++
++int fwupdate_setBootCount(uint8_t bootCnt)
++{
++	return flag_write(BOOT_COUNT_FLAG_INDEX, bootCnt);
++}
++
++
++static int do_fwup(cmd_tbl_t * cmdtp, int flag, int argc, char * const argv[])
++{
++	char*       cmd = NULL;
++	char*       fwupflag = NULL;
++	uint8_t     update;
++	uint8_t     fail;
++	uint8_t     bootcnt;
++	char*       bootlimit;
++	uint32_t    bootmax;
++
++	/* at least two arguments please */
++	if (argc < 2)
++		goto usage;
++
++	cmd = argv[1];
++
++	/*
++	 * Syntax is:
++	 *   0    1     2
++	 *   fwup clear flag
++	 */
++	if (strcmp(cmd, "clear") == 0) {
++		if (argc != 3)
++			goto usage;
++		else
++			fwupflag = argv[2];
++
++		if (strcmp(fwupflag, "update") == 0) {
++			if (0 != fwupdate_setUpdateFlag(0)) {
++				return 1;
++			}
++		} else if (strcmp(fwupflag, "fail") == 0) {
++			if (0 != fwupdate_setFailFlag(0)) {
++				return 1;
++			}
++		}
++		return 0;
++	}
++
++	/*
++	 * Syntax is:
++	 *   0    1   2
++	 *   fwup set flag
++	 */
++	if (strcmp(cmd, "set") == 0) {
++		if (argc != 3)
++			goto usage;
++		else
++			fwupflag = argv[2];
++
++		if (strcmp(fwupflag, "update") == 0) {
++			if (0 != fwupdate_setUpdateFlag(1)) {
++				return 1;
++			}
++		} else if (strcmp(fwupflag, "fail") == 0) {
++			if (0 != fwupdate_setFailFlag(1)) {
++				return 1;
++			}
++		}
++		return 0;
++	}
++
++	/*
++	 * Syntax is:
++	 *   0    1
++	 *   fwup update
++	 */
++	if (strcmp(cmd, "update") == 0) {
++
++		if (0 > fwupdate_getUpdateFlag(&update)) {
++			return 1;
++		} else {
++			return (update ? 0 : 1);
++		}
++		return 0;
++	}
++
++	/*
++	 * Syntax is:
++	 *   0    1
++	 *   fwup fail
++	 */
++	if (strcmp(cmd, "fail") == 0) {
++
++		if (0 > fwupdate_getFailFlag(&fail)) {
++			return 1;
++		} else {
++			return (fail ? 0 : 1);
++		}
++		return 0;
++	}
++
++	/*
++	 * Syntax is:
++	 *   0    1
++	 *   fwup incbootcnt
++	 */
++	if (strcmp(cmd, "incbootcnt") == 0) {
++
++		if (0 > fwupdate_getBootCount(&bootcnt)) {
++			return 1;
++		} else if (0 > fwupdate_setBootCount(bootcnt+1)) {
++			return 1;
++		}
++		return 0;
++	}
++
++	/*
++	 * Syntax is:
++	 *   0    1
++	 *   fwup bootcnt
++	 */
++	if (strcmp(cmd, "bootcnt") == 0) {
++
++		if (0 > fwupdate_getBootCount(&bootcnt)) {
++			return 1;
++		} else {
++			bootlimit = getenv("bootlimit");
++			if (NULL == bootlimit) {
++				bootmax = MAX_BOOT_COUNT;
++			} else {
++				bootmax = simple_strtoul(bootlimit, NULL, 10);
++			}
++		}
++		return ((bootcnt < bootmax) ? 0 : 1);
++	}
++
++usage:
++	return cmd_usage(cmdtp);
++}
++
++U_BOOT_CMD(
++		fwup, CONFIG_SYS_MAXARGS, 1, do_fwup,
++		"Streamunlimited firmware update",
++		"clear flag - clears the user requested flag\n"
++		"fwup set flag   - sets the user requested flag\n"
++		"fwup update     - checks if update flag is set\n"
++		"fwup fail       - checks if fail flag is set\n"
++		"fwup incbootcnt - increments boot count\n"
++		"fwup bootcnt    - checks if boot count is less than maximum allowed"
++		);
++
++#ifdef CONFIG_CMD_SFU_PARSER
++
++#define SFU_BUF_LEN     (80)
++
++static int do_sfu(cmd_tbl_t * cmdtp, int flag, int argc, char * const argv[])
++{
++	char*           cmd;
++	uint32_t        addr;
++	sfu_cpuver_t    glob_ver;
++	uint32_t        num_chunks;
++	sfu_cpuhdr_t    chunk_hdr;
++	uint32_t        chunk;
++	uint32_t        chnklen;
++	char            sfubuf[SFU_BUF_LEN];
++	int             idx;
++	char            hexchar[3];
++	int             status = 0;
++
++
++	if (argc == 2) {
++		/*
++		 * Syntax is:
++		 *   0   1
++		 *   sfu errstate
++		 */
++		if (strcmp(argv[1], "errstate") == 0) {
++			// Set status LED to solid red to indicate error state
++			// TODO ERROR LED
++			//if (NULL != LedFp) {
++			//mLedFp(LED_RED, LED_ON);
++			printf("SERIOUS ERROR\n");
++
++			//}
++
++			// DO NOT RETURN FROM AN ERROR STATE
++			SFU_ERR("SFU: ERROR STATE  -");
++			while(1) {
++				SFU_ERR("\b\\");
++				udelay(1 * 1000000);
++				SFU_ERR("\b|");
++				udelay(1 * 1000000);
++				SFU_ERR("\b/");
++				udelay(1 * 1000000);
++				SFU_ERR("\b-");
++				udelay(1 * 1000000);
++			}
++			return 0;
++		} else {
++			goto usage;
++		}
++	}
++	/* at least three arguments for the remaining commands please */
++	else if (argc < 3)
++		goto usage;
++
++	cmd = argv[1];
++	addr = simple_strtoul(argv[2], NULL, 16);
++
++	/*
++	 * Syntax is:
++	 *   0   1     2
++	 *   sfu magic addr
++	 */
++	if (strcmp(cmd, "magic") == 0) {
++
++		if (0 > sfu_MagicValid(addr)) {
++			return 1;
++		}
++		return 0;
++	}
++
++	/*
++	 * Syntax is:
++	 *   0   1     2
++	 *   sfu valid addr
++	 */
++	if (strcmp(cmd, "valid") == 0) {
++
++		if (0 > sfu_ImageValid(addr)) {
++			return 1;
++		}
++		return 0;
++	}
++
++	/*
++	 * Syntax is:
++	 *   0   1       2
++	 *   sfu globver addr
++	 */
++	if (strcmp(cmd, "globver") == 0) {
++
++		if (0 > sfu_GetGlobalVersion(addr, &glob_ver)) {
++			return 1;
++		}
++		sprintf(sfubuf, "%08x.%08x.%08x.%08x",
++				glob_ver.major,
++				glob_ver.minor,
++				glob_ver.commitcnt,
++				glob_ver.githash);
++		status |= set_hush_var_with_str_value("SFU_GLOB_VERS", sfubuf);
++		SFU_DBG("SFU_GLOB_VERS=%s\n", sfubuf);
++
++		return status;
++	}
++
++	/*
++	 * Syntax is:
++	 *   0   1       2
++	 *   sfu chnknum addr
++	 */
++	if (strcmp(cmd, "chnknum") == 0) {
++
++		if (0 > sfu_GetNumChunks(addr, &num_chunks)) {
++			return 1;
++		}
++		sprintf(sfubuf, "0x%08x", num_chunks);
++		status |= set_hush_var_with_str_value("SFU_NUM_CHNKS", sfubuf);
++		SFU_DBG("SFU_NUM_CHNKS=%s\n", sfubuf);
++
++		return status;
++	}
++
++	/*
++	 * Syntax is:
++	 *   0   1       2    3
++	 *   sfu chnkhdr addr id
++	 */
++	if (strcmp(cmd, "chnkhdr") == 0) {
++		if (argc != 4)
++			goto usage;
++
++		if (0 > sfu_GetNumChunks(addr, &num_chunks)) {
++			return 1;
++		}
++		SFU_DBG("num chunks=%d\n", num_chunks);
++		SFU_DBG("Searching for \"%s\" chunk...\n", argv[3]);
++
++		for (chunk = 1; num_chunks >= chunk; chunk++) {
++			if (0 > sfu_GetChunkHeader(addr, chunk, &chunk_hdr)) {
++				return 1;
++			}
++			SFU_DBG("chunk %d header name(%s) hdr_flag(0x%08x)\n",
++					chunk, chunk_hdr.dest, chunk_hdr.hdr_flag);
++
++			if ((SFU_HDR_FLAG_MINIMUM == (chunk_hdr.hdr_flag &
++							SFU_HDR_FLAG_MINIMUM)) &&
++					(strlen(argv[3]) == strlen(chunk_hdr.dest)) &&
++					(0 == strncmp(argv[3], chunk_hdr.dest, strlen(argv[3])))) {
++				// chunk found
++				SFU_DBG("chunk found\n");
++				break;
++			}
++		}
++
++		if (chunk > num_chunks) {
++			return 1;
++		} else {
++			SFU_DBG("\n\n--------- CHUNK NAME(%s) ---------\n", chunk_hdr.dest);
++			sprintf(sfubuf, "0x%08x", (addr + chunk_hdr.data));
++			status |= set_hush_var_with_str_value("SFU_CHNK_DATA", sfubuf);
++			SFU_DBG("SFU_CHNK_DATA=%s\n", sfubuf);
++			sprintf(sfubuf, "%s", chunk_hdr.dest);
++			status |= set_hush_var_with_str_value("SFU_CHNK_DEST", sfubuf);
++			SFU_DBG("SFU_CHNK_DEST=%s\n", sfubuf);
++			sprintf(sfubuf, "0x%08x", chunk_hdr.size);
++			status |= set_hush_var_with_str_value("SFU_CHNK_SIZE", sfubuf);
++			SFU_DBG("SFU_CHNK_SIZE=%s\n", sfubuf);
++			sprintf(sfubuf, "%08x.%08x.%08x.%08x",
++					chunk_hdr.version.major,
++					chunk_hdr.version.minor,
++					chunk_hdr.version.commitcnt,
++					chunk_hdr.version.githash);
++			status |= set_hush_var_with_str_value("SFU_CHNK_VERS", sfubuf);
++			SFU_DBG("SFU_CHNK_VERS=%s\n", sfubuf);
++			sprintf(sfubuf, "%08x", chunk_hdr.encryption_method);
++			status |= set_hush_var_with_str_value("SFU_CHNK_ENCM", sfubuf);
++			SFU_DBG("SFU_CHNK_ENCM=%s\n", sfubuf);
++			if (chunk_hdr.hdr_flag & SFU_HDR_FLAG__CR32) {
++				sprintf(sfubuf, "%08x", chunk_hdr.crc32);
++				status |= set_hush_var_with_str_value("SFU_CHNK_CR32", sfubuf);
++				SFU_DBG("SFU_CHNK_CR32=%s\n", sfubuf);
++			}
++			else
++			{
++				status |= set_hush_var_with_str_value("SFU_CHNK_CR32", "");
++				SFU_DBG("SFU_CHNK_CR32=%s\n", "");
++			}
++			if (chunk_hdr.hdr_flag & SFU_HDR_FLAG__MD5_) {
++				memset(sfubuf, 0x00, SFU_BUF_LEN);
++				for (idx = 0; sizeof(chunk_hdr.md5) > idx; idx++) {
++					sprintf(hexchar, "%02x", chunk_hdr.md5[idx]);
++					strncat(sfubuf, hexchar, (SFU_BUF_LEN-1));
++				}
++				status |= set_hush_var_with_str_value("SFU_CHNK_MD5_", sfubuf);
++				SFU_DBG("SFU_CHNK_MD5_=%s\n", sfubuf);
++			}
++			else
++			{
++				status |= set_hush_var_with_str_value("SFU_CHNK_MD5_", "");
++				SFU_DBG("SFU_CHNK_MD5_=%s\n", "");
++			}
++			if (chunk_hdr.hdr_flag & SFU_HDR_FLAG__SHA2) {
++				memset(sfubuf, 0x00, SFU_BUF_LEN);
++				for (idx = 0; sizeof(chunk_hdr.sha256) > idx; idx++) {
++					sprintf(hexchar, "%02x", chunk_hdr.sha256[idx]);
++					strncat(sfubuf, hexchar, (SFU_BUF_LEN-1));
++				}
++				status |= set_hush_var_with_str_value("SFU_CHNK_SHA2", sfubuf);
++				SFU_DBG("SFU_CHNK_SHA2=%s\n", sfubuf);
++			}
++			else
++			{
++				status |= set_hush_var_with_str_value("SFU_CHNK_SHA2", "");
++				SFU_DBG("SFU_CHNK_SHA2=%s\n", "");
++			}
++			SFU_DBG("--- --- --- --- --- --- ---\n\n");
++		}
++
++		return status;
++	}
++
++#ifdef CONFIG_BLOWFISH
++	/*
++	 * Syntax is:
++	 *   0   1       2    3
++	 *   sfu decrypt addr len
++	 */
++	if (strcmp(cmd, "decrypt") == 0) {
++		if (argc != 4)
++			goto usage;
++
++		chnklen = simple_strtoul(argv[3], NULL, 16);
++		if (0 > sfu_Decrypt(addr, chnklen)) {
++			return 1;
++		}
++
++		return 0;
++	}
++#endif // CONFIG_BLOWFISH
++
++usage:
++	return cmd_usage(cmdtp);
++}
++
++U_BOOT_CMD(
++		sfu, CONFIG_SYS_MAXARGS, 1, do_sfu,
++		"Streamunlimited Firmware Update parser",
++		"magic addr           - determine if SFU magic number is valid\n"
++		"sfu valid addr       - determine if SFU image is valid\n"
++		"sfu globver addr     - get the global version of the SFU image\n"
++		"sfu chnknum addr     - get the number of chunks in SFU image\n"
++		"sfu chnkhdr addr id  - get chunk header with id\n"
++		"sfu errstate         - handle error state condition\n"
++#ifdef CONFIG_BLOWFISH
++		"sfu decrypt addr len - decrypt ram starting at <addr> and <len> bytes\n"
++#endif // CONFIG_BLOWFISH
++		);
++#endif // CONFIG_CMD_SFU_PARSER
++
++#ifdef CONFIG_HUSH_INIT_VAR
++int hush_init_var (void)
++{
++	int status = 0;
++
++	status |= set_hush_var_with_str_value("UBOOT_RESET", "no");
++	status |= set_hush_var_with_str_value("UPDATE_XLOADER", "no");
++	status |= set_hush_var_with_str_value("KERNEL_ERASED", "no");
++	status |= set_hush_var_with_str_value("UPDATE_ROOTFS", "no");
++	status |= set_hush_var_with_str_value("UPDATE_KERNEL", "no");
++	status |= set_hush_var_with_str_value("ERROR_STATE", "no");
++
++	status |= set_hush_var_with_str_value("SFU_TOTAL_LEN", "0x0");
++	status |= set_hush_var_with_str_value("SFU_GLOB_VERS", "");
++	status |= set_hush_var_with_str_value("SFU_NUM_CHNKS", "");
++	status |= set_hush_var_with_str_value("SFU_CHNK_DATA", "");
++	status |= set_hush_var_with_str_value("SFU_CHNK_SIZE", "");
++	status |= set_hush_var_with_str_value("SFU_CHNK_DEST", "");
++	status |= set_hush_var_with_str_value("SFU_CHNK_VERS", "");
++	status |= set_hush_var_with_str_value("SFU_CHNK_ENCM", "");
++	status |= set_hush_var_with_str_value("SFU_CHNK_CR32", "");
++	status |= set_hush_var_with_str_value("SFU_CHNK_MD5_", "");
++	status |= set_hush_var_with_str_value("SFU_CHNK_SHA2", "");
++
++	return status;
++}
++#endif
+diff --git a/board/streamunlimited/stream800/fwupdate.h b/board/streamunlimited/stream800/fwupdate.h
+new file mode 100644
+index 0000000..c9c2c10
+--- /dev/null
++++ b/board/streamunlimited/stream800/fwupdate.h
+@@ -0,0 +1,35 @@
++/*
++ * fwupdate.h
++ *
++ * Copyright (C) 2012, StreamUnlimited Engineering GmbH, http://www.streamunlimited.com/
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation; either version 2 of
++ * the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR /PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++#ifndef __FWUPDATE_H
++#define __FWUPDATE_H
++
++#include <common.h>
++
++#define MAX_BOOT_COUNT	(6UL)
++
++int fwupdate_init(void);
++
++int fwupdate_getUpdateFlag(uint8_t *pUpdateFlag);
++int fwupdate_setUpdateFlag(uint8_t updateFlag);
++
++int fwupdate_getFailFlag(uint8_t *pFailFlag);
++int fwupdate_setFailFlag(uint8_t failFlag);
++
++int fwupdate_getBootCount(uint8_t* pBootCnt);
++int fwupdate_setBootCount(uint8_t bootCnt);
++
++#endif	/* __FWUPDATE_H */
+diff --git a/board/streamunlimited/stream800/sfu_parser.c b/board/streamunlimited/stream800/sfu_parser.c
+new file mode 100644
+index 0000000..ce8e71f
+--- /dev/null
++++ b/board/streamunlimited/stream800/sfu_parser.c
+@@ -0,0 +1,1084 @@
++/*
++ * (C) Copyright 2011 Attero Tech LLC
++ *
++ * Written by: Dan Brunswick <dan.brunswick@atterotech.com>
++ *
++ * See file CREDITS for list of people who contributed to this
++ * project.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation; either version 2 of
++ * the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
++ * MA 02111-1307 USA
++ *
++ */
++
++#include <common.h>
++#include "sfu_parser.h"
++#include <const_env_common.h>
++
++#ifdef CONFIG_SFU_FILE
++#include <stdio.h>
++#include <string.h>
++#endif // CONFIG_SFU_FILE
++
++#ifdef CONFIG_SFU_RAM
++#include <linux/string.h>
++#endif // CONFIG_SFU_RAM
++
++#ifdef CONFIG_BLOWFISH
++#include "blowfish.h"
++#endif // CONFIG_BLOWFISH
++
++#include <hush.h>
++
++#include <u-boot/md5.h>
++#include <sha256.h>
++
++extern uint32_t crc32(uint32_t crc, const uint8_t* baseaddr, uint32_t length);
++extern void md5(unsigned char *input, int len, unsigned char output[16]);
++
++
++static int32_t ImageValid(uint32_t startAddr);
++static int32_t GetGlobalVersion(uint32_t startAddr,
++		sfu_cpuver_t* pGlobVer);
++static int32_t ExtractChunkSfuHdr(sfu_option_t* pOption,
++		sfu_cpuhdr_t* pHdr);
++
++
++#define MAX_HUSH_SET_STRING_LEN (512)
++int set_hush_var_with_str_value(const char *var_name,
++		char       *var_value)
++{
++	static char var_and_value_string[MAX_HUSH_SET_STRING_LEN];
++	int status;
++
++	memset(var_and_value_string, 0x0, MAX_HUSH_SET_STRING_LEN);
++	strncpy(var_and_value_string, var_name, (MAX_HUSH_SET_STRING_LEN-1));
++	strncat(var_and_value_string, "=", (MAX_HUSH_SET_STRING_LEN-1));
++	strncat(var_and_value_string, var_value, (MAX_HUSH_SET_STRING_LEN-1));
++
++	status = set_local_var(var_and_value_string, 0);
++
++	return ((status < 0) ? 1 : 0);
++}
++
++#ifdef CONFIG_SFU_FILE
++#include <sys/types.h>
++#include <unistd.h>
++
++static int fileRead(int fd, uint8_t* destAddr, size_t dataLen);
++
++//----------------------------------------------------------------------------
++//  Function: sfu_ImageValid
++//
++//  Description:
++//      	This function determines if the SFU image is valid.
++//
++//  Returns:
++//	        int32_t imageValid   where 0 indicates valid and
++//                                     <0 indicates invalid
++//----------------------------------------------------------------------------
++int32_t sfu_ImageValid(
++		int fd // Image file descriptor
++		)
++{
++	uint8_t                  header[GLOBAL_HDR_LEN];
++	sfu_global_hdr_w_data_t* pGlobHdr = (sfu_global_hdr_w_data_t*)header;
++	uint32_t                 totalLen;
++	uint32_t                 calcCrc32;
++	int32_t                  imageValid;
++	uint8_t                  byte;
++
++	if (0 > fd)
++	{
++		SFU_ERR("ERROR: File descriptor is %d\n", fd);
++		return IMG_VALIDITY__FILE_ERR;
++	}
++
++	// Seek to the beginning of the file
++	if ((off_t)-1 == lseek(fd, 0, SEEK_SET))
++	{
++		SFU_ERR("ERROR: IMG_VALIDITY__FILE_ERR ");
++		SFU_ERR("errno(0x%08x) (%s)\n", errno, strerror(errno));
++		return IMG_VALIDITY__FILE_ERR;
++	}
++
++	// Retrieve the global header
++	if (0 > fileRead(fd, header, sizeof(header)))
++	{
++		SFU_ERR("ERROR: IMG_VALIDITY__FILE_ERR\n");
++		return IMG_VALIDITY__FILE_ERR;
++	}
++
++	imageValid = ImageValid((uint32_t)header);
++	if (imageValid)
++	{
++		return imageValid;
++	}
++
++	// Verify that the SFU image's CRC32 matches the calculated CRC32
++	totalLen = SFU_32BIT_VALUE(pGlobHdr->total_length);
++	calcCrc32 = 0;
++	totalLen -= GLOBAL_CRC_CALC_OFFSET;
++	while (totalLen--)
++	{
++		// Retrieve byte from file for CRC32 calculation
++		if (0 > fileRead(fd, &byte, sizeof(byte)))
++		{
++			SFU_ERR("ERROR: IMG_VALIDITY__FILE_ERR\n");
++			return IMG_VALIDITY__FILE_ERR;
++		}
++		calcCrc32 = crc32(calcCrc32,
++				&byte,
++				sizeof(byte));
++	}
++	if (calcCrc32 != SFU_32BIT_VALUE(pGlobHdr->global_crc32))
++	{
++		SFU_ERR("ERROR: IMG_VALIDITY__CRC32_ERR\n");
++		SFU_ERR("\tCalcCRC(%08x) FileCRC(%08x)\n",
++				calcCrc32, SFU_32BIT_VALUE(pGlobHdr->global_crc32));
++		return IMG_VALIDITY__CRC32_ERR;
++	}
++
++	return IMG_VALIDITY__VALID;
++} // end sfu_ImageValid
++
++
++//----------------------------------------------------------------------------
++//  Function: sfu_GetGlobalVersion
++//
++//  Description:
++//      	This function gets the global version of the SFU file.
++//
++//  Returns:
++//	        int32_t status    where 0 indicates success and
++//                                  <0 indicates error
++//----------------------------------------------------------------------------
++int32_t sfu_GetGlobalVersion(
++		int           fd,        // Image file descriptor
++		sfu_cpuver_t* pGlobalVer // Address to store version
++		)
++{
++	uint8_t                  header[GLOBAL_HDR_LEN];
++	sfu_global_hdr_w_data_t* pGlobHdr = (sfu_global_hdr_w_data_t*)header;
++
++	if (0 > fd)
++	{
++		SFU_ERR("ERROR: File descriptor is %d\n", fd);
++		return IMG_VALIDITY__FILE_ERR;
++	}
++
++	// Seek to the beginning of the file
++	if ((off_t)-1 == lseek(fd, 0, SEEK_SET))
++	{
++		SFU_ERR("ERROR: IMG_VALIDITY__FILE_ERR ");
++		SFU_ERR("errno(0x%08x) (%s)\n", errno, strerror(errno));
++		return IMG_VALIDITY__FILE_ERR;
++	}
++
++	// Retrieve the global header
++	if (0 > fileRead(fd, header, sizeof(header)))
++	{
++		SFU_ERR("ERROR: IMG_VALIDITY__FILE_ERR\n");
++		return IMG_VALIDITY__FILE_ERR;
++	}
++
++	return GetGlobalVersion((uint32_t)header, pGlobalVer);
++} // end sfu_GetGlobalVersion
++
++
++//----------------------------------------------------------------------------
++//  Function: sfu_GetNumChunks
++//
++//  Description:
++//      	This function gets the number of chunks in the SFU file.
++//
++//  Returns:
++//	        int32_t status    where 0 indicates success and
++//                                  <0 indicates error
++//----------------------------------------------------------------------------
++int32_t sfu_GetNumChunks(
++		int       fd,        // Image file descriptor
++		uint32_t* pNumChunks // Address to store number of chunks in SFU
++		)
++{
++	uint8_t          globOptCnt[SFU_COUNT_BYTE_LEN];
++	uint32_t         globOptCnt32;
++	uint32_t         globOptIndex;
++	bool             notfound = true;
++	uint8_t          chnkCnt[SFU_CHNK_CNT_BYTE_LEN];
++	uint32_t         optLen32;
++	sfu_option_hdr_t optionHdr;
++
++	if (0 > fd)
++	{
++		SFU_ERR("ERROR: File descriptor is %d\n", fd);
++		return IMG_VALIDITY__FILE_ERR;
++	}
++
++	// Seek to the global opt count offset in the file
++	if ((off_t)-1 == lseek(fd, GLOBAL_OPT_CNT_OFFSET, SEEK_SET))
++	{
++		SFU_ERR("ERROR: IMG_VALIDITY__FILE_ERR ");
++		SFU_ERR("errno(0x%08x) (%s)\n", errno, strerror(errno));
++		return IMG_VALIDITY__FILE_ERR;
++	}
++
++	// Retrieve the global option count
++	if (0 > fileRead(fd, globOptCnt, sizeof(globOptCnt)))
++	{
++		SFU_ERR("ERROR: IMG_VALIDITY__FILE_ERR\n");
++		return IMG_VALIDITY__FILE_ERR;
++	}
++	globOptCnt32 = SFU_32BIT_VALUE(globOptCnt);
++
++	for (globOptIndex = 0;
++			((globOptCnt32 > globOptIndex) && notfound);
++			globOptIndex++)
++	{
++		// Retrieve the option header
++		if (0 > fileRead(fd, optionHdr.id, sizeof(optionHdr)))
++		{
++			SFU_ERR("ERROR: IMG_VALIDITY__FILE_ERR\n");
++			return IMG_VALIDITY__FILE_ERR;
++		}
++
++		// Extract chunk count from CHNK global option SFU
++		if (0 == strncmp((char*)optionHdr.id,
++					SFU_GLBL_CHNK_ID,
++					SFU_OPTION_ID_BYTE_LEN))
++		{
++			// Retrieve the chunk count
++			if (0 > fileRead(fd, chnkCnt, sizeof(chnkCnt)))
++			{
++				SFU_ERR("ERROR: IMG_VALIDITY__FILE_ERR\n");
++				return IMG_VALIDITY__FILE_ERR;
++			}
++			*pNumChunks = SFU_32BIT_VALUE(chnkCnt);
++			notfound = false;
++		}
++		else
++		{
++			// Seek to next option header
++			if ((off_t)-1 == lseek(fd,
++						SFU_32BIT_VALUE(optionHdr.length),
++						SEEK_CUR))
++			{
++				SFU_ERR("ERROR: IMG_VALIDITY__FILE_ERR ");
++				SFU_ERR("errno(0x%08x) (%s)\n", errno, strerror(errno));
++				return IMG_VALIDITY__FILE_ERR;
++			}
++		}
++	}
++
++	if (notfound)
++	{
++		return -1;
++	}
++
++	return 0;
++} // end sfu_GetNumChunks
++
++
++//----------------------------------------------------------------------------
++//  Function: sfu_GetChunkHeader
++//
++//  Description:
++//      	This function gets the chunk header of the user requested chunk
++//      	from the SFU file.
++//
++//  Returns:
++//	        int32_t status    where 0 indicates success and
++//                                  <0 indicates error
++//----------------------------------------------------------------------------
++int32_t sfu_GetChunkHeader(
++		int           fd,       // Image file descriptor
++		uint32_t      chunkNum, // Chunk number
++		sfu_cpuhdr_t* pHdr      // Address to store header
++		)
++{
++	uint8_t      globOptCnt[SFU_COUNT_BYTE_LEN];
++	uint32_t     globOptCnt32;
++	uint32_t     globOptIndex;
++	uint8_t      chnkOptCnt[SFU_COUNT_BYTE_LEN];
++	uint32_t     chnkOptCnt32;
++	uint32_t     chnkIndex;
++	sfu_option_t option;
++	uint32_t     optIndex;
++	uint32_t     optLen32;
++
++	if (0 > fd)
++	{
++		SFU_ERR("ERROR: File descriptor is %d\n", fd);
++		return IMG_VALIDITY__FILE_ERR;
++	}
++
++	// Seek to the global opt count offset in the file
++	if ((off_t)-1 == lseek(fd, GLOBAL_OPT_CNT_OFFSET, SEEK_SET))
++	{
++		SFU_ERR("ERROR: IMG_VALIDITY__FILE_ERR ");
++		SFU_ERR("errno(0x%08x) (%s)\n", errno, strerror(errno));
++		return IMG_VALIDITY__FILE_ERR;
++	}
++
++	// Retrieve the global option count
++	if (0 > fileRead(fd, globOptCnt, sizeof(globOptCnt)))
++	{
++		SFU_ERR("ERROR: IMG_VALIDITY__FILE_ERR\n");
++		return IMG_VALIDITY__FILE_ERR;
++	}
++	globOptCnt32 = SFU_32BIT_VALUE(globOptCnt);
++
++	for (globOptIndex = 0;
++			(globOptCnt32 > globOptIndex);
++			globOptIndex++)
++	{
++		// Retrieve the option header
++		if (0 > fileRead(fd, option.hdr.id, SFU_OPTION_HDR_LEN))
++		{
++			SFU_ERR("ERROR: IMG_VALIDITY__FILE_ERR\n");
++			return IMG_VALIDITY__FILE_ERR;
++		}
++
++		// Seek to next option header
++		if ((off_t)-1 == lseek(fd,
++					SFU_32BIT_VALUE(option.hdr.length),
++					SEEK_CUR))
++		{
++			SFU_ERR("ERROR: IMG_VALIDITY__FILE_ERR ");
++			SFU_ERR("errno(0x%08x) (%s)\n", errno, strerror(errno));
++			return IMG_VALIDITY__FILE_ERR;
++		}
++	}
++
++	// Go through chunk options until desired chunk is reached.
++	// Extract chunk information and store in user requested location
++	pHdr->hdr_flag = 0;
++	for (chnkIndex = 0; chunkNum > chnkIndex; chnkIndex++)
++	{
++		// Retrieve the chunk option count
++		if (0 > fileRead(fd, chnkOptCnt, sizeof(chnkOptCnt)))
++		{
++			SFU_ERR("ERROR: IMG_VALIDITY__FILE_ERR\n");
++			return IMG_VALIDITY__FILE_ERR;
++		}
++		chnkOptCnt32 = SFU_32BIT_VALUE(chnkOptCnt);
++
++		for (optIndex = 0;
++				(chnkOptCnt32 > optIndex);
++				optIndex++)
++		{
++			// Retrieve the option header
++			if (0 > fileRead(fd, option.hdr.id, SFU_OPTION_HDR_LEN))
++			{
++				SFU_ERR("ERROR: IMG_VALIDITY__FILE_ERR\n");
++				return IMG_VALIDITY__FILE_ERR;
++			}
++
++			optLen32 = SFU_32BIT_VALUE(option.hdr.length);
++			if (MAX_SFU_OPTION_DATA_LEN < optLen32)
++			{
++				SFU_ERR("ERROR: option length(%d) exceeds maximum(%d)\n",
++						optLen32, MAX_SFU_OPTION_DATA_LEN);
++				return -1;
++			}
++
++			// Retrieve the option variable length data
++			if (0 > fileRead(fd,
++						option.var_len_data,
++						optLen32))
++			{
++				SFU_ERR("ERROR: IMG_VALIDITY__FILE_ERR\n");
++				return IMG_VALIDITY__FILE_ERR;
++			}
++
++			if ((chunkNum - 1) == chnkIndex)
++			{
++				// Extract chunk SFU header information
++				if (0 > ExtractChunkSfuHdr(&option, pHdr))
++				{
++					SFU_ERR("ERROR: ExtractChunkSfuHdr() reported failure\n");
++					return -1;
++				}
++			}
++			else
++			{
++				// Seek to next option header
++				if ((off_t)-1 == lseek(fd,
++							SFU_32BIT_VALUE(option.hdr.length),
++							SEEK_CUR))
++				{
++					SFU_ERR("ERROR: IMG_VALIDITY__FILE_ERR ");
++					SFU_ERR("errno(0x%08x) (%s)\n", errno, strerror(errno));
++					return IMG_VALIDITY__FILE_ERR;
++				}
++			}
++		}
++	}
++
++	return 0;
++} // end sfu_GetChunkHeader
++
++
++#ifdef CONFIG_BLOWFISH
++//----------------------------------------------------------------------------
++//  Function: sfu_Decrypt
++//
++//  Description:
++//      	This function ...
++//
++//  Returns:
++//	        int32_t status    where 0 indicates success and
++//                                  <0 indicates error
++//----------------------------------------------------------------------------
++int32_t sfu_Decrypt(
++		int      fd,    // Image file descriptor
++		uint32_t data,  // Chunk data offset within file
++		uint32_t size   // Chunk data size
++		)
++{
++	// TODO
++	return -1;
++} // sfu_Decrypt
++#endif // CONFIG_BLOWFISH
++
++
++//----------------------------------------------------------------------------
++//  Function: fileRead
++//
++//  Description:
++//      	This function reads the user requested number of bytes from the
++//      	user requested file and	stores it in the user requested address.
++//
++//  Returns:
++//	        int numberOfBytes  where >=0 indicates number of bytes read and
++//                                   <0 indicates error
++//----------------------------------------------------------------------------
++static int fileRead(
++		int      fd,       // Image file descriptor
++		uint8_t* destAddr, // Address to store data
++		size_t   dataLen   // Length of data to store
++		)
++{
++	// TODO FIXME - to be filled in by SUE
++	// This is a FLASH access function
++	// This function will take care of handling bad NAND sectors.
++	return -1;
++} // end fileRead
++#endif // CONFIG_SFU_FILE
++
++
++#ifdef CONFIG_SFU_RAM
++extern int set_hush_var_with_str_value(const char *, char *);
++//----------------------------------------------------------------------------
++//  Function: sfu_MagicValid
++//
++//  Description:
++//      	This function determines if the SFU image's magic number is valid.
++//
++//  Returns:
++//	        int32_t magicValid   where 0 indicates valid and
++//                                     <0 indicates invalid
++//----------------------------------------------------------------------------
++int32_t sfu_MagicValid(
++		uint32_t startAddr // RAM start address
++		)
++{
++	int                      status = 0;
++	sfu_global_hdr_w_data_t* pGlobHdr = (sfu_global_hdr_w_data_t*)startAddr;
++	uint32_t                 totalLen;
++	char                     strbuf[16];
++
++	// Verify that the SFU image's magic field is valid
++	if (0 != strncmp((char*)pGlobHdr->magic,
++				SFU_FILE_HEADER_MAGIC,
++				SFU_MAGIC_BYTE_LEN))
++	{
++		SFU_ERR("ERROR: IMG_VALIDITY__MAGIC_ERR  expect(%s) file(%c%c%c%c%c%c%c%c)\n",
++				SFU_FILE_HEADER_MAGIC,
++				((char*)pGlobHdr->magic)[0],
++				((char*)pGlobHdr->magic)[1],
++				((char*)pGlobHdr->magic)[2],
++				((char*)pGlobHdr->magic)[3],
++				((char*)pGlobHdr->magic)[4],
++				((char*)pGlobHdr->magic)[5],
++				((char*)pGlobHdr->magic)[6],
++				((char*)pGlobHdr->magic)[7]);
++		return IMG_VALIDITY__MAGIC_ERR;
++	}
++
++	// Verify that the SFU image's total length is less or equal to the
++	// maximum download partition byte length
++	totalLen = SFU_32BIT_VALUE(pGlobHdr->total_length);
++	if (MAX_SFU_DWNLD_MTD_PART_SIZE < totalLen)
++	{
++		SFU_ERR("ERROR: IMG_VALIDITY__TOTLEN_ERR  max(%08x) file(%08x)\n",
++				(uint32_t)MAX_SFU_DWNLD_MTD_PART_SIZE, totalLen);
++		return IMG_VALIDITY__TOTLEN_ERR;
++	}
++
++	sprintf(strbuf, "0x%08x", totalLen);
++	status = set_hush_var_with_str_value("SFU_TOTAL_LEN", strbuf);
++
++	return ((0 == status) ? IMG_VALIDITY__VALID : IMG_VALIDITY__TOTLEN_ERR);
++} // end sfu_MagicValid
++
++
++#define SFU_BUF_LEN     (80)
++
++//----------------------------------------------------------------------------
++//  Function: sfu_ImageValid
++//
++//  Description:
++//      	This function determines if the SFU image is valid.
++//
++//  Returns:
++//	        int32_t imageValid   where 0 indicates valid and
++//                                     <0 indicates invalid
++//----------------------------------------------------------------------------
++int32_t sfu_ImageValid(
++		uint32_t startAddr // RAM start address
++		)
++{
++	sfu_global_hdr_w_data_t* pGlobHdr = (sfu_global_hdr_w_data_t*)startAddr;
++	uint32_t                 totalLen;
++	uint32_t                 calcCrc32;
++	int32_t                  imageValid = ImageValid(startAddr);
++
++	uint32_t                 num_chunks;
++	uint32_t                 chunk;
++	sfu_cpuhdr_t             chunk_hdr;
++	char            sfubuf[SFU_BUF_LEN];
++	uint32_t        chnk_data_addr;
++	int             idx;
++	char            hexchar[3];
++	char            md5_output[16];
++	char            sha256_output[32];
++	sha256_context sha256;
++
++	if (imageValid)
++	{
++		return imageValid;
++	}
++
++	totalLen = SFU_32BIT_VALUE(pGlobHdr->total_length);
++
++	// Verify that the SFU image's CRC32 matches the calculated CRC32
++	calcCrc32 = crc32(0,
++			pGlobHdr->global_version.major,
++			(totalLen - GLOBAL_CRC_CALC_OFFSET));
++	if (calcCrc32 != SFU_32BIT_VALUE(pGlobHdr->global_crc32))
++	{
++		SFU_ERR("ERROR: IMG_VALIDITY__CRC32_ERR  calc(%08x) file(%08x)\n",
++				calcCrc32, SFU_32BIT_VALUE(pGlobHdr->global_crc32));
++		return IMG_VALIDITY__CRC32_ERR;
++	}
++
++	if (0 > sfu_GetNumChunks(startAddr, &num_chunks)) {
++		return IMG_VALIDITY__CRC32_ERR;
++	}
++
++	for (chunk = 1; num_chunks >= chunk; chunk++) {
++		if (0 > sfu_GetChunkHeader(startAddr, chunk, &chunk_hdr)) {
++			return 1;
++		}
++		if (SFU_HDR_FLAG_MINIMUM == (chunk_hdr.hdr_flag &
++						SFU_HDR_FLAG_MINIMUM)) {
++
++			chnk_data_addr = startAddr + chunk_hdr.data;
++
++			if (chunk_hdr.hdr_flag & SFU_HDR_FLAG__CR32) {
++				calcCrc32 = crc32(0, chnk_data_addr, chunk_hdr.size);
++				if (calcCrc32 != chunk_hdr.crc32)
++					return IMG_VALIDITY__CRC32_ERR;
++			}
++
++			if (chunk_hdr.hdr_flag & SFU_HDR_FLAG__MD5_) {
++
++				md5(chnk_data_addr, chunk_hdr.size, md5_output);
++				if (strncmp(md5_output, chunk_hdr.md5, 16) != 0)
++					return IMG_VALIDITY__MD5_ERR;
++			}
++
++			if (chunk_hdr.hdr_flag & SFU_HDR_FLAG__SHA2) {
++				sha256_starts(&sha256);
++				sha256_update(&sha256, chnk_data_addr, chunk_hdr.size);
++				sha256_finish(&sha256, sha256_output);
++
++				if (strncmp(sha256_output, chunk_hdr.sha256, 32) != 0)
++					return IMG_VALIDITY__SH256_ERR;
++			}
++		}
++	}
++
++	return IMG_VALIDITY__VALID;
++} // end sfu_ImageValid
++
++
++//----------------------------------------------------------------------------
++//  Function: sfu_GetGlobalVersion
++//
++//  Description:
++//      	This function gets the global version of the SFU file in RAM.
++//
++//  Returns:
++//	        int32_t status    where 0 indicates success and
++//                                  <0 indicates error
++//----------------------------------------------------------------------------
++int32_t sfu_GetGlobalVersion(
++		uint32_t      startAddr, // RAM start address
++		sfu_cpuver_t* pGlobalVer // Address to store version
++		)
++{
++	return GetGlobalVersion(startAddr, pGlobalVer);
++} // end sfu_GetGlobalVersion
++
++
++//----------------------------------------------------------------------------
++//  Function: sfu_GetNumChunks
++//
++//  Description:
++//      	This function gets the number of chunks in the SFU file in RAM.
++//
++//  Returns:
++//	        int32_t status    where 0 indicates success and
++//                                  <0 indicates error
++//----------------------------------------------------------------------------
++int32_t sfu_GetNumChunks(
++		uint32_t  startAddr, // RAM start address
++		uint32_t* pNumChunks // Address to store number of chunks in SFU
++		)
++{
++	uint8_t*          pGlobOptCnt = (uint8_t*)(startAddr +
++			GLOBAL_OPT_CNT_OFFSET);
++	uint32_t          globOptCnt32;
++	uint32_t          globOptIndex;
++	bool              notfound = true;
++	sfu_option_hdr_t* pOptionHdr = (sfu_option_hdr_t*)(startAddr +
++			GLOBAL_HDR_LEN);
++	uint32_t          optLen32;
++	uint8_t*          pData = (uint8_t*)pOptionHdr;
++
++	// Retrieve the global option count
++	globOptCnt32 = SFU_32BIT_VALUE(pGlobOptCnt);
++
++	for (globOptIndex = 0;
++			((globOptCnt32 > globOptIndex) && notfound);
++			globOptIndex++)
++	{
++		// Extract chunk count from CHNK global option SFU
++		if (0 == strncmp((char*)pOptionHdr->id,
++					SFU_GLBL_CHNK_ID,
++					SFU_OPTION_ID_BYTE_LEN))
++		{
++			// Retrieve the chunk count
++			*pNumChunks =
++				SFU_32BIT_VALUE(((sfu_option_t*)pOptionHdr)->var_len_data);
++			notfound = false;
++		}
++		else
++		{
++			// Advance pointer to next option header
++			optLen32 = SFU_32BIT_VALUE(pOptionHdr->length);
++			pData += (SFU_OPTION_HDR_LEN + optLen32);
++			pOptionHdr = (sfu_option_hdr_t*)pData;
++		}
++	}
++
++	if (notfound)
++	{
++		return -1;
++	}
++
++	return 0;
++} // end sfu_GetNumChunks
++
++
++//----------------------------------------------------------------------------
++//  Function: sfu_GetChunkHeader
++//
++//  Description:
++//      	This function gets the chunk header of the user requested chunk
++//      	from the SFU file in RAM.
++//
++//  Returns:
++//	        int32_t status    where 0 indicates success and
++//                                  <0 indicates error
++//----------------------------------------------------------------------------
++int32_t sfu_GetChunkHeader(
++		uint32_t      startAddr, // RAM start address
++		uint32_t      chunkNum,  // Chunk number
++		sfu_cpuhdr_t* pHdr       // Address to store header
++		)
++{
++	uint8_t*          pGlobOptCnt = (uint8_t*)(startAddr +
++			GLOBAL_OPT_CNT_OFFSET);
++	uint32_t          globOptCnt32;
++	uint32_t          globOptIndex;
++	sfu_option_hdr_t* pOptionHdr = (sfu_option_hdr_t*)(startAddr +
++			GLOBAL_HDR_LEN);
++	uint8_t*          pData = (uint8_t*)pOptionHdr;
++	uint32_t          chnkOptCnt32;
++	uint32_t          chnkIndex;
++	uint32_t          optIndex;
++	uint32_t          optLen32;
++
++	// Retrieve the global option count
++	globOptCnt32 = SFU_32BIT_VALUE(pGlobOptCnt);
++
++	for (globOptIndex = 0;
++			(globOptCnt32 > globOptIndex);
++			globOptIndex++)
++	{
++		// Advance pointer to next option header
++		optLen32 = SFU_32BIT_VALUE(pOptionHdr->length);
++		pData += (SFU_OPTION_HDR_LEN + optLen32);
++		pOptionHdr = (sfu_option_hdr_t*)pData;
++	}
++
++	// Go through chunk options until desired chunk is reached.
++	// Extract chunk information and store in user requested location
++	pHdr->hdr_flag = 0;
++	for (chnkIndex = 0; chunkNum > chnkIndex; chnkIndex++)
++	{
++		// Retrieve the chunk option count
++		chnkOptCnt32 = SFU_32BIT_VALUE(pData);
++
++		// Advance pointer to the next option header
++		pData += SFU_COUNT_BYTE_LEN;
++		pOptionHdr = (sfu_option_hdr_t*)pData;
++
++		for (optIndex = 0;
++				(chnkOptCnt32 > optIndex);
++				optIndex++)
++		{
++			if ((chunkNum - 1) == chnkIndex)
++			{
++				// Extract chunk SFU header information
++				if (0 > ExtractChunkSfuHdr((sfu_option_t*)pOptionHdr, pHdr))
++				{
++					SFU_ERR("ERROR: ExtractChunkSfuHdr() reported failure\n");
++					return -1;
++				}
++			}
++
++			// Advance pointer to next option header
++			optLen32 = SFU_32BIT_VALUE(pOptionHdr->length);
++			pData += (SFU_OPTION_HDR_LEN + optLen32);
++			pOptionHdr = (sfu_option_hdr_t*)pData;
++		}
++	}
++
++	return 0;
++} // end sfu_GetChunkHeader
++
++
++#ifdef CONFIG_BLOWFISH
++//----------------------------------------------------------------------------
++//  Function: sfu_Decrypt
++//
++//  Description:
++//      	This function gets the sfu_chnk_data and sfu_chnk_size from the
++//      	u-boot environment, decrypts the image starting at <sfu_chnk_data>
++//      	address with <sfu_chnk_size> length, overwrites RAM area with
++//      	decrypted image, and set the <sfu_chnk_size> to the decrypted
++//      	image length.
++//
++//  Returns:
++//	        int32_t status    where 0 indicates success and
++//                                  <0 indicates error
++//----------------------------------------------------------------------------
++int32_t sfu_Decrypt(
++		uint32_t data,  // SFU Chunk Data Base Address
++		uint32_t size   // SFU Chunk Data Size
++		)
++{
++	char*    keystr;
++	char     sfubuf[40];
++	uint32_t idx;
++	uint32_t orig_image_len = 0;
++	int      status = 0;
++
++	keystr = getconst("key");
++	if ((NULL == keystr) || ('\0' == *keystr)) {
++		SFU_ERR("ERROR: key constants variable not set\n");
++		return -1;
++	}
++	InitializeBlowfish(keystr, strlen(keystr));
++
++	for (idx = 0; size > idx; idx+=8)
++	{
++		Blowfish_decipher((unsigned long*)(data + idx),
++				(unsigned long*)(data + idx + 4));
++	}
++	orig_image_len =
++		(((*((uint8_t*)(data + size - 4))) << 24) |
++		 ((*((uint8_t*)(data + size - 3))) << 16) |
++		 ((*((uint8_t*)(data + size - 2))) << 8) |
++		 ((*((uint8_t*)(data + size - 1))) << 0));
++	if ((size-8) >= orig_image_len)
++	{
++		sprintf(sfubuf, "0x%08x", orig_image_len);
++		status |= set_hush_var_with_str_value("SFU_CHNK_SIZE", sfubuf);
++		SFU_DBG("SFU_CHNK_SIZE=%s\n", sfubuf);
++		if (status) {
++			SFU_ERR("ERROR: %s -> failed to set HUSH variable, SFU_CHNK_SIZE\n",
++					__FUNCTION__);
++			return -1;
++		}
++	}
++	else
++	{
++		// decryption failed if original length is not less than
++		// or equal to the padded 64-bit length minus eight
++		SFU_ERR("ERROR: %s -> padded_len(0x%08x)  orig_len(0x%08x)\n",
++				__FUNCTION__, size, orig_image_len);
++		return -1;
++	}
++
++	return 0;
++} // sfu_Decrypt
++#endif // CONFIG_BLOWFISH
++#endif // CONFIG_SFU_RAM
++
++
++//----------------------------------------------------------------------------
++//  Function: ImageValid
++//
++//  Description:
++//      	This function determines if the SFU image is valid.
++//
++//  Returns:
++//	        int32_t imageValid   where 0 indicates valid and
++//                                     <0 indicates invalid
++//----------------------------------------------------------------------------
++static int32_t ImageValid(
++		uint32_t startAddr // RAM start address
++		)
++{
++	sfu_global_hdr_w_data_t* pGlobHdr = (sfu_global_hdr_w_data_t*)startAddr;
++	uint32_t                 totalLen;
++
++	// Verify that the SFU image's magic field is valid
++	if (0 != strncmp((char*)pGlobHdr->magic,
++				SFU_FILE_HEADER_MAGIC,
++				SFU_MAGIC_BYTE_LEN))
++	{
++		SFU_ERR("ERROR: IMG_VALIDITY__MAGIC_ERR  expect(%s) file(%c%c%c%c%c%c%c%c)\n",
++				SFU_FILE_HEADER_MAGIC,
++				((char*)pGlobHdr->magic)[0],
++				((char*)pGlobHdr->magic)[1],
++				((char*)pGlobHdr->magic)[2],
++				((char*)pGlobHdr->magic)[3],
++				((char*)pGlobHdr->magic)[4],
++				((char*)pGlobHdr->magic)[5],
++				((char*)pGlobHdr->magic)[6],
++				((char*)pGlobHdr->magic)[7]);
++		return IMG_VALIDITY__MAGIC_ERR;
++	}
++
++	// Verify that the SFU image's total length is less or equal to the
++	// maximum download partition byte length
++	totalLen = SFU_32BIT_VALUE(pGlobHdr->total_length);
++	if (MAX_SFU_DWNLD_MTD_PART_SIZE < totalLen)
++	{
++		SFU_ERR("ERROR: IMG_VALIDITY__TOTLEN_ERR  max(%08x) file(%08x)\n",
++				(uint32_t)MAX_SFU_DWNLD_MTD_PART_SIZE, totalLen);
++		return IMG_VALIDITY__TOTLEN_ERR;
++	}
++
++	// Verify that the SFU image can be parsed by ensuring image format
++	// version is less or equal to the maximum image format version
++	if (MAX_SFU_IMG_FMT_VERSION < SFU_32BIT_VALUE(pGlobHdr->img_fmt_version))
++	{
++		SFU_ERR("ERROR: IMG_VALIDITY__IMGFMTVER_ERR  max(%08x) file(%08x)\n",
++				(uint32_t)MAX_SFU_IMG_FMT_VERSION, SFU_32BIT_VALUE(pGlobHdr->img_fmt_version));
++		return IMG_VALIDITY__IMGFMTVER_ERR;
++	}
++
++	return IMG_VALIDITY__VALID;
++} // end ImageValid
++
++
++//----------------------------------------------------------------------------
++//  Function: GetGlobalVersion
++//
++//  Description:
++//      	This function gets the global version of the SFU file in RAM.
++//
++//  Returns:
++//	        int32_t status    where 0 indicates success and
++//                                  <0 indicates error
++//----------------------------------------------------------------------------
++static int32_t GetGlobalVersion(
++		uint32_t      startAddr, // RAM start address
++		sfu_cpuver_t* pGlobVer   // Address to store version
++		)
++{
++	sfu_global_hdr_w_data_t* pGlobHdr = (sfu_global_hdr_w_data_t*)startAddr;
++
++	pGlobVer->major = SFU_32BIT_VALUE(pGlobHdr->global_version.major);
++	pGlobVer->minor = SFU_32BIT_VALUE(pGlobHdr->global_version.minor);
++	pGlobVer->commitcnt = SFU_32BIT_VALUE(pGlobHdr->global_version.commitcnt);
++	pGlobVer->githash = SFU_32BIT_VALUE(pGlobHdr->global_version.githash);
++
++	return 0;
++} // end GetGlobalVersion
++
++
++//----------------------------------------------------------------------------
++//  Function: ExtractChunkSfuHdr
++//
++//  Description:
++//      	This function extracts chunk SFU option data to the user
++//      	requested chunk header data storage area.
++//
++//  Returns:
++//	        int32_t status    where 0 indicates success and
++//                                  <0 indicates error
++//----------------------------------------------------------------------------
++static int32_t ExtractChunkSfuHdr(
++		sfu_option_t* pOption, // Address of option
++		sfu_cpuhdr_t* pHdr     // Address to store header
++		)
++{
++	int32_t    status = 0;
++	sfu_ver_t* pVer;
++	int        idx;
++
++	if (0 == strncmp((char*)pOption->hdr.id,
++				SFU_CHNK_OPT_ID_VERS,
++				SFU_OPTION_ID_BYTE_LEN))
++	{
++		pVer = (sfu_ver_t*)&pOption->var_len_data;
++		pHdr->version.major = SFU_32BIT_VALUE(pVer->major);
++		pHdr->version.minor = SFU_32BIT_VALUE(pVer->minor);
++		pHdr->version.commitcnt = SFU_32BIT_VALUE(pVer->commitcnt);
++		pHdr->version.githash = SFU_32BIT_VALUE(pVer->githash);
++
++		// Set the header data flag
++		pHdr->hdr_flag |= SFU_HDR_FLAG__VERS;
++
++		SFU_DBG("INFO: VERSION (%08x.%08x.%08x.%08x) HDRFLAG(%08x)\n",
++				pHdr->version.major,
++				pHdr->version.minor,
++				pHdr->version.commitcnt,
++				pHdr->version.githash,
++				pHdr->hdr_flag);
++	}
++	else if (0 == strncmp((char*)pOption->hdr.id,
++				SFU_CHNK_OPT_ID_SIZE,
++				SFU_OPTION_ID_BYTE_LEN))
++	{
++		pHdr->size = SFU_32BIT_VALUE(pOption->var_len_data);
++
++		// Set the header data flag
++		pHdr->hdr_flag |= SFU_HDR_FLAG__SIZE;
++
++		SFU_DBG("INFO: SIZE (%08x) HDRFLAG(%08x)\n",
++				pHdr->size, pHdr->hdr_flag);
++	}
++	else if (0 == strncmp((char*)pOption->hdr.id,
++				SFU_CHNK_OPT_ID_DATA,
++				SFU_OPTION_ID_BYTE_LEN))
++	{
++		pHdr->data = SFU_32BIT_VALUE(pOption->var_len_data);
++
++		// Set the header data flag
++		pHdr->hdr_flag |= SFU_HDR_FLAG__DATA;
++
++		SFU_DBG("INFO: DATA (%08x) HDRFLAG(%08x)\n",
++				pHdr->data, pHdr->hdr_flag);
++	}
++	else if (0 == strncmp((char*)pOption->hdr.id,
++				SFU_CHNK_OPT_ID_DEST,
++				SFU_OPTION_ID_BYTE_LEN))
++	{
++		memcpy(pHdr->dest, pOption->var_len_data, sizeof(pHdr->dest));
++
++		// Set the header data flag
++		pHdr->hdr_flag |= SFU_HDR_FLAG__DEST;
++
++		SFU_DBG("INFO: DEST (%s) HDRFLAG(%08x)\n",
++				pHdr->dest, pHdr->hdr_flag);
++	}
++	else if (0 == strncmp((char*)pOption->hdr.id,
++				SFU_CHNK_OPT_ID_MD5_,
++				SFU_OPTION_ID_BYTE_LEN))
++	{
++		memcpy(pHdr->md5, pOption->var_len_data, sizeof(pHdr->md5));
++
++		// Set the header data flag
++		pHdr->hdr_flag |= SFU_HDR_FLAG__MD5_;
++
++		SFU_DBG("INFO: MD5_ (");
++		for (idx = 0; sizeof(pHdr->md5) > idx ; idx++)
++		{
++			SFU_DBG("%02x", pHdr->md5[idx]);
++		}
++		SFU_DBG(") HDRFLAG(%08x)\n", pHdr->hdr_flag);
++	}
++	else if (0 == strncmp((char*)pOption->hdr.id,
++				SFU_CHNK_OPT_ID_SHA2,
++				SFU_OPTION_ID_BYTE_LEN))
++	{
++		memcpy(pHdr->sha256, pOption->var_len_data, sizeof(pHdr->sha256));
++
++		// Set the header data flag
++		pHdr->hdr_flag |= SFU_HDR_FLAG__SHA2;
++
++		SFU_DBG("INFO: SHA256 (");
++		for (idx = 0; sizeof(pHdr->sha256) > idx ; idx++)
++		{
++			SFU_DBG("%02x", pHdr->sha256[idx]);
++		}
++		SFU_DBG(") HDRFLAG(%08x)\n", pHdr->hdr_flag);
++	}
++	else if (0 == strncmp((char*)pOption->hdr.id,
++				SFU_CHNK_OPT_ID_CR32,
++				SFU_OPTION_ID_BYTE_LEN))
++	{
++		pHdr->crc32 = SFU_32BIT_VALUE(pOption->var_len_data);
++
++		// Set the header data flag
++		pHdr->hdr_flag |= SFU_HDR_FLAG__CR32;
++
++		SFU_DBG("INFO: CRC32 (%08x) HDRFLAG(%08x)\n",
++				pHdr->crc32, pHdr->hdr_flag);
++	}
++	else if (0 == strncmp((char*)pOption->hdr.id,
++				SFU_CHNK_OPT_ID_ENCM,
++				SFU_OPTION_ID_BYTE_LEN))
++	{
++		pHdr->encryption_method = SFU_32BIT_VALUE(pOption->var_len_data);
++
++		// Set the header data flag
++		pHdr->hdr_flag |= SFU_HDR_FLAG__ENCM;
++
++		SFU_DBG("INFO: ENCM (%08x) HDRFLAG(%08x)\n",
++				pHdr->encryption_method, pHdr->hdr_flag);
++	}
++	else
++	{
++		// Invalid/Unknown chunk header option
++		status = -1;
++
++		SFU_ERR("ERROR: Unknown chunk header option (%c%c%c%c)\n",
++				(char)pOption->hdr.id[0], (char)pOption->hdr.id[1],
++				(char)pOption->hdr.id[2], (char)pOption->hdr.id[3]);
++	}
++
++	return status;
++} // end ExtractChunkSfuHdr
++
+diff --git a/board/streamunlimited/stream800/sfu_parser.h b/board/streamunlimited/stream800/sfu_parser.h
+new file mode 100644
+index 0000000..409fcd8
+--- /dev/null
++++ b/board/streamunlimited/stream800/sfu_parser.h
+@@ -0,0 +1,213 @@
++/*
++ * (C) Copyright 2011 Attero Tech LLC
++ *
++ * Written by: Dan Brunswick <dan.brunswick@atterotech.com>
++ *
++ * See file CREDITS for list of people who contributed to this
++ * project.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation; either version 2 of
++ * the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
++ * MA 02111-1307 USA
++ *
++ */
++
++#ifndef _SFU_PARSER_H_
++#define _SFU_PARSER_H_
++
++#include <common.h>
++
++#ifdef CONFIG_SFU_FILE
++#include <stdint.h>
++#include <stdbool.h>
++#endif // CONFIG_SFU_FILE
++
++#include <errno.h>
++#define SFU_ERR(x...) printf(x)
++
++#ifdef SFU_DEBUG
++#define SFU_DBG(x...) printf(x)
++#else
++#define SFU_DBG(x...)
++#endif
++
++#ifdef CONFIG_SFU_RAM
++typedef uint32_t bool;
++#define false       (0x0UL)
++#define true        (!false)
++#endif // CONFIG_SFU_RAM
++
++#define SFU_FILE_HEADER_MAGIC                 "S800_UPD"
++#define SFU_DOWNLOAD_MTD_PARTITION      "/dev/mtd7"
++#define MAX_SFU_DWNLD_MTD_PART_SIZE     (0x05F00000UL)
++#define MAX_SFU_IMG_FMT_VERSION         (0x00000001UL)
++#define SFU_GLBL_CHNK_ID                "CHNK"
++#define SFU_CHNK_OPT_ID_VERS            "vers"
++#define SFU_CHNK_OPT_ID_SIZE            "size"
++#define SFU_CHNK_OPT_ID_DATA            "data"
++#define SFU_CHNK_OPT_ID_DEST            "dest"
++#define SFU_CHNK_OPT_ID_MD5_            "md5_"
++#define SFU_CHNK_OPT_ID_SHA2            "sha2"
++#define SFU_CHNK_OPT_ID_CR32            "cr32"
++#define SFU_CHNK_OPT_ID_ENCM            "encm"
++
++#define IMG_VALIDITY__VALID             (0)
++#define IMG_VALIDITY__MAGIC_ERR         (-1)
++#define IMG_VALIDITY__TOTLEN_ERR        (-2)
++#define IMG_VALIDITY__IMGFMTVER_ERR     (-3)
++#define IMG_VALIDITY__CRC32_ERR         (-4)
++#define IMG_VALIDITY__FILE_ERR          (-5)
++#define IMG_VALIDITY__MD5_ERR           (-6)
++#define IMG_VALIDITY__SH256_ERR         (-7)
++
++#define SFU_MAGIC_BYTE_LEN              (8)
++#define SFU_COUNT_BYTE_LEN              (4)
++#define SFU_CRC32_BYTE_LEN              (4)
++#define SFU_TOTAL_LENGTH_BYTE_LEN       (4)
++#define SFU_IMG_FMT_VERSION_BYTE_LEN    (4)
++#define SFU_VERSION_BYTE_LEN            (4)
++#define SFU_OPTION_ID_BYTE_LEN          (4)
++#define SFU_OPTION_LENGTH_BYTE_LEN      (4)
++#define SFU_CHNK_CNT_BYTE_LEN           (4)
++#define SFU_DEST_BYTE_LEN               (32)
++#define SFU_MD5_HASH_LEN                (16)
++#define SFU_SHA256_HASH_LEN             (32)
++#define MAX_SFU_OPTION_DATA_LEN         (512)
++
++#define SFU_HDR_FLAG__VERS      (0x00000001UL)
++#define SFU_HDR_FLAG__SIZE      (0x00000002UL)
++#define SFU_HDR_FLAG__DATA      (0x00000004UL)
++#define SFU_HDR_FLAG__DEST      (0x00000008UL)
++#define SFU_HDR_FLAG__MD5_      (0x00000010UL)
++#define SFU_HDR_FLAG__SHA2      (0x00000020UL)
++#define SFU_HDR_FLAG__CR32      (0x00000040UL)
++#define SFU_HDR_FLAG__ENCM      (0x00000080UL)
++
++#define SFU_HDR_FLAG_MINIMUM    (SFU_HDR_FLAG__VERS | \
++                                 SFU_HDR_FLAG__SIZE | \
++                                 SFU_HDR_FLAG__DATA | \
++                                 SFU_HDR_FLAG__DEST | \
++                                 SFU_HDR_FLAG__ENCM)
++
++#define SFU_32BIT_VALUE(addr)   ((addr[3] << 24) | \
++                                 (addr[2] << 16) | \
++                                 (addr[1] << 8)  | \
++                                 (addr[0]))
++
++typedef struct
++{
++    uint32_t major;
++    uint32_t minor;
++    uint32_t commitcnt;
++    uint32_t githash;
++} sfu_cpuver_t;
++
++typedef struct
++{
++    uint8_t major[SFU_VERSION_BYTE_LEN];
++    uint8_t minor[SFU_VERSION_BYTE_LEN];
++    uint8_t commitcnt[SFU_VERSION_BYTE_LEN];
++    uint8_t githash[SFU_VERSION_BYTE_LEN];
++} sfu_ver_t;
++#define SFU_VER_LEN     sizeof(sfu_ver_t)
++
++typedef struct
++{
++    uint8_t     magic[SFU_MAGIC_BYTE_LEN];
++    uint8_t     img_fmt_version[SFU_IMG_FMT_VERSION_BYTE_LEN];
++    uint8_t     total_length[SFU_TOTAL_LENGTH_BYTE_LEN];
++    uint8_t     global_crc32[SFU_CRC32_BYTE_LEN];
++    sfu_ver_t   global_version;
++    uint8_t     global_options_count[SFU_COUNT_BYTE_LEN];
++    uint8_t     var_len_data[];
++} sfu_global_hdr_w_data_t;
++#define GLOBAL_HDR_LEN          (SFU_MAGIC_BYTE_LEN +           \
++                                 SFU_IMG_FMT_VERSION_BYTE_LEN + \
++                                 SFU_TOTAL_LENGTH_BYTE_LEN +    \
++                                 SFU_CRC32_BYTE_LEN +           \
++                                 SFU_VER_LEN +                  \
++                                 SFU_COUNT_BYTE_LEN)
++#define GLOBAL_OPT_CNT_OFFSET   (GLOBAL_HDR_LEN - SFU_COUNT_BYTE_LEN)
++#define GLOBAL_CRC_OFFSET       (SFU_MAGIC_BYTE_LEN +           \
++                                 SFU_IMG_FMT_VERSION_BYTE_LEN + \
++                                 SFU_TOTAL_LENGTH_BYTE_LEN)
++#define GLOBAL_CRC_CALC_OFFSET  (SFU_MAGIC_BYTE_LEN +           \
++                                 SFU_IMG_FMT_VERSION_BYTE_LEN + \
++                                 SFU_TOTAL_LENGTH_BYTE_LEN +    \
++                                 SFU_CRC32_BYTE_LEN)
++
++typedef struct
++{
++    uint8_t id[SFU_OPTION_ID_BYTE_LEN];
++    uint8_t length[SFU_OPTION_LENGTH_BYTE_LEN];
++} sfu_option_hdr_t;
++#define SFU_OPTION_HDR_LEN  sizeof(sfu_option_hdr_t)
++
++typedef struct
++{
++    sfu_option_hdr_t hdr;
++    uint8_t          var_len_data[MAX_SFU_OPTION_DATA_LEN];
++} sfu_option_t;
++
++typedef struct
++{
++    uint32_t        hdr_flag;
++    sfu_cpuver_t    version;
++    uint32_t        size;
++    uint32_t        data;
++    char            dest[SFU_DEST_BYTE_LEN];
++    uint8_t         md5[SFU_MD5_HASH_LEN];
++    uint8_t         sha256[SFU_SHA256_HASH_LEN];
++    uint32_t        crc32;
++    uint32_t        encryption_method;
++} sfu_cpuhdr_t;
++
++
++#ifdef CONFIG_SFU_FILE
++#define FILE_RETRY_COUNT    (10)
++
++int32_t sfu_ImageValid(int fd);
++int32_t sfu_GetGlobalVersion(int           fd,
++                             sfu_cpuver_t* pGlobalVer);
++int32_t sfu_GetNumChunks(int       fd,
++                         uint32_t* pNumChunks);
++int32_t sfu_GetChunkHeader(int           fd,
++                           uint32_t      chunkNum,
++                           sfu_cpuhdr_t* pHdr);
++#ifdef CONFIG_BLOWFISH
++int32_t sfu_Decrypt(int      fd,
++                    uint32_t data,
++                    uint32_t size
++);
++#endif // CONFIG_BLOWFISH
++#endif // CONFIG_SFU_FILE
++
++#ifdef CONFIG_SFU_RAM
++int32_t sfu_MagicValid(uint32_t startAddr);
++int32_t sfu_ImageValid(uint32_t startAddr);
++int32_t sfu_GetGlobalVersion(uint32_t      startAddr,
++                             sfu_cpuver_t* pGlobalVer);
++int32_t sfu_GetNumChunks(uint32_t  startAddr,
++                         uint32_t* pNumChunks);
++int32_t sfu_GetChunkHeader(uint32_t      startAddr,
++                           uint32_t      chunkNum,
++                           sfu_cpuhdr_t* pHdr);
++#ifdef CONFIG_BLOWFISH
++int32_t sfu_Decrypt(uint32_t data,
++                    uint32_t size);
++#endif // CONFIG_BLOWFISH
++#endif // CONFIG_SFU_RAM
++
++#endif /* _SFU_PARSER_H_ */
++
+diff --git a/include/configs/stream800.h b/include/configs/stream800.h
+index 3b5d788..6603c37 100644
+--- a/include/configs/stream800.h
++++ b/include/configs/stream800.h
+@@ -27,7 +27,16 @@
+ #define CONFIG_DMA_COHERENT_SIZE	(1 << 20)
+ 
+ #define CONFIG_ENV_SIZE			(128 << 10)	/* 128 KiB */
+-#define CONFIG_SYS_MALLOC_LEN		(1024 << 10)
++#define CONFIG_CONST_ENV_COMMON
++#define CONFIG_CONSTANTS_SIZE   (128 << 10) /*  128 KiB */
++
++#define CONFIG_SYS_MALLOC_LEN       (CONFIG_ENV_SIZE + (128 << 10) + \
++		CONFIG_CONSTANTS_SIZE + (1024 << 10) + (10 << 10))
++
++
++/* define CONFIG_SYS_MALLOC_LEN		(1024 << 10) */
++
++
+ #define CONFIG_SYS_LONGHELP		/* undef to save memory */
+ #define CONFIG_SYS_HUSH_PARSER		/* use "hush" command parser */
+ #define CONFIG_SYS_PROMPT		"U-Boot# "
+@@ -50,64 +59,787 @@
+ 
+ #define CONFIG_CMD_ASKENV
+ #define CONFIG_VERSION_VARIABLE
++#define CONFIG_CMD_MTDPARTS
++
++#define MTDIDS_DEFAULT          "nand0=nand"
++#define MTDPARTS_DEFAULT		"mtdparts=nand:" \
++        _str(CONFIG_MLO_SIZE) "(mlo)," \
++        _str(CONFIG_MLO_SIZE) "(mlo2)," \
++        _str(CONFIG_MLO_SIZE) "(mlo3)," \
++        _str(CONFIG_MLO_SIZE) "(mlo4)," \
++        _str(CONFIG_UBOOT_SIZE) "(u-boot)," \
++        _str(CONFIG_UBOOTENV_SIZE) "(u-boot-env)," \
++        _str(CONFIG_CONSTPART_SIZE) "(constants)," \
++        _str(CONFIG_SETTINGS_SIZE) "(settings)," \
++        _str(CONFIG_UIMAGE_SIZE) "(kernel)," \
++        _str(CONFIG_DTS_SIZE) "(dts)," \
++        _str(CONFIG_RFS_SIZE) "(rootfs)," \
++        _str(CONFIG_DOWNLOAD_SIZE) "(download)"
++#define CONFIG_MTD_PARTITIONS
++#define CONFIG_CMD_UBI
++#define CONFIG_CMD_UBIFS
++#define CONFIG_RBTREE
++#define CONFIG_LZO
++#define CONFIG_CMD_NAND_TRIMFFS
++#define CONFIG_CMD_MKFS_UBIFS
++#define CONFIG_MTD_UBI_WL_THRESHOLD (4096)
++#define CONFIG_MTD_UBI_BEB_RESERVE  (2)
++
++#define CONFIG_CMD_SFU_PARSER
++#define CONFIG_SFU_RAM
++#undef SFU_DEBUG
++#undef CRC32_DEBUG
++#undef MD5_DEBUG
++#undef SHA256_DEBUG
++
++/* Environment information */
++#define CONFIG_BOOTDELAY		1
++#define CONFIG_BOOTCOUNT_LIMIT  6
++
++#define _stra(s) #s
++#define _str(s) _stra(s)
++
++#define CONFIG_MLO_BASE     0x00000000
++#define CONFIG_MLO_SIZE     0x00020000
++
++#define CONFIG_MLO_BASE_2     0x00020000
++#define CONFIG_MLO_SIZE_2     0x00020000
++
++#define CONFIG_MLO_BASE_3     0x00040000
++#define CONFIG_MLO_SIZE_3     0x00020000
++
++#define CONFIG_MLO_BASE_4     0x00060000
++#define CONFIG_MLO_SIZE_4     0x00020000
++
++#define CONFIG_UBOOT_BASE       0x00080000
++#define CONFIG_UBOOT_SIZE       0x00200000
++
++#define CONFIG_UBOOTENV_BASE    0x00280000
++#define CONFIG_UBOOTENV_SIZE    0x00080000
++#define CONFIG_ENV_RANGE        CONFIG_UBOOTENV_SIZE
++
++#define CONFIG_CONSTANTS_BASE   0x00300000
++#define CONFIG_CONSTPART_SIZE   0x00080000
++#define CONFIG_CONSTANTS_RANGE  CONFIG_CONSTPART_SIZE
++
++#define CONFIG_SETTINGS_BASE    0x00380000
++#define CONFIG_SETTINGS_SIZE    0x00800000
++
++#define CONFIG_UIMAGE_BASE      0x00B80000
++#define CONFIG_UIMAGE_SIZE      0x00600000
++
++#define CONFIG_DTS_BASE    		0x01180000
++#define CONFIG_DTS_SIZE    		0x00200000
++
++#define CONFIG_RFS_BASE         0x01380000
++#define CONFIG_RFS_SIZE         0x07300000
++
++#define CONFIG_DOWNLOAD_BASE    0x08680000
++#define CONFIG_DOWNLOAD_SIZE    0x07980000
++
+ 
+ /* set to negative value for no autoboot */
+ #define CONFIG_BOOTDELAY		1
+ #define CONFIG_ENV_VARS_UBOOT_CONFIG
+-#define CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG
++
++
++/*
++ * UPDATE PROCESS is fully described at: https://extern.streamunlimited.com:8443/display/Stream800/Firmware+Update+Architecture
++ *
++ * Update methods:
++ *
++ * 	USB RECOVERY:
++ *
++ * 		Following conditions has to be fulfilled to start USB recovery in u-boot:
++ * 			board specific tests on USB recovery passes
++ * 			=> this test usually check press of button connected to GPIO1_9
++ * 			USB stick is plugged in during boot
++ * 			USB stick contains valid file called sfupdate on first partition, which has to be fat32
++ *
++ * 		Following steps will be performed if conditions are fulfilled:
++ * 			U-boot copy sfupdate to download partition
++ * 			U-boot set FAIL flag and reset the board
++ * 			Restarted U-boot loads sfupdate from download partition into RAM
++ * 			U-boot verifies checksums and versions of all parts of sfupdate inside RAM
++ * 			U-boot flashes MLO, u-boot and u-boot-env if version changed  In this case it also reset the board
++ * 				If reset was performed than, u-boot recognize that FAIL flag is set and continues usb recovery
++ * 				loads sfupdate from download partition into RAM again
++ * 				verifies the checksums and versions and it will find out that MLO, u-boot and u-boot-env are up to date
++ * 			FAIL flag is still set so u-boot erase the kernel
++ * 			U-boot automatically flashes dts without version check.
++ * 			U-boot automatically flashes rootfs without version check.
++ * 			U-boot automatically flashes the kernel.
++ * 			U-boot boots the kernel.
++ * 			Userspace after correct boot should clear FAIL flag.
++ *
++ * 	NETWORK UPDATE:
++ *
++ * 		Steps happening in the userspace:
++ * 			update image is downloaded and flashed to download partition
++ * 			board is restarted with UPDATE flag set
++ *
++ * 		Following conditions has to be fullfilled to start net update in u-boot:
++ * 			UPDATE flag is set
++ *
++ * 		Following steps will be performed if conditions are fulfilled:
++ * 			Restarted U-boot loads sfupdate from download partition into RAM
++ * 			U-boot verifies checksums and versions of all parts of sfupdate inside RAM
++ * 			U-boot flashes MLO, u-boot and u-boot-env if version changed. In this case it also reset the board
++ * 				If reset was performed than, u-boot recognize that UPDATE flag is set and continues with network update
++ * 				loads sfupdate from download partition into RAM again
++ * 				verifies the checksums and versions and it will find out that MLO, u-boot and u-boot-env are up to date
++ * 			If rootfs or kernel version changed, kernel is erased
++ * 			If dts version changed, dts is erased and flashed
++ * 			If rootfs version changed, rootfs is erased and flashed
++ * 			If rootfs or kernel version changed, kernel is flashed
++ * 			U-boot clear UPDATE flag
++ * 			U-boot set FAIL flag
++ * 			U-boot boots the kernel
++ * 			Userspace after correct boot should clear FAIL flag.
++ *
++ * METHODS:
++ *		handle_encm                     - decrypts chunk configured by last "sfu chnkhdr", if it was encrypted
++ *		update_download_from_usb        - loads sfupdate file from usb and saves it into download partition
++ * 		check_bootloaders_need_flashing - check MLO, u-boot, u-boot-env partition in image, set enviroments to signalize that flashing them is needed
++ * 		flash_bootloaders_as_needed     - flash MLO, u-boot, u-boot-env partition as needed, decision is based on enviroment set by check_bootloaders_need_flashing
++ * 		check_system_need_flashing      - check DTS, rootfs, kernel partition in image, set enviroments to signalize that flashing them is needed
++ * 		flash_system_as_needed          - flash DTS, rootfs, kernel partition in image as needed, decision is based on enviroment set by check_system_need_flashing
++ *		sfu_boot                        - main method
++ *
++ * VARIABLES:
++ * 		bootcount                       - actual count of uncorrect reboots
++ * 		bootlimit                       - limit of uncorrcet reboots, if reached, board does not boot anymore
++ * 		sfu_load_addr                   - base RAM address for u-boot operations
++ * 		mlo_vers                        - version of MLO stored in NAND
++ * 		uboot_vers                      - version of u-boot stored in NAND
++ * 		ubootenv_vers                   - version of u-bootenv stored in NAND
++ * 		dts_vers                        - version of DTS partition stored in NAND
++ * 		kernel_vers                     - version of kernel stored in NAND
++ * 		rootfs_vers                     - version of rootfs stored in NAND
++ * 		SFU_CHNK_ENCM                   - actual chunk encryption flag in sfupdate file, set by call sfu chnkdr command
++ * 		SFU_CHNK_DATA                   - actual chunk data start address, set by call sfu chnkdr command
++ * 		SFU_CHNK_SIZE                   - actual chunk data size, set by call sfu chnkdr command
++ * 		SFU_CHNK_VERS                   - actual chunk version in sfupdate file, set by call sfu chnkdr command
++ * 		SFU_DECRYPT_MLO_CHNK_SIZE       - size of MLO chunk after decryption, set by call sfu decrypt command
++ * 		SFU_DECRYPT_UBOOT_CHNK_SIZE     - size of u-boot chunk after decryption, set by call sfu decrypt command
++ * 		SFU_DECRYPT_UBOOTENV_CHNK_SIZE  - size of u-boot chunk after decryption, set by call sfu decrypt command
++ * 		SFU_DECRYPT_DTS_CHNK_SIZE       - size dts chunk after decryption, set by call sfu decrypt command
++ * 		SFU_DECRYPT_ROOTFS_CHNK_SIZE    - size rootfs chunk after decryption, set by call sfu decrypt command
++ * 		SFU_DECRYPT_KERNEL_CHNK_SIZE    - size of kernel chunk after decryption, set by call sfu decrypt command
++ * 		MLO_NEEDS_FLASHING              - flag for later MLO flashing
++ * 		UBOOT_NEEDS_FLASHING            - flag for later u-boot flashing
++ * 		UBOOTENV_NEEDS_FLASHING         - flag for later u-boot-env flashing
++ * 		DTS_NEEDS_FLASHING              - flag for later dts flashing
++ * 		ROOTFS_NEEDS_FLASHING           - flag for later rootfs flashing
++ * 		KERNEL_NEEDS_FLASHING           - flag for later kernel flashing
++ */
++
+ #define CONFIG_EXTRA_ENV_SETTINGS \
+-	"loadaddr=0x80200000\0" \
+-	"fdtaddr=0x80F80000\0" \
+-	"rdaddr=0x81000000\0" \
+-	"bootfile=uImage\0" \
+-	"fdtfile=\0" \
+-	"console=ttyO0,115200n8\0" \
+-	"optargs=\0" \
+-	"mmcdev=0\0" \
+-	"mmcroot=/dev/mmcblk0p2 ro\0" \
+-	"mmcrootfstype=ext4 rootwait\0" \
+-	"ramroot=/dev/ram0 rw ramdisk_size=65536 initrd=${rdaddr},64M\0" \
+-	"ramrootfstype=ext2\0" \
++    "loadaddr=0x80200000\0" \
++    "fdtaddr=0x80F80000\0" \
++    "rdaddr=0x81000000\0" \
++    "bootfile=uImage\0" \
++    "fdtfile=\0" \
++    "console=ttyO0,115200n8\0" \
++    "optargs=\0" \
++    "sfu_load_addr=0x80200000\0" \
++    "wdt_timeout=600\0" \
++    "wdtargs=omap_wdt.timer_margin=600 omap_wdt.pwrup_disable=0\0" \
+ 	"bootargs_defaults=setenv bootargs " \
+ 		"console=${console} " \
+-		"${optargs}\0" \
+-	"mmcargs=setenv bootargs console=${console} " \
+-		"${optargs} " \
+-		"root=${mmcroot} " \
+-		"rootfstype=${mmcrootfstype}\0" \
+-	"bootenv=uEnv.txt\0" \
+-	"loadbootenv=fatload mmc ${mmcdev} ${loadaddr} ${bootenv}\0" \
+-	"importbootenv=echo Importing environment from mmc ...; " \
+-		"env import -t $loadaddr $filesize\0" \
+-	"ramargs=setenv bootargs console=${console} " \
+-		"${optargs} " \
+-		"root=${ramroot} " \
+-		"rootfstype=${ramrootfstype}\0" \
+-	"loadramdisk=fatload mmc ${mmcdev} ${rdaddr} ramdisk.gz\0" \
+-	"loaduimagefat=fatload mmc ${mmcdev} ${loadaddr} ${bootfile}\0" \
+-	"loaduimage=ext2load mmc ${mmcdev}:2 ${loadaddr} ${bootfile}\0" \
+-	"mmcboot=echo Booting from mmc ...; " \
+-		"run mmcargs; " \
+-		"bootm ${loadaddr}\0" \
+-	"ramboot=echo Booting from ramdisk ...; " \
+-		"run ramargs; " \
+-		"bootm ${loadaddr}\0" \
++		"optargs=${optargs}\0" \
++    "smsc95xx_args=smsc95xx.turbo_mode=N\0" \
++    "partMloBase=" _str(CONFIG_MLO_BASE) "\0" \
++    "partMloSize=" _str(CONFIG_MLO_SIZE) "\0" \
++    "partUbootBase=" _str(CONFIG_UBOOT_BASE) "\0" \
++    "partUbootSize=" _str(CONFIG_UBOOT_SIZE) "\0" \
++    "partUbootEnvBase=" _str(CONFIG_UBOOTENV_BASE) "\0" \
++    "partUbootEnvSize=" _str(CONFIG_UBOOTENV_SIZE) "\0" \
++    "partConstantsBase=" _str(CONFIG_CONSTANTS_BASE) "\0" \
++    "partConstantsSize=" _str(CONFIG_CONSTPART_SIZE) "\0" \
++    "partSettingsBase=" _str(CONFIG_SETTINGS_BASE) "\0" \
++    "partSettingsSize=" _str(CONFIG_SETTINGS_SIZE) "\0" \
++    "partDtsBase=" _str(CONFIG_DTS_BASE) "\0" \
++    "partDtsSize=" _str(CONFIG_DTS_SIZE) "\0" \
++    "partuImageBase=" _str(CONFIG_UIMAGE_BASE) "\0" \
++    "partuImageSize=" _str(CONFIG_UIMAGE_SIZE) "\0" \
++    "partRfsBase=" _str(CONFIG_RFS_BASE) "\0" \
++    "partRfsSize=" _str(CONFIG_RFS_SIZE) "\0" \
++    "partDownloadBase=" _str(CONFIG_DOWNLOAD_BASE) "\0" \
++    "partDownloadSize=" _str(CONFIG_DOWNLOAD_SIZE) "\0" \
++    "eraseSettings=" \
++        "if nand erase.part settings; " \
++            "then " \
++            "echo \"INFO: nand erase successful\"; " \
++        "else " \
++            "echo \"ERROR: nand erase failed\"; " \
++            "sfu errstate; " \
++        "fi; \0" \
++    "mtdparts=mtdparts=nand:" \
++        _str(CONFIG_MLO_SIZE) "(mlo)," \
++        _str(CONFIG_MLO_SIZE) "(mlo2)," \
++        _str(CONFIG_MLO_SIZE) "(mlo3)," \
++        _str(CONFIG_MLO_SIZE) "(mlo4)," \
++        _str(CONFIG_UBOOT_SIZE) "(u-boot)," \
++        _str(CONFIG_UBOOTENV_SIZE) "(u-boot-env)," \
++        _str(CONFIG_CONSTPART_SIZE) "(constants)," \
++        _str(CONFIG_SETTINGS_SIZE) "(settings)," \
++        _str(CONFIG_UIMAGE_SIZE) "(kernel)," \
++        _str(CONFIG_DTS_SIZE) "(dts)," \
++        _str(CONFIG_RFS_SIZE) "(rootfs)," \
++        _str(CONFIG_DOWNLOAD_SIZE) "(download)\0" \
++    "mtdpartitions=mtdparts=omap2-nand.0:" \
++        _str(CONFIG_MLO_SIZE) "(mlo)," \
++        _str(CONFIG_MLO_SIZE) "(mlo2)," \
++        _str(CONFIG_MLO_SIZE) "(mlo3)," \
++        _str(CONFIG_MLO_SIZE) "(mlo4)," \
++        _str(CONFIG_UBOOT_SIZE) "(u-boot)," \
++        _str(CONFIG_UBOOTENV_SIZE) "(u-boot-env)," \
++        _str(CONFIG_CONSTPART_SIZE) "(constants)," \
++        _str(CONFIG_SETTINGS_SIZE) "(settings)," \
++        _str(CONFIG_UIMAGE_SIZE) "(kernel)," \
++        _str(CONFIG_DTS_SIZE) "(dts)," \
++        _str(CONFIG_RFS_SIZE) "(rootfs)," \
++        _str(CONFIG_DOWNLOAD_SIZE) "(download)\0" \
++    "readuImage=nand read ${sfu_load_addr} kernel\0" \
++    "nandroot=ubi0:stream800-rootfs ubi.mtd=10,2048 rw\0" \
++    "nandrootfstype=ubifs rootwait=1\0" \
++    "nandargs=setenv bootargs console=${console} " \
++        "root=${nandroot} noinitrd " \
++        "rootfstype=${nandrootfstype}\0" \
++    "nand_boot=echo \"Booting from nand ...\"; " \
++        "run nandargs; " \
++        "echo \"INFO: loading kernel image into RAM...\"; " \
++        "run readuImage; " \
++        "echo \"INFO: booting kernel image...\"; " \
++        "bootm ${sfu_load_addr}; " \
++        "echo \"INFO: kernel boot failed...\"; " \
++        "echo \"INFO: resetting...\"; " \
++        "reset;\0" \
++    "panicargs=panic=10 mem=127M\0" \
++    "usbmount=usb reset\0" \
++ \
++ \
++    "handle_encm=" \
++        "if test ${SFU_CHNK_ENCM} = 00000001; " \
++            "then " \
++            "if sfu decrypt ${SFU_CHNK_DATA} ${SFU_CHNK_SIZE}; " \
++                "then " \
++                "echo \"INFO: chunk decrypt successful\"; " \
++            "else " \
++                "echo \"ERROR: chunk decrypt failed\"; " \
++                "sfu errstate; " \
++            "fi; " \
++        "elif test ${SFU_CHNK_ENCM} = 00000000; " \
++            "then " \
++             "echo \"INFO: chunk not encrypted\"; " \
++        "else " \
++            "echo \"ERROR: encryption method invalid (${SFU_CHNK_ENCM})\"; " \
++            "sfu errstate; " \
++        "fi;\0" \
++ \
++ \
++    "update_download_from_usb=" \
++        "echo \"INFO: usb thumbdrive sfupdate check...\"; " \
++        "if fatload usb 0 ${sfu_load_addr} sfupdate; " \
++            "then " \
++            "echo \"INFO: SFU update image found on usb thumbdrive\"; " \
++            "if sfu valid ${sfu_load_addr}; " \
++                "then " \
++                "echo \"INFO: SFU image valid\"; " \
++                "echo \"INFO: download partition being erased\"; " \
++                "nand erase.part download; " \
++                "echo \"INFO: writing sfupdate image to flash...\"; " \
++                "if nand write ${sfu_load_addr} download ${filesize}; " \
++                    "then " \
++                    "echo \"INFO: nand write successful\"; " \
++                "else " \
++                    "echo \"ERROR: nand write failed\"; " \
++                    "sfu errstate; " \
++                "fi; " \
++                "echo \"INFO: setting fail flag...\"; " \
++                "fwup set fail; " \
++                "echo \"INFO: reseting...\"; " \
++                "reset; " \
++            "else echo \"INFO: SFU image invalid\"; " \
++            "fi; " \
++        "else echo \"INFO: SFU image USB load failed\"; " \
++        "fi; " \
++        "echo \"INFO: usb thumbdrive sfupdate check complete\";\0" \
++ \
++ \
++    "check_bootloaders_need_flashing=" \
++        "echo \"INFO: Start check_bootloaders_need_flashing...\"; " \
++        "if sfu chnkhdr ${sfu_load_addr} mlo; " \
++            "then " \
++            "echo \"INFO: mlo in download partition SFU update image\"; " \
++            "if test -z \\\\'${mlo_vers}\\\\' || test ${mlo_vers} != ${SFU_CHNK_VERS}; " \
++                "then " \
++                "if test -z \\\\'${mlo_vers}\\\\'; then echo \"INFO: mlo_vers is missing\"; fi; " \
++                "if test ${mlo_vers} != ${SFU_CHNK_VERS}; then echo \"INFO: mlo_vers(${mlo_vers}) not equal SFU_CHNK_VERS(${SFU_CHNK_VERS})\"; fi; " \
++                "echo \"INFO: mlo needs flashing...\"; " \
++                "run handle_encm; " \
++                "if test ${SFU_CHNK_ENCM} = 00000001; " \
++                    "then " \
++                    "SFU_DECRYPT_MLO_CHNK_SIZE=${SFU_CHNK_SIZE}; " \
++                "fi; " \
++                "MLO_NEEDS_FLASHING=yes; " \
++            "fi; " \
++        "else " \
++            "echo \"INFO: mlo not in download partition SFU update image\"; " \
++        "fi; " \
++        "if sfu chnkhdr ${sfu_load_addr} u-boot; " \
++            "then " \
++            "echo \"INFO: uboot in download partition SFU update image\"; " \
++            "if test -z \\\\'${uboot_vers}\\\\' || test ${uboot_vers} != ${SFU_CHNK_VERS}; " \
++                "then " \
++                "if test -z \\\\'${uboot_vers}\\\\'; then echo \"INFO: uboot_vers is missing\"; fi; " \
++                "if test ${uboot_vers} != ${SFU_CHNK_VERS}; then echo \"INFO: uboot_vers(${uboot_vers}) not equal SFU_CHNK_VERS(${SFU_CHNK_VERS})\"; fi; " \
++                "echo \"INFO: u-boot needs flashing...\"; " \
++                "run handle_encm; " \
++                "if test ${SFU_CHNK_ENCM} = 00000001; " \
++                    "then " \
++                    "SFU_DECRYPT_UBOOT_CHNK_SIZE=${SFU_CHNK_SIZE}; " \
++                "fi; " \
++                "UBOOT_NEEDS_FLASHING=yes; " \
++            "fi; " \
++        "else " \
++            "echo \"INFO: u-boot not in download partition SFU update image\"; " \
++        "fi; " \
++        "if sfu chnkhdr ${sfu_load_addr} u-boot-env; " \
++            "then " \
++            "echo \"INFO: uboot environment in download partition SFU update image\"; " \
++            "if test -z \\\\'${ubootenv_vers}\\\\' || test ${ubootenv_vers} != ${SFU_CHNK_VERS}; " \
++                "then " \
++                "if test -z \\\\'${ubootenv_vers}\\\\'; then echo \"INFO: ubootenv_vers is missing\"; fi; " \
++                "if test ${ubootenv_vers} != ${SFU_CHNK_VERS}; then echo \"INFO: ubootenv_vers(${ubootenv_vers}) not equal SFU_CHNK_VERS(${SFU_CHNK_VERS})\"; fi; " \
++                "echo \"INFO: u-boot-env needs flashing...\"; " \
++                "run handle_encm; " \
++                "if test ${SFU_CHNK_ENCM} = 00000001; " \
++                    "then " \
++                    "SFU_DECRYPT_UBOOTENV_CHNK_SIZE=${SFU_CHNK_SIZE}; " \
++                "fi; " \
++                "UBOOTENV_NEEDS_FLASHING=yes; " \
++            "fi; " \
++        "else " \
++            "echo \"INFO: u-boot-env not in download partition SFU update image\"; " \
++        "fi; " \
++        "echo \"INFO: Completed check_bootloaders_need_flashing\";\0" \
++ \
++ \
++    "flash_bootloaders_as_needed=" \
++        "echo \"INFO: Starting flash_bootloaders_as_needed..\"; " \
++        "TMP_MLO_VERS=${mlo_vers}; " \
++        "TMP_UBOOT_VERS=${uboot_vers}; " \
++        "TMP_UBOOTENV_VERS=${ubootenv_vers}; " \
++        "TMP_DTS_VERS=${dts_vers}; " \
++        "TMP_ROOTFS_VERS=${rootfs_vers}; " \
++        "TMP_KERNEL_VERS=${kernel_vers}; " \
++        "if test ${MLO_NEEDS_FLASHING} = yes; " \
++            "then " \
++            "if sfu chnkhdr ${sfu_load_addr} mlo; " \
++                "then " \
++                "echo \"INFO: mlo in download partition SFU update image\"; " \
++                "bstate dontunplug; " \
++                "echo \"INFO: mlo partition being erased\"; " \
++                "nand erase.part ${SFU_CHNK_DEST}; " \
++                "if test ${SFU_CHNK_ENCM} = 00000001; " \
++                    "then " \
++                    "SFU_CHNK_SIZE=${SFU_DECRYPT_MLO_CHNK_SIZE}; " \
++                "fi; " \
++                "echo \"INFO: writing mlo to flash...\"; " \
++                "if nand write ${SFU_CHNK_DATA} ${SFU_CHNK_DEST} ${SFU_CHNK_SIZE}; " \
++                    "then " \
++                    "echo \"INFO: nand write successful\"; " \
++                "else " \
++                    "echo \"ERROR: nand write failed\"; " \
++                    "sfu errstate; " \
++                "fi; " \
++                "TMP_MLO_VERS=${SFU_CHNK_VERS}; " \
++                "UBOOT_RESET=yes; " \
++            "else " \
++                "echo \"ERROR: mlo not in download partition SFU update image\"; " \
++                "sfu errstate; " \
++            "fi; " \
++        "fi; " \
++        "if test ${UBOOT_NEEDS_FLASHING} = yes; " \
++            "then " \
++            "if sfu chnkhdr ${sfu_load_addr} u-boot; " \
++                "then " \
++                "echo \"INFO: uboot in download partition SFU update image\"; " \
++                "bstate dontunplug; " \
++                "echo \"INFO: u-boot partition being erased\"; " \
++                "nand erase.part ${SFU_CHNK_DEST}; " \
++                "if test ${SFU_CHNK_ENCM} = 00000001; " \
++                    "then " \
++                    "SFU_CHNK_SIZE=${SFU_DECRYPT_UBOOT_CHNK_SIZE}; " \
++                "fi; " \
++                "echo \"INFO: writing uboot to flash...\"; " \
++                "if nand write ${SFU_CHNK_DATA} ${SFU_CHNK_DEST} ${SFU_CHNK_SIZE}; " \
++                    "then " \
++                    "echo \"INFO: nand write successful\"; " \
++                "else " \
++                    "echo \"ERROR: nand write failed\"; " \
++                    "sfu errstate; " \
++                "fi; " \
++                "TMP_UBOOT_VERS=${SFU_CHNK_VERS}; " \
++                "UBOOT_RESET=yes; " \
++            "else " \
++                "echo \"ERROR: u-boot not in download partition SFU update image\"; " \
++                "sfu errstate; " \
++            "fi; " \
++        "fi; " \
++        "if test ${UBOOTENV_NEEDS_FLASHING} = yes; " \
++            "then " \
++            "if sfu chnkhdr ${sfu_load_addr} u-boot-env; " \
++                "then " \
++                "echo \"INFO: uboot environment in download partition SFU update image\"; " \
++                "bstate dontunplug; " \
++                "echo \"INFO: u-boot-env partition being erased\"; " \
++                "nand erase.part ${SFU_CHNK_DEST}; " \
++                "if test ${SFU_CHNK_ENCM} = 00000001; " \
++                    "then " \
++                    "SFU_CHNK_SIZE=${SFU_DECRYPT_UBOOTENV_CHNK_SIZE}; " \
++                "fi; " \
++                "echo \"INFO: writing uboot-env to flash...\"; " \
++                "if nand write ${SFU_CHNK_DATA} ${SFU_CHNK_DEST} ${SFU_CHNK_SIZE}; " \
++                    "then " \
++                    "echo \"INFO: nand write successful\"; " \
++                "else " \
++                    "echo \"ERROR: nand write failed\"; " \
++                    "sfu errstate; " \
++                "fi; " \
++                "echo \"INFO: reloading uboot-env from flash to internal memory so new environment is used...\"; " \
++                "env reload;" \
++                "TMP_UBOOTENV_VERS=${SFU_CHNK_VERS};" \
++                "UBOOT_RESET=yes; " \
++            "else " \
++                "echo \"ERROR: u-boot-env not in download partition SFU update image\"; " \
++                "sfu errstate; " \
++            "fi; " \
++        "fi; " \
++        "if test ${MLO_NEEDS_FLASHING} = yes; " \
++            "then " \
++            "echo \"INFO: setting mlo_vers in environment...\"; " \
++            "setenv mlo_vers ${TMP_MLO_VERS};" \
++        "fi; " \
++        "if test ${UBOOT_NEEDS_FLASHING} = yes; " \
++            "then " \
++            "echo \"INFO: setting uboot_vers in environment...\"; " \
++            "setenv uboot_vers ${TMP_UBOOT_VERS};" \
++        "fi; " \
++        "if test ${UBOOTENV_NEEDS_FLASHING} = yes; " \
++            "then " \
++            "echo \"INFO: setting mlo in environment...\"; " \
++            "setenv mlo_vers ${TMP_MLO_VERS};" \
++            "echo \"INFO: setting uboot_vers in environment...\"; " \
++            "setenv uboot_vers ${TMP_UBOOT_VERS};" \
++            "echo \"INFO: setting ubootenv_vers in environment...\"; " \
++            "setenv ubootenv_vers ${TMP_UBOOTENV_VERS};" \
++            "echo \"INFO: restoring dts_vers in environment...\"; " \
++            "setenv dts_vers ${TMP_DTS_VERS};" \
++            "echo \"INFO: restoring rootfs_vers in environment...\"; " \
++            "setenv rootfs_vers ${TMP_ROOTFS_VERS};" \
++            "echo \"INFO: restoring kernel_vers in environment...\"; " \
++            "setenv kernel_vers ${TMP_KERNEL_VERS};" \
++        "fi; " \
++        "if test ${MLO_NEEDS_FLASHING} = yes || test ${UBOOT_NEEDS_FLASHING} = yes || test ${UBOOTENV_NEEDS_FLASHING} = yes; " \
++            "then " \
++            "echo \"INFO: saving environment...\"; " \
++            "saveenv;" \
++        "fi; " \
++        "echo \"INFO: Completed flash_bootloaders_as_needed.\";\0" \
++ \
++ \
++    "check_system_need_flashing=" \
++        "echo \"INFO: Start check_system_need_flashing...\"; " \
++        "if sfu chnkhdr ${sfu_load_addr} dts; " \
++            "then " \
++            "echo \"INFO: dts in download partition SFU update image\"; " \
++            "if fwup fail; then echo \"INFO: Fail flag is set\"; fi; " \
++            "if test -z \\\\'${dts_vers}\\\\'; then echo \"INFO: dts_vers is missing\"; fi; " \
++            "if test ${dts_vers} != ${SFU_CHNK_VERS}; then echo \"INFO: dts_vers(${dts_vers}) not equal SFU_CHNK_VERS(${SFU_CHNK_VERS})\";  fi; " \
++            "if fwup fail ||  test -z \\\\'${dts_vers}\\\\' || test ${dts_vers} != ${SFU_CHNK_VERS}; " \
++                "then " \
++                "echo \"INFO: dts needs flashing...\"; " \
++                "run handle_encm; " \
++                "if test ${SFU_CHNK_ENCM} = 00000001; " \
++                    "then " \
++                    "SFU_DECRYPT_DTS_CHNK_SIZE=${SFU_CHNK_SIZE}; " \
++                "fi; " \
++                "DTS_NEEDS_FLASHING=yes; " \
++            "fi; " \
++        "else " \
++            "echo \"INFO: dts not in download partition SFU update image\"; " \
++        "fi; " \
++        "if sfu chnkhdr ${sfu_load_addr} rootfs; " \
++            "then " \
++            "echo \"INFO: rootfs in download partition SFU update image\"; " \
++            "if fwup fail; then echo \"INFO: Fail flag is set\"; fi; " \
++            "if test -z \\\\'${rootfs_vers}\\\\'; then echo \"INFO: rootfs_vers is missing\"; fi; " \
++            "if test ${rootfs_vers} != ${SFU_CHNK_VERS}; then echo \"INFO: rootfs_vers(${rootfs_vers}) not equal SFU_CHNK_VERS(${SFU_CHNK_VERS})\";  fi; " \
++            "if fwup fail ||  test -z \\\\'${rootfs_vers}\\\\' || test ${rootfs_vers} != ${SFU_CHNK_VERS}; " \
++                "then " \
++                "echo \"INFO: rootfs needs flashing...\"; " \
++                "run handle_encm; " \
++                "if test ${SFU_CHNK_ENCM} = 00000001; " \
++                    "then " \
++                    "SFU_DECRYPT_ROOTFS_CHNK_SIZE=${SFU_CHNK_SIZE}; " \
++                "fi; " \
++                "ROOTFS_NEEDS_FLASHING=yes; " \
++            "fi; " \
++        "else " \
++            "echo \"INFO: rootfs not in download partition SFU update image\"; " \
++        "fi; " \
++        "if sfu chnkhdr ${sfu_load_addr} kernel; " \
++            "then " \
++            "echo \"INFO: kernel in download partition SFU update image\"; " \
++            "if fwup fail; then echo \"INFO: Fail flag is set\"; fi; " \
++            "if test -z \\\\'${kernel_vers}\\\\'; then echo \"INFO: kernel_vers is missing\"; fi; " \
++            "if test ${kernel_vers} != ${SFU_CHNK_VERS}; then echo \"INFO: kernel_vers(${kernel_vers}) not equal SFU_CHNK_VERS(${SFU_CHNK_VERS})\";  fi; " \
++            "if fwup fail ||  test -z \\\\'${kernel_vers}\\\\' || test ${kernel_vers} != ${SFU_CHNK_VERS}; " \
++                "then " \
++                "echo \"INFO: kernel needs flashing...\"; " \
++                "run handle_encm; " \
++                "if test ${SFU_CHNK_ENCM} = 00000001; " \
++                    "then " \
++                    "SFU_DECRYPT_KERNEL_CHNK_SIZE=${SFU_CHNK_SIZE}; " \
++                "fi; " \
++                "KERNEL_NEEDS_FLASHING=yes; " \
++            "fi; " \
++        "else " \
++            "echo \"INFO: kernel not in download partition SFU update image\"; " \
++        "fi; " \
++        "echo \"INFO: Completed check_system_need_flashing\";\0" \
++ \
++ \
++    "flash_system_as_needed=" \
++        "echo \"INFO: Starting flash_system_as_needed...\"; " \
++        "if test ${DTS_NEEDS_FLASHING} = yes || test ${ROOTFS_NEEDS_FLASHING} = yes || test ${KERNEL_NEEDS_FLASHING} = yes; " \
++            "then " \
++            "echo \"INFO: kernel partition being erased\"; " \
++            "nand erase.part kernel; " \
++            "KERNEL_NEEDS_FLASHING=yes; " \
++        "fi; " \
++        "if test ${DTS_NEEDS_FLASHING} = yes; " \
++            "then " \
++            "if sfu chnkhdr ${sfu_load_addr} dts; " \
++                "then " \
++                "echo \"INFO: dts in download partition SFU update image\"; " \
++                "bstate dontunplug; " \
++                "echo \"INFO: dts partition being erased\"; " \
++                "nand erase.part ${SFU_CHNK_DEST}; " \
++                "if test ${SFU_CHNK_ENCM} = 00000001; " \
++                    "then " \
++                    "SFU_CHNK_SIZE=${SFU_DECRYPT_DTS_CHNK_SIZE}; " \
++                "fi; " \
++                "echo \"INFO: writing dts to flash...\"; " \
++                "if nand write ${SFU_CHNK_DATA} ${SFU_CHNK_DEST} ${SFU_CHNK_SIZE}; " \
++                    "then " \
++                    "echo \"INFO: nand write successful\"; " \
++                "else " \
++                    "echo \"ERROR: nand write failed\"; " \
++                    "sfu errstate; " \
++                "fi; " \
++                "setenv dts_vers ${SFU_CHNK_VERS};" \
++            "fi; " \
++        "fi; " \
++        "if test ${ROOTFS_NEEDS_FLASHING} = yes; " \
++            "then " \
++            "if sfu chnkhdr ${sfu_load_addr} rootfs; " \
++                "then " \
++                "echo \"INFO: rootfs in download partition SFU update image\"; " \
++                "bstate dontunplug; " \
++                "echo \"INFO: erasing rootfs partition\"; " \
++                "nand erase.part rootfs; " \
++                "if ubi part rootfs 2048; " \
++                    "then " \
++                    "echo \"INFO: rootfs is a valid ubi partition\"; " \
++                "fi; " \
++                "if test ${SFU_CHNK_ENCM} = 00000001; " \
++                    "then " \
++                    "SFU_CHNK_SIZE=${SFU_DECRYPT_ROOTFS_CHNK_SIZE}; " \
++                "fi; " \
++                "echo \"INFO: need to create ubi stream800-rootfs volume first...\"; " \
++                "if ubi create stream800-rootfs; " \
++                    "then " \
++                    "echo \"INFO: successfully created volume, stream800-rootfs...\"; " \
++                    "echo \"INFO: writing ubi rootfs to flash...\"; " \
++                    "if ubi write ${SFU_CHNK_DATA} stream800-rootfs ${SFU_CHNK_SIZE}; " \
++                        "then " \
++                        "echo \"INFO: successfully wrote rootfs to flash after volume, stream800-rootfs, was created...\"; " \
++                    "else " \
++                        "echo \"ERROR: failed to write rootfs to flash after volume, stream800-rootfs, was created\"; " \
++                        "sfu errstate; " \
++                    "fi; " \
++                "else " \
++                    "echo \"ERROR: failed to create volume, stream800-rootfs\"; " \
++                    "sfu errstate; " \
++                "fi; " \
++                "setenv rootfs_vers ${SFU_CHNK_VERS};" \
++            "else " \
++                "echo \"ERROR: rootfs not in download partition SFU update image\"; " \
++                "sfu errstate; " \
++            "fi; " \
++        "fi; " \
++        "if test ${KERNEL_NEEDS_FLASHING} = yes; " \
++            "then " \
++            "if sfu chnkhdr ${sfu_load_addr} kernel; " \
++                "then " \
++                "echo \"INFO: kernel in download partition SFU update image\"; " \
++                "bstate dontunplug; " \
++                "if test ${SFU_CHNK_ENCM} = 00000001; " \
++                    "then " \
++                    "SFU_CHNK_SIZE=${SFU_DECRYPT_KERNEL_CHNK_SIZE}; " \
++                "fi; " \
++                "echo \"INFO: writing kernel to flash...\"; " \
++                "if nand write ${SFU_CHNK_DATA} ${SFU_CHNK_DEST} ${SFU_CHNK_SIZE}; " \
++                    "then " \
++                    "echo \"INFO: nand write successful\"; " \
++                "else " \
++                    "echo \"ERROR: nand write failed\"; " \
++                    "sfu errstate; " \
++                "fi; " \
++                "setenv kernel_vers ${SFU_CHNK_VERS};" \
++            "else " \
++                "echo \"ERROR: kernel not in download partition SFU update image\"; " \
++                "sfu errstate; " \
++            "fi; " \
++        "fi; " \
++        "if test ${DTS_NEEDS_FLASHING} = yes || test ${ROOTFS_NEEDS_FLASHING} = yes || test ${KERNEL_NEEDS_FLASHING} = yes; " \
++            "then " \
++            "echo \"INFO: saving environment...\"; " \
++            "saveenv;" \
++        "fi; " \
++        "echo \"INFO: Completed flash_system_as_needed.\";\0" \
++ \
++ \
++    "sfu_boot=" \
++        "echo \"INFO: SFU firmware update process started...\"; " \
++        "if fwup fail; " \
++            "then " \
++            "if test ${bootcount} -eq ${bootlimit}; " \
++                "then " \
++                "echo \"INFO: bootcount(${bootcount}) equals bootlimit(${bootlimit})\"; " \
++                "echo \"INFO: erasing settings partition\"; " \
++                "run eraseSettings; " \
++                "if ubi part settings 2048; " \
++                    "then " \
++                    "echo \"INFO: settings is a valid ubi partition\"; " \
++                    "echo \"INFO: creating volume settings...\"; " \
++                    "if ubi create stream800-settings; " \
++                        "then " \
++                        "echo \"INFO: successfully created volume, settings...\"; " \
++                    "else " \
++                        "echo \"ERROR: failed to create volume, settings\"; " \
++                        "sfu errstate; " \
++                    "fi; " \
++                "fi; " \
++            "fi; " \
++            "if test ${bootcount} -gt ${bootlimit}; " \
++                "then " \
++                "echo \"INFO: bootcount(${bootcount}) greater than bootlimit(${bootlimit})\"; " \
++                "bstate hardfailure; " \
++                "echo \"ERROR: Maximum boot count reached!\"; " \
++                "sfu errstate; " \
++            "fi; " \
++        "fi; " \
++        "if test ${bootcount} -eq 1; " \
++            "then " \
++            "echo \"INFO: bootcount(${bootcount}) equals 1\"; " \
++            "run usbmount; " \
++            "if usb storage; " \
++            "then " \
++                "if fatfind usb 0 / sfupdate; " \
++                    "then " \
++                    "echo \"INFO: sfupdate image found on USB thumbdrive\"; " \
++                    "bstate dontunplug; " \
++                    "run update_download_from_usb; " \
++                "else " \
++                    "echo \"ERROR: sfupdate image not found on USB thumbdrive\"; " \
++                    "sfu errstate; " \
++                "fi; " \
++            "fi; " \
++        "fi; " \
++        "if fwup fail || fwup update || test -z \\\\'${mlo_vers}\\\\' || test -z \\\\'${uboot_vers}\\\\' || test -z \\\\'${ubootenv_vers}\\\\' || test -z \\\\'${dts_vers}\\\\' || test -z \\\\'${rootfs_vers}\\\\' || test -z \\\\'${kernel_vers}\\\\'; " \
++            "then " \
++            "if fwup fail; then echo \"INFO: Fail flag is set\"; fi; " \
++            "if fwup update; then echo \"INFO: Update flag is set\"; fi; " \
++            "if test -z \\\\'${mlo_vers}\\\\'; then echo \"INFO: mlo_vers is missing\"; fi; " \
++            "if test -z \\\\'${uboot_vers}\\\\'; then echo \"INFO: uboot_vers is missing\"; fi; " \
++            "if test -z \\\\'${ubootenv_vers}\\\\'; then echo \"INFO: ubootenv_vers is missing\"; fi; " \
++            "if test -z \\\\'${dts_vers}\\\\'; then echo \"INFO: dts_vers is missing\"; fi; " \
++            "if test -z \\\\'${kernel_vers}\\\\'; then echo \"INFO: kernel_vers is missing\"; fi; " \
++            "if test -z \\\\'${rootfs_vers}\\\\'; then echo \"INFO: rootfs_vers is missing\"; fi; " \
++            "bstate dontunplug; " \
++            "VALID_IMAGE=no; " \
++            "echo \"INFO: Need to read the sfupdate from download partition...\"; " \
++            "if nand read ${sfu_load_addr} download 0x10; " \
++                "then " \
++                "if sfu magic ${sfu_load_addr}; " \
++                    "then " \
++                    "echo \"INFO: sfupdate image total length is ${SFU_TOTAL_LEN}\"; " \
++                    "if nand read ${sfu_load_addr} download ${SFU_TOTAL_LEN}; " \
++                        "then " \
++                        "if sfu valid ${sfu_load_addr}; " \
++                            "then " \
++                            "echo \"INFO: SFU image in download partition is valid\"; " \
++                            "VALID_IMAGE=yes; " \
++                        "else " \
++                            "echo \"ERROR: SFU image in download partition is invalid\"; " \
++                        "fi; " \
++                    "else " \
++                        "echo \"ERROR: nand read failed\"; " \
++                    "fi; " \
++                "else " \
++                    "echo \"ERROR: SFU image in download partition is invalid\"; " \
++                "fi; " \
++            "else " \
++                "echo \"ERROR: nand read failed\"; " \
++            "fi; " \
++            "if test ${VALID_IMAGE} = yes; " \
++                "then " \
++                "UBOOT_NEEDS_FLASHING=no; " \
++                "UBOOTENV_NEEDS_FLASHING=no; " \
++                "MLO_NEEDS_FLASHING=no; " \
++                "DTS_NEEDS_FLASHING=no; " \
++                "ROOTFS_NEEDS_FLASHING=no; " \
++                "KERNEL_NEEDS_FLASHING=no; " \
++                "UBOOT_RESET=no; " \
++                "run check_bootloaders_need_flashing; " \
++                "run flash_bootloaders_as_needed; " \
++                "if test ${UBOOT_RESET} = yes; " \
++                "then " \
++                    "echo \"INFO: Resetting ...\"; " \
++                    "reset; " \
++                "fi;" \
++                "run check_system_need_flashing; " \
++                "run flash_system_as_needed; " \
++             "else " \
++                "if fwup fail || test -z \\\\'${mlo_vers}\\\\' || test -z \\\\'${uboot_vers}\\\\' || test -z \\\\'${ubootenv_vers}\\\\' || test -z \\\\'${dts_vers}\\\\' || test -z \\\\'${rootfs_vers}\\\\' || test -z \\\\'${kernel_vers}\\\\'; " \
++                "then " \
++                    "sfu errstate; " \
++                "fi; " \
++             "fi; " \
++        "fi; " \
++        "echo \"INFO: SFU firmware update process completed\"; " \
++        "echo \"INFO: clearing update flag...\"; " \
++        "fwup clear update; " \
++        "echo \"INFO: setting fail flag...\"; " \
++        "fwup set fail; " \
++        "bstate normal; " \
++        "run nand_boot;\0" \
+ 
+ #define CONFIG_BOOTCOMMAND \
+-	"mmc dev ${mmcdev}; if mmc rescan; then " \
+-		"echo SD/MMC found on device ${mmcdev};" \
+-		"if run loadbootenv; then " \
+-			"echo Loaded environment from ${bootenv};" \
+-			"run importbootenv;" \
+-		"fi;" \
+-		"if test -n $uenvcmd; then " \
+-			"echo Running uenvcmd ...;" \
+-			"run uenvcmd;" \
+-		"fi;" \
+-		"if run loaduimage; then " \
+-			"run mmcboot;" \
+-		"fi;" \
+-	"fi;" \
++	"echo \"INFO: attempting SFU boot...\"; " \
++	"echo \"INFO: MLO version: ${mlo_vers}\"; " \
++	"echo \"INFO: U-boot version: ${uboot_vers}\"; " \
++	"echo \"INFO: UImage version: ${kernel_vers}\"; " \
++	"echo \"INFO: Rootfs version: ${rootfs_vers}\"; " \
++	"run sfu_boot;" \
++
++#define CONFIG_ALTBOOTCOMMAND \
++	"echo \"ERROR: Maximum boot count reached!\"; sfu errstate;"
+ 
+ /* Clock Defines */
+ #define V_OSCK				25000000  /* Clock output from T2 */
+@@ -245,6 +977,9 @@
+ #define CONFIG_SPL_BOARD_INIT
+ #define CONFIG_SPL_NAND_AM33XX_BCH
+ #define CONFIG_SPL_NAND_SUPPORT
++#define CONFIG_SPL_NAND_BASE
++#define CONFIG_SPL_NAND_DRIVERS
++#define CONFIG_SPL_NAND_ECC
+ #define CONFIG_SYS_NAND_5_ADDR_CYCLE
+ #define CONFIG_SYS_NAND_PAGE_COUNT	(CONFIG_SYS_NAND_BLOCK_SIZE / \
+ 					 CONFIG_SYS_NAND_PAGE_SIZE)
+@@ -345,11 +1080,29 @@
+ #define CONFIG_SYS_MAX_NAND_DEVICE	1		/* Max number of NAND
+ 							   devices */
+ #undef CONFIG_ENV_IS_NOWHERE
+-#define CONFIG_ENV_IS_IN_NAND
+-#define CONFIG_ENV_OFFSET		0x260000 /* environment starts here */
++#define CONFIG_ENV_IS_IN_NAND 1
++#define CONFIG_ENV_OFFSET		CONFIG_UBOOTENV_BASE /* environment starts here */
++#define ONENAND_ENV_OFFSET		CONFIG_UBOOTENV_BASE /* environment starts here */
++#define ONENAND_END_SIZE        CONFIG_UBOOTENV_SIZE
+ #define CONFIG_SYS_ENV_SECT_SIZE	(128 << 10)	/* 128 KiB */
++
+ #endif
+ 
++#define CONFIG_CONSTANTS_OFFSET     CONFIG_CONSTANTS_BASE
++#define CONFIG_CONST_OFFSET_REDUND  (CONFIG_CONSTANTS_BASE + CONFIG_CONSTANTS_SIZE)
++
++/*  allow overwrite in the constants partition */
++#define CONFIG_CONST_OVERWRITE
++
++#define CONFIG_CONST_ECC_AUTOCORRECT
++
++#define CONFIG_HUSH_INIT_VAR
++#define CONFIG_MD5
++#define CONFIG_SHA256
++#define CONFIG_CMD_MD5SUM
++#define CONFIG_CMD_SHA256SUM
++#define CONFIG_BLOWFISH
++
+ #undef CONFIG_USB_ETHER
+ 
+ #endif	/* ! __CONFIG_STREAM800_H */
+-- 
+2.7.4
+

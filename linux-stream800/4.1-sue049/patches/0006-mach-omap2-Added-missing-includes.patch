@@ -1,0 +1,26 @@
+From 6917f9b09ddebd82584b4c085cbed20c48bbfd59 Mon Sep 17 00:00:00 2001
+From: Pascal Huerst <pascal.huerst@gmail.com>
+Date: Thu, 16 Oct 2014 17:16:38 +0200
+Subject: [PATCH] mach-omap2: Added missing includes
+
+Signed-off-by: Pascal Huerst <pascal.huerst@gmail.com>
+---
+ arch/arm/mach-omap2/common.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm/mach-omap2/common.c b/arch/arm/mach-omap2/common.c
+index a638eae..2b0cf8b 100644
+--- a/arch/arm/mach-omap2/common.c
++++ b/arch/arm/mach-omap2/common.c
+@@ -17,7 +17,7 @@
+ #include "common.h"
+ #include "omap-secure.h"
+ #include "asm/mach/map.h"
+-
++#include "asm/memblock.h"
+ 
+ /*
+  * Stub function for OMAP2 so that common files
+-- 
+1.9.1
+

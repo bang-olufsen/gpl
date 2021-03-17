@@ -1,0 +1,487 @@
+From d0aab5db49cd68357ddbd3bb8b83137f78b5780f Mon Sep 17 00:00:00 2001
+From: Fionn Cleary <fionn.cleary@streamunlimited.com>
+Date: Tue, 12 Aug 2014 17:42:54 +0200
+Subject: [PATCH] stream800: Move board detection into seperate file
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Don’t tie board detection into non-spl code.
+
+Signed-off-by: Fionn Cleary <fionn.cleary@streamunlimited.com>
+---
+ board/streamunlimited/stream800/Makefile        |   2 +-
+ board/streamunlimited/stream800/board.c         | 153 ++++--------------------
+ board/streamunlimited/stream800/board.h         |  63 +---------
+ board/streamunlimited/stream800/board_defines.c | 135 +++++++++++++++++++++
+ board/streamunlimited/stream800/board_defines.h |  51 ++++++++
+ 5 files changed, 210 insertions(+), 194 deletions(-)
+ create mode 100644 board/streamunlimited/stream800/board_defines.c
+ create mode 100644 board/streamunlimited/stream800/board_defines.h
+
+diff --git a/board/streamunlimited/stream800/Makefile b/board/streamunlimited/stream800/Makefile
+index a96cfb4..315fcac 100644
+--- a/board/streamunlimited/stream800/Makefile
++++ b/board/streamunlimited/stream800/Makefile
+@@ -17,7 +17,7 @@
+ ifdef CONFIG_SPL_BUILD
+ obj-y += mux.o board-spl.o
+ else
+-obj-y += board.o mux.o adc.o board-sue_demo_client_board.o board-sue_first_carrier_board.o board-sue_factory_test_board.o fwupdate.o sfu_parser.o omap_wdt.o tftp_update.o
++obj-y += board.o mux.o adc.o board-sue_demo_client_board.o board-sue_first_carrier_board.o board-sue_factory_test_board.o fwupdate.o sfu_parser.o omap_wdt.o tftp_update.o board_defines.o
+ endif
+ 
+ 
+diff --git a/board/streamunlimited/stream800/board.c b/board/streamunlimited/stream800/board.c
+index 8bfaaf3..99b74ee 100755
+--- a/board/streamunlimited/stream800/board.c
++++ b/board/streamunlimited/stream800/board.c
+@@ -98,8 +98,6 @@ static void board_printf_info(void)
+ 		   stream800CarrierBoardTypeStrings[board.carrierBoardType]);
+ }
+ 
+-static void board_detect(struct Stream800Board *board);
+-
+ void set_board_interface(struct StreamBoardInterface * interface) {
+ 	board_interface = interface;
+ }
+@@ -169,42 +167,6 @@ int board_init(void)
+ 	return 0;
+ }
+ 
+-static struct SupportedModules {
+-	Stream800ModuleVersion moduleVersion;
+-	unsigned msb_min;	// Ain0
+-	unsigned msb_max;
+-	unsigned lsb_min;	// Ain6
+-	unsigned lsb_max;
+-} supportedModules[] = {
+-	{MV_L2,		0xCCC,	0xD54,	0x4CC,	0x555},
+-	// L2 - Stream800/1WEB7 and  L2 - Stream800/2WEB7:
+-	// same config for different ADC values, as RAM
+-	// and Bluetooth are auto-detected at runtime:
+-	{MV_L2,		0xCCC,	0xD54,	0x111,	0x199},
+-	{MV_L2,		0xCCC,	0xD54,	0x199,	0x222},
+-	// L2 - Stream800/2E7 (no wifi/bt module)
+-	{MV_L2,		0xCCC,	0xD54,	0x2aa,	0x333},
+-	// L2 - Stream800/1E7 (no wifi/bt module)
+-	{MV_L2,		0xCCC,  0xD54,  0x5dd,  0x666},
+-	// L2 - Stream800/2E7-4 (no wifi/bt module, 4G flash)
+-	{MV_L2,		0xCCC,  0xD54,  0x6ee,  0x777},
+-	// L2 - Stream800/2E8-4 (no wifi/bt module, 800Mhz, 4G flash)
+-	{MV_L2,		0xCCC,  0xD54,  0x777,  0x7ff},
+-	// TODO: add another stream800 module revisions here
+-};
+-
+-static struct SupportedCarrierBoards {
+-	Stream800CarrierBoardType boardType;
+-	unsigned msb_min;	// Ain3
+-	unsigned msb_max;
+-	unsigned lsb_min;	// Ain2
+-	unsigned lsb_max;
+-} supportedCarrierBoards[] = {
+-	{CBT_SueDemoClientBoard,	0xF76,	0xFFF,	0x000,	0x088},
+-	{CBT_SueFactoryTestBoard,	0x000,	0x088,	0x000,	0x088},		// L0
+-	{CBT_SueFactoryTestBoard,	0x6EE,	0x777,	0x000,	0x088},		// L1
+-	// CUSTOMIZE: add your board here
+-};
+ 
+ #ifdef CONFIG_BOOTCOUNT_LIMIT
+ void bootcount_store (ulong a)
+@@ -242,99 +204,28 @@ static void init_si5351x(void)
+ 	printf("Si5351x correctly initialized\n");
+ }
+ 
+-static void board_detect(struct Stream800Board *board)
+-{
+-	if (!board) {
+-		BUG();
+-		return;
+-	}
+-
+-	board->moduleVersion = MV_unknown;
+-	board->carrierBoardType = CBT_unknown;
+-
+-	{
+-		unsigned MV_MSB = read_adc_channel(0);	// Module Version (MSB)
+-		unsigned MV_LSB = read_adc_channel(6);	// Module Version (LSB)
+-		unsigned CBT_MSB = read_adc_channel(3);	// Carrier Board Type (MSB)
+-		unsigned CBT_LSB = read_adc_channel(2);	// Carrier Board Type (LSB)
+-		int i;
+-
+-		// Detecting module version
+-		for (i = 0; i < sizeof(supportedModules) / sizeof(supportedModules[0]); i++) {
+-			if ((MV_MSB >= supportedModules[i].msb_min) && (MV_MSB <= supportedModules[i].msb_max)
+-				&& (MV_LSB >= supportedModules[i].lsb_min) && (MV_LSB <= supportedModules[i].lsb_max)) {
+-				board->moduleVersion = supportedModules[i].moduleVersion;
+-				break;
+-			}
+-		}
+-
+-		// Detecting carrier board type
+-		for (i = 0; i < sizeof(supportedCarrierBoards) / sizeof(supportedCarrierBoards[0]); i++) {
+-			if ((CBT_MSB >= supportedCarrierBoards[i].msb_min) && (CBT_MSB <= supportedCarrierBoards[i].msb_max)
+-				&& (CBT_LSB >= supportedCarrierBoards[i].lsb_min) && (CBT_LSB <= supportedCarrierBoards[i].lsb_max)) {
+-				board->carrierBoardType = supportedCarrierBoards[i].boardType;
+-				break;
+-			}
+-		}
+-
+-		// Try to check if we run some of obsolete revision of stream800 module
+-		// L1 has not correctly implemented board detection support in HW, values used for detection are only experimental
+-		if (board->moduleVersion == MV_unknown || board->carrierBoardType == CBT_unknown) {
+-			if (MV_MSB >= 0xDA0 && MV_MSB <= 0xF00 && MV_LSB >= 0xBA0 && MV_LSB <= 0xD00
+-				&& CBT_MSB >= 0xCA0 && CBT_MSB <= 0xE00 && CBT_LSB >= 0xCA0 && CBT_LSB <= 0xE00) {
+-				board->moduleVersion = MV_L1;
+-				board->carrierBoardType = CBT_SueDemoClientBoard;
+-		// It is not recommend to use L1 or L2 with CBT_SueFirstCarrierBoard, values used for detection are only experimental
+-			} else if (MV_MSB >= 0xDE0 && MV_MSB <= 0xF00 && MV_LSB >= 0xBD0 && MV_LSB <= 0xCD0
+-				&& CBT_MSB >= 0xE80 && CBT_MSB <= 0xEB0 && CBT_LSB >= 0x4C0 && CBT_LSB <= 0x510) {
+-				board->moduleVersion = MV_L1;
+-				board->carrierBoardType = CBT_SueFirstCarrierBoard;
+-			} else if (MV_MSB >= 0xCE0 && MV_MSB <= 0xD30 && MV_LSB >= 0x4D0 && MV_LSB <= 0x540
+-				&& CBT_MSB >= 0xE50 && CBT_MSB <= 0xEF0 && CBT_LSB >= 0x000 && CBT_LSB <= 0x050) {
+-				board->moduleVersion = MV_L2;
+-				board->carrierBoardType = CBT_SueFirstCarrierBoard;
+-			}
+-		}
+-
+-		if (board->moduleVersion == MV_unknown || board->carrierBoardType == CBT_unknown) {
+-			printf("MV_MSB: 0x%03X, MV_LSB: 0x%03X, CBT_MSB: 0x%03X, CBT_LSB: 0x%03X\n",
+-				MV_MSB, MV_LSB, CBT_MSB, CBT_LSB);
+-		}
+-
+-		/* When carrier board is unknown set to democlient
+-		 * It should work but some peripherials will not work but
+-		 * board will boot up. Without that there is issue with
+-		 * dtb loading because cramfsdir isn't properly set when unknown.
+-		 */
+-		if (board->carrierBoardType == CBT_unknown) {
+-			printf("Carrierboard unknown. Setting to Democlient.\n");
+-			board->carrierBoardType = CBT_SueDemoClientBoard;
+-		}
+-	}
+-}
+-
+-static int erase_database(void)
+-{
+-	puts("Erasing Nand Settings Partition...\n");
+-
+-	return run_command("nand erase.part settings", 0);
+-}
+-
+-static void factory_reset(void) {
+-	// erase database partition in NAND
+-	if (erase_database()) {
+-		printf("ERROR: Database erase failed!\n");
+-	} else if (0 == ubi_part(DB_PART_NAME, DB_PART_VID_HDR_OFFSET)) {
+-		// partition is good/valid
+-		// create new database volumel
+-		if (0 != ubi_create(DB_VOLUME_NAME)) {
+-			printf("ERROR: Database UBI create volume failed!\n");
+-		}
+-	} else {
+-		printf("ERROR: Database UBI partition invalid!\n");
+-	}
+-	udelay(2000000);
+-}
++/* Two unused functions, uncomment when factory_reset is implemented */
++/* static int erase_database(void) */
++/* { */
++/* 	puts("Erasing Nand Settings Partition...\n"); */
++/* 	return run_command("nand erase.part settings", 0); */
++/* } */
++
++/* static void factory_reset(void){ */
++/* 	// erase database partition in NAND */
++/* 	if (erase_database()) { */
++/* 		printf("ERROR: Database erase failed!\n"); */
++/* 	} else if (0 == ubi_part(DB_PART_NAME, DB_PART_VID_HDR_OFFSET)) { */
++/* 		// partition is good/valid */
++/* 		// create new database volumel */
++/* 		if (0 != ubi_create(DB_VOLUME_NAME)) { */
++/* 			printf("ERROR: Database UBI create volume failed!\n"); */
++/* 		} */
++/* 	} else { */
++/* 		printf("ERROR: Database UBI partition invalid!\n"); */
++/* 	} */
++/* 	udelay(2000000); */
++/* } */
+ 
+ static int create_mtd_part(char *buf, struct partition part)
+ {
+diff --git a/board/streamunlimited/stream800/board.h b/board/streamunlimited/stream800/board.h
+index be49ad8..06ab038 100644
+--- a/board/streamunlimited/stream800/board.h
++++ b/board/streamunlimited/stream800/board.h
+@@ -20,68 +20,7 @@
+ #define _BOARD_H_
+ 
+ #include <common.h>
+-
+-/** Module version
+- * \see https://extern.streamunlimited.com:8443/display/Stream800/Stream800+Hardware+Configuration
+- */
+-typedef enum {
+-	MV_unknown,
+-	MV_L0,
+-	MV_L1,
+-	MV_L2
+-} Stream800ModuleVersion;
+-
+-static const char *stream800ModuleVersionStrings[] = {
+-	[MV_unknown] = "unknown",
+-	[MV_L0] = "stream800 rev.L0",
+-	[MV_L1] = "stream800 rev.L1",
+-	[MV_L2] = "stream800 rev.L2"
+-};
+-
+-
+-/** Carrier board type
+- * \see https://extern.streamunlimited.com:8443/display/Stream800/Stream800+Hardware+Configuration
+- */
+-typedef enum {
+-	CBT_unknown,
+-	CBT_SueFactoryTestBoard,		///< SUE factory test board
+-	CBT_SueFirstCarrierBoard,		///< SUE Carrier Board
+-	CBT_SueDemoClientBoard,			///< SUE demo client
+-	// CUSTOMIZE: Add entry for you board here
+-} Stream800CarrierBoardType;
+-
+-static const char *stream800CarrierBoardTypeStrings[] = {
+-	[CBT_unknown]				= "unknown",
+-	[CBT_SueFactoryTestBoard]	= "SUE factory test board",
+-	[CBT_SueFirstCarrierBoard]	= "SUE first carrier board",
+-	[CBT_SueDemoClientBoard]	= "SUE demo client board",
+-	// CUSTOMIZE: Add name for you board here
+-};
+-
+-
+-struct Stream800Board {
+-	Stream800ModuleVersion moduleVersion;
+-	Stream800CarrierBoardType carrierBoardType;
+-};
+-
+-typedef enum {
+-	BS_Off = 0,
+-	BS_Normal,
+-	BS_DontUnplug,		/* flashing new FW, ... */
+-	BS_HardFailure,		/* cannot boot, ... */
+-	BS_BootingKernel,
+-} BoardState;
+-
+-static const char *boardStateStrings[] = {
+-	[BS_Off]		= "unknown",
+-	[BS_Normal]		= "normal",
+-	[BS_DontUnplug]		= "dont unplug/flashing new fw",
+-	[BS_HardFailure]	= "hard failure/cannot boot",
+-	[BS_BootingKernel]	= "booting kernel",
+-};
+-
+-Stream800ModuleVersion get_module_version(void);
+-Stream800CarrierBoardType get_carrier_board_type(void);
++#include "board_defines.h"
+ 
+ struct StreamBoardInterface {
+ 
+diff --git a/board/streamunlimited/stream800/board_defines.c b/board/streamunlimited/stream800/board_defines.c
+new file mode 100644
+index 0000000..667e13b
+--- /dev/null
++++ b/board/streamunlimited/stream800/board_defines.c
+@@ -0,0 +1,135 @@
++#include "board_defines.h"
++#include "adc.h"
++
++#ifndef CONFIG_SPL_BUILD
++const char *stream800ModuleVersionStrings[] = {
++	[MV_unknown] = "unknown",
++	[MV_L0] = "stream800 rev.L0",
++	[MV_L1] = "stream800 rev.L1",
++	[MV_L2] = "stream800 rev.L2"
++};
++
++const char *stream800CarrierBoardTypeStrings[] = {
++	[CBT_unknown]				= "unknown",
++	[CBT_SueFactoryTestBoard]	= "SUE factory test board",
++	[CBT_SueFirstCarrierBoard]	= "SUE first carrier board",
++	[CBT_SueDemoClientBoard]	= "SUE demo client board",
++	// CUSTOMIZE: Add name for you board here
++};
++
++const char *boardStateStrings[] = {
++	[BS_Off]		= "unknown",
++	[BS_Normal]		= "normal",
++	[BS_DontUnplug]		= "dont unplug/flashing new fw",
++	[BS_HardFailure]	= "hard failure/cannot boot",
++	[BS_BootingKernel]	= "booting kernel",
++};
++#endif
++
++static struct SupportedModules {
++	Stream800ModuleVersion moduleVersion;
++	unsigned msb_min;	// Ain0
++	unsigned msb_max;
++	unsigned lsb_min;	// Ain6
++	unsigned lsb_max;
++} supportedModules[] = {
++	{MV_L2,		0xCCC,	0xD54,	0x4CC,	0x555},
++	// L2 - Stream800/1WEB7 and  L2 - Stream800/2WEB7:
++	// same config for different ADC values, as RAM
++	// and Bluetooth are auto-detected at runtime:
++	{MV_L2,		0xCCC,	0xD54,	0x111,	0x199},
++	{MV_L2,		0xCCC,	0xD54,	0x199,	0x222},
++	// L2 - Stream800/2E7 (no wifi/bt module)
++	{MV_L2,		0xCCC,	0xD54,	0x2aa,	0x333},
++	// L2 - Stream800/1E7 (no wifi/bt module)
++	{MV_L2,		0xCCC,  0xD54,  0x5dd,  0x666},
++	// L2 - Stream800/2E7-4 (no wifi/bt module, 4G flash)
++	{MV_L2,		0xCCC,  0xD54,  0x6ee,  0x777},
++	// L2 - Stream800/2E8-4 (no wifi/bt module, 800Mhz, 4G flash)
++	{MV_L2,		0xCCC,  0xD54,  0x777,  0x7ff},
++	// TODO: add another stream800 module revisions here
++};
++
++static struct SupportedCarrierBoards {
++	Stream800CarrierBoardType boardType;
++	unsigned msb_min;	// Ain3
++	unsigned msb_max;
++	unsigned lsb_min;	// Ain2
++	unsigned lsb_max;
++} supportedCarrierBoards[] = {
++	{CBT_SueDemoClientBoard,	0xF76,	0xFFF,	0x000,	0x088},
++	{CBT_SueFactoryTestBoard,	0x000,	0x088,	0x000,	0x088},		// L0
++	{CBT_SueFactoryTestBoard,	0x6EE,	0x777,	0x000,	0x088},		// L1
++	// CUSTOMIZE: add your board here
++};
++
++void board_detect(struct Stream800Board *board)
++{
++	if (!board) {
++		BUG();
++		return;
++	}
++
++	board->moduleVersion = MV_unknown;
++	board->carrierBoardType = CBT_unknown;
++
++	{
++		unsigned MV_MSB = read_adc_channel(0);	// Module Version (MSB)
++		unsigned MV_LSB = read_adc_channel(6);	// Module Version (LSB)
++		unsigned CBT_MSB = read_adc_channel(3);	// Carrier Board Type (MSB)
++		unsigned CBT_LSB = read_adc_channel(2);	// Carrier Board Type (LSB)
++		int i;
++
++		// Detecting module version
++		for (i = 0; i < sizeof(supportedModules) / sizeof(supportedModules[0]); i++) {
++			if ((MV_MSB >= supportedModules[i].msb_min) && (MV_MSB <= supportedModules[i].msb_max)
++				&& (MV_LSB >= supportedModules[i].lsb_min) && (MV_LSB <= supportedModules[i].lsb_max)) {
++				board->moduleVersion = supportedModules[i].moduleVersion;
++				break;
++			}
++		}
++
++		// Detecting carrier board type
++		for (i = 0; i < sizeof(supportedCarrierBoards) / sizeof(supportedCarrierBoards[0]); i++) {
++			if ((CBT_MSB >= supportedCarrierBoards[i].msb_min) && (CBT_MSB <= supportedCarrierBoards[i].msb_max)
++				&& (CBT_LSB >= supportedCarrierBoards[i].lsb_min) && (CBT_LSB <= supportedCarrierBoards[i].lsb_max)) {
++				board->carrierBoardType = supportedCarrierBoards[i].boardType;
++				break;
++			}
++		}
++
++		// Try to check if we run some of obsolete revision of stream800 module
++		// L1 has not correctly implemented board detection support in HW, values used for detection are only experimental
++		if (board->moduleVersion == MV_unknown || board->carrierBoardType == CBT_unknown) {
++			if (MV_MSB >= 0xDA0 && MV_MSB <= 0xF00 && MV_LSB >= 0xBA0 && MV_LSB <= 0xD00
++				&& CBT_MSB >= 0xCA0 && CBT_MSB <= 0xE00 && CBT_LSB >= 0xCA0 && CBT_LSB <= 0xE00) {
++				board->moduleVersion = MV_L1;
++				board->carrierBoardType = CBT_SueDemoClientBoard;
++		// It is not recommend to use L1 or L2 with CBT_SueFirstCarrierBoard, values used for detection are only experimental
++			} else if (MV_MSB >= 0xDE0 && MV_MSB <= 0xF00 && MV_LSB >= 0xBD0 && MV_LSB <= 0xCD0
++				&& CBT_MSB >= 0xE80 && CBT_MSB <= 0xEB0 && CBT_LSB >= 0x4C0 && CBT_LSB <= 0x510) {
++				board->moduleVersion = MV_L1;
++				board->carrierBoardType = CBT_SueFirstCarrierBoard;
++			} else if (MV_MSB >= 0xCE0 && MV_MSB <= 0xD30 && MV_LSB >= 0x4D0 && MV_LSB <= 0x540
++				&& CBT_MSB >= 0xE50 && CBT_MSB <= 0xEF0 && CBT_LSB >= 0x000 && CBT_LSB <= 0x050) {
++				board->moduleVersion = MV_L2;
++				board->carrierBoardType = CBT_SueFirstCarrierBoard;
++			}
++		}
++
++		if (board->moduleVersion == MV_unknown || board->carrierBoardType == CBT_unknown) {
++			printf("MV_MSB: 0x%03X, MV_LSB: 0x%03X, CBT_MSB: 0x%03X, CBT_LSB: 0x%03X\n",
++				MV_MSB, MV_LSB, CBT_MSB, CBT_LSB);
++		}
++
++		/* When carrier board is unknown set to democlient
++		 * It should work but some peripherials will not work but
++		 * board will boot up. Without that there is issue with
++		 * dtb loading because cramfsdir isn't properly set when unknown.
++		 */
++		if (board->carrierBoardType == CBT_unknown) {
++			printf("Carrierboard unknown. Setting to Democlient.\n");
++			board->carrierBoardType = CBT_SueDemoClientBoard;
++		}
++	}
++}
+diff --git a/board/streamunlimited/stream800/board_defines.h b/board/streamunlimited/stream800/board_defines.h
+new file mode 100644
+index 0000000..e64f1d8
+--- /dev/null
++++ b/board/streamunlimited/stream800/board_defines.h
+@@ -0,0 +1,51 @@
++#ifndef _BOARD_DEFINES_H_
++#define _BOARD_DEFINES_H_
++
++#include <common.h>
++
++/** Module version
++ * \see https://extern.streamunlimited.com:8443/display/Stream800/Stream800+Hardware+Configuration
++ */
++typedef enum {
++	MV_unknown,
++	MV_L0,
++	MV_L1,
++	MV_L2
++} Stream800ModuleVersion;
++
++extern const char *stream800ModuleVersionStrings[];
++
++/** Carrier board type
++ * \see https://extern.streamunlimited.com:8443/display/Stream800/Stream800+Hardware+Configuration
++ */
++typedef enum {
++	CBT_unknown,
++	CBT_SueFactoryTestBoard,		///< SUE factory test board
++	CBT_SueFirstCarrierBoard,		///< SUE Carrier Board
++	CBT_SueDemoClientBoard,			///< SUE demo client
++	// CUSTOMIZE: Add entry for you board here
++} Stream800CarrierBoardType;
++
++extern const char *stream800CarrierBoardTypeStrings[];
++
++struct Stream800Board {
++	Stream800ModuleVersion moduleVersion;
++	Stream800CarrierBoardType carrierBoardType;
++};
++
++typedef enum {
++	BS_Off = 0,
++	BS_Normal,
++	BS_DontUnplug,		/* flashing new FW, ... */
++	BS_HardFailure,		/* cannot boot, ... */
++	BS_BootingKernel,
++} BoardState;
++
++extern const char *boardStateStrings[];
++
++Stream800ModuleVersion get_module_version(void);
++Stream800CarrierBoardType get_carrier_board_type(void);
++
++void board_detect(struct Stream800Board*);
++
++#endif /* _BOARD_DEFINES_H_ */
+-- 
+2.7.4
+

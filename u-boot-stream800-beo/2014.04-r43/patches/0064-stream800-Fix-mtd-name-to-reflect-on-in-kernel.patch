@@ -1,0 +1,28 @@
+From f99f8978914d2dfd4a35186489d9ad96bf75d7cf Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Wed, 4 Dec 2013 16:06:10 +0100
+Subject: [PATCH] stream800: Fix mtd name to reflect on in kernel.
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ include/configs/stream800.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/include/configs/stream800.h b/include/configs/stream800.h
+index 7eb1feb..929b968 100644
+--- a/include/configs/stream800.h
++++ b/include/configs/stream800.h
+@@ -61,8 +61,8 @@
+ #define CONFIG_VERSION_VARIABLE
+ #define CONFIG_CMD_MTDPARTS
+ 
+-#define MTDIDS_DEFAULT          "nand0=nand"
+-#define MTDPARTS_DEFAULT		"mtdparts=nand:" \
++#define MTDIDS_DEFAULT          "nand0=omap2-nand.0"
++#define MTDPARTS_DEFAULT		"mtdparts=omap2-nand.0:" \
+         _str(CONFIG_MLO_SIZE) "(mlo)," \
+         _str(CONFIG_MLO_SIZE) "(mlo2)," \
+         _str(CONFIG_MLO_SIZE) "(mlo3)," \
+-- 
+2.7.4
+

@@ -1,0 +1,64 @@
+<!-- ##### SECTION Title ##### -->
+gmime-filter-best
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GMimeFilterBest ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ENUM GMimeFilterBestFlags ##### -->
+<para>
+
+</para>
+
+@GMIME_FILTER_BEST_CHARSET: 
+@GMIME_FILTER_BEST_ENCODING: 
+
+<!-- ##### FUNCTION g_mime_filter_best_new ##### -->
+<para>
+
+</para>
+
+@flags: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_filter_best_charset ##### -->
+<para>
+
+</para>
+
+@best: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_filter_best_encoding ##### -->
+<para>
+
+</para>
+
+@best: 
+@constraint: 
+@Returns: 
+
+

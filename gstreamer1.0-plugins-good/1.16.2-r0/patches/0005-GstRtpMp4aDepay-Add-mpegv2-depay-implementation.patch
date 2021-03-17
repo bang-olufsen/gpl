@@ -1,0 +1,362 @@
+From 5c864e08bf6ed2bdf1ed87db119a63408dddcb83 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Fri, 6 Nov 2020 13:37:10 +0100
+Subject: [PATCH] GstRtpMp4aDepay: Add mpegv2 depay implementation
+
+---
+ gst/rtp/gstrtpmp4adepay.c | 260 +++++++++++++++++++++++++++++++++++++++++-----
+ gst/rtp/gstrtpmp4adepay.h |   2 +
+ 2 files changed, 234 insertions(+), 28 deletions(-)
+
+diff --git a/gst/rtp/gstrtpmp4adepay.c b/gst/rtp/gstrtpmp4adepay.c
+index e537d25..ea5c741 100644
+--- a/gst/rtp/gstrtpmp4adepay.c
++++ b/gst/rtp/gstrtpmp4adepay.c
+@@ -37,8 +37,11 @@ GST_STATIC_PAD_TEMPLATE ("src",
+     GST_PAD_SRC,
+     GST_PAD_ALWAYS,
+     GST_STATIC_CAPS ("audio/mpeg,"
+-        "mpegversion = (int) 4," "framed = (boolean) { false, true }, "
+-        "stream-format = (string) raw")
++        "mpegversion = (int) { 2, 4 },"
++        "framed = (boolean) true, "
++        "stream-format = (string) raw,"
++        "clock-rate = (int) [ 1, MAX ], "
++        "channels = (int) [ 1, 2 ]," "base-profile = (string) { lc, ltp, ssr }")
+     );
+ 
+ static GstStaticPadTemplate gst_rtp_mp4a_depay_sink_template =
+@@ -109,7 +112,6 @@ static void
+ gst_rtp_mp4a_depay_init (GstRtpMP4ADepay * rtpmp4adepay)
+ {
+   rtpmp4adepay->adapter = gst_adapter_new ();
+-  rtpmp4adepay->framed = FALSE;
+ }
+ 
+ static void
+@@ -129,6 +131,195 @@ static const guint aac_sample_rates[] = { 96000, 88200, 64000, 48000,
+   44100, 32000, 24000, 22050, 16000, 12000, 11025, 8000, 7350
+ };
+ 
++
++struct _GstAudioMuxElement
++{
++  guint8 audio_mux_version;
++  guint8 audio_mux_version_a;
++  guint32 tara_buffer_fullness;
++  guint8 all_streams_same_time_framing;
++
++  // contains only data for the first layer of the first program of the first frame
++
++  guint16 audio_object_type;
++  guint8 sampling_frequency_index;
++  guint32 sampling_frequency;
++  guint8 channel_configuration;
++
++  guint8 frame_length_type;
++  guint8 latm_buffer_fullness;
++
++  guint32 other_data_length;
++  guint8 crc;
++
++  guint32 payload_pos;
++  guint32 payload_length;
++};
++
++static void
++gst_audio_mux_element_print (GstAudioMuxElement * element)
++{
++  GST_INFO
++      ("StreamMuxConfig version=%u versionA=%u sameTime=%u taraBufferF=%u objectType=%u freqIdx=%u freq=%u channelConf=%u frameLenType=%u otherLen=%u payloadPos=%u payloadLen=%u",
++      element->audio_mux_version, element->audio_mux_version_a,
++      element->all_streams_same_time_framing, element->tara_buffer_fullness,
++      element->audio_object_type, element->sampling_frequency_index,
++      element->sampling_frequency, element->channel_configuration,
++      element->frame_length_type, element->other_data_length,
++      element->payload_pos, element->payload_length);
++}
++
++static guint32
++gst_audio_mux_element_latm_get_value (GstBitReader * br)
++{
++  guint8 bytes_for_value;
++  guint8 i;
++  guint8 tmp;
++  guint32 value = 0;
++
++  gst_bit_reader_get_bits_uint8 (br, &bytes_for_value, 2);
++  for (i = 0; i <= bytes_for_value; ++i) {
++    value <<= 8;
++    gst_bit_reader_get_bits_uint8 (br, &tmp, 8);
++    value += tmp;
++  }
++
++  return value;
++}
++
++static guint32
++gst_audio_mux_element_audio_specific_config (GstAudioMuxElement * element,
++    GstBitReader * br)
++{
++  guint32 bit_start_pos = gst_bit_reader_get_pos (br);
++
++  gst_bit_reader_get_bits_uint16 (br, &element->audio_object_type, 5);
++  if (element->audio_object_type == 31) {
++    gst_bit_reader_get_bits_uint16 (br, &element->audio_object_type, 6);
++    element->audio_object_type += 32;
++  }
++
++  gst_bit_reader_get_bits_uint8 (br, &element->sampling_frequency_index, 4);
++  if (element->sampling_frequency_index == 0xF) {
++    gst_bit_reader_get_bits_uint32 (br, &element->sampling_frequency, 24);
++  }
++
++  gst_bit_reader_get_bits_uint8 (br, &element->channel_configuration, 4);
++
++  // other bits of audio specific config are skipped
++
++  return gst_bit_reader_get_pos (br) - bit_start_pos;
++}
++
++static gboolean
++gst_audio_mux_element_init (GstAudioMuxElement * element, guint8 * data,
++    gsize size)
++{
++  GstBitReader br;
++  guint8 tmp8;
++  guint32 tmp32;
++
++  gst_bit_reader_init (&br, data, size);
++
++  // check useSameStreamMux
++  gst_bit_reader_get_bits_uint8 (&br, &tmp8, 1);
++  if (!tmp8) {
++    gst_bit_reader_get_bits_uint8 (&br, &element->audio_mux_version, 1);
++    if (element->audio_mux_version == 1) {
++      gst_bit_reader_get_bits_uint8 (&br, &element->audio_mux_version_a, 1);
++    } else {
++      element->audio_mux_version_a = 0;
++    }
++
++    if (element->audio_mux_version_a == 0) {
++      if (element->audio_mux_version == 1) {
++        element->tara_buffer_fullness =
++            gst_audio_mux_element_latm_get_value (&br);
++      }
++
++      gst_bit_reader_get_bits_uint8 (&br,
++          &element->all_streams_same_time_framing, 1);
++
++      // check numSubFrames == 0
++      gst_bit_reader_get_bits_uint8 (&br, &tmp8, 6);
++      if (tmp8 != 0) {
++        GST_ERROR ("Unsupported AudioMuxElement numSubFrames=%u", tmp8);
++        return FALSE;
++      }
++      // check numProgram == 0
++      gst_bit_reader_get_bits_uint8 (&br, &tmp8, 4);
++      if (tmp8 != 0) {
++        GST_ERROR ("Unsuported AudioMuxElement numProgram=%u", tmp8);
++        return FALSE;
++      }
++      // check numLayer == 0
++      gst_bit_reader_get_bits_uint8 (&br, &tmp8, 3);
++      if (tmp8 != 0) {
++        GST_ERROR ("Unsupported AudioMuxElement numLayer=%u", tmp8);
++        return FALSE;
++      }
++
++      if (element->audio_mux_version == 0) {
++        gst_audio_mux_element_audio_specific_config (element, &br);
++      } else {
++        // tmp32 = ascLen
++        tmp32 = gst_audio_mux_element_latm_get_value (&br);
++        tmp32 -= gst_audio_mux_element_audio_specific_config (element, &br);
++        gst_bit_reader_skip (&br, tmp32);
++      }
++
++      gst_bit_reader_get_bits_uint8 (&br, &element->frame_length_type, 3);
++
++      gst_bit_reader_get_bits_uint8 (&br, &element->latm_buffer_fullness, 8);
++
++      // other data present?
++      gst_bit_reader_get_bits_uint8 (&br, &tmp8, 1);
++      if (tmp8) {
++        if (element->audio_mux_version == 1) {
++          element->other_data_length =
++              gst_audio_mux_element_latm_get_value (&br);
++        } else {
++          GST_ERROR
++              ("Unsupported AudioMuxElement otherDataPresent=1, audioMuxVersion!=1");
++        }
++      }
++      // crc check
++      gst_bit_reader_get_bits_uint8 (&br, &tmp8, 1);
++      if (tmp8) {
++        gst_bit_reader_get_bits_uint8 (&br, &element->crc, 8);
++      }
++    }
++  }
++
++  if (element->all_streams_same_time_framing) {
++    if (element->frame_length_type == 0) {
++      element->payload_length = 0;
++      do {
++        gst_bit_reader_get_bits_uint8 (&br, &tmp8, 8);
++        element->payload_length += tmp8;
++      } while (tmp8 == 255);
++    } else {
++      GST_ERROR ("Unsupported AudioMuxElement: frameLengthType!=0");
++    }
++  } else {
++    GST_ERROR ("Unsupported AudioMuxElement: allStreamsSameTimeFraming==0");
++    return FALSE;
++  }
++
++  guint curPos = gst_bit_reader_get_pos (&br);
++
++  // payload starts byte-aligned
++  element->payload_pos = curPos / 8;
++  if (curPos % 8 != 0) {
++    ++curPos;
++  }
++
++  GST_DEBUG ("Bits read: %u", curPos);
++
++  return TRUE;
++}
++
++
+ static gboolean
+ gst_rtp_mp4a_depay_setcaps (GstRTPBaseDepayload * depayload, GstCaps * caps)
+ {
+@@ -136,15 +327,15 @@ gst_rtp_mp4a_depay_setcaps (GstRTPBaseDepayload * depayload, GstCaps * caps)
+   GstRtpMP4ADepay *rtpmp4adepay;
+   GstCaps *srccaps;
+   const gchar *str;
++  const gchar *base_profile;
+   gint clock_rate;
+   gint object_type;
+-  gint channels = 2;            /* default */
++  gint channels;
+   gboolean res;
++  gint mpegversion;
+ 
+   rtpmp4adepay = GST_RTP_MP4A_DEPAY (depayload);
+ 
+-  rtpmp4adepay->framed = FALSE;
+-
+   structure = gst_caps_get_structure (caps, 0);
+ 
+   if (!gst_structure_get_int (structure, "clock-rate", &clock_rate))
+@@ -154,10 +345,27 @@ gst_rtp_mp4a_depay_setcaps (GstRTPBaseDepayload * depayload, GstCaps * caps)
+   if (!gst_structure_get_int (structure, "object", &object_type))
+     object_type = 2;            /* AAC LC default */
+ 
++  if (!gst_structure_get_int (structure, "mpegversion", &mpegversion))
++    mpegversion = 4;            /* default */
++
++  if (!gst_structure_get_int (structure, "channels", &channels))
++    channels = 2;               /* default */
++
++  if (!gst_structure_get_boolean (structure, "cpresent",
++          &rtpmp4adepay->inband_config))
++    rtpmp4adepay->inband_config = TRUE;
++
+   srccaps = gst_caps_new_simple ("audio/mpeg",
+-      "mpegversion", G_TYPE_INT, 4,
+-      "framed", G_TYPE_BOOLEAN, FALSE, "channels", G_TYPE_INT, channels,
+-      "stream-format", G_TYPE_STRING, "raw", NULL);
++      "mpegversion", G_TYPE_INT, mpegversion,
++      "framed", G_TYPE_BOOLEAN, TRUE,
++      "channels", G_TYPE_INT, channels,
++      "stream-format", G_TYPE_STRING, "raw",
++      "rate", G_TYPE_INT, clock_rate, NULL);
++
++  if ((base_profile = gst_structure_get_string (structure, "base-profile"))) {
++    gst_caps_set_simple (srccaps, "base-profile", G_TYPE_STRING, base_profile,
++        NULL);
++  }
+ 
+   if ((str = gst_structure_get_string (structure, "config"))) {
+     GValue v = { 0 };
+@@ -312,28 +520,26 @@ gst_rtp_mp4a_depay_process (GstRTPBaseDepayload * depayload, GstRTPBuffer * rtp)
+   }
+ 
+   outbuf = gst_rtp_buffer_get_payload_buffer (rtp);
++  outbuf = gst_buffer_make_writable (outbuf);
++  GST_BUFFER_PTS (outbuf) = GST_BUFFER_PTS (rtp->buffer);
+ 
+-  if (!rtpmp4adepay->framed) {
+-    if (gst_rtp_buffer_get_marker (rtp)) {
+-      GstCaps *caps;
+-
+-      rtpmp4adepay->framed = TRUE;
++  if (rtpmp4adepay->inband_config) {
++    gst_buffer_map (outbuf, &map, GST_MAP_READ);
++    GstAudioMuxElement element = { };
++    gst_audio_mux_element_init (&element, map.data, map.size);
++    gst_audio_mux_element_print (&element);
++    gst_buffer_unmap (outbuf, &map);
+ 
+-      gst_rtp_base_depayload_push (depayload, outbuf);
++    GstBuffer *dataBuf =
++        gst_buffer_copy_region (outbuf, GST_BUFFER_COPY_ALL,
++        element.payload_pos, element.payload_length);
++        
++    gst_buffer_unref(outbuf);
+ 
+-      caps = gst_pad_get_current_caps (depayload->srcpad);
+-      caps = gst_caps_make_writable (caps);
+-      gst_caps_set_simple (caps, "framed", G_TYPE_BOOLEAN, TRUE, NULL);
+-      gst_pad_set_caps (depayload->srcpad, caps);
+-      gst_caps_unref (caps);
+-      return NULL;
+-    } else {
+-      return outbuf;
+-    }
++    return dataBuf;
+   }
+ 
+-  outbuf = gst_buffer_make_writable (outbuf);
+-  GST_BUFFER_PTS (outbuf) = GST_BUFFER_PTS (rtp->buffer);
++
+   gst_adapter_push (rtpmp4adepay->adapter, outbuf);
+ 
+   /* RTP marker bit indicates the last packet of the AudioMuxElement => create
+@@ -412,7 +618,6 @@ gst_rtp_mp4a_depay_process (GstRTPBaseDepayload * depayload, GstRTPBuffer * rtp)
+           ("Packet invalid"), ("Not all payload consumed: "
+               "possible wrongly encoded packet."));
+     }
+-
+     gst_buffer_unmap (outbuf, &map);
+     gst_buffer_unref (outbuf);
+   }
+@@ -443,7 +648,6 @@ gst_rtp_mp4a_depay_change_state (GstElement * element,
+       gst_adapter_clear (rtpmp4adepay->adapter);
+       rtpmp4adepay->frame_len = 0;
+       rtpmp4adepay->numSubFrames = 0;
+-      rtpmp4adepay->framed = FALSE;
+       break;
+     default:
+       break;
+diff --git a/gst/rtp/gstrtpmp4adepay.h b/gst/rtp/gstrtpmp4adepay.h
+index 31eaf56..04a3964 100644
+--- a/gst/rtp/gstrtpmp4adepay.h
++++ b/gst/rtp/gstrtpmp4adepay.h
+@@ -38,6 +38,7 @@ G_BEGIN_DECLS
+ 
+ typedef struct _GstRtpMP4ADepay GstRtpMP4ADepay;
+ typedef struct _GstRtpMP4ADepayClass GstRtpMP4ADepayClass;
++typedef struct _GstAudioMuxElement GstAudioMuxElement;
+ 
+ struct _GstRtpMP4ADepay
+ {
+@@ -45,6 +46,7 @@ struct _GstRtpMP4ADepay
+   GstAdapter *adapter;
+   guint8 numSubFrames;
+   guint frame_len;
++  gboolean inband_config;
+ 
+   gboolean framed;
+ };

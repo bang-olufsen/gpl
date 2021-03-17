@@ -1,0 +1,305 @@
+From 106d38a00e227dc68576c2dda1f1657686058823 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Fri, 26 May 2017 13:35:12 +0200
+Subject: [PATCH] gatttool: Add functions for PTS test
+
+Add function to get all characteristics descriptors to gatttool
+Implemented prepare and execute write request
+Fixed opcode in function dec_prep_write_resp
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ attrib/att.c         |   2 +-
+ attrib/interactive.c | 198 +++++++++++++++++++++++++++++++++++++++++++++++++--
+ 2 files changed, 193 insertions(+), 7 deletions(-)
+
+diff --git a/attrib/att.c b/attrib/att.c
+index 826b3c1..230b50a 100644
+--- a/attrib/att.c
++++ b/attrib/att.c
+@@ -1174,7 +1174,7 @@ uint16_t dec_prep_write_resp(const uint8_t *pdu, size_t len, uint16_t *handle,
+ 	if (len < min_len)
+ 		return 0;
+ 
+-	if (pdu[0] != ATT_OP_PREP_WRITE_REQ)
++	if (pdu[0] != ATT_OP_PREP_WRITE_RESP)
+ 		return 0;
+ 
+ 	*handle = get_le16(&pdu[1]);
+diff --git a/attrib/interactive.c b/attrib/interactive.c
+index 81718cb..1bddf25 100644
+--- a/attrib/interactive.c
++++ b/attrib/interactive.c
+@@ -192,8 +192,6 @@ static void disconnect_io()
+ 	attrib = NULL;
+ 	opt_mtu = 0;
+ 
+-	g_io_channel_shutdown(iochannel, FALSE, NULL);
+-	g_io_channel_unref(iochannel);
+ 	iochannel = NULL;
+ 
+ 	set_state(STATE_DISCONNECTED);
+@@ -305,6 +303,35 @@ static void char_desc_cb(uint8_t status, GSList *descriptors, void *user_data)
+ 	}
+ }
+ 
++static void char_desc_all_cb(guint8 status, GSList *descriptors, void *user_data)
++{
++	GSList *l;
++	uint16_t handle = 0;
++	bt_uuid_t *uuid = user_data;
++
++	if (status && status != ATT_ECODE_ATTR_NOT_FOUND) {
++		error("Discover all descriptors failed: %s\n",
++							att_ecode2str(status));
++		free(uuid);
++		return;
++	}
++
++	for (l = descriptors; l; l = l->next) {
++		struct gatt_desc *desc = l->data;
++
++		if (desc->handle > handle)
++			handle = desc->handle;
++
++		rl_printf("handle: 0x%04x, uuid: %s\n", desc->handle,
++								desc->uuid);
++	}
++
++	if (handle++ > 0 && handle < 0xffff)
++		gatt_discover_desc(attrib, handle, 0xffff, uuid, char_desc_all_cb, user_data);
++	else
++		free(uuid);
++}
++
+ static void char_read_cb(guint8 status, const guint8 *pdu, guint16 plen,
+ 							gpointer user_data)
+ {
+@@ -586,6 +613,27 @@ static void cmd_char_desc(int argcp, char **argvp)
+ 	gatt_discover_desc(attrib, start, end, NULL, char_desc_cb, NULL);
+ }
+ 
++static void cmd_char_desc_all(int argcp, char **argvp)
++{
++	if (conn_state != STATE_CONNECTED) {
++		rl_printf("Command failed: disconnected\n");
++		return;
++	}
++
++	bt_uuid_t *uuid = NULL;
++
++	if (argcp > 1) {
++		uuid = (bt_uuid_t*)malloc(sizeof(bt_uuid_t));
++		if (bt_string_to_uuid(uuid, argvp[1]) < 0) {
++			rl_printf("Invalid UUID\n");
++			free(uuid);
++			return;
++		}
++	}
++
++	gatt_discover_desc(attrib, 0x0001, 0xffff, uuid, char_desc_all_cb, uuid);
++}
++
+ static void cmd_read_hnd(int argcp, char **argvp)
+ {
+ 	int handle;
+@@ -681,6 +729,51 @@ static void cmd_read_uuid(int argcp, char **argvp)
+ 									NULL);
+ }
+ 
++static void prep_write_req_cb(guint8 status, const guint8 *pdu, guint16 plen,
++							gpointer user_data)
++{
++	uint16_t handle;
++	uint16_t offset;
++	uint8_t *value = (uint8_t*)malloc(plen);
++	size_t vlen;
++	int i;
++
++	if (status != 0) {
++		rl_printf("Prepare Write Request failed: "
++						"%s\n", att_ecode2str(status));
++		return;
++	}
++
++	if (!dec_prep_write_resp(pdu, plen, &handle, &offset, value, &vlen)) {
++		rl_printf("Protocol error\n");
++		return;
++	}
++
++	printf("Prepare Write Request successfull: handle=0x%04x offset=%d value=", handle, offset);
++	for (i = 0; i < vlen; ++i)
++		rl_printf("%02x", value[i]);
++	rl_printf("\n");
++
++	free(value);
++}
++
++static void exec_write_req_cb(guint8 status, const guint8 *pdu, guint16 plen,
++							gpointer user_data)
++{
++	gboolean cancel_req = (user_data == ATT_CANCEL_ALL_PREP_WRITES);
++
++	if (status != 0) {
++		rl_printf("%s Write Request failed: "
++						"%s\n", (cancel_req ? "Cancel" : "Execute"), att_ecode2str(status));
++		return;
++	}
++	if (!dec_exec_write_resp(pdu, plen)) {
++		rl_printf("Protocol error\n");
++		return;
++	}
++	rl_printf("%s Write Request successfull\n", (cancel_req ? "Cancel" : "Execute"));
++}
++
+ static void char_write_req_cb(guint8 status, const guint8 *pdu, guint16 plen,
+ 							gpointer user_data)
+ {
+@@ -743,18 +836,18 @@ static void cmd_char_write_offset(int argcp, char **argvp)
+ 	int offset;
+ 
+ 	if (conn_state != STATE_CONNECTED) {
+-		printf("Command failed: disconnected\n");
++		rl_printf("Command failed: disconnected\n");
+ 		return;
+ 	}
+ 
+ 	if (argcp < 4) {
+-		printf("Usage: %s <handle> <new value> <offset>\n", argvp[0]);
++		rl_printf("Usage: %s <handle> <new value> <offset>\n", argvp[0]);
+ 		return;
+ 	}
+ 
+ 	handle = strtohandle(argvp[1]);
+ 	if (handle <= 0) {
+-		printf("A valid handle is required\n");
++		rl_printf("A valid handle is required\n");
+ 		return;
+ 	}
+ 
+@@ -765,7 +858,7 @@ static void cmd_char_write_offset(int argcp, char **argvp)
+ 	}
+ 	
+ 	offset = strtol(argvp[3], NULL, 16);
+-	printf("offset=%u\n", offset);
++	rl_printf("offset=%u\n", offset);
+ 
+ 	gatt_write_char_with_offset(attrib, handle, value, plen,
+ 					char_write_req_cb, NULL, offset);
+@@ -773,6 +866,91 @@ static void cmd_char_write_offset(int argcp, char **argvp)
+ 	g_free(value);
+ }
+ 
++static void cmd_prep_write(int argcp, char **argvp)
++{
++	uint8_t *value;
++	size_t vlen;
++	int handle;
++	int offset = 0;
++
++	if (conn_state != STATE_CONNECTED) {
++		rl_printf("Command failed: disconnected\n");
++		return;
++	}
++
++	if (argcp < 3) {
++		rl_printf("Usage: %s <handle> <new value> [offset]\n", argvp[0]);
++		return;
++	}
++
++	handle = strtohandle(argvp[1]);
++	if (handle <= 0) {
++		rl_printf("A valid handle is required\n");
++		return;
++	}
++
++	vlen = gatt_attr_data_from_string(argvp[2], &value);
++	if (vlen == 0) {
++		g_printerr("Invalid value\n");
++		return;
++	}
++
++	if (argcp > 3) {
++		offset = strtol(argvp[3], NULL, 16);
++		rl_printf("offset=%u\n", offset);
++	}
++
++	guint16 plen;
++	size_t buflen;
++	uint8_t *buf;
++
++	buf = g_attrib_get_buffer(attrib, &buflen);
++
++	plen = enc_prep_write_req(handle, offset, value, vlen,
++								buf, buflen);
++
++	if (plen == 0) {
++		rl_printf("Unable to encode prepare write request\n");
++	} else {
++		g_attrib_send(attrib, 0, buf, plen,
++			prep_write_req_cb,
++			NULL,  // user_data
++			NULL); // notify
++	}
++
++	g_free(value);
++}
++
++static void cmd_exec_write(int argcp, char **argvp)
++{
++	if (conn_state != STATE_CONNECTED) {
++		rl_printf("Command failed: disconnected\n");
++		return;
++	}
++
++	uint8_t *buf;
++	size_t buflen;
++	guint16 plen;
++	uint8_t flags;
++
++	if (g_strcmp0("cancel-write-req", argvp[0]) == 0)
++		flags = ATT_CANCEL_ALL_PREP_WRITES;
++	else
++		flags = ATT_WRITE_ALL_PREP_WRITES;
++
++	buf = g_attrib_get_buffer(attrib, &buflen);
++	plen = enc_exec_write_req(flags, buf, buflen);
++
++	if (plen == 0) {
++		rl_printf("Unable to encode execute write request\n");
++	} else {
++		g_attrib_send(attrib, 0, buf, plen,
++			exec_write_req_cb,
++			(gpointer)(intptr_t)flags,
++			NULL);	// notify
++	}
++}
++
+ static void cmd_sec_level(int argcp, char **argvp)
+ {
+ 	GError *gerr = NULL;
+@@ -895,6 +1073,8 @@ static struct {
+ 		"Characteristics Discovery" },
+ 	{ "char-desc",		cmd_char_desc,	"[start hnd] [end hnd]",
+ 		"Characteristics Descriptor Discovery" },
++	{ "char-desc-all",	cmd_char_desc_all,	"[UUID]",
++		"All characteristics Descriptor Discovery" },
+ 	{ "char-read-hnd",	cmd_read_hnd,	"<handle>",
+ 		"Characteristics Value/Descriptor Read by handle" },
+ 	{ "char-read-blob",	cmd_read_hnd_blob,	"<handle> <offset>",
+@@ -907,6 +1087,12 @@ static struct {
+ 		"Characteristic Value Write (No response)" },
+ 	{ "char-write-off",	cmd_char_write_offset,	"<handle> <new value> <offset>",
+ 		"Characteristic Value Write (Write Request)" },
++	{ "prep-write-req",	cmd_prep_write,	"<handle> <new value> [offset]",
++		"Prepare Write Request" },
++	{ "exec-write-req",	cmd_exec_write,	"",
++		"Execute Write Request" },
++	{ "cancel-write-req",	cmd_exec_write,	"",
++		"Cancel Write Request" },
+ 	{ "sec-level",		cmd_sec_level,	"[low | medium | high]",
+ 		"Set security level. Default: low" },
+ 	{ "mtu",		cmd_mtu,	"<value>",
+-- 
+2.7.4
+

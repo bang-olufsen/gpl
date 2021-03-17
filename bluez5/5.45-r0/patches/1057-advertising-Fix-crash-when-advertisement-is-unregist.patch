@@ -1,0 +1,147 @@
+From b42051e05afad549f47140f9aa49034ef3a051f0 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Thu, 31 Oct 2019 08:23:15 +0100
+Subject: [PATCH] advertising: Fix crash when advertisement is unregistered
+ while adding
+
+This commit fixes 2 problems:
+- dereferencing of freed pointer when unregister during MGMT ADD_ADVERTISEMENT call
+- double free when unregistered before removing proxy object
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ src/advertising.c | 42 +++++++++++++++++++++++-------------------
+ 1 file changed, 23 insertions(+), 19 deletions(-)
+
+diff --git a/src/advertising.c b/src/advertising.c
+index 12a2f6b..b314713 100644
+--- a/src/advertising.c
++++ b/src/advertising.c
+@@ -59,6 +59,8 @@ struct btd_adv_manager {
+ #define AD_TYPE_BLE 2
+ 
+ struct btd_adv_client {
++	int ref_count;
++
+ 	struct btd_adv_manager *manager;
+ 	char *owner;
+ 	char *path;
+@@ -119,13 +121,6 @@ static void client_free(void *data)
+ 	free(client);
+ }
+ 
+-static gboolean client_free_idle_cb(void *data)
+-{
+-	client_free(data);
+-
+-	return FALSE;
+-}
+-
+ static void client_release(void *data)
+ {
+ 	struct btd_adv_client *client = data;
+@@ -151,12 +146,19 @@ static void client_destroy(void *data)
+ 	client_free(data);
+ }
+ 
+-static void client_remove(void *data)
++static struct btd_adv_client *client_ref(struct btd_adv_client *client)
++{
++	__sync_fetch_and_add(&client->ref_count, 1);
++
++	return client;
++}
++
++static void client_unref(struct btd_adv_client *client)
+ {
+-	struct btd_adv_client *client = data;
+ 	struct mgmt_cp_remove_advertising cp;
+ 
+-	g_dbus_client_set_disconnect_watch(client->client, NULL, NULL);
++	if (__sync_sub_and_fetch(&client->ref_count, 1))
++		return;
+ 
+ 	cp.instance = client->instance;
+ 
+@@ -166,14 +168,14 @@ static void client_remove(void *data)
+ 
+ 	queue_remove(client->manager->clients, client);
+ 
+-	g_idle_add(client_free_idle_cb, client);
++	client_free(client);
+ }
+ 
+ static void client_disconnect_cb(DBusConnection *conn, void *user_data)
+ {
+ 	DBG("Client disconnected");
+ 
+-	client_remove(user_data);
++	client_unref(user_data);
+ }
+ 
+ static bool parse_type(GDBusProxy *proxy, uint8_t *type)
+@@ -512,8 +514,6 @@ static void add_client_complete(struct btd_adv_client *client, uint8_t status)
+ 						mgmt_errstr(status), status);
+ 		reply = btd_error_failed(client->reg,
+ 					"Failed to register advertisement");
+-		queue_remove(client->manager->clients, client);
+-		g_idle_add(client_free_idle_cb, client);
+ 
+ 	} else
+ 		reply = dbus_message_new_method_return(client->reg);
+@@ -521,6 +521,8 @@ static void add_client_complete(struct btd_adv_client *client, uint8_t status)
+ 	g_dbus_send_message(btd_get_dbus_connection(), reply);
+ 	dbus_message_unref(client->reg);
+ 	client->reg = NULL;
++
++	client_unref(client);
+ }
+ 
+ static void add_adv_callback(uint8_t status, uint16_t length,
+@@ -666,6 +668,9 @@ static DBusMessage *refresh_advertisement(struct btd_adv_client *client)
+ 		return btd_error_failed(client->reg, "Failed");
+ 	}
+ 
++	/* Hold reference to client until add_adv_callback is finished */
++	client_ref(client);
++
+ 	free(cp);
+ 
+ 	return NULL;
+@@ -772,14 +777,12 @@ static void client_proxy_added(GDBusProxy *proxy, void *data)
+ 		return;
+ 
+ 	/* Failed to publish for some reason, remove. */
+-	queue_remove(client->manager->clients, client);
+-
+-	g_idle_add(client_free_idle_cb, client);
+-
+ 	g_dbus_send_message(btd_get_dbus_connection(), reply);
+ 
+ 	dbus_message_unref(client->reg);
+ 	client->reg = NULL;
++
++	client_unref(client);
+ }
+ 
+ static struct btd_adv_client *client_create(struct btd_adv_manager *manager,
+@@ -875,6 +878,7 @@ static DBusMessage *register_advertisement(DBusConnection *conn,
+ 	DBG("Registered advertisement at path %s", match.path);
+ 
+ 	queue_push_tail(manager->clients, client);
++	client_ref(client);
+ 
+ 	return NULL;
+ }
+@@ -904,7 +908,7 @@ static DBusMessage *unregister_advertisement(DBusConnection *conn,
+ 	if (!client)
+ 		return btd_error_does_not_exist(msg);
+ 
+-	client_remove(client);
++	client_unref(client);
+ 
+ 	return dbus_message_new_method_return(msg);
+ }
+-- 
+2.7.4
+

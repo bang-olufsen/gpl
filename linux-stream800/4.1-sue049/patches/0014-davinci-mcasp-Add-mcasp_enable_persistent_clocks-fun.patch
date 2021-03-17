@@ -1,0 +1,114 @@
+From 7bfae40f1bbc9e3f0a9e9161e792f2fc8f025d29 Mon Sep 17 00:00:00 2001
+From: Martin Pietryka <martin.pietryka@streamunlimited.com>
+Date: Thu, 19 Nov 2015 12:37:31 +0100
+Subject: [PATCH] davinci-mcasp: Add mcasp_enable_persistent_clocks() function
+
+This also removes the tx-rx-clk-separate device tree option.
+
+The new way is to set "sue,persistent-clocks" option inside a
+"sue,am33xx-generic-audio" block.
+
+In a future kernel upgrade the following commits can be dropped:
+3f052cd ALSA: ASoC: McASP: keep XCLKRST in DAVINCI_MCASP_GBLCTLX_REG on stream stop
+c4d7ace ASoC: McASP: Add option for keeping TX-LRCK running
+
+Signed-off-by: Martin Pietryka <martin.pietryka@streamunlimited.com>
+---
+ sound/soc/davinci/davinci-mcasp.c | 38 ++++++++++++++++++++++++++------------
+ sound/soc/davinci/davinci-mcasp.h |  2 ++
+ 2 files changed, 28 insertions(+), 12 deletions(-)
+
+diff --git a/sound/soc/davinci/davinci-mcasp.c b/sound/soc/davinci/davinci-mcasp.c
+index 2f0154f..9506dd6 100644
+--- a/sound/soc/davinci/davinci-mcasp.c
++++ b/sound/soc/davinci/davinci-mcasp.c
+@@ -98,9 +98,9 @@ struct davinci_mcasp {
+ 	/* McASP FIFO related */
+ 	u8	txnumevt;
+ 	u8	rxnumevt;
+-	u8	tx_rx_clk_separate;
+ 
+-	u8	tx_lrclk_always;
++	u8	tx_rx_clk_separate;
++	bool	persistent_clocks;
+ 
+ 	bool	dat_port;
+ 
+@@ -285,14 +285,9 @@ static void mcasp_stop_tx(struct davinci_mcasp *mcasp)
+ 	 * In synchronous mode keep TX clocks running if the capture stream is
+ 	 * still running.
+ 	 */
+-	if (mcasp_is_synchronous(mcasp) && mcasp->streams)
++	if ((mcasp_is_synchronous(mcasp) && mcasp->streams) || mcasp->persistent_clocks)
+ 		val =  TXHCLKRST | TXCLKRST | TXFSRST;
+ 
+-	val |= TXCLKRST;
+-
+-	if (mcasp->tx_lrclk_always)
+-		val |= TXFSRST;
+-
+ 	mcasp_set_reg(mcasp, DAVINCI_MCASP_GBLCTLX_REG, val);
+ 	mcasp_set_reg(mcasp, DAVINCI_MCASP_TXSTAT_REG, 0xFFFFFFFF);
+ 
+@@ -1169,6 +1164,29 @@ static int davinci_mcasp_trigger(struct snd_pcm_substream *substream,
+ 	return ret;
+ }
+ 
++/* Used by the SUE am33xx-s800 platform driver to enable the audio clocks on boot */
++int mcasp_enable_persistent_clocks(struct snd_soc_dai *cpu_dai)
++{
++	struct davinci_mcasp *mcasp = snd_soc_dai_get_drvdata(cpu_dai);
++
++	mcasp->persistent_clocks = true;
++
++	mcasp_i2s_hw_param(mcasp, SNDRV_PCM_STREAM_PLAYBACK, 2, false);
++
++	davinci_set_dai_fmt(cpu_dai, SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_CBS_CFS | SND_SOC_DAIFMT_NB_NF , SNDRV_PCM_STREAM_PLAYBACK);
++
++	davinci_config_channel_size(mcasp, SNDRV_PCM_STREAM_PLAYBACK, 32);
++
++	mcasp_set_ctl_reg(mcasp, DAVINCI_MCASP_GBLCTLX_REG, TXHCLKRST);
++	mcasp_set_ctl_reg(mcasp, DAVINCI_MCASP_GBLCTLX_REG, TXCLKRST);
++
++	/* Release Frame Sync generator */
++	mcasp_set_ctl_reg(mcasp, DAVINCI_MCASP_GBLCTLX_REG, TXFSRST);
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(mcasp_enable_persistent_clocks);
++
+ static const unsigned int davinci_mcasp_dai_rates[] = {
+ 	8000, 11025, 16000, 22050, 32000, 44100, 48000, 64000,
+ 	88200, 96000, 176400, 192000,
+@@ -1761,9 +1779,6 @@ static struct davinci_mcasp_pdata *davinci_mcasp_set_pdata_from_of(
+ 	if (of_find_property(np, "tx-rx-clk-separate", NULL))
+ 		pdata->tx_rx_clk_separate = 1;
+ 
+-	if (of_find_property(np, "tx-lrclk-always", NULL))
+-		pdata->tx_lrclk_always = 1;
+-
+ 	return  pdata;
+ 
+ nodata:
+@@ -1856,7 +1871,6 @@ static int davinci_mcasp_probe(struct platform_device *pdev)
+ 	mcasp->txnumevt = pdata->txnumevt;
+ 	mcasp->rxnumevt = pdata->rxnumevt;
+ 	mcasp->tx_rx_clk_separate = pdata->tx_rx_clk_separate;
+-	mcasp->tx_lrclk_always = pdata->tx_lrclk_always;
+ 
+ 	mcasp->dev = &pdev->dev;
+ 
+diff --git a/sound/soc/davinci/davinci-mcasp.h b/sound/soc/davinci/davinci-mcasp.h
+index 79dc511..0b4028e 100644
+--- a/sound/soc/davinci/davinci-mcasp.h
++++ b/sound/soc/davinci/davinci-mcasp.h
+@@ -303,4 +303,6 @@
+ #define NUMEVT(x)	(((x) & 0xFF) << 8)
+ #define NUMDMA_MASK	(0xFF)
+ 
++int mcasp_enable_persistent_clocks(struct snd_soc_dai *cpu_dai);
++
+ #endif	/* DAVINCI_MCASP_H */
+-- 
+1.9.1
+

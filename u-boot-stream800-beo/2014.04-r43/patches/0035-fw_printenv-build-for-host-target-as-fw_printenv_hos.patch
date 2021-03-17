@@ -1,0 +1,161 @@
+From 4dcfa431eca92986e328cdd27d6aba76f082b3a6 Mon Sep 17 00:00:00 2001
+From: Matus Ujhelyi <matus.ujhelyi@streamunlimited.com>
+Date: Thu, 18 Apr 2013 15:05:29 +0200
+Subject: [PATCH] fw_printenv: build for host target as fw_printenv_host and
+ for target as fw_printenv
+
+fw_printenv_utility can be used to obtain u-boot-env and const from linux userspace
+fw_*.config - add config files for fw_printenv utility
+
+Signed-off-by: Matus Ujhelyi <matus.ujhelyi@streamunlimited.com>
+---
+ tools/env/fw_env.c      |  3 ++-
+ tools/env/fw_env.config |  5 +++--
+ tools/env/fw_env.h      |  5 ++++-
+ tools/env/fw_env_main.c | 37 ++++++++++++++++++++++++++++++-------
+ 4 files changed, 39 insertions(+), 11 deletions(-)
+
+diff --git a/tools/env/fw_env.c b/tools/env/fw_env.c
+index f5c9f56..443b19a 100644
+--- a/tools/env/fw_env.c
++++ b/tools/env/fw_env.c
+@@ -111,6 +111,7 @@ static int flash_io (int mode);
+ static char *envmatch (char * s1, char * s2);
+ static int parse_config (void);
+ 
++char * config_file = CONFIG_ENV_FILE;
+ #if defined(CONFIG_FILE)
+ static int get_config (char *);
+ #endif
+@@ -1257,7 +1258,7 @@ static int parse_config ()
+ 
+ #if defined(CONFIG_FILE)
+ 	/* Fills in DEVNAME(), ENVSIZE(), DEVESIZE(). Or don't. */
+-	if (get_config (CONFIG_FILE)) {
++	if (get_config (config_file)) {
+ 		fprintf (stderr,
+ 			"Cannot parse config file: %s\n", strerror (errno));
+ 		return -1;
+diff --git a/tools/env/fw_env.config b/tools/env/fw_env.config
+index c9b9f6a..3d5b193 100644
+--- a/tools/env/fw_env.config
++++ b/tools/env/fw_env.config
+@@ -7,8 +7,8 @@
+ 
+ # NOR example
+ # MTD device name	Device offset	Env. size	Flash sector size	Number of sectors
+-/dev/mtd1		0x0000		0x4000		0x4000
+-/dev/mtd2		0x0000		0x4000		0x4000
++#/dev/mtd1		0x0000		0x4000		0x4000
++#/dev/mtd2		0x0000		0x4000		0x4000
+ 
+ # MTD SPI-dataflash example
+ # MTD device name	Device offset	Env. size	Flash sector size	Number of sectors
+@@ -20,3 +20,4 @@
+ 
+ # Block device example
+ #/dev/mmcblk0		0xc0000		0x20000
++/dev/mtd5		0x0		0x80000		0x20000			4
+diff --git a/tools/env/fw_env.h b/tools/env/fw_env.h
+index 1a64866..ca38c80 100644
+--- a/tools/env/fw_env.h
++++ b/tools/env/fw_env.h
+@@ -20,7 +20,9 @@
+  * See included "fw_env.config" sample file
+  * for notes on configuration.
+  */
+-#define CONFIG_FILE     "/etc/fw_env.config"
++#define CONFIG_FILE         1
++#define CONFIG_ENV_FILE     "/etc/fw_env.config"
++#define CONFIG_CONST_FILE   "/etc/fw_const.config"
+ 
+ #ifndef CONFIG_FILE
+ #define HAVE_REDUND /* For systems with 2 env sectors */
+@@ -62,3 +64,4 @@ extern int fw_env_write(char *name, char *value);
+ extern int fw_env_close(void);
+ 
+ extern unsigned	long  crc32	 (unsigned long, const unsigned char *, unsigned);
++extern char	* config_file;
+diff --git a/tools/env/fw_env_main.c b/tools/env/fw_env_main.c
+index 234c361..721b2a0 100644
+--- a/tools/env/fw_env_main.c
++++ b/tools/env/fw_env_main.c
+@@ -34,6 +34,10 @@
+ 
+ #define	CMD_PRINTENV	"fw_printenv"
+ #define CMD_SETENV	"fw_setenv"
++#define	CMD_PRINTCONST	"fw_printconst"
++#define CMD_SETCONST	"fw_setconst"
++
++extern char * config_file;
+ 
+ static struct option long_options[] = {
+ 	{"script", required_argument, NULL, 's'},
+@@ -41,16 +45,17 @@ static struct option long_options[] = {
+ 	{NULL, 0, NULL, 0}
+ };
+ 
++
+ void usage(void)
+ {
+ 
+ 	fprintf(stderr, "fw_printenv/fw_setenv, "
+-		"a command line interface to U-Boot environment\n\n"
+-		"usage:\tfw_printenv [-n] [variable name]\n"
+-		"\tfw_printenv -d\n"
+-		"\tfw_setenv [variable name] [variable value]\n"
+-		"\tfw_setenv -s [ file ]\n"
+-		"\tfw_setenv -s - < [ file ]\n\n"
++		"a command line interface to U-Boot environment and constants\n\n"
++		"usage:\tfw_printenv/fw_printconst [-n] [variable name]\n"
++		"\tfw_printenv/fw_printconst -d\n"
++		"\tfw_setenv/fw_setconst [variable name] [variable value]\n"
++		"\tfw_setenv/fw_setconst -s [ file ]\n"
++		"\tfw_setenv/fw_setconst -s - < [ file ]\n\n"
+ 		"The file passed as argument contains only pairs "
+ 		"name / value\n"
+ 		"Example:\n"
+@@ -128,6 +133,7 @@ int main(int argc, char *argv[])
+ 	}
+ 
+ 	if (strcmp(cmdname, CMD_PRINTENV) == 0) {
++		config_file = CONFIG_ENV_FILE;
+ 		if (print_default_env != 0) {
+ 			fw_print_default_env();
+ 		} else {
+@@ -135,6 +141,22 @@ int main(int argc, char *argv[])
+ 				retval = EXIT_FAILURE;
+ 		}
+ 	} else if (strcmp(cmdname, CMD_SETENV) == 0) {
++		config_file = CONFIG_ENV_FILE;
++		if (!script_file) {
++			if (fw_setenv(argc, argv) != 0)
++				retval = EXIT_FAILURE;
++		} else {
++			if (fw_parse_script(script_file) != 0)
++				retval = EXIT_FAILURE;
++		}
++	} else if (strcmp(cmdname, CMD_PRINTCONST) == 0) {
++		config_file = CONFIG_CONST_FILE;
++		if (print_default_env == 0) {
++			if (fw_printenv(argc, argv) != 0)
++				retval = EXIT_FAILURE;
++		}
++	} else if (strcmp(cmdname, CMD_SETCONST) == 0) {
++		config_file = CONFIG_CONST_FILE;
+ 		if (!script_file) {
+ 			if (fw_setenv(argc, argv) != 0)
+ 				retval = EXIT_FAILURE;
+@@ -145,7 +167,8 @@ int main(int argc, char *argv[])
+ 	} else {
+ 		fprintf(stderr,
+ 			"Identity crisis - may be called as `" CMD_PRINTENV
+-			"' or as `" CMD_SETENV "' but not as `%s'\n",
++			"' or as `" CMD_PRINTCONST "' or as `" CMD_SETENV
++			"' or as `" CMD_SETCONST "' but not as `%s'\n",
+ 			cmdname);
+ 		retval = EXIT_FAILURE;
+ 	}
+-- 
+2.7.4
+

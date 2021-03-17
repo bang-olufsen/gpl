@@ -1,0 +1,32 @@
+From 57e641ede8bce8e746b782f52e9a29b9fd968dde Mon Sep 17 00:00:00 2001
+From: Nagaraj D R <nagaraj.dr@samsung.com>
+Date: Thu, 3 May 2018 17:25:43 +0530
+Subject: [PATCH] src/device.c : Fix BREDR-ATT MTU issue
+
+For BREDR-ATT, according to spec, ATT MTU is same has
+L2CAP configured MTU on which ATT is running and there won't be
+ATT MTU exchange procedure. So, set the MTU to L2CAP MTU for
+BREDR-ATT and for LE-ATT adjust the ATT MTU based on
+EXCHANGE_MTU request and response.
+---
+ src/device.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/src/device.c b/src/device.c
+index d6328e9..7fe7a74 100644
+--- a/src/device.c
++++ b/src/device.c
+@@ -5055,7 +5055,9 @@ bool device_attach_att(struct btd_device *dev, GIOChannel *io)
+ 	}
+ 
+ 	dev->att_mtu = MIN(mtu, BT_ATT_MAX_LE_MTU);
+-	attrib = g_attrib_new(io, BT_ATT_DEFAULT_LE_MTU, false);
++	attrib = g_attrib_new(io,
++			cid == ATT_CID ? BT_ATT_DEFAULT_LE_MTU : dev->att_mtu,
++			false);
+ 	if (!attrib) {
+ 		error("Unable to create new GAttrib instance");
+ 		return false;
+-- 
+2.7.4
+

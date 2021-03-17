@@ -1,0 +1,34 @@
+From 3b899ff2383c77efd03a486fc16f45e55a986c62 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Radek=20Dost=C3=A1l?= <radek.dostal@streamunlimited.com>
+Date: Thu, 22 Feb 2018 14:11:24 +0100
+Subject: [PATCH] HACK: fix distorted audio with gcc5
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+this does not seem to be timing issue, only thing necessary seems to be
+that we need to reference parent_rate variable to disable some wrong gcc5
+optimization.
+
+Signed-off-by: Radek Dostál <radek.dostal@streamunlimited.com>
+---
+ drivers/clk/clk-si5351.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/clk/clk-si5351.c b/drivers/clk/clk-si5351.c
+index 30335d3..95fcea2 100644
+--- a/drivers/clk/clk-si5351.c
++++ b/drivers/clk/clk-si5351.c
+@@ -736,6 +736,9 @@ static long si5351_msynth_round_rate(struct clk_hw *hw, unsigned long rate,
+ 		__func__, __clk_get_name(hwdata->hw.clk), a, b, c, divby4,
+ 		*parent_rate, rate);
+ 
++	//GCC5 issue workaround - parent_rate needs to be referenced
++	*(volatile unsigned long*)parent_rate = *parent_rate;
++
+ 	return rate;
+ }
+ 
+-- 
+2.7.4
+

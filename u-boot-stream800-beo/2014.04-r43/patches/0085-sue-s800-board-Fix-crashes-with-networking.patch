@@ -1,0 +1,25 @@
+From 88963b768cef9567f111c7a6260368da72fc424b Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Fri, 11 Apr 2014 12:18:14 +0200
+Subject: [PATCH] sue:s800:board: Fix crashes with networking
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ board/streamunlimited/stream800/board.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/board/streamunlimited/stream800/board.c b/board/streamunlimited/stream800/board.c
+index 2b63ab5..c31cbab 100755
+--- a/board/streamunlimited/stream800/board.c
++++ b/board/streamunlimited/stream800/board.c
+@@ -508,6 +508,7 @@ static struct cpsw_platform_data cpsw_data = {
+ 	.ale_entries		= 1024,
+ 	.host_port_reg_ofs	= 0x108,
+ 	.hw_stats_reg_ofs	= 0x900,
++	.bd_ram_ofs		= 0x2000,
+ 	.mac_control		= (1 << 5),
+ 	.control		= cpsw_control,
+ 	.host_port_num		= 0,
+-- 
+2.7.4
+

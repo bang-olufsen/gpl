@@ -1,0 +1,72 @@
+From 36ca549d99b0c9c33eaadb0cd68a8aaf1e11f2d4 Mon Sep 17 00:00:00 2001
+From: Stanislav Ruzani <stanislav.ruzani@streamunlimited.com>
+Date: Thu, 27 Jul 2017 10:12:12 +0200
+Subject: [PATCH 1/2] - reworked BusDispatcher::leave() to get rid of throw()
+
+Signed-off-by: Stanislav Ruzani <stanislav.ruzani@streamunlimited.com>
+---
+ include/dbus-c++/dispatcher.h            |  2 +-
+ include/dbus-c++/eventloop-integration.h |  2 +-
+ src/eventloop-integration.cpp            | 10 ++++++++--
+ 3 files changed, 10 insertions(+), 4 deletions(-)
+ mode change 100644 => 100755 include/dbus-c++/dispatcher.h
+
+diff --git a/include/dbus-c++/dispatcher.h b/include/dbus-c++/dispatcher.h
+old mode 100644
+new mode 100755
+index b5b5536..8b8ae70
+--- a/include/dbus-c++/dispatcher.h
++++ b/include/dbus-c++/dispatcher.h
+@@ -162,7 +162,7 @@ public:
+ 
+   virtual void enter() = 0;
+ 
+-  virtual void leave() = 0;
++  virtual bool leave() = 0;
+ 
+   virtual Timeout *add_timeout(Timeout::Internal *) = 0;
+ 
+diff --git a/include/dbus-c++/eventloop-integration.h b/include/dbus-c++/eventloop-integration.h
+index 3e44304..3aabae9 100644
+--- a/include/dbus-c++/eventloop-integration.h
++++ b/include/dbus-c++/eventloop-integration.h
+@@ -69,7 +69,7 @@ public:
+ 
+   virtual void enter();
+ 
+-  virtual void leave();
++  virtual bool leave();
+ 
+   virtual Pipe *add_pipe(void(*handler)(const void *data, void *buffer, unsigned int nbyte), const void *data);
+ 
+diff --git a/src/eventloop-integration.cpp b/src/eventloop-integration.cpp
+index 1c57cd8..fc7240d 100644
+--- a/src/eventloop-integration.cpp
++++ b/src/eventloop-integration.cpp
+@@ -117,15 +117,21 @@ void BusDispatcher::enter()
+   debug_log("leaving dispatcher %p", this);
+ }
+ 
+-void BusDispatcher::leave()
++bool BusDispatcher::leave()
+ {
+   _running = false;
++  bool res = true;
+ 
+   int ret = write(_fdunlock[1], "exit", strlen("exit"));
+-  if (ret == -1) throw Error("WriteError:errno", toString(errno).c_str());
++  if (ret == -1)
++  {
++	debug_log("WriteError:errno: %s", toString(errno).c_str());
++	res = false;
++  }
+ 
+   close(_fdunlock[1]);
+   close(_fdunlock[0]);
++  return res;
+ }
+ 
+ Pipe *BusDispatcher::add_pipe(void(*handler)(const void *data, void *buffer, unsigned int nbyte), const void *data)
+-- 
+2.13.0
+

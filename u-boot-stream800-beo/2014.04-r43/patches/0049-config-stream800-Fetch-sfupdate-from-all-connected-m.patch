@@ -1,0 +1,59 @@
+From 94f78f24bf95f3af69b02a27114da28f5ab04909 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Wed, 7 Aug 2013 14:27:34 +0200
+Subject: [PATCH] config: stream800: Fetch sfupdate from all connected mass
+ storage devices.
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ include/configs/stream800.h | 20 +++++++++++++++-----
+ 1 file changed, 15 insertions(+), 5 deletions(-)
+
+diff --git a/include/configs/stream800.h b/include/configs/stream800.h
+index 2b7d15c..56b00e3 100644
+--- a/include/configs/stream800.h
++++ b/include/configs/stream800.h
+@@ -390,7 +390,7 @@
+  \
+     "update_download_from_usb=" \
+         "echo \"INFO: usb thumbdrive sfupdate check...\"; " \
+-        "if fatload usb 0 ${sfu_load_addr} sfupdate; " \
++        "if fatload usb ${usbdev} ${sfu_load_addr} sfupdate; " \
+             "then " \
+             "echo \"INFO: SFU update image found on usb thumbdrive\"; " \
+             "if sfu valid ${sfu_load_addr}; " \
+@@ -799,17 +799,27 @@
+                 "then " \
+                 "echo \"INFO: USB update request active, checking USB for update file ...\"; " \
+                 "run usbmount; " \
++                "usbdev=-1; " \
+                 "if usb storage; " \
+                     "then " \
+                     "if fatfind usb 0 / sfupdate; " \
+                         "then " \
+-                        "echo \"INFO: sfupdate image found on USB thumbdrive\"; " \
++                        "echo \"INFO: sfupdate image found on USB-0 thumbdrive\"; " \
+                         "bstate dontunplug; " \
++                        "usbdev=0; " \
+                         "run update_download_from_usb; " \
+                     "else " \
+-                        "echo \"ERROR: sfupdate image not found on USB thumbdrive\"; " \
+-                        "sfu errstate; " \
+-                    "fi; " \
++			 "if fatfind usb 1 / sfupdate; "\
++			    "then " \
++			    "echo \"INFO: sfupdate image found on USB-1 thumbdrive\"; " \
++			    "bstate dontunplug; " \
++			    "usbdev=1; " \
++			    "run update_download_from_usb; " \
++			"else " \
++                            "echo \"ERROR: sfupdate image not found on any USB thumbdrive\"; " \
++                            "sfu errstate; " \
++			"fi;" \
++		    "fi; " \
+                 "fi; " \
+             "else " \
+                 "echo \"INFO: USB update request is not active, not checking USB for FW update file\" ;" \
+-- 
+2.7.4
+

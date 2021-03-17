@@ -1,0 +1,30 @@
+From d0857b7e82fc0c270ff2a6c37298782f52313c87 Mon Sep 17 00:00:00 2001
+From: Johan Hedberg <johan.hedberg@intel.com>
+Date: Mon, 2 Nov 2015 14:39:16 +0200
+Subject: [PATCH] Bluetooth: L2CAP: Fix checked range when allocating new CID
+
+The 'dyn_end' value is also a valid CID so it should be included in
+the range of values checked.
+
+Signed-off-by: Johan Hedberg <johan.hedberg@intel.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+---
+ net/bluetooth/l2cap_core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
+index 5fa3b71..6f0800b 100644
+--- a/net/bluetooth/l2cap_core.c
++++ b/net/bluetooth/l2cap_core.c
+@@ -239,7 +239,7 @@ static u16 l2cap_alloc_cid(struct l2cap_conn *conn)
+ 	else
+ 		dyn_end = L2CAP_CID_DYN_END;
+ 
+-	for (cid = L2CAP_CID_DYN_START; cid < dyn_end; cid++) {
++	for (cid = L2CAP_CID_DYN_START; cid <= dyn_end; cid++) {
+ 		if (!__l2cap_get_chan_by_scid(conn, cid))
+ 			return cid;
+ 	}
+-- 
+2.7.4
+

@@ -1,0 +1,100 @@
+From 132221b1147c6921b88f44decd4aff2fe0826397 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@gmail.com>
+Date: Tue, 10 Jun 2014 11:49:51 +0200
+Subject: [PATCH] fwupdate: Check FIT header and fetch only length of
+ totalbytes from download partition
+
+Previously we fetch 2 times from download partition. This patch adds possibility
+to check only FIT header and then download appropriate length from download
+partition. Rest is same as before.
+
+Signed-off-by: Marek Belisko <marek.belisko@gmail.com>
+---
+ board/streamunlimited/stream800/fwupdate.c | 20 ++++++++++++++++
+ include/configs/stream800.h                | 38 +++++++++++++++---------------
+ 2 files changed, 39 insertions(+), 19 deletions(-)
+
+diff --git a/board/streamunlimited/stream800/fwupdate.c b/board/streamunlimited/stream800/fwupdate.c
+index 8984bc0..3849514 100644
+--- a/board/streamunlimited/stream800/fwupdate.c
++++ b/board/streamunlimited/stream800/fwupdate.c
+@@ -439,6 +439,26 @@ static int do_sfu(cmd_tbl_t * cmdtp, int flag, int argc, char * const argv[])
+ 	if (strcmp(cmd, "valid") == 0) {
+ 		verify = 1;
+ 	}
++
++	if (strcmp(cmd, "chk_hdr") == 0) {
++	/* check FIT header and return size */
++
++
++		void *buf = map_sysmem(addr, 0);
++		int ret;
++		char strbuf[16];
++
++		ret = fdt_check_header(buf);
++		if (ret) {
++			printf("Invalid FIT header! - %d\n", ret);
++			return 1;
++		}
++
++		printf("FDT total size:0x%8x\n", fdt_totalsize(buf));
++		sprintf(strbuf, "0x%08x", fdt_totalsize(buf));
++		status = set_hush_var_with_str_value("SFU_TOTAL_LEN", strbuf);
++		return 0;
++	}
+ 	/* skip FIT bytes to get correct sfu address */
+ 	if (check_sfu_signature(addr, &sfu_addr, verify) == 0)
+ 		addr = sfu_addr;
+diff --git a/include/configs/stream800.h b/include/configs/stream800.h
+index 98b26cc..db60d68 100644
+--- a/include/configs/stream800.h
++++ b/include/configs/stream800.h
+@@ -829,26 +829,26 @@
+                 "VALID_IMAGE=yes; " \
+             "else " \
+                 "echo \"INFO: Need to read the sfupdate from download partition...\"; " \
+-                "if nand read ${sfu_load_addr} download; " \
++                "if nand read ${sfu_load_addr} download 0x64; " \
+                     "then " \
+-                    "if sfu magic ${sfu_load_addr}; " \
+-                        "then " \
+-                        "echo \"INFO: sfupdate image total length is ${SFU_TOTAL_LEN}\"; " \
+-                        "if nand read ${sfu_load_addr} download ${SFU_TOTAL_LEN}; " \
+-                            "then " \
+-                            "if sfu valid ${sfu_load_addr}; " \
+-                                "then " \
+-                                "echo \"INFO: SFU image in download partition is valid\"; " \
+-                                "VALID_IMAGE=yes; " \
+-                            "else " \
+-                                "echo \"ERROR: SFU image in download partition is invalid\"; " \
+-                            "fi; " \
+-                        "else " \
+-                            "echo \"ERROR: nand read failed\"; " \
+-                        "fi; " \
+-                    "else " \
+-                        "echo \"ERROR: SFU image in download partition is invalid\"; " \
+-                    "fi; " \
++ 		    "if sfu chk_hdr ${sfu_load_addr}; " \
++ 			"then "\
++			    "echo \"INFO: sfupdate image total length is ${SFU_TOTAL_LEN}\"; " \
++			    "if nand read ${sfu_load_addr} download ${SFU_TOTAL_LEN}; " \
++			        "then " \
++				    "if sfu valid ${sfu_load_addr}; " \
++					"then " \
++					"echo \"INFO: SFU image in download partition is valid\"; " \
++					"VALID_IMAGE=yes; " \
++				    "else " \
++					"echo \"ERROR: SFU image in download partition is invalid\"; " \
++				    "fi; " \
++				"else " \
++				    "echo \"ERROR: nand read failed\"; " \
++				"fi; " \
++			    "else "\
++				"echo \"ERROR: SFU image in download partition is invalid\"; " \
++ 			"fi; " \
+                 "else " \
+                     "echo \"ERROR: nand read failed\"; " \
+                 "fi; " \
+-- 
+2.7.4
+

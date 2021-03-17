@@ -1,0 +1,107 @@
+From 3cccbc3d3b37c5d3439c1d6d2d37a839be1f5b39 Mon Sep 17 00:00:00 2001
+From: Simon Glass <sjg@chromium.org>
+Date: Wed, 16 Apr 2014 08:41:37 -0600
+Subject: [PATCH] hash: Export functions to find and show hash
+
+These functions are generally useful for displaying a hash value and finding
+available algorithms, so export them.
+
+Signed-off-by: Simon Glass <sjg@chromium.org>
+---
+ common/hash.c  | 13 ++++++-------
+ include/hash.h | 22 ++++++++++++++++++++++
+ 2 files changed, 28 insertions(+), 7 deletions(-)
+
+diff --git a/common/hash.c b/common/hash.c
+index 872cd85..f82b9dd 100644
+--- a/common/hash.c
++++ b/common/hash.c
+@@ -204,7 +204,7 @@ static int parse_verify_sum(struct hash_algo *algo, char *verify_str, u8 *vsum,
+ 	return 0;
+ }
+ 
+-static struct hash_algo *find_hash_algo(const char *name)
++struct hash_algo *hash_find_algo(const char *name)
+ {
+ 	int i;
+ 
+@@ -216,8 +216,7 @@ static struct hash_algo *find_hash_algo(const char *name)
+ 	return NULL;
+ }
+ 
+-static void show_hash(struct hash_algo *algo, ulong addr, ulong len,
+-		      u8 *output)
++void hash_show(struct hash_algo *algo, ulong addr, ulong len, u8 *output)
+ {
+ 	int i;
+ 
+@@ -231,7 +230,7 @@ int hash_block(const char *algo_name, const void *data, unsigned int len,
+ {
+ 	struct hash_algo *algo;
+ 
+-	algo = find_hash_algo(algo_name);
++	algo = hash_find_algo(algo_name);
+ 	if (!algo) {
+ 		debug("Unknown hash algorithm '%s'\n", algo_name);
+ 		return -EPROTONOSUPPORT;
+@@ -265,7 +264,7 @@ int hash_command(const char *algo_name, int flags, cmd_tbl_t *cmdtp, int flag,
+ 		u8 vsum[HASH_MAX_DIGEST_SIZE];
+ 		void *buf;
+ 
+-		algo = find_hash_algo(algo_name);
++		algo = hash_find_algo(algo_name);
+ 		if (!algo) {
+ 			printf("Unknown hash algorithm '%s'\n", algo_name);
+ 			return CMD_RET_USAGE;
+@@ -298,7 +297,7 @@ int hash_command(const char *algo_name, int flags, cmd_tbl_t *cmdtp, int flag,
+ 			if (memcmp(output, vsum, algo->digest_size) != 0) {
+ 				int i;
+ 
+-				show_hash(algo, addr, len, output);
++				hash_show(algo, addr, len, output);
+ 				printf(" != ");
+ 				for (i = 0; i < algo->digest_size; i++)
+ 					printf("%02x", vsum[i]);
+@@ -306,7 +305,7 @@ int hash_command(const char *algo_name, int flags, cmd_tbl_t *cmdtp, int flag,
+ 				return 1;
+ 			}
+ 		} else {
+-			show_hash(algo, addr, len, output);
++			hash_show(algo, addr, len, output);
+ 			printf("\n");
+ 
+ 			if (argc) {
+diff --git a/include/hash.h b/include/hash.h
+index e92d272..c69bc25 100644
+--- a/include/hash.h
++++ b/include/hash.h
+@@ -77,4 +77,26 @@ int hash_command(const char *algo_name, int flags, cmd_tbl_t *cmdtp, int flag,
+ int hash_block(const char *algo_name, const void *data, unsigned int len,
+ 	       uint8_t *output, int *output_size);
+ 
++/**
++ * hash_find_algo() - Find an algorithm by name
++ *
++ * @name:		Name of algorithm to search for
++ * @return pointer to algorithm structure, or NULL if not found
++ */
++struct hash_algo *hash_find_algo(const char *name);
++
++/**
++ * hash_show() - Print out a hash algorithm and value
++ *
++ * You will get a message like this (without a newline at the end):
++ *
++ * "sha1 for 9eb3337c ... 9eb3338f ==> 7942ef1df479fd3130f716eb9613d107dab7e257"
++ *
++ * @algo:		Algorithm used for hash
++ * @addr:		Address of data that was hashed
++ * @len:		Length of data that was hashed
++ * @output:		Hash value to display
++ */
++void hash_show(struct hash_algo *algo, ulong addr, ulong len, u8 *output);
++
+ #endif
+-- 
+2.7.4
+

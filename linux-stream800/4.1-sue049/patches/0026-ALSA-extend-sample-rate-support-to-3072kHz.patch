@@ -1,0 +1,73 @@
+From 656af0f6565638aba32d6e1431ae398bd2d6e19a Mon Sep 17 00:00:00 2001
+From: Lee Page <lee.page@streamunlimited.com>
+Date: Fri, 13 Mar 2015 11:57:23 +0100
+Subject: [PATCH] ALSA: extend sample rate support to 3072kHz
+
+Signed-off-by: Miroslav Rudisin <miero@seznam.cz>
+[extended to 3072kHz]
+Signed-off-by: Lee Page <lee.page@streamunlimited.com>
+[code polishing]
+Signed-off-by: Radek Dostal <radek.dostal@streamunlimited.com>
+---
+ include/sound/pcm.h     | 16 ++++++++++++++++
+ sound/core/pcm_native.c |  6 ++++--
+ 2 files changed, 20 insertions(+), 2 deletions(-)
+
+diff --git a/include/sound/pcm.h b/include/sound/pcm.h
+index 0cb7f3f..e4e8ed7 100644
+--- a/include/sound/pcm.h
++++ b/include/sound/pcm.h
+@@ -129,6 +129,14 @@ struct snd_pcm_ops {
+ #define SNDRV_PCM_RATE_96000		(1<<10)		/* 96000Hz */
+ #define SNDRV_PCM_RATE_176400		(1<<11)		/* 176400Hz */
+ #define SNDRV_PCM_RATE_192000		(1<<12)		/* 192000Hz */
++#define SNDRV_PCM_RATE_352800		(1<<13)		/* 352800Hz */
++#define SNDRV_PCM_RATE_384000		(1<<14)		/* 384000Hz */
++#define SNDRV_PCM_RATE_705600		(1<<15)		/* 705600Hz */
++#define SNDRV_PCM_RATE_768000		(1<<16)		/* 768000Hz */
++#define SNDRV_PCM_RATE_1411200		(1<<17)		/* 1411200Hz */
++#define SNDRV_PCM_RATE_1536000		(1<<18)		/* 1536000Hz */
++#define SNDRV_PCM_RATE_2822400		(1<<19)		/* 2822400Hz */
++#define SNDRV_PCM_RATE_3072000		(1<<20)		/* 3072000Hz */
+ 
+ #define SNDRV_PCM_RATE_CONTINUOUS	(1<<30)		/* continuous range */
+ #define SNDRV_PCM_RATE_KNOT		(1<<31)		/* supports more non-continuos rates */
+@@ -141,6 +149,14 @@ struct snd_pcm_ops {
+ 					 SNDRV_PCM_RATE_88200|SNDRV_PCM_RATE_96000)
+ #define SNDRV_PCM_RATE_8000_192000	(SNDRV_PCM_RATE_8000_96000|SNDRV_PCM_RATE_176400|\
+ 					 SNDRV_PCM_RATE_192000)
++#define SNDRV_PCM_RATE_8000_384000	(SNDRV_PCM_RATE_8000_192000|SNDRV_PCM_RATE_352800|\
++					 SNDRV_PCM_RATE_384000)
++#define SNDRV_PCM_RATE_8000_768000	(SNDRV_PCM_RATE_8000_384000|SNDRV_PCM_RATE_705600|\
++					 SNDRV_PCM_RATE_768000)
++#define SNDRV_PCM_RATE_8000_1536000	(SNDRV_PCM_RATE_8000_768000|SNDRV_PCM_RATE_1411200|\
++					 SNDRV_PCM_RATE_1536000)
++#define SNDRV_PCM_RATE_8000_3072000	(SNDRV_PCM_RATE_8000_1536000|SNDRV_PCM_RATE_2822400|\
++					 SNDRV_PCM_RATE_3072000)
+ #define _SNDRV_PCM_FMTBIT(fmt)		(1ULL << (__force int)SNDRV_PCM_FORMAT_##fmt)
+ #define SNDRV_PCM_FMTBIT_S8		_SNDRV_PCM_FMTBIT(S8)
+ #define SNDRV_PCM_FMTBIT_U8		_SNDRV_PCM_FMTBIT(U8)
+diff --git a/sound/core/pcm_native.c b/sound/core/pcm_native.c
+index 75888dd..91bfb36 100644
+--- a/sound/core/pcm_native.c
++++ b/sound/core/pcm_native.c
+@@ -1972,12 +1972,14 @@ static int snd_pcm_hw_rule_sample_bits(struct snd_pcm_hw_params *params,
+ 	return snd_interval_refine(hw_param_interval(params, rule->var), &t);
+ }
+ 
+-#if SNDRV_PCM_RATE_5512 != 1 << 0 || SNDRV_PCM_RATE_192000 != 1 << 12
++#if SNDRV_PCM_RATE_5512 != 1 << 0 || SNDRV_PCM_RATE_3072000 != 1 << 20
+ #error "Change this table"
+ #endif
+ 
+ static unsigned int rates[] = { 5512, 8000, 11025, 16000, 22050, 32000, 44100,
+-                                 48000, 64000, 88200, 96000, 176400, 192000 };
++                                 48000, 64000, 88200, 96000, 176400, 192000,
++                                 352800, 384000, 705600, 768000, 1411200,
++                                 1536000, 2822400, 3072000 };
+ 
+ const struct snd_pcm_hw_constraint_list snd_pcm_known_rates = {
+ 	.count = ARRAY_SIZE(rates),
+-- 
+1.9.1
+

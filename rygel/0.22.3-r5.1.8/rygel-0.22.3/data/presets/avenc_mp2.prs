@@ -1,0 +1,6 @@
+[_presets_]
+version=1.0
+element-name=avenc_mp2
+
+[Rygel DLNA preset]
+bitrate=256000

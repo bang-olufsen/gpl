@@ -1,0 +1,83 @@
+From de61b241697f567625ca424d15a5240cdb13bc95 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Fri, 22 May 2015 15:38:09 +0200
+Subject: [PATCH] Added fake property element on subscription to events
+
+This fixes UDA-4.1.9 UPnP test case
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ src/librygel-renderer/rygel-qplay.c    | 18 ++++++++++++++++++
+ src/librygel-renderer/rygel-qplay.vala |  9 +++++++++
+ 2 files changed, 27 insertions(+)
+
+diff --git a/src/librygel-renderer/rygel-qplay.c b/src/librygel-renderer/rygel-qplay.c
+index afaf276..cd7a030 100644
+--- a/src/librygel-renderer/rygel-qplay.c
++++ b/src/librygel-renderer/rygel-qplay.c
+@@ -173,6 +173,8 @@ static void qplay_get_tracks_count_cb (QPlay* self, GUPnPService* registrar, GUP
+ static void _qplay_get_tracks_count_cb_gupnp_service_action_invoked (GUPnPService* _sender, GUPnPServiceAction* action, gpointer self);
+ static void qplay_get_max_tracks_cb (QPlay* self, GUPnPService* registrar, GUPnPServiceAction* action);
+ static void _qplay_get_max_tracks_cb_gupnp_service_action_invoked (GUPnPService* _sender, GUPnPServiceAction* action, gpointer self);
++static void qplay_query_fake_state_cb (QPlay* self, GUPnPService* registrar, const gchar* variable, GValue* value);
++static void _qplay_query_fake_state_cb_gupnp_service_query_variable (GUPnPService* _sender, const gchar* variable, GValue* value, gpointer self);
+ void rygel_player_controller_interface_set_network_key (RygelPlayerControllerInterface* self, const gchar* value);
+ void rygel_player_controller_interface_set_network_ssid (RygelPlayerControllerInterface* self, const gchar* value);
+ void rygel_player_controller_interface_set_network (RygelPlayerControllerInterface* self, const gchar* ssid, const gchar* key);
+@@ -240,6 +242,11 @@ static void _qplay_get_max_tracks_cb_gupnp_service_action_invoked (GUPnPService*
+ }
+ 
+ 
++static void _qplay_query_fake_state_cb_gupnp_service_query_variable (GUPnPService* _sender, const gchar* variable, GValue* value, gpointer self) {
++	qplay_query_fake_state_cb ((QPlay*) self, _sender, variable, value);
++}
++
++
+ static void qplay_real_constructed (GObject* base) {
+ 	QPlay * self;
+ 	RygelMediaRendererPlugin* plugin = NULL;
+@@ -273,10 +280,21 @@ static void qplay_real_constructed (GObject* base) {
+ 	g_signal_connect_object ((GUPnPService*) self, "action-invoked::SetTracksInfo", (GCallback) _qplay_set_tracks_info_cb_gupnp_service_action_invoked, self, 0);
+ 	g_signal_connect_object ((GUPnPService*) self, "action-invoked::GetTracksCount", (GCallback) _qplay_get_tracks_count_cb_gupnp_service_action_invoked, self, 0);
+ 	g_signal_connect_object ((GUPnPService*) self, "action-invoked::GetMaxTracks", (GCallback) _qplay_get_max_tracks_cb_gupnp_service_action_invoked, self, 0);
++	g_signal_connect_object ((GUPnPService*) self, "query-variable::FakeState", (GCallback) _qplay_query_fake_state_cb_gupnp_service_query_variable, self, 0);
+ 	_g_object_unref0 (plugin);
+ }
+ 
+ 
++static void qplay_query_fake_state_cb (QPlay* self, GUPnPService* registrar, const gchar* variable, GValue* value) {
++	g_return_if_fail (self != NULL);
++	g_return_if_fail (registrar != NULL);
++	g_return_if_fail (variable != NULL);
++	g_return_if_fail (value != NULL);
++	g_value_init (value, G_TYPE_INT);
++	g_value_set_int (value, 0);
++}
++
++
+ static void qplay_set_network_cb (QPlay* self, GUPnPService* registrar, GUPnPServiceAction* action) {
+ 	GUPnPServiceAction* _tmp0_ = NULL;
+ 	guint _tmp1_ = 0U;
+diff --git a/src/librygel-renderer/rygel-qplay.vala b/src/librygel-renderer/rygel-qplay.vala
+index 84d1b00..f65a612 100644
+--- a/src/librygel-renderer/rygel-qplay.vala
++++ b/src/librygel-renderer/rygel-qplay.vala
+@@ -50,6 +50,15 @@ internal class QPlay: Service {
+         this.action_invoked["SetTracksInfo"].connect (this.set_tracks_info_cb);
+         this.action_invoked["GetTracksCount"].connect (this.get_tracks_count_cb);
+         this.action_invoked["GetMaxTracks"].connect (this.get_max_tracks_cb);
++
++        this.query_variable["FakeState"].connect (this.query_fake_state_cb);
++    }
++
++    private void query_fake_state_cb (Service        registrar,
++                                      string         variable,
++                                      ref GLib.Value value) {
++        value.init (typeof (int));
++        value.set_int (0);
+     }
+ 
+     /* SetNetwork, QPlayAuth and FakeAction action implementations (fake) */
+-- 
+1.9.1
+

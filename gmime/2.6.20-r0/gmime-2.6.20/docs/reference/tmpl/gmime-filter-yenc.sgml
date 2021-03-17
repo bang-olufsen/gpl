@@ -1,0 +1,186 @@
+<!-- ##### SECTION Title ##### -->
+gmime-filter-yenc
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GMimeFilterYenc ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION g_mime_filter_yenc_new ##### -->
+<para>
+
+</para>
+
+@encode: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_filter_yenc_set_state ##### -->
+<para>
+
+</para>
+
+@yenc: 
+@state: 
+
+
+<!-- ##### FUNCTION g_mime_filter_yenc_set_crc ##### -->
+<para>
+
+</para>
+
+@yenc: 
+@crc: 
+
+
+<!-- ##### FUNCTION g_mime_filter_yenc_get_crc ##### -->
+<para>
+
+</para>
+
+@yenc: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_filter_yenc_get_pcrc ##### -->
+<para>
+
+</para>
+
+@yenc: 
+@Returns: 
+
+
+<!-- ##### MACRO GMIME_YENCODE_CRC_INIT ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO GMIME_YENCODE_CRC_FINAL ##### -->
+<para>
+
+</para>
+
+@crc: 
+
+
+<!-- ##### MACRO GMIME_YENCODE_STATE_INIT ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO GMIME_YDECODE_STATE_INIT ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO GMIME_YDECODE_STATE_EOLN ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO GMIME_YDECODE_STATE_ESCAPE ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO GMIME_YDECODE_STATE_END ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO GMIME_YDECODE_STATE_BEGIN ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO GMIME_YDECODE_STATE_DECODE ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO GMIME_YDECODE_STATE_PART ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### FUNCTION g_mime_ydecode_step ##### -->
+<para>
+
+</para>
+
+@inbuf: 
+@inlen: 
+@outbuf: 
+@state: 
+@pcrc: 
+@crc: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_yencode_step ##### -->
+<para>
+
+</para>
+
+@inbuf: 
+@inlen: 
+@outbuf: 
+@state: 
+@pcrc: 
+@crc: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_yencode_close ##### -->
+<para>
+
+</para>
+
+@inbuf: 
+@inlen: 
+@outbuf: 
+@state: 
+@pcrc: 
+@crc: 
+@Returns: 
+
+

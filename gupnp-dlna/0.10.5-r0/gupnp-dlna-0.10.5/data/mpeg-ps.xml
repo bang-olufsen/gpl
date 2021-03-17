@@ -1,0 +1,203 @@
+<?xml version="1.0"?>
+
+<dlna-profiles>
+  <include ref="common.xml" />
+  <include ref="mpeg-common.xml" />
+
+  <restrictions>
+    <restriction id="MPEG_PS" type="container">
+      <field name="name" type="string">
+        <value>video/mpeg</value>
+      </field>
+      <field name="systemstream" type="boolean">
+        <value>true</value>
+      </field>
+      <field name="mpegversion" type="int">
+        <value>2</value>
+      </field>
+    </restriction>
+
+    <restriction id="MPEG_PS_VIDEO" type="video">
+      <field name="name" type="string">
+        <value>video/mpeg</value>
+      </field>
+      <field name="systemstream" type="boolean">
+        <value>false</value>
+      </field>
+      <field name="mpegversion" type="int">
+        <value>2</value>
+      </field>
+      <field name="profile" type="string">
+        <value>simple</value>
+        <value>main</value>
+      </field>
+      <field name="level" type="string">
+        <value>low</value>
+        <value>main</value>
+      </field>
+      <field name="bitrate" type="int" used="in-strict">
+        <range min="1" max="9800000" />
+      </field>
+    </restriction>
+
+    <restriction id="MPEG_PS_AUDIO" type="audio">
+      <field name="rate" type="int">
+        <value>48000</value>
+      </field>
+    </restriction>
+  </restrictions>
+
+  <dlna-profile name="MPEG_PS_PAL" mime="video/mpeg">
+    <parent name="MPEG_PS" />
+
+    <restriction type="audio">
+      <parent name="MPEG_PS_AUDIO" />
+      <field name="name" type="string">
+        <value>audio/x-ac3</value>
+      </field>
+    </restriction>
+
+    <restriction type="audio">
+      <parent name="MPEG_PS_AUDIO" />
+
+      <field name="name" type="string">
+        <value>audio/x-private1-ac3</value>
+      </field>
+    </restriction>
+
+    <restriction type="audio">
+      <parent name="MPEG_PS_AUDIO" />
+
+      <field name="name" type="string">
+        <value>audio/ac3</value>
+      </field>
+    </restriction>
+
+    <restriction type="audio">
+      <parent name="MPEG_PS_AUDIO" />
+
+      <field name="name" type="string">
+        <value>audio/mpeg</value>
+      </field>
+      <field name="mpegversion" type="int">
+        <value>1</value>
+        <value>2</value>
+      </field>
+    </restriction>
+
+    <restriction type="audio">
+      <parent name="MPEG_PS_AUDIO" />
+
+      <field name="name" type="string">
+        <value>audio/x-private1-lpcm</value>
+      </field>
+    </restriction>
+
+    <restriction type="video">
+      <parent name="MPEG_PS_VIDEO" />
+      <parent name="720x576" />
+    </restriction>
+
+    <restriction type="video">
+      <parent name="MPEG_PS_VIDEO" />
+      <parent name="704x576" />
+    </restriction>
+
+    <restriction type="video">
+      <parent name="MPEG_PS_VIDEO" />
+      <parent name="544x576" />
+    </restriction>
+
+    <restriction type="video">
+      <parent name="MPEG_PS_VIDEO" />
+      <parent name="480x576" />
+    </restriction>
+
+    <restriction type="video">
+      <parent name="MPEG_PS_VIDEO" />
+      <parent name="352x576" />
+    </restriction>
+
+    <restriction type="video">
+      <parent name="MPEG_PS_VIDEO" />
+      <parent name="352x288" />
+    </restriction>
+  </dlna-profile>
+
+  <dlna-profile name="MPEG_PS_NTSC" mime="video/mpeg">
+    <parent name="MPEG_PS" />
+
+    <restriction type="audio">
+      <parent name="MPEG_PS_AUDIO" />
+      <field name="name" type="string">
+        <value>audio/x-ac3</value>
+      </field>
+    </restriction>
+
+    <restriction type="audio">
+      <parent name="MPEG_PS_AUDIO" />
+
+      <field name="name" type="string">
+        <value>audio/x-private1-ac3</value>
+      </field>
+    </restriction>
+
+    <restriction type="audio">
+      <parent name="MPEG_PS_AUDIO" />
+
+      <field name="name" type="string">
+        <value>audio/ac3</value>
+      </field>
+    </restriction>
+
+    <restriction type="audio">
+      <parent name="MPEG_PS_AUDIO" />
+
+      <field name="name" type="string">
+        <value>audio/mpeg</value>
+      </field>
+      <field name="mpegversion" type="int">
+        <value>1</value>
+        <value>2</value>
+      </field>
+    </restriction>
+
+    <restriction type="audio">
+      <parent name="MPEG_PS_AUDIO" />
+
+      <field name="name" type="string">
+        <value>audio/x-private1-lpcm</value>
+      </field>
+    </restriction>
+
+    <restriction type="video">
+      <parent name="MPEG_PS_VIDEO" />
+      <parent name="720x480" />
+    </restriction>
+
+    <restriction type="video">
+      <parent name="MPEG_PS_VIDEO" />
+      <parent name="704x480" />
+    </restriction>
+
+    <restriction type="video">
+      <parent name="MPEG_PS_VIDEO" />
+      <parent name="480x480" />
+    </restriction>
+
+    <restriction type="video">
+      <parent name="MPEG_PS_VIDEO" />
+      <parent name="544x480" />
+    </restriction>
+
+    <restriction type="video">
+      <parent name="MPEG_PS_VIDEO" />
+      <parent name="352x480" />
+    </restriction>
+
+    <restriction type="video">
+      <parent name="MPEG_PS_VIDEO" />
+      <parent name="352x240" />
+    </restriction>
+  </dlna-profile>
+</dlna-profiles>

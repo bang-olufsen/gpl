@@ -1,0 +1,37 @@
+From e0e9e56078971cf8857e81eaf9496e51566d1b1b Mon Sep 17 00:00:00 2001
+From: Vladimir Koutny <vladimir.koutny@streamunlimited.com>
+Date: Thu, 30 May 2013 10:18:19 +0200
+Subject: [PATCH] stream800: Fix build of host env tools
+
+Signed-off-by: Vladimir Koutny <vladimir.koutny@streamunlimited.com>
+---
+ common/env_flags.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/common/env_flags.c b/common/env_flags.c
+index 985f92e..f397ca5 100644
+--- a/common/env_flags.c
++++ b/common/env_flags.c
+@@ -5,9 +5,6 @@
+  * SPDX-License-Identifier:	GPL-2.0+
+  */
+ 
+-#include <linux/string.h>
+-#include <linux/ctype.h>
+-
+ #ifdef USE_HOSTCC /* Eliminate "ANSI does not permit..." warnings */
+ #include <stdint.h>
+ #include <stdio.h>
+@@ -20,6 +17,9 @@
+ #include <environment.h>
+ #endif
+ 
++#include <linux/string.h>
++#include <linux/ctype.h>
++
+ #ifdef CONFIG_CMD_NET
+ #define ENV_FLAGS_NET_VARTYPE_REPS "im"
+ #else
+-- 
+2.7.4
+

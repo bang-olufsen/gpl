@@ -1,0 +1,847 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>librygel-renderer Reference Manual: Implementing Renderer Plugins: Simple Example</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="index.html" title="librygel-renderer Reference Manual">
+<link rel="up" href="implementing-renderer-plugins.html" title="Implementing Rygel Renderer Plugins">
+<link rel="prev" href="implementing-renderer-plugins.html" title="Implementing Rygel Renderer Plugins">
+<link rel="next" href="api-main-list.html" title="librygel-renderer API Reference">
+<meta name="generator" content="GTK-Doc V1.20.1 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts"></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="implementing-renderer-plugins.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="implementing-renderer-plugins.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="api-main-list.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="section">
+<div class="titlepage"><div><div><h2 class="title" style="clear: both">
+<a name="implementing-renderer-plugins-simple-example"></a>Implementing Renderer Plugins: Simple Example</h2></div></div></div>
+<p>
+This example source code shows how to implement a Rygel Renderer plugin.</p>
+<p>This example implements module that provides a <a class="link" href="RygelMediaPlayer.html" title="RygelMediaPlayer">RygelMediaPlayer</a> 
+that simply prints the addresses of any URIs provided to it by a UPnP/DLNA controller. A real Rygel renderer 
+plugin's player would render the actual media content to some device. See, for instance, the
+<a class="ulink" href="http:/developer.gnome.org/librygel-renderer-gst/unstable/RygelPlaybinPlayer.html" target="_top">RygelPlaybinPlayer</a> from the
+librygel-renderer-gst library, used in the <a class="ulink" href="http://git.gnome.org/browse/rygel/tree/src/plugins/playbin/" target="_top">Rygel Playbin plugin</a>.
+</p>
+<pre class="programlisting">
+/*
+ * Copyright (C) 2012 Intel Corporation
+ *
+ * This file is part of Rygel.
+ *
+ * Rygel is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * Rygel is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ */
+
+#ifndef __RYGEL_EXAMPLE_RENDERER_PLUGIN_H__
+#define __RYGEL_EXAMPLE_RENDERER_PLUGIN_H__
+
+#include &lt;glib.h&gt;
+#include &lt;glib-object.h&gt;
+#include &lt;rygel-renderer.h&gt;
+
+G_BEGIN_DECLS
+
+#define RYGEL_EXAMPLE_TYPE_RENDERER_PLUGIN (rygel_example_renderer_plugin_get_type ())
+#define RYGEL_EXAMPLE_RENDERER_PLUGIN(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), RYGEL_EXAMPLE_TYPE_RENDERER_PLUGIN, RygelExampleRendererPlugin))
+#define RYGEL_EXAMPLE_RENDERER_PLUGIN_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), RYGEL_EXAMPLE_TYPE_RENDERER_PLUGIN, RygelExampleRendererPluginClass))
+#define RYGEL_EXAMPLE_IS_RENDERER_PLUGIN(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), RYGEL_EXAMPLE_TYPE_RENDERER_PLUGIN))
+#define RYGEL_EXAMPLE_IS_RENDERER_PLUGIN_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), RYGEL_EXAMPLE_TYPE_RENDERER_PLUGIN))
+#define RYGEL_EXAMPLE_RENDERER_PLUGIN_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), RYGEL_EXAMPLE_TYPE_RENDERER_PLUGIN, RygelExampleRendererPluginClass))
+
+typedef struct _RygelExampleRendererPlugin RygelExampleRendererPlugin;
+typedef struct _RygelExampleRendererPluginClass RygelExampleRendererPluginClass;
+typedef struct _RygelExampleRendererPluginPrivate RygelExampleRendererPluginPrivate;
+
+struct _RygelExampleRendererPlugin {
+  RygelMediaRendererPlugin parent_instance;
+  RygelExampleRendererPluginPrivate * priv;
+};
+
+struct _RygelExampleRendererPluginClass {
+  RygelMediaRendererPluginClass parent_class;
+};
+
+GType rygel_example_renderer_plugin_get_type (void) G_GNUC_CONST;
+
+RygelExampleRendererPlugin* rygel_example_renderer_plugin_new (void);
+
+void module_init (RygelPluginLoader* loader);
+
+G_END_DECLS
+
+#endif /* __RYGEL_EXAMPLE_RENDERER_PLUGIN_H__ */
+
+
+</pre>
+<pre class="programlisting">
+/*
+ * Copyright (C) 2012 Intel Corporation
+ *
+ * This file is part of Rygel.
+ *
+ * Rygel is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * Rygel is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ */
+
+#include "example-renderer-plugin.h"
+#include "example-player.h"
+
+#define RYGEL_EXAMPLE_RENDERER_PLUGIN_NAME "ExampleRendererPluginC"
+
+enum  {
+  RYGEL_EXAMPLE_RENDERER_PLUGIN_DUMMY_PROPERTY
+};
+
+#define RYGEL_EXAMPLE_RENDERER_PLUGIN_TITLE "Example Render Plugin C"
+#define RYGEL_EXAMPLE_RENDERER_PLUGIN_DESCRIPTION "An example Rygel renderer plugin implemented in C."
+
+G_DEFINE_TYPE (RygelExampleRendererPlugin, rygel_example_renderer_plugin, RYGEL_TYPE_MEDIA_RENDERER_PLUGIN)
+
+static RygelExamplePlayer *player;
+
+void
+module_init (RygelPluginLoader* loader) {
+  RygelExampleRendererPlugin* plugin;
+
+  g_return_if_fail (loader != NULL);
+
+  if (rygel_plugin_loader_plugin_disabled (loader, RYGEL_EXAMPLE_RENDERER_PLUGIN_NAME)) {
+    g_message ("Plugin '%s' disabled by user. Ignoring.",
+      RYGEL_EXAMPLE_RENDERER_PLUGIN_NAME);
+    return;
+  }
+
+  plugin = rygel_example_renderer_plugin_new ();
+  rygel_plugin_loader_add_plugin (loader, RYGEL_PLUGIN (plugin));
+  g_object_unref (plugin);
+}
+
+
+static RygelExampleRendererPlugin*
+rygel_example_renderer_plugin_construct (GType object_type) {
+  RygelExampleRendererPlugin *self;
+
+  self = (RygelExampleRendererPlugin*) rygel_media_renderer_plugin_construct (object_type,
+    RYGEL_EXAMPLE_RENDERER_PLUGIN_NAME, NULL, RYGEL_EXAMPLE_RENDERER_PLUGIN_DESCRIPTION,
+    RYGEL_PLUGIN_CAPABILITIES_NONE);
+
+  return self;
+}
+
+
+RygelExampleRendererPlugin*
+rygel_example_renderer_plugin_new (void) {
+  return rygel_example_renderer_plugin_construct (RYGEL_EXAMPLE_TYPE_RENDERER_PLUGIN);
+}
+
+
+static RygelMediaPlayer *
+rygel_example_renderer_plugin_get_player (RygelMediaRendererPlugin* plugin)
+{
+    if (player == NULL) {
+        player = rygel_example_player_new ();
+    }
+
+    return RYGEL_EXAMPLE_PLAYER (g_object_ref (player));
+}
+
+static void
+rygel_example_renderer_plugin_class_init (RygelExampleRendererPluginClass *klass) {
+    RygelMediaRendererPluginClass *plugin_class;
+
+    plugin_class = RYGEL_EXAMPLE_RENDERER_PLUGIN_CLASS (klass);
+    plugin_class-&gt;get_player = rygel_example_renderer_plugin_get_player;
+}
+
+
+static void
+rygel_example_renderer_plugin_init (RygelExampleRendererPlugin *self) {
+}
+
+
+
+</pre>
+<pre class="programlisting">
+/*
+ * Copyright (C) 2012 Intel Corporation
+ *
+ * This file is part of Rygel.
+ *
+ * Rygel is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * Rygel is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ */
+
+#ifndef __RYGEL_EXAMPLE_PLAYER_H__
+#define __RYGEL_EXAMPLE_PLAYER_H__
+
+#include &lt;glib.h&gt;
+#include &lt;glib-object.h&gt;
+#include &lt;rygel-renderer.h&gt;
+
+G_BEGIN_DECLS
+
+#define RYGEL_EXAMPLE_TYPE_PLAYER (rygel_example_player_get_type ())
+#define RYGEL_EXAMPLE_PLAYER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), RYGEL_EXAMPLE_TYPE_PLAYER, RygelExamplePlayer))
+#define RYGEL_EXAMPLE_PLAYER_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), RYGEL_EXAMPLE_TYPE_PLAYER, RygelExamplePlayerClass))
+#define RYGEL_EXAMPLE_IS_PLAYER(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), RYGEL_EXAMPLE_TYPE_PLAYER))
+#define RYGEL_EXAMPLE_IS_PLAYER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), RYGEL_EXAMPLE_TYPE_PLAYER))
+#define RYGEL_EXAMPLE_PLAYER_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), RYGEL_EXAMPLE_TYPE_PLAYER, RygelExamplePlayerClass))
+
+typedef struct _RygelExamplePlayer RygelExamplePlayer;
+typedef struct _RygelExamplePlayerClass RygelExamplePlayerClass;
+typedef struct _RygelExamplePlayerPrivate RygelExamplePlayerPrivate;
+
+struct _RygelExamplePlayer {
+  GObject parent_instance;
+  RygelExamplePlayerPrivate * priv;
+};
+
+struct _RygelExamplePlayerClass {
+  GObjectClass parent_class;
+};
+
+GType rygel_example_player_get_type (void) G_GNUC_CONST;
+
+RygelExamplePlayer* rygel_example_player_new (void);
+
+G_END_DECLS
+
+#endif /* __RYGEL_EXAMPLE_PLAYER_H__ */
+
+
+</pre>
+<pre class="programlisting">
+/*
+ * Copyright (C) 2012 Intel Corporation
+ *
+ * This file is part of Rygel.
+ *
+ * Rygel is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * Rygel is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ */
+
+#include "example-player.h"
+
+enum  {
+  RYGEL_EXAMPLE_PLAYER_DUMMY_PROPERTY,
+  RYGEL_EXAMPLE_PLAYER_PLAYBACK_STATE,
+  RYGEL_EXAMPLE_PLAYER_URI,
+  RYGEL_EXAMPLE_PLAYER_MIME_TYPE,
+  RYGEL_EXAMPLE_PLAYER_CAN_SEEK,
+  RYGEL_EXAMPLE_PLAYER_METADATA,
+  RYGEL_EXAMPLE_PLAYER_CONTENT_FEATURES,
+  RYGEL_EXAMPLE_PLAYER_VOLUME,
+  RYGEL_EXAMPLE_PLAYER_DURATION,
+  RYGEL_EXAMPLE_PLAYER_POSITION,
+  RYGEL_EXAMPLE_PLAYER_PLAYBACK_SPEED,
+  RYGEL_EXAMPLE_PLAYER_ALLOWED_PLAYBACK_SPEEDS,
+  RYGEL_EXAMPLE_PLAYER_CAN_SEEK_BYTES,
+  RYGEL_EXAMPLE_PLAYER_BYTE_POSITION,
+  RYGEL_EXAMPLE_PLAYER_SIZE
+};
+
+static void rygel_example_player_rygel_media_player_interface_init (RygelMediaPlayerIface  *iface);
+
+static gboolean
+rygel_example_player_real_seek (RygelMediaPlayer *base, gint64 time);
+
+static gchar**
+rygel_example_player_real_get_protocols (RygelMediaPlayer *base, int *result_length1);
+
+static gchar**
+rygel_example_player_real_get_mime_types (RygelMediaPlayer *base, int *result_length1);
+
+static gchar*
+rygel_example_player_real_get_playback_state (RygelMediaPlayer *base);
+
+static void
+rygel_example_player_real_set_playback_state (RygelMediaPlayer *base, const gchar *value);
+
+static gchar*
+rygel_example_player_real_get_uri (RygelMediaPlayer *base);
+
+static void
+rygel_example_player_real_set_uri (RygelMediaPlayer *base, const gchar *value);
+
+static gchar*
+rygel_example_player_real_get_mime_type (RygelMediaPlayer *base);
+
+static void
+rygel_example_player_real_set_mime_type (RygelMediaPlayer *base, const gchar *value);
+
+static gchar*
+rygel_example_player_real_get_metadata (RygelMediaPlayer *base);
+
+static void
+rygel_example_player_real_set_metadata (RygelMediaPlayer *base, const gchar *value);
+
+static gchar*
+rygel_example_player_real_get_content_features (RygelMediaPlayer *base);
+
+static void
+rygel_example_player_real_set_content_features (RygelMediaPlayer *base, const gchar *value);
+
+static gdouble
+rygel_example_player_real_get_volume (RygelMediaPlayer *base);
+
+static void
+rygel_example_player_real_set_volume (RygelMediaPlayer *base, gdouble value);
+
+static gint64
+rygel_example_player_real_get_duration (RygelMediaPlayer *base);
+
+static gint64
+rygel_example_player_real_get_position (RygelMediaPlayer *base);
+
+static gboolean
+rygel_example_player_real_get_can_seek (RygelMediaPlayer *base);
+
+static gchar **
+rygel_example_player_real_get_allowed_playback_speeds (RygelMediaPlayer *base, int *length);
+
+static void
+rygel_example_player_real_set_playback_speed (RygelMediaPlayer *base, const char *speed);
+
+static gchar *
+rygel_example_player_real_get_playback_speed (RygelMediaPlayer *base);
+
+static gint64
+rygel_example_player_real_get_byte_position (RygelMediaPlayer* base);
+
+static gint64
+rygel_example_player_real_get_size (RygelMediaPlayer* base);
+
+static gboolean
+rygel_example_player_real_get_can_seek_bytes (RygelMediaPlayer* base);
+
+static void
+_rygel_example_player_get_property (GObject *object, guint property_id, GValue *value, GParamSpec *pspec);
+
+static void
+_rygel_example_player_set_property (GObject *object, guint property_id, const GValue *value, GParamSpec *pspec);
+
+static void
+rygel_example_player_finalize (GObject *obj);
+
+
+G_DEFINE_TYPE_WITH_CODE (RygelExamplePlayer, rygel_example_player, G_TYPE_OBJECT,
+                         G_IMPLEMENT_INTERFACE (RYGEL_TYPE_MEDIA_PLAYER,
+                                                rygel_example_player_rygel_media_player_interface_init))
+
+struct _RygelExamplePlayerPrivate {
+  gchar *_playback_state;
+  gchar *_uri;
+  gchar *_mime_type;
+  gchar *_metadata;
+  gchar *_content_features;
+  gdouble _volume;
+  gint64 _duration;
+  gint64 _position;
+  gchar *playback_speed;
+};
+
+static const gchar* RYGEL_EXAMPLE_PLAYER_PROTOCOLS[] = {"http-get", NULL};
+static const gchar* RYGEL_EXAMPLE_PLAYER_MIME_TYPES[] = {"image/jpeg", "image/png", NULL};
+
+RygelExamplePlayer*
+rygel_example_player_new (void) {
+    return g_object_new (RYGEL_EXAMPLE_TYPE_PLAYER, NULL);
+}
+
+
+static void
+rygel_example_player_rygel_media_player_interface_init (RygelMediaPlayerIface *iface) {
+  iface-&gt;seek = (gboolean (*)(RygelMediaPlayer*, gint64)) rygel_example_player_real_seek;
+  iface-&gt;get_protocols = (gchar **(*)(RygelMediaPlayer*, int*)) rygel_example_player_real_get_protocols;
+  iface-&gt;get_mime_types = (gchar **(*)(RygelMediaPlayer*, int*)) rygel_example_player_real_get_mime_types;
+  iface-&gt;get_playback_state = rygel_example_player_real_get_playback_state;
+  iface-&gt;set_playback_state = rygel_example_player_real_set_playback_state;
+  iface-&gt;get_uri = rygel_example_player_real_get_uri;
+  iface-&gt;set_uri = rygel_example_player_real_set_uri;
+  iface-&gt;get_mime_type = rygel_example_player_real_get_mime_type;
+  iface-&gt;set_mime_type = rygel_example_player_real_set_mime_type;
+  iface-&gt;get_metadata = rygel_example_player_real_get_metadata;
+  iface-&gt;set_metadata = rygel_example_player_real_set_metadata;
+  iface-&gt;get_content_features = rygel_example_player_real_get_content_features;
+  iface-&gt;set_content_features = rygel_example_player_real_set_content_features;
+  iface-&gt;get_volume = rygel_example_player_real_get_volume;
+  iface-&gt;set_volume = rygel_example_player_real_set_volume;
+  iface-&gt;get_duration = rygel_example_player_real_get_duration;
+  iface-&gt;get_position = rygel_example_player_real_get_position;
+  iface-&gt;get_can_seek = rygel_example_player_real_get_can_seek;
+  iface-&gt;get_allowed_playback_speeds = rygel_example_player_real_get_allowed_playback_speeds;
+  iface-&gt;get_playback_speed = rygel_example_player_real_get_playback_speed;
+  iface-&gt;set_playback_speed = rygel_example_player_real_set_playback_speed;
+  iface-&gt;get_can_seek_bytes = rygel_example_player_real_get_can_seek_bytes;
+  iface-&gt;get_size = rygel_example_player_real_get_size;
+  iface-&gt;get_byte_position = rygel_example_player_real_get_byte_position;
+}
+
+static void
+rygel_example_player_class_init (RygelExamplePlayerClass *klass) {
+  GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+
+  g_type_class_add_private (gobject_class, sizeof (RygelExamplePlayerPrivate));
+
+  gobject_class-&gt;get_property = _rygel_example_player_get_property;
+  gobject_class-&gt;set_property = _rygel_example_player_set_property;
+  gobject_class-&gt;finalize = rygel_example_player_finalize;
+
+  g_object_class_override_property (gobject_class,
+                                    RYGEL_EXAMPLE_PLAYER_PLAYBACK_STATE,
+                                    "playback-state");
+
+  g_object_class_override_property (gobject_class,
+                                    RYGEL_EXAMPLE_PLAYER_URI,
+                                    "uri");
+
+  g_object_class_override_property (gobject_class,
+                                    RYGEL_EXAMPLE_PLAYER_MIME_TYPE,
+                                    "mime-type");
+
+  g_object_class_override_property (gobject_class,
+                                    RYGEL_EXAMPLE_PLAYER_METADATA,
+                                    "metadata");
+
+  g_object_class_override_property (gobject_class,
+                                    RYGEL_EXAMPLE_PLAYER_CAN_SEEK,
+                                    "can-seek");
+
+  g_object_class_override_property (gobject_class,
+                                    RYGEL_EXAMPLE_PLAYER_CONTENT_FEATURES,
+                                    "content-features");
+
+  g_object_class_override_property (gobject_class,
+                                    RYGEL_EXAMPLE_PLAYER_VOLUME,
+                                    "volume");
+
+  g_object_class_override_property (gobject_class,
+                                    RYGEL_EXAMPLE_PLAYER_DURATION,
+                                    "duration");
+
+  g_object_class_override_property (gobject_class,
+                                    RYGEL_EXAMPLE_PLAYER_POSITION,
+                                    "position");
+
+  g_object_class_override_property (gobject_class,
+                                    RYGEL_EXAMPLE_PLAYER_PLAYBACK_SPEED,
+                                    "playback-speed");
+
+  g_object_class_override_property (gobject_class,
+                                    RYGEL_EXAMPLE_PLAYER_ALLOWED_PLAYBACK_SPEEDS,
+                                    "allowed-playback-speeds");
+
+  g_object_class_override_property (gobject_class,
+                                    RYGEL_EXAMPLE_PLAYER_CAN_SEEK_BYTES,
+                                    "can-seek-bytes");
+
+  g_object_class_override_property (gobject_class,
+                                    RYGEL_EXAMPLE_PLAYER_BYTE_POSITION,
+                                    "byte-position");
+
+  g_object_class_override_property (gobject_class,
+                                    RYGEL_EXAMPLE_PLAYER_SIZE,
+                                    "size");
+}
+
+static void
+rygel_example_player_init (RygelExamplePlayer *self) {
+  self-&gt;priv = G_TYPE_INSTANCE_GET_PRIVATE (self,
+                                            RYGEL_EXAMPLE_TYPE_PLAYER,
+                                            RygelExamplePlayerPrivate);
+
+  self-&gt;priv-&gt;_playback_state = g_strdup ("NO_MEDIA_PRESENT");
+  self-&gt;priv-&gt;_uri = NULL;
+  self-&gt;priv-&gt;_mime_type = NULL;
+  self-&gt;priv-&gt;_metadata = NULL;
+  self-&gt;priv-&gt;_content_features = NULL;
+  self-&gt;priv-&gt;_volume = 0;
+  self-&gt;priv-&gt;_duration = 0;
+  self-&gt;priv-&gt;_position = 0;
+  self-&gt;priv-&gt;playback_speed = g_strdup ("1");
+}
+
+
+static gboolean
+rygel_example_player_real_seek (RygelMediaPlayer *base, gint64 time) {
+  /* RygelExamplePlayer *self = RYGEL_EXAMPLE_PLAYER (base); */
+  return FALSE;
+}
+
+static gchar**
+rygel_example_player_real_get_protocols (RygelMediaPlayer *base, int *result_length) {
+  /* RygelExamplePlayer *self = RYGEL_EXAMPLE_PLAYER (base); */
+
+  if (result_length) {
+    *result_length = g_strv_length (RYGEL_EXAMPLE_PLAYER_PROTOCOLS);
+  }
+
+  return g_strdupv (RYGEL_EXAMPLE_PLAYER_PROTOCOLS);
+}
+
+
+static gchar**
+rygel_example_player_real_get_mime_types (RygelMediaPlayer *base, int *result_length) {
+  /* RygelExamplePlayer *self = RYGEL_EXAMPLE_PLAYER (base); */
+
+  if (result_length) {
+    *result_length = g_strv_length (RYGEL_EXAMPLE_PLAYER_MIME_TYPES);
+  }
+
+  return g_strdupv (RYGEL_EXAMPLE_PLAYER_MIME_TYPES);
+}
+
+
+static gchar*
+rygel_example_player_real_get_playback_state (RygelMediaPlayer *base) {
+  RygelExamplePlayer *self = RYGEL_EXAMPLE_PLAYER (base);
+
+  return g_strdup (self-&gt;priv-&gt;_playback_state);
+}
+
+
+static void
+rygel_example_player_real_set_playback_state (RygelMediaPlayer *base, const gchar *value) {
+  RygelExamplePlayer *self = RYGEL_EXAMPLE_PLAYER (base);
+
+  g_free (self-&gt;priv-&gt;_playback_state);
+  self-&gt;priv-&gt;_playback_state = g_strdup (value);
+
+  g_object_notify (G_OBJECT (self), "playback-state");
+}
+
+
+static gchar*
+rygel_example_player_real_get_uri (RygelMediaPlayer *base) {
+  RygelExamplePlayer *self = RYGEL_EXAMPLE_PLAYER (base);
+
+  return g_strdup (self-&gt;priv-&gt;_uri);
+}
+
+
+static void
+rygel_example_player_real_set_uri (RygelMediaPlayer *base, const gchar *value) {
+  RygelExamplePlayer *self = RYGEL_EXAMPLE_PLAYER (base);
+
+  g_free (self-&gt;priv-&gt;_uri);
+  self-&gt;priv-&gt;_uri = g_strdup (value);
+
+  g_debug ("URI set to %s.", value);
+  g_object_notify (G_OBJECT (self), "uri");
+}
+
+
+static gchar*
+rygel_example_player_real_get_mime_type (RygelMediaPlayer *base) {
+  RygelExamplePlayer *self = RYGEL_EXAMPLE_PLAYER (base);
+
+  return g_strdup (self-&gt;priv-&gt;_mime_type);
+}
+
+
+static void
+rygel_example_player_real_set_mime_type (RygelMediaPlayer *base, const gchar *value) {
+  RygelExamplePlayer *self = RYGEL_EXAMPLE_PLAYER (base);
+
+  g_free (self-&gt;priv-&gt;_mime_type);
+  self-&gt;priv-&gt;_mime_type = g_strdup (value);
+
+  g_object_notify (G_OBJECT (self), "mime-type");
+}
+
+
+static gchar*
+rygel_example_player_real_get_metadata (RygelMediaPlayer *base) {
+  RygelExamplePlayer *self = RYGEL_EXAMPLE_PLAYER (base);
+
+  return g_strdup (self-&gt;priv-&gt;_metadata);
+}
+
+
+static void
+rygel_example_player_real_set_metadata (RygelMediaPlayer *base, const gchar *value) {
+  RygelExamplePlayer *self = RYGEL_EXAMPLE_PLAYER (base);
+
+  g_free (self-&gt;priv-&gt;_mime_type);
+  self-&gt;priv-&gt;_mime_type = g_strdup (value);
+
+  g_object_notify (G_OBJECT (self), "metadata");
+}
+
+
+static gchar*
+rygel_example_player_real_get_content_features (RygelMediaPlayer *base) {
+  RygelExamplePlayer *self = RYGEL_EXAMPLE_PLAYER (base);
+
+  return g_strdup (self-&gt;priv-&gt;_content_features);
+}
+
+
+static void
+rygel_example_player_real_set_content_features (RygelMediaPlayer *base, const gchar *value) {
+  RygelExamplePlayer *self = RYGEL_EXAMPLE_PLAYER (base);
+
+  g_free (self-&gt;priv-&gt;_content_features);
+  self-&gt;priv-&gt;_content_features = g_strdup (value);
+
+  g_object_notify (G_OBJECT (self), "content-features");
+}
+
+
+static gdouble
+rygel_example_player_real_get_volume (RygelMediaPlayer *base) {
+  RygelExamplePlayer *self = RYGEL_EXAMPLE_PLAYER (base);
+
+  return self-&gt;priv-&gt;_volume;
+}
+
+
+static void
+rygel_example_player_real_set_volume (RygelMediaPlayer *base, gdouble value) {
+  RygelExamplePlayer *self = RYGEL_EXAMPLE_PLAYER (base);
+
+  self-&gt;priv-&gt;_volume = value;
+
+  g_debug ("volume set to %f.", value);
+  g_object_notify (G_OBJECT (self), "volume");
+}
+
+
+static gint64
+rygel_example_player_real_get_duration (RygelMediaPlayer *base) {
+  RygelExamplePlayer *self = RYGEL_EXAMPLE_PLAYER (base);
+
+  return self-&gt;priv-&gt;_duration;
+}
+
+
+static gint64
+rygel_example_player_real_get_position (RygelMediaPlayer *base) {
+  RygelExamplePlayer *self = RYGEL_EXAMPLE_PLAYER (base);
+
+  return self-&gt;priv-&gt;_position;
+}
+
+static gboolean
+rygel_example_player_real_get_can_seek (RygelMediaPlayer *base) {
+    return FALSE;
+}
+
+static gchar **
+rygel_example_player_real_get_allowed_playback_speeds (RygelMediaPlayer *base, int *length)
+{
+    if (length != NULL) {
+        *length = 6;
+    }
+
+    return g_strsplit ("-1,-1/2,1/2,1,2,4", ",", -1);
+}
+
+static void
+rygel_example_player_real_set_playback_speed (RygelMediaPlayer *base,
+                                              const char *speed)
+{
+  RygelExamplePlayer *self = RYGEL_EXAMPLE_PLAYER (base);
+
+  if (self-&gt;priv-&gt;playback_speed != NULL) {
+    g_free (self-&gt;priv-&gt;playback_speed);
+  }
+
+  self-&gt;priv-&gt;playback_speed = g_strdup (speed);
+
+  g_object_notify (G_OBJECT (self), "playback-speed");
+}
+
+static gchar *
+rygel_example_player_real_get_playback_speed (RygelMediaPlayer *base)
+{
+  RygelExamplePlayer *self = RYGEL_EXAMPLE_PLAYER (base);
+
+  return g_strdup (self-&gt;priv-&gt;playback_speed);
+}
+
+static gint64
+rygel_example_player_real_get_byte_position (RygelMediaPlayer* base)
+{
+	RygelExamplePlayer *self = RYGEL_EXAMPLE_PLAYER (base);
+	return 0;
+}
+
+static gint64
+rygel_example_player_real_get_size (RygelMediaPlayer* base)
+{
+	RygelExamplePlayer *self = RYGEL_EXAMPLE_PLAYER (base);
+	return 0;
+}
+
+static gboolean
+rygel_example_player_real_get_can_seek_bytes (RygelMediaPlayer* base)
+{
+	RygelExamplePlayer *self = RYGEL_EXAMPLE_PLAYER (base);
+	return FALSE;
+}
+
+static void
+_rygel_example_player_get_property (GObject *object, guint property_id, GValue *value, GParamSpec *pspec) {
+  RygelMediaPlayer *base = RYGEL_MEDIA_PLAYER (object);
+
+  switch (property_id) {
+    case RYGEL_EXAMPLE_PLAYER_PLAYBACK_STATE:
+      g_value_take_string (value, rygel_media_player_get_playback_state (base));
+      break;
+    case RYGEL_EXAMPLE_PLAYER_URI:
+      g_value_take_string (value, rygel_media_player_get_uri (base));
+      break;
+    case RYGEL_EXAMPLE_PLAYER_MIME_TYPE:
+      g_value_take_string (value, rygel_media_player_get_mime_type (base));
+      break;
+    case RYGEL_EXAMPLE_PLAYER_METADATA:
+      g_value_take_string (value, rygel_media_player_get_metadata (base));
+      break;
+    case RYGEL_EXAMPLE_PLAYER_CONTENT_FEATURES:
+      g_value_take_string (value, rygel_media_player_get_content_features (base));
+      break;
+    case RYGEL_EXAMPLE_PLAYER_VOLUME:
+      g_value_set_double (value, rygel_media_player_get_volume (base));
+      break;
+    case RYGEL_EXAMPLE_PLAYER_DURATION:
+      g_value_set_int64 (value, rygel_media_player_get_duration (base));
+      break;
+    case RYGEL_EXAMPLE_PLAYER_POSITION:
+      g_value_set_int64 (value, rygel_media_player_get_position (base));
+      break;
+    case RYGEL_EXAMPLE_PLAYER_CAN_SEEK:
+      g_value_set_boolean (value, rygel_media_player_get_can_seek (base));
+      break;
+    case RYGEL_EXAMPLE_PLAYER_PLAYBACK_SPEED:
+      g_value_take_string (value, rygel_media_player_get_playback_speed (base));
+      break;
+    case RYGEL_EXAMPLE_PLAYER_ALLOWED_PLAYBACK_SPEEDS:
+      {
+        int length;
+
+        g_value_take_boxed (value, rygel_media_player_get_allowed_playback_speeds (base, &amp;length));
+      }
+      break;
+    case RYGEL_EXAMPLE_PLAYER_CAN_SEEK_BYTES:
+      g_value_set_boolean (value, rygel_media_player_get_can_seek_bytes (base));
+      break;
+    case RYGEL_EXAMPLE_PLAYER_BYTE_POSITION:
+      g_value_set_int64 (value, rygel_media_player_get_byte_position (base));
+      break;
+    case RYGEL_EXAMPLE_PLAYER_SIZE:
+      g_value_set_int64 (value, rygel_media_player_get_size (base));
+      break;
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+      break;
+  }
+}
+
+
+static void
+_rygel_example_player_set_property (GObject *object, guint property_id, const GValue *value, GParamSpec *pspec) {
+  RygelMediaPlayer *base = RYGEL_MEDIA_PLAYER (object);
+
+  switch (property_id) {
+    case RYGEL_EXAMPLE_PLAYER_PLAYBACK_STATE:
+      rygel_media_player_set_playback_state (base, g_value_get_string (value));
+      break;
+    case RYGEL_EXAMPLE_PLAYER_URI:
+      rygel_media_player_set_uri (base, g_value_get_string (value));
+      break;
+    case RYGEL_EXAMPLE_PLAYER_MIME_TYPE:
+      rygel_media_player_set_mime_type (base, g_value_get_string (value));
+      break;
+    case RYGEL_EXAMPLE_PLAYER_METADATA:
+      rygel_media_player_set_metadata (base, g_value_get_string (value));
+      break;
+    case RYGEL_EXAMPLE_PLAYER_CONTENT_FEATURES:
+      rygel_media_player_set_content_features (base, g_value_get_string (value));
+      break;
+    case RYGEL_EXAMPLE_PLAYER_VOLUME:
+      rygel_media_player_set_volume (base, g_value_get_double (value));
+      break;
+    case RYGEL_EXAMPLE_PLAYER_PLAYBACK_SPEED:
+      rygel_media_player_set_playback_speed (base, g_value_get_string (value));
+      break;
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
+      break;
+  }
+}
+
+static void
+rygel_example_player_finalize (GObject *obj) {
+  RygelExamplePlayer *self = RYGEL_EXAMPLE_PLAYER (obj);
+
+  g_free (self-&gt;priv-&gt;_playback_state);
+  g_free (self-&gt;priv-&gt;_uri);
+  g_free (self-&gt;priv-&gt;_mime_type);
+  g_free (self-&gt;priv-&gt;_metadata);
+  g_free (self-&gt;priv-&gt;_content_features);
+
+  G_OBJECT_CLASS (rygel_example_player_parent_class)-&gt;finalize (obj);
+}
+
+
+
+</pre>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.20.1</div>
+</body>
+</html>

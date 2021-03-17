@@ -1,0 +1,28 @@
+From 02aafb2aad36fe80d85b696e752e9bc6cb50f15f Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Wed, 6 Aug 2014 09:45:51 +0200
+Subject: [PATCH] s800: Use new command to verify and update bootfile variable
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ include/configs/stream800.h | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/include/configs/stream800.h b/include/configs/stream800.h
+index ca164a9..020b438 100644
+--- a/include/configs/stream800.h
++++ b/include/configs/stream800.h
+@@ -796,9 +796,7 @@
+ 			"stftpup use_static_data; " \
+ 		    "fi; " \
+ 			\
+-		    "if test -z \\\\'${bootfile}\\\\' || test ${bootfile} = uImage; then " \
+-			"setenv bootfile sfupdate; " \
+-		    "fi; " \
++		    "stftpup check_modify_bootfile; " \
+ 			\
+ 		    "if tftp ${sfu_load_addr} ${rootpath}${bootfile}; " \
+ 			"then " \
+-- 
+2.7.4
+

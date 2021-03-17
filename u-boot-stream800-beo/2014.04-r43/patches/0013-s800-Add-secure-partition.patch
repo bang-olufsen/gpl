@@ -1,0 +1,49 @@
+From 5bc383c09ece88ee7996619d412d85c0eb6444a6 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@gmail.com>
+Date: Wed, 4 Jun 2014 14:46:29 +0200
+Subject: [PATCH] s800: Add secure partition
+
+Signed-off-by: Marek Belisko <marek.belisko@gmail.com>
+---
+ board/streamunlimited/stream800/partitions.h | 11 ++++++-----
+ include/configs/stream800.h                  |  2 +-
+ 2 files changed, 7 insertions(+), 6 deletions(-)
+
+diff --git a/board/streamunlimited/stream800/partitions.h b/board/streamunlimited/stream800/partitions.h
+index 89176ac..707185c 100644
+--- a/board/streamunlimited/stream800/partitions.h
++++ b/board/streamunlimited/stream800/partitions.h
+@@ -54,11 +54,12 @@ struct partition s800_part_512M[] = {
+ 	 * and CONFIG_CONSTANTS_BASE  in stream800.h
+ 	 */
+ 	[6] = { 0x00300000, 0x00080000, "constants" },
+-	[7] = { 0x00380000, 0x10000000, "settings" },
+-	[8] = { 0x10380000, 0x00600000, "kernel" },
+-	[9] = { 0x10980000, 0x00200000, "dts" },
+-	[10] = { 0x10B80000, 0x07B00000, "rootfs" },
+-	[11] = { 0x18680000, 0x07980000, "download" }
++	[7] = { 0x00380000, 0x00a00000, "secure" },
++	[8] = { 0x00d80000, 0x0f600000, "settings"},
++	[9] = { 0x10380000, 0x00600000, "kernel" },
++	[10] = { 0x10980000, 0x00200000, "dts" },
++	[11] = { 0x10B80000, 0x07B00000, "rootfs" },
++	[12] = { 0x18680000, 0x07980000, "download" }
+ };
+ 
+ #endif /* _PARTITIONS_H */
+diff --git a/include/configs/stream800.h b/include/configs/stream800.h
+index b4aaa62..4ca429b 100644
+--- a/include/configs/stream800.h
++++ b/include/configs/stream800.h
+@@ -270,7 +270,7 @@
+         "fi;\0" \
+ \
+ \
+-    "nandroot=ubi0:stream800-rootfs ubi.mtd=10,2048 rw\0" \
++    "nandroot=ubi0:stream800-rootfs ubi.mtd=11,2048 rw\0" \
+     "nandrootfstype=ubifs rootwait=1\0" \
+     "nandargs=setenv bootargs console=${console} " \
+         "root=${nandroot} noinitrd ${wdtargs} " \
+-- 
+2.7.4
+

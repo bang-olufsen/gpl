@@ -1,0 +1,60 @@
+From dffb8abb39d35ad5a10229b8806a365dbfe07d11 Mon Sep 17 00:00:00 2001
+From: Andriy Danylovskyy <andriy.danylovskyy@streamunlimited.com>
+Date: Mon, 15 Apr 2019 13:27:10 +0200
+Subject: [PATCH] get the proper girdir path from gobject-introspection
+
+Signed-off-by: Andriy Danylovskyy <andriy.danylovskyy@streamunlimited.com>
+---
+ libgupnp-dlna/Makefile.am | 2 +-
+ vala/Makefile.am          | 6 +++++-
+ 2 files changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/libgupnp-dlna/Makefile.am b/libgupnp-dlna/Makefile.am
+index 3364e8f..5e2e21a 100644
+--- a/libgupnp-dlna/Makefile.am
++++ b/libgupnp-dlna/Makefile.am
+@@ -248,7 +248,7 @@ endif
+ 
+ INTROSPECTION_GIRS += $(girs)
+ 
+-girdir = $(datadir)/gir-1.0
++girdir = $$($(PKG_CONFIG) gobject-introspection-1.0 --variable=girdir)
+ gir_DATA = $(girs)
+ 
+ typelibdir = $(libdir)/girepository-1.0/
+diff --git a/vala/Makefile.am b/vala/Makefile.am
+index fe955de..7e01bb1 100644
+--- a/vala/Makefile.am
++++ b/vala/Makefile.am
+@@ -1,5 +1,7 @@
+ if HAVE_INTROSPECTION
+ if HAVE_VAPIGEN
++GIRDIR = $$($(PKG_CONFIG) gobject-introspection-1.0 --variable=girdir)
++
+ gupnp-dlna-2.0.vapi: gupnp-dlna-2.0.stamp
+ 	@true
+ 
+@@ -8,6 +10,7 @@ gupnp-dlna-2.0.stamp: $(builddir)/../libgupnp-dlna/GUPnPDLNA-2.0.gir \
+ 		$(srcdir)/gupnp-dlna-2.0-custom.vala
+ 	$(AM_V_GEN)$(VAPIGEN) --metadatadir=$(srcdir) \
+ 			      --library=gupnp-dlna-2.0 \
++			      --girdir=$(PKG_CONFIG_SYSROOT_DIR)$(GIRDIR) \
+ 			      $(builddir)/../libgupnp-dlna/GUPnPDLNA-2.0.gir \
+ 			      $(srcdir)/gupnp-dlna-2.0-custom.vala && \
+ 	echo timestamp > $(@F)
+@@ -34,10 +37,11 @@ gupnp-dlna-gst-2.0.stamp: $(builddir)/../libgupnp-dlna/GUPnPDLNAGst-2.0.gir \
+ 		$(srcdir)/GUPnPDLNAGst-2.0.metadata \
+ 		$(srcdir)/gupnp-dlna-gst-2.0-custom.vala \
+ 		gupnp-dlna-2.0.vapi
++	cp $(builddir)/../libgupnp-dlna/GUPnPDLNA-2.0.gir $(PKG_CONFIG_SYSROOT_DIR)$(GIRDIR)/; \
+ 	$(AM_V_GEN)$(VAPIGEN) --metadatadir=$(srcdir) \
+ 			      --library=gupnp-dlna-gst-2.0 \
+ 			      --vapidir=$(builddir) \
+-			      --girdir=$(builddir)/../libgupnp-dlna \
++			      --girdir=$(PKG_CONFIG_SYSROOT_DIR)$(GIRDIR) \
+ 			      --pkg gupnp-dlna-2.0 \
+ 			      --pkg gstreamer-1.0 \
+ 			      --pkg gstreamer-pbutils-1.0 \
+-- 
+2.7.4
+

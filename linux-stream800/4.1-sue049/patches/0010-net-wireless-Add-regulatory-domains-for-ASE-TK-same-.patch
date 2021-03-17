@@ -1,0 +1,92 @@
+From cc283626ae946a6436b1506ead2df47f40ab2fd9 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@gmail.com>
+Date: Tue, 6 Oct 2015 13:23:40 +0200
+Subject: [PATCH] net: wireless: Add regulatory domains for ASE-TK (same as for
+ ASE)
+
+Adapt to latest reg.db requirements.
+
+Signed-off-by: Marek Belisko <marek.belisko@gmail.com>
+---
+ net/wireless/db.txt | 71 ++++++++++++++++++++++++++++++++++++++++-------------
+ 1 file changed, 54 insertions(+), 17 deletions(-)
+
+diff --git a/net/wireless/db.txt b/net/wireless/db.txt
+index a2fc3a0..e157589 100644
+--- a/net/wireless/db.txt
++++ b/net/wireless/db.txt
+@@ -1,17 +1,54 @@
+-#
+-# This file is a placeholder to prevent accidental build breakage if someone
+-# enables CONFIG_CFG80211_INTERNAL_REGDB.  Almost no one actually needs to
+-# enable that build option.
+-#
+-# You should be using CRDA instead.  It is even better if you use the CRDA
+-# package provided by your distribution, since they will probably keep it
+-# up-to-date on your behalf.
+-#
+-# If you _really_ intend to use CONFIG_CFG80211_INTERNAL_REGDB then you will
+-# need to replace this file with one containing appropriately formatted
+-# regulatory rules that cover the regulatory domains you will be using.  Your
+-# best option is to extract the db.txt file from the wireless-regdb git
+-# repository:
+-#
+-#   git://git.kernel.org/pub/scm/linux/kernel/git/linville/wireless-regdb.git
+-#
++# This is the world regulatory domain
++country 00:
++	(2402 - 2472 @ 40), (3, 20)
++	# Channel 12 - 13.
++	(2457 - 2482 @ 40), (3, 20), NO-IR
++	# Channel 14. Only JP enables this and for 802.11b only
++	(2474 - 2494 @ 20), (3, 20), NO-IR, NO-OFDM
++	# Channel 36 - 48
++	(5170 - 5250 @ 40), (3, 20), NO-IR
++	# NB: 5260 MHz - 5700 MHz requies DFS
++	# Channel 149 - 165
++	(5735 - 5835 @ 40), (3, 20), NO-IR
++
++# ASE specific regions
++# mapping:
++# 	AA = United States
++#	AB = Rest of the world
++#	AC = China
++
++country AA:
++	(2402 - 2472 @ 40), (N/A, 14)
++	(5170 - 5250 @ 40), (N/A, 16)
++	(5250 - 5330 @ 40), (N/A, 16), DFS
++	(5490 - 5590 @ 40), (N/A, 16), DFS
++	(5650 - 5710 @ 40), (N/A, 16), DFS
++	(5735 - 5835 @ 40), (N/A, 16)
++
++country AB:
++	(2402 - 2472 @ 40), (N/A, 14)
++	# Channel 12 - 13.
++	(2457 - 2482 @ 20), (N/A, 14), NO-IR
++	(5170 - 5250 @ 40), (N/A, 13), NO-IR
++	(5250 - 5330 @ 40), (N/A, 14), DFS, NO-IR
++	(5490 - 5590 @ 40), (N/A, 16), DFS, NO-IR
++	(5650 - 5710 @ 40), (N/A, 16), DFS, NO-IR
++
++country AC:
++	(2402 - 2482 @ 40), (N/A, 14)
++	(5735 - 5835 @ 40), (N/A, 16)
++
++# ASE default setting
++country RZ:
++	(2402 - 2482 @ 40), (3, 14)
++	# Channel 14. Only JP enables this and for 802.11b only
++	(2474 - 2494 @ 20), (3, 14), NO-IR, NO-OFDM
++	# Channel 36 - 48
++	(5170 - 5250 @ 40), (3, 13), NO-IR
++	# Channel 52 - 64
++	(5250 - 5330 @ 40), (3, 13), NO-IR, DFS
++	# Channel 100 - 140
++	(5490 - 5730 @ 40), (3, 13), NO-IR, DFS
++	# Channel 149 - 165
++	(5735 - 5835 @ 40), (3, 13), NO-IR
++
+-- 
+1.9.1
+

@@ -1,0 +1,26 @@
+From f6412b188de070753f1c09a8f6bc786d33a5bfb6 Mon Sep 17 00:00:00 2001
+From: Avichal Agarwal <avichal.a@samsung.com>
+Date: Tue, 20 Mar 2018 10:39:41 +0530
+Subject: [PATCH] doc/gatt-api.txt: Add support for Included Service
+
+included service support implemented at server side
+---
+ doc/gatt-api.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/doc/gatt-api.txt b/doc/gatt-api.txt
+index 4ca27b3..b73b85b 100644
+--- a/doc/gatt-api.txt
++++ b/doc/gatt-api.txt
+@@ -45,7 +45,7 @@ Properties	string UUID [read-only]
+ 			belongs to. Only present on services from remote
+ 			devices.
+ 
+-		array{object} Includes [read-only]: Not implemented
++		array{object} Includes [read-only]
+ 
+ 			Array of object paths representing the included
+ 			services of this service.
+-- 
+2.7.4
+

@@ -1,0 +1,43 @@
+From acbc05a8ca162c8abc5c547b1e4152fa16afa5d7 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@gmail.com>
+Date: Tue, 6 Oct 2015 13:38:03 +0200
+Subject: [PATCH] mwifiex: Add disable-40MHz-on-2.4Ghz module param (for use on
+ HH1)
+
+Signed-off-by: Vladimir Koutny <vladimir.koutny@streamunlimited.com>
+---
+ drivers/net/wireless/mwifiex/join.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/drivers/net/wireless/mwifiex/join.c b/drivers/net/wireless/mwifiex/join.c
+index 411a6c2..8a81d11 100644
+--- a/drivers/net/wireless/mwifiex/join.c
++++ b/drivers/net/wireless/mwifiex/join.c
+@@ -28,6 +28,10 @@
+ 
+ #define CAPINFO_MASK    (~(BIT(15) | BIT(14) | BIT(12) | BIT(11) | BIT(9)))
+ 
++
++static int disable_40mhz_24ghz = 0;
++module_param(disable_40mhz_24ghz, int, 0644);
++
+ /*
+  * Append a generic IE as a pass through TLV to a TLV buffer.
+  *
+@@ -397,6 +401,13 @@ int mwifiex_cmd_802_11_associate(struct mwifiex_private *priv,
+ 	u8 *pos;
+ 	int rsn_ie_len = 0;
+ 
++
++	/* Enable/Disable 40MHz for 2.4G band based on module param */
++	if (disable_40mhz_24ghz)
++		priv->wdev.wiphy->bands[IEEE80211_BAND_2GHZ]->ht_cap.cap &= ~IEEE80211_HT_CAP_SUP_WIDTH_20_40;
++	else
++		priv->wdev.wiphy->bands[IEEE80211_BAND_2GHZ]->ht_cap.cap |= IEEE80211_HT_CAP_SUP_WIDTH_20_40;
++
+ 	pos = (u8 *) assoc;
+ 
+ 	cmd->command = cpu_to_le16(HostCmd_CMD_802_11_ASSOCIATE);
+-- 
+1.9.1
+

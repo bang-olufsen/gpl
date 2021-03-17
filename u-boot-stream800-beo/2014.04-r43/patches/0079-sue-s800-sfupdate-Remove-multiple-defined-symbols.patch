@@ -1,0 +1,30 @@
+From a9e094fba17e81ff4257de4877e0e8ea6bf422af Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Fri, 11 Apr 2014 07:28:34 +0200
+Subject: [PATCH] sue:s800: sfupdate: Remove multiple defined symbols
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ board/streamunlimited/stream800/sfu_parser.h | 6 ------
+ 1 file changed, 6 deletions(-)
+
+diff --git a/board/streamunlimited/stream800/sfu_parser.h b/board/streamunlimited/stream800/sfu_parser.h
+index 409fcd8..5a431d4 100644
+--- a/board/streamunlimited/stream800/sfu_parser.h
++++ b/board/streamunlimited/stream800/sfu_parser.h
+@@ -42,12 +42,6 @@
+ #define SFU_DBG(x...)
+ #endif
+ 
+-#ifdef CONFIG_SFU_RAM
+-typedef uint32_t bool;
+-#define false       (0x0UL)
+-#define true        (!false)
+-#endif // CONFIG_SFU_RAM
+-
+ #define SFU_FILE_HEADER_MAGIC                 "S800_UPD"
+ #define SFU_DOWNLOAD_MTD_PARTITION      "/dev/mtd7"
+ #define MAX_SFU_DWNLD_MTD_PART_SIZE     (0x05F00000UL)
+-- 
+2.7.4
+

@@ -1,0 +1,67 @@
+<!-- ##### SECTION Title ##### -->
+gmime-stream-buffer
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### ENUM GMimeStreamBufferMode ##### -->
+<para>
+
+</para>
+
+@GMIME_STREAM_BUFFER_CACHE_READ: 
+@GMIME_STREAM_BUFFER_BLOCK_READ: 
+@GMIME_STREAM_BUFFER_BLOCK_WRITE: 
+
+<!-- ##### STRUCT GMimeStreamBuffer ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION g_mime_stream_buffer_new ##### -->
+<para>
+
+</para>
+
+@source: 
+@mode: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_stream_buffer_gets ##### -->
+<para>
+
+</para>
+
+@stream: 
+@buf: 
+@max: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_stream_buffer_readln ##### -->
+<para>
+
+</para>
+
+@stream: 
+@buffer: 
+
+

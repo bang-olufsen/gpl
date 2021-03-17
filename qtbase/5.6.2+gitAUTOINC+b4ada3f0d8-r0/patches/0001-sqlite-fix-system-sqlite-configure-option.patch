@@ -1,0 +1,31 @@
+From 48f98ea1b3230bb2b62f4166e0761893da21efe3 Mon Sep 17 00:00:00 2001
+From: Etienne Cordonnier <etienne.cordonnier@streamunlimited.com>
+Date: Thu, 3 Nov 2016 12:06:47 +0100
+Subject: [PATCH] sqlite: fix system-sqlite configure option
+
+Original commit in qtbase's dev branch: ced4d167a25b63afd293a59aed389ca6efce7951
+---
+ src/sql/drivers/sqlite/qsql_sqlite.pri | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/src/sql/drivers/sqlite/qsql_sqlite.pri b/src/sql/drivers/sqlite/qsql_sqlite.pri
+index e323f2e..bcf8900 100644
+--- a/src/sql/drivers/sqlite/qsql_sqlite.pri
++++ b/src/sql/drivers/sqlite/qsql_sqlite.pri
+@@ -1,9 +1,9 @@
+ HEADERS += $$PWD/qsql_sqlite_p.h
+ SOURCES += $$PWD/qsql_sqlite.cpp
+ 
+-!system-sqlite:!contains(LIBS, .*sqlite3.*) {
+-    include($$PWD/../../../3rdparty/sqlite.pri)
+-} else {
++#!system-sqlite:!contains(LIBS, .*sqlite3.*) {
++#    include($$PWD/../../../3rdparty/sqlite.pri)
++#} else {
+     LIBS += $$QT_LFLAGS_SQLITE
+     QMAKE_CXXFLAGS *= $$QT_CFLAGS_SQLITE
+-}
++#}
+-- 
+2.7.4
+

@@ -1,0 +1,365 @@
+From b62e610cc1e26cbb421d45ace1a7c31cfa00623d Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Mon, 12 Jun 2017 15:01:29 +0200
+Subject: [PATCH] advertising: add scan response data to advertisement
+
+Signed-off-by: Martin Geier <martin.geier@streamunlimited.com>
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ doc/advertising-api.txt |  26 ++++++++++
+ src/advertising.c       | 123 ++++++++++++++++++++++++++++++++++++++----------
+ 2 files changed, 125 insertions(+), 24 deletions(-)
+
+diff --git a/doc/advertising-api.txt b/doc/advertising-api.txt
+index c9787a7..eac9874 100644
+--- a/doc/advertising-api.txt
++++ b/doc/advertising-api.txt
+@@ -71,6 +71,32 @@ Properties	string Type
+ 			Includes the Tx Power in the advertising packet.
+ 			If missing, the Tx Power is not included.
+ 
++		array{string} RspServiceUUIDs
++
++			List of UUIDs to include in the "Service UUID" field of
++			the Scan Response Data.
++
++		dict RspManufacturerData
++
++			Manufactuer Data fields to include in
++			the Scan Response Data.  Keys are the Manufacturer ID
++			to associate with the data.
++
++		array{string} RspSolicitUUIDs
++
++			Array of UUIDs to include in "Service Solicitation"
++			Scan Response Data.
++
++		dict RspServiceData
++
++			Service Data elements to include. The keys are the
++			UUID to associate with the data.
++
++		string RspLocalName
++
++			Includes the Local Name in the Scan Response packet when
++			there is space available
++
+ 
+ LE Advertising Manager hierarchy
+ ================================
+diff --git a/src/advertising.c b/src/advertising.c
+index b4da6f9..3569c02 100644
+--- a/src/advertising.c
++++ b/src/advertising.c
+@@ -47,6 +47,7 @@ struct btd_adv_manager {
+ 	struct mgmt *mgmt;
+ 	uint16_t mgmt_index;
+ 	uint8_t max_adv_len;
++	uint8_t max_scan_rsp_len;
+ 	uint8_t max_ads;
+ 	unsigned int instance_bitmap;
+ };
+@@ -64,6 +65,7 @@ struct btd_adv_client {
+ 	uint8_t type; /* Advertising type */
+ 	bool include_tx_power;
+ 	struct bt_ad *data;
++	struct bt_ad *scan_rsp_data;
+ 	uint8_t instance;
+ };
+ 
+@@ -100,6 +102,7 @@ static void client_free(void *data)
+ 						client->instance);
+ 
+ 	bt_ad_unref(client->data);
++	bt_ad_unref(client->scan_rsp_data);
+ 
+ 	g_dbus_proxy_unref(client->proxy);
+ 
+@@ -195,11 +198,12 @@ static bool parse_type(GDBusProxy *proxy, uint8_t *type)
+ 	return false;
+ }
+ 
+-static bool parse_service_uuids(GDBusProxy *proxy, struct bt_ad *data)
++static bool parse_service_uuids(GDBusProxy *proxy, struct bt_ad *data,
++					const char *property)
+ {
+ 	DBusMessageIter iter, ariter;
+ 
+-	if (!g_dbus_proxy_get_property(proxy, "ServiceUUIDs", &iter))
++	if (!g_dbus_proxy_get_property(proxy, property, &iter))
+ 		return true;
+ 
+ 	if (dbus_message_iter_get_arg_type(&iter) != DBUS_TYPE_ARRAY)
+@@ -215,7 +219,7 @@ static bool parse_service_uuids(GDBusProxy *proxy, struct bt_ad *data)
+ 
+ 		dbus_message_iter_get_basic(&ariter, &uuid_str);
+ 
+-		DBG("Adding ServiceUUID: %s", uuid_str);
++		DBG("Adding %s: %s", property, uuid_str);
+ 
+ 		if (bt_string_to_uuid(&uuid, uuid_str) < 0)
+ 			goto fail;
+@@ -233,11 +237,12 @@ fail:
+ 	return false;
+ }
+ 
+-static bool parse_solicit_uuids(GDBusProxy *proxy, struct bt_ad *data)
++static bool parse_solicit_uuids(GDBusProxy *proxy, struct bt_ad *data,
++					const char *property)
+ {
+ 	DBusMessageIter iter, ariter;
+ 
+-	if (!g_dbus_proxy_get_property(proxy, "SolicitUUIDs", &iter))
++	if (!g_dbus_proxy_get_property(proxy, property, &iter))
+ 		return true;
+ 
+ 	if (dbus_message_iter_get_arg_type(&iter) != DBUS_TYPE_ARRAY)
+@@ -253,7 +258,7 @@ static bool parse_solicit_uuids(GDBusProxy *proxy, struct bt_ad *data)
+ 
+ 		dbus_message_iter_get_basic(&ariter, &uuid_str);
+ 
+-		DBG("Adding SolicitUUID: %s", uuid_str);
++		DBG("Adding %s: %s", property, uuid_str);
+ 
+ 		if (bt_string_to_uuid(&uuid, uuid_str) < 0)
+ 			goto fail;
+@@ -271,11 +276,12 @@ fail:
+ 	return false;
+ }
+ 
+-static bool parse_manufacturer_data(GDBusProxy *proxy, struct bt_ad *data)
++static bool parse_manufacturer_data(GDBusProxy *proxy, struct bt_ad *data,
++					const char *property)
+ {
+ 	DBusMessageIter iter, entries;
+ 
+-	if (!g_dbus_proxy_get_property(proxy, "ManufacturerData", &iter))
++	if (!g_dbus_proxy_get_property(proxy, property, &iter))
+ 		return true;
+ 
+ 	if (dbus_message_iter_get_arg_type(&iter) != DBUS_TYPE_ARRAY)
+@@ -312,7 +318,7 @@ static bool parse_manufacturer_data(GDBusProxy *proxy, struct bt_ad *data)
+ 
+ 		dbus_message_iter_get_fixed_array(&array, &manuf_data, &len);
+ 
+-		DBG("Adding ManufacturerData for %04x", manuf_id);
++		DBG("Adding %s for %04x", property, manuf_id);
+ 
+ 		if (!bt_ad_add_manufacturer_data(data, manuf_id, manuf_data,
+ 									len))
+@@ -328,11 +334,12 @@ fail:
+ 	return false;
+ }
+ 
+-static bool parse_service_data(GDBusProxy *proxy, struct bt_ad *data)
++static bool parse_service_data(GDBusProxy *proxy, struct bt_ad *data,
++					const char *property)
+ {
+ 	DBusMessageIter iter, entries;
+ 
+-	if (!g_dbus_proxy_get_property(proxy, "ServiceData", &iter))
++	if (!g_dbus_proxy_get_property(proxy, property, &iter))
+ 		return true;
+ 
+ 	if (dbus_message_iter_get_arg_type(&iter) != DBUS_TYPE_ARRAY)
+@@ -373,7 +380,7 @@ static bool parse_service_data(GDBusProxy *proxy, struct bt_ad *data)
+ 
+ 		dbus_message_iter_get_fixed_array(&array, &service_data, &len);
+ 
+-		DBG("Adding ServiceData for %s", uuid_str);
++		DBG("Adding %s for %s", property, uuid_str);
+ 
+ 		if (!bt_ad_add_service_data(data, &uuid, service_data, len))
+ 			goto fail;
+@@ -388,14 +395,14 @@ fail:
+ 	return false;
+ }
+ 
+-static bool parse_local_name(GDBusProxy *proxy,
+-							struct bt_ad *data)
++static bool parse_local_name(GDBusProxy *proxy, struct bt_ad *data,
++					const char *property)
+ {
+ 	DBusMessageIter iter;
+ 	const char *local_name;
+ 
+-	if (!g_dbus_proxy_get_property(proxy, "LocalName", &iter)) {
+-		DBG("LocaName not found");
++	if (!g_dbus_proxy_get_property(proxy, property, &iter)) {
++		DBG("%s not found", property);
+ 		return true;
+ 	}
+ 
+@@ -405,10 +412,10 @@ static bool parse_local_name(GDBusProxy *proxy,
+ 	dbus_message_iter_get_basic(&iter, &local_name);
+ 
+ 	if (strlen(local_name) == 0) {
+-		DBG("Local name is not set, clear");
++		DBG("%s is not set, clear", property);
+ 		bt_ad_clear_local_name(data);
+ 	} else {
+-		DBG("Adding local name: '%s'", local_name);
++		DBG("Adding %s: '%s'", property, local_name);
+ 		if (!bt_ad_set_local_name(data, local_name)) {
+ 			bt_ad_clear_local_name(data);
+ 			return false;
+@@ -507,6 +514,8 @@ static DBusMessage *refresh_advertisement(struct btd_adv_client *client)
+ 	uint8_t param_len;
+ 	uint8_t *adv_data;
+ 	size_t adv_data_len;
++	uint8_t *scan_rsp_data;
++	size_t scan_rsp_data_len;
+ 	uint32_t flags = 0;
+ 
+ 	DBG("Refreshing advertisement: %s", client->path);
+@@ -528,6 +537,7 @@ static DBusMessage *refresh_advertisement(struct btd_adv_client *client)
+ 
+ 		if (!adv_data || (adv_data_len > calc_max_adv_len(client, flags))) {
+ 			error("Advertising data too long or couldn't be generated.");
++			g_free(adv_data);
+ 
+ 			return g_dbus_create_error(client->reg, ERROR_INTERFACE
+ 							".InvalidLength",
+@@ -535,7 +545,27 @@ static DBusMessage *refresh_advertisement(struct btd_adv_client *client)
+ 		}
+ 	}
+ 
+-	param_len = sizeof(struct mgmt_cp_add_advertising) + adv_data_len;
++	scan_rsp_data = bt_ad_generate(client->scan_rsp_data, &scan_rsp_data_len);
++
++	if (!scan_rsp_data || scan_rsp_data_len > client->manager->max_scan_rsp_len) {
++		// if the data are too long, try to remove local name
++		bt_ad_clear_local_name(client->scan_rsp_data);
++		g_free(scan_rsp_data);
++
++		scan_rsp_data = bt_ad_generate(client->scan_rsp_data, &scan_rsp_data_len);
++
++		if (!scan_rsp_data || scan_rsp_data_len > client->manager->max_scan_rsp_len) {
++			error("Scan response data too long or couldn't be generated.");
++			g_free(scan_rsp_data);
++			free(adv_data);
++
++			return g_dbus_create_error(client->reg, ERROR_INTERFACE
++							".InvalidLength",
++							"Scan response data too long.");
++		}
++	}
++
++	param_len = sizeof(struct mgmt_cp_add_advertising) + adv_data_len + scan_rsp_data_len;
+ 
+ 	cp = malloc0(param_len);
+ 
+@@ -543,6 +573,7 @@ static DBusMessage *refresh_advertisement(struct btd_adv_client *client)
+ 		error("Couldn't allocate for MGMT!");
+ 
+ 		free(adv_data);
++		free(scan_rsp_data);
+ 
+ 		return btd_error_failed(client->reg, "Failed");
+ 	}
+@@ -552,7 +583,11 @@ static DBusMessage *refresh_advertisement(struct btd_adv_client *client)
+ 	cp->adv_data_len = adv_data_len;
+ 	memcpy(cp->data, adv_data, adv_data_len);
+ 
++	cp->scan_rsp_len = scan_rsp_data_len;
++	memcpy(cp->data + adv_data_len, scan_rsp_data, scan_rsp_data_len);
++
+ 	free(adv_data);
++	free(scan_rsp_data);
+ 
+ 	if (!mgmt_send(client->manager->mgmt, MGMT_OP_ADD_ADVERTISING,
+ 				client->manager->mgmt_index, param_len, cp,
+@@ -576,31 +611,66 @@ static DBusMessage *parse_advertisement(struct btd_adv_client *client)
+ 		goto fail;
+ 	}
+ 
+-	if (!parse_service_uuids(client->proxy, client->data)) {
++	if (!parse_service_uuids(client->proxy, client->data,
++						"ServiceUUIDs")) {
+ 		error("Property \"ServiceUUIDs\" failed to parse");
+ 		goto fail;
+ 	}
+ 
+-	if (!parse_solicit_uuids(client->proxy, client->data)) {
++	if (!parse_solicit_uuids(client->proxy, client->data,
++						"SolicitUUIDs")) {
+ 		error("Property \"SolicitUUIDs\" failed to parse");
+ 		goto fail;
+ 	}
+ 
+-	if (!parse_manufacturer_data(client->proxy, client->data)) {
++	if (!parse_manufacturer_data(client->proxy, client->data,
++						"ManufacturerData")) {
+ 		error("Property \"ManufacturerData\" failed to parse");
+ 		goto fail;
+ 	}
+ 
+-	if (!parse_service_data(client->proxy, client->data)) {
++	if (!parse_service_data(client->proxy, client->data,
++						"ServiceData")) {
+ 		error("Property \"ServiceData\" failed to parse");
+ 		goto fail;
+ 	}
+ 
+-	if (!parse_local_name(client->proxy, client->data)) {
++	if (!parse_local_name(client->proxy, client->data,
++						"LocalName")) {
+ 		error("Property \"LocalName\" failed to parse");
+ 		goto fail;
+ 	}
+ 
++	if (!parse_service_uuids(client->proxy, client->scan_rsp_data,
++						"RspServiceUUIDs")) {
++		error("Property \"RspServiceUUIDs\" failed to parse");
++		goto fail;
++	}
++
++	if (!parse_solicit_uuids(client->proxy, client->scan_rsp_data,
++						"RspSolicitUUIDs")) {
++		error("Property \"RspSolicitUUIDs\" failed to parse");
++		goto fail;
++	}
++
++	if (!parse_manufacturer_data(client->proxy, client->scan_rsp_data,
++						"RspManufacturerData")) {
++		error("Property \"RspManufacturerData\" failed to parse");
++		goto fail;
++	}
++
++	if (!parse_service_data(client->proxy, client->scan_rsp_data,
++						"RspServiceData")) {
++		error("Property \"RspServiceData\" failed to parse");
++		goto fail;
++	}
++
++	if (!parse_local_name(client->proxy, client->scan_rsp_data,
++						"RspLocalName")) {
++		error("Property \"RspLocalName\" failed to parse");
++		goto fail;
++	}
++
+ 	if (!parse_include_tx_power(client->proxy, &client->include_tx_power)) {
+ 		error("Property \"IncludeTxPower\" failed to parse");
+ 		goto fail;
+@@ -670,6 +740,10 @@ static struct btd_adv_client *client_create(struct btd_adv_manager *manager,
+ 	if (!client->data)
+ 		goto fail;
+ 
++	client->scan_rsp_data = bt_ad_new();
++	if (!client->scan_rsp_data)
++		goto fail;
++
+ 	client->instance = util_get_uid(&manager->instance_bitmap,
+ 							manager->max_ads);
+ 	if (!client->instance)
+@@ -796,6 +870,7 @@ static void read_adv_features_callback(uint8_t status, uint16_t length,
+ 	}
+ 
+ 	manager->max_adv_len = feat->max_adv_data_len;
++	manager->max_scan_rsp_len = feat->max_scan_rsp_len;
+ 	manager->max_ads = feat->max_instances;
+ 
+ 	if (manager->max_ads == 0)
+-- 
+2.7.4
+

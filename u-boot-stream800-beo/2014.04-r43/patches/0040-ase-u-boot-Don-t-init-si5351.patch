@@ -1,0 +1,32 @@
+From 5e0ad36232d79b1f285c2e0daac36bfa7826c75d Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Mon, 20 Oct 2014 14:21:51 +0200
+Subject: [PATCH] ase: u-boot: Don't init si5351
+
+To avoid have different clocks on output during booting remove si5351 init
+from u-boot. Clocks are properly setup in kernel audio driver.
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ board/streamunlimited/stream800/board.c | 5 -----
+ 1 file changed, 5 deletions(-)
+
+diff --git a/board/streamunlimited/stream800/board.c b/board/streamunlimited/stream800/board.c
+index 6930c58..11c072f 100755
+--- a/board/streamunlimited/stream800/board.c
++++ b/board/streamunlimited/stream800/board.c
+@@ -175,11 +175,6 @@ int board_init(void)
+ 
+ 	enable_board_pin_mux(&board);
+ 
+-	i2c_init(CONFIG_SYS_I2C_SPEED, CONFIG_SYS_I2C_SLAVE);
+-	/* ASE have si5351 on i2c1 bus */
+-	i2c_set_bus_num(1);
+-
+-	init_si5351x();
+ 	boost_cpu_speed();
+ 
+ 	/* This is temporarily (after reset during FW update we sometime detect unwanted external warm reset) */
+-- 
+2.7.4
+

@@ -1,0 +1,119 @@
+From 984e5e8ad2edc7a1aeaeff70fece63f8a0c6580a Mon Sep 17 00:00:00 2001
+From: Xia Zhou <xia.zhou@streamunlimited.com>
+Date: Wed, 20 Aug 2014 12:04:18 +0200
+Subject: [PATCH] add a FakeState in QPlay service to work around with UPnP
+ empty eventSubURI error
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This commit fixes UPnP test case UDA-2.1.2:
+
+"If the service has no evented variables, the '<eventSubURL>' element MUST be↲
+present but MST be empty."
+
+This hotfix adds FakeState state variable to the QPlay service, so that the
+eventSubURL does not need to be empty. Correct solution for this problem would
+be to fix Rygel/GUPnP to report empty eventSubURL in case there are no state
+variables.
+
+Signed-off-by: Xia Zhou <xia.zhou@streamunlimited.com>
+---
+ data/xml/QPlayDescription.xml.in       |  4 ++++
+ src/librygel-renderer/rygel-qplay.c    | 18 ++++++++++++++++++
+ src/librygel-renderer/rygel-qplay.vala | 10 ++++++++++
+ 3 files changed, 32 insertions(+)
+
+diff --git a/data/xml/QPlayDescription.xml.in b/data/xml/QPlayDescription.xml.in
+index 6c6a6bd..d63ab29 100755
+--- a/data/xml/QPlayDescription.xml.in
++++ b/data/xml/QPlayDescription.xml.in
+@@ -84,5 +84,9 @@
+ 			<name>AVTransportURIMetaData</name>
+ 			<dataType>string</dataType>
+ 		</stateVariable>
++		<stateVariable sendEvents="yes">
+++			<name>FakeState</name>
+++			<dataType>ui4</dataType>
+++		</stateVariable>
+ 	</serviceStateTable>
+ </scpd>
+\ No newline at end of file
+diff --git a/src/librygel-renderer/rygel-qplay.c b/src/librygel-renderer/rygel-qplay.c
+index 4fdeb73..fe4d0a2 100644
+--- a/src/librygel-renderer/rygel-qplay.c
++++ b/src/librygel-renderer/rygel-qplay.c
+@@ -65,6 +65,8 @@ enum  {
+ static void rygel_qplay_real_constructed (GObject* base);
+ static void rygel_qplay_set_network_cb (RygelQPlay* self, GUPnPService* registrar, GUPnPServiceAction* action);
+ static void _rygel_qplay_set_network_cb_gupnp_service_action_invoked (GUPnPService* _sender, GUPnPServiceAction* action, gpointer self);
++static void rygel_qplay_query_state (RygelQPlay* self, GUPnPService* registrar, const gchar* variable, GValue* value);
++static void _rygel_qplay_query_state_gupnp_service_query_variable (GUPnPService* _sender, const gchar* variable, GValue* value, gpointer self);
+ RygelQPlay* rygel_qplay_new (void);
+ RygelQPlay* rygel_qplay_construct (GType object_type);
+ 
+@@ -74,12 +76,18 @@ static void _rygel_qplay_set_network_cb_gupnp_service_action_invoked (GUPnPServi
+ }
+ 
+ 
++static void _rygel_qplay_query_state_gupnp_service_query_variable (GUPnPService* _sender, const gchar* variable, GValue* value, gpointer self) {
++	rygel_qplay_query_state ((RygelQPlay*) self, _sender, variable, value);
++}
++
++
+ static void rygel_qplay_real_constructed (GObject* base) {
+ 	RygelQPlay * self;
+ 	self = (RygelQPlay*) base;
+ 	G_OBJECT_CLASS (rygel_qplay_parent_class)->constructed ((GObject*) G_TYPE_CHECK_INSTANCE_CAST (self, gupnp_service_get_type (), GUPnPService));
+ 	g_signal_connect_object ((GUPnPService*) self, "action-invoked::SetNetwork", (GCallback) _rygel_qplay_set_network_cb_gupnp_service_action_invoked, self, 0);
+ 	g_signal_connect_object ((GUPnPService*) self, "action-invoked::QPlayAuth", (GCallback) _rygel_qplay_set_network_cb_gupnp_service_action_invoked, self, 0);
++	g_signal_connect_object ((GUPnPService*) self, "query-variable::FakeState", (GCallback) _rygel_qplay_query_state_gupnp_service_query_variable, self, 0);
+ }
+ 
+ 
+@@ -108,6 +116,16 @@ static void rygel_qplay_set_network_cb (RygelQPlay* self, GUPnPService* registra
+ }
+ 
+ 
++static void rygel_qplay_query_state (RygelQPlay* self, GUPnPService* registrar, const gchar* variable, GValue* value) {
++	g_return_if_fail (self != NULL);
++	g_return_if_fail (registrar != NULL);
++	g_return_if_fail (variable != NULL);
++	g_return_if_fail (value != NULL);
++	g_value_init (value, G_TYPE_INT);
++	g_value_set_int (value, 0);
++}
++
++
+ RygelQPlay* rygel_qplay_construct (GType object_type) {
+ 	RygelQPlay * self = NULL;
+ 	self = (RygelQPlay*) g_object_new (object_type, NULL);
+diff --git a/src/librygel-renderer/rygel-qplay.vala b/src/librygel-renderer/rygel-qplay.vala
+index 622aeb9..1f21103 100644
+--- a/src/librygel-renderer/rygel-qplay.vala
++++ b/src/librygel-renderer/rygel-qplay.vala
+@@ -43,6 +43,9 @@ internal class Rygel.QPlay: Service {
+ 
+         this.action_invoked["SetNetwork"].connect (this.set_network_cb);
+         this.action_invoked["QPlayAuth"].connect (this.set_network_cb);
++
++        this.query_variable["FakeState"].connect
++                                        (this.query_state);
+     }
+ 
+     /* SetNetwork and QPlayAuth action implementations (fake) */
+@@ -58,4 +61,11 @@ internal class Rygel.QPlay: Service {
+ 
+         action.return ();
+     }
++
++    private void query_state (Service        registrar,
++                              string         variable,
++                              ref GLib.Value value) {
++        value.init (typeof (int));
++        value.set_int (0);
++    }
+ }
+-- 
+1.9.1
+

@@ -1,0 +1,32 @@
+From 147ae1c045068a540e849a59c5616ac8f7516b57 Mon Sep 17 00:00:00 2001
+From: Fionn Cleary <fionn.cleary@streamunlimited.com>
+Date: Thu, 7 Aug 2014 15:21:30 +0200
+Subject: [PATCH] =?UTF-8?q?tools:env:=20Don=E2=80=99t=20strip=20fw=5Fprint?=
+ =?UTF-8?q?env?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Yocto bitbake Daisy refuses to complete build if a binary is stripped
+after the compile stage.
+
+Signed-off-by: Fionn Cleary <fionn.cleary@streamunlimited.com>
+---
+ tools/env/Makefile | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/tools/env/Makefile b/tools/env/Makefile
+index 76a621a..19c25f4 100644
+--- a/tools/env/Makefile
++++ b/tools/env/Makefile
+@@ -26,7 +26,6 @@ always := fw_printenv_host fw_printenv
+ 
+ $(obj)/fw_printenv: FORCE
+ 	$(CC) $(HOSTCFLAGS) $(HOSTLDFLAGS) -o $@ $(HOSTSRCS)
+-	$(STRIP) $@
+ 
+ $(obj)/fw_printenv_host: FORCE
+ 	$(HOSTCC) $(HOSTCFLAGS) $(HOSTLDFLAGS) -o $@ $(HOSTSRCS)
+-- 
+2.7.4
+

@@ -1,0 +1,5 @@
+mkbuiltins_have_stringize.patch -p1
+build-tests.patch -p1
+test-output.patch -p1
+dont-include-target-CFLAGS-in-host-LDFLAGS.patch -p1
+string-format.patch -p1

@@ -1,0 +1,39 @@
+From aeacc1173da8db5d8098b6ac189e5b508ce29f98 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Wed, 25 May 2016 13:18:33 +0200
+Subject: [PATCH] ASoC: Drop annoying messages
+
+Drop following:
+[   21.602040] snd-soc-am33xx-s800 audio: Serial configuration is empty, skipping reconfiguration
+[   21.625773] snd-soc-am33xx-s800 audio: Unsupported codec dai MLCK : -524
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ sound/soc/davinci/am33xx-s800.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/sound/soc/davinci/am33xx-s800.c b/sound/soc/davinci/am33xx-s800.c
+index 2520cc7..dbbd60c 100644
+--- a/sound/soc/davinci/am33xx-s800.c
++++ b/sound/soc/davinci/am33xx-s800.c
+@@ -72,7 +72,7 @@ static int am33xx_s800_setup_mcasp(struct snd_pcm_substream *substream, snd_pcm_
+ 	bool is_dsd = (format == SNDRV_PCM_FORMAT_DSD_U8);
+ 
+ 	if (!serial_config) {
+-		dev_warn(card->dev, "Serial configuration is empty, skipping reconfiguration\n");
++		dev_info(card->dev, "Serial configuration is empty, skipping reconfiguration\n");
+ 		return 0;
+ 	}
+ 
+@@ -301,7 +301,7 @@ static int am33xx_s800_common_hw_params(struct snd_pcm_substream *substream,
+ 	/* Codec MCLK */
+ 	ret = snd_soc_dai_set_sysclk(codec_dai, 0, mclk, SND_SOC_CLOCK_IN);
+ 	if (ret < 0) {
+-		dev_warn(card->dev, "Unsupported codec dai MLCK : %d\n", ret);
++		dev_info(card->dev, "Unsupported codec dai MLCK : %d\n", ret);
+ 		/* intentionally ignore errors - the codec driver may not care, at least give a warning */
+ 	}
+ 
+-- 
+1.9.1
+

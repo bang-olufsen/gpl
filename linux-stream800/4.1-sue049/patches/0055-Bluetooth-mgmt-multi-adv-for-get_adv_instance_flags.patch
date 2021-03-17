@@ -1,0 +1,45 @@
+From c9f4051c3b4853c69b23d9a3f1013fd1585167d8 Mon Sep 17 00:00:00 2001
+From: Florian Grandel <fgrandel@gmail.com>
+Date: Thu, 18 Jun 2015 03:16:40 +0200
+Subject: [PATCH] Bluetooth: mgmt: multi adv for get_adv_instance_flags()
+
+The get_adv_instance_flags() would not work with instance identifiers
+other than 0x01. This is being fixed so that arbitrary instance
+identifiers can be dealt with while still correctly dealing with the
+special case of the 0x00 identifier.
+
+Signed-off-by: Florian Grandel <fgrandel@gmail.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+---
+ net/bluetooth/mgmt.c | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
+
+diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
+index e9f191e..3eac4a4 100644
+--- a/net/bluetooth/mgmt.c
++++ b/net/bluetooth/mgmt.c
+@@ -960,12 +960,17 @@ static bool get_connectable(struct hci_dev *hdev)
+ static u32 get_adv_instance_flags(struct hci_dev *hdev, u8 instance)
+ {
+ 	u32 flags;
++	struct adv_info *adv_instance;
+ 
+-	if (instance > 0x01)
+-		return 0;
++	if (instance != 0x00) {
++		adv_instance = hci_find_adv_instance(hdev, instance);
+ 
+-	if (instance == 0x01)
+-		return hdev->adv_instance.flags;
++		/* Return 0 when we got an invalid instance identifier. */
++		if (!adv_instance)
++			return 0;
++
++		return adv_instance->flags;
++	}
+ 
+ 	/* Instance 0 always manages the "Tx Power" and "Flags" fields */
+ 	flags = MGMT_ADV_FLAG_TX_POWER | MGMT_ADV_FLAG_MANAGED_FLAGS;
+-- 
+2.7.4
+

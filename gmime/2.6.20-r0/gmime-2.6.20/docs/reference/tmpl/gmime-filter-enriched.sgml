@@ -1,0 +1,44 @@
+<!-- ##### SECTION Title ##### -->
+gmime-filter-enriched
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### MACRO GMIME_FILTER_ENRICHED_IS_RICHTEXT ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### STRUCT GMimeFilterEnriched ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION g_mime_filter_enriched_new ##### -->
+<para>
+
+</para>
+
+@flags: 
+@Returns: 
+
+

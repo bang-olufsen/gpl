@@ -1,0 +1,48 @@
+From 697255dd14dc8a1f47fc91675cb7bdd3c77cc158 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Fri, 6 Nov 2020 10:13:23 +0100
+Subject: [PATCH] plparse/totem-pl-parser.h
+
+---
+ plparse/totem-pl-parser.h | 28 ++++++++++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
+
+diff --git a/plparse/totem-pl-parser.h b/plparse/totem-pl-parser.h
+index 0a71731..0e11273 100644
+--- a/plparse/totem-pl-parser.h
++++ b/plparse/totem-pl-parser.h
+@@ -79,6 +79,34 @@ typedef struct {
+  * Since: 2.26
+  **/
+ #define TOTEM_PL_PARSER_FIELD_URI		"url"
++
++/**
++ * TOTEM_PL_PARSER_FIELD_ALTERNATIVE_URI1:
++ *
++ * Metadata field for an entry's 1st alternative URI.
++ *
++ * Since: B&O add-on
++ **/
++#define TOTEM_PL_PARSER_FIELD_ALTERNATIVE_URI1		"alternative-url1"
++
++/**
++ * TOTEM_PL_PARSER_FIELD_ALTERNATIVE_URI2:
++ *
++ * Metadata field for an entry's 2nd alternative URI.
++ *
++ * Since: B&O add-on
++ **/
++#define TOTEM_PL_PARSER_FIELD_ALTERNATIVE_URI2		"alternative-url2"
++
++/**
++ * TOTEM_PL_PARSER_FIELD_ALTERNATIVE_URI3:
++ *
++ * Metadata field for an entry's 3rd alternative URI.
++ *
++ * Since: B&O add-on
++ **/
++#define TOTEM_PL_PARSER_FIELD_ALTERNATIVE_URI3		"alternative-url3"
++
+ /**
+  * TOTEM_PL_PARSER_FIELD_GENRE:
+  *

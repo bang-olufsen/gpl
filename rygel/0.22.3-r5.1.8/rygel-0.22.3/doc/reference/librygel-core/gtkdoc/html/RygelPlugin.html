@@ -1,0 +1,944 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>librygel-core Reference Manual: RygelPlugin</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="index.html" title="librygel-core Reference Manual">
+<link rel="up" href="api-main-list-c.html" title="librygel-core API Reference">
+<link rel="prev" href="RygelRootDevice.html" title="RygelRootDevice">
+<link rel="next" href="RygelMediaDevice.html" title="RygelMediaDevice">
+<meta name="generator" content="GTK-Doc V1.20.1 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#RygelPlugin.description" class="shortcut">Description</a></span><span id="nav_hierarchy">  <span class="dim">|</span> 
+                  <a href="#RygelPlugin.object-hierarchy" class="shortcut">Object Hierarchy</a></span><span id="nav_properties">  <span class="dim">|</span> 
+                  <a href="#RygelPlugin.properties" class="shortcut">Properties</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="api-main-list-c.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="RygelRootDevice.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="RygelMediaDevice.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry">
+<a name="RygelPlugin"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="RygelPlugin.top_of_page"></a>RygelPlugin</span></h2>
+<p>RygelPlugin — This represents a Rygel plugin.</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1">
+<a name="RygelPlugin.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="functions_return">
+<col class="functions_name">
+</colgroup>
+<tbody>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a class="link" href="RygelPlugin.html#RYGEL-TYPE-PLUGIN:CAPS" title="RYGEL_TYPE_PLUGIN">RYGEL_TYPE_PLUGIN</a></td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="RygelPlugin.html#rygel-plugin-add-resource" title="rygel_plugin_add_resource ()">rygel_plugin_add_resource</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="RygelPlugin.html#rygel-plugin-add-icon" title="rygel_plugin_add_icon ()">rygel_plugin_add_icon</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="RygelPlugin.html#rygel-plugin-apply-hacks" title="rygel_plugin_apply_hacks ()">rygel_plugin_apply_hacks</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="RygelPlugin.html" title="RygelPlugin"><span class="returnvalue">RygelPlugin</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="RygelPlugin.html#rygel-plugin-new" title="rygel_plugin_new ()">rygel_plugin_new</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="RygelPlugin.html#RygelPluginCapabilities" title="enum RygelPluginCapabilities"><span class="returnvalue">RygelPluginCapabilities</span></a>
+</td>
+<td class="function_name">
+<a class="link" href="RygelPlugin.html#rygel-plugin-get-capabilities" title="rygel_plugin_get_capabilities ()">rygel_plugin_get_capabilities</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="RygelPlugin.html#rygel-plugin-set-capabilities" title="rygel_plugin_set_capabilities ()">rygel_plugin_set_capabilities</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">const <a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="RygelPlugin.html#rygel-plugin-get-name" title="rygel_plugin_get_name ()">rygel_plugin_get_name</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">const <a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="RygelPlugin.html#rygel-plugin-get-title" title="rygel_plugin_get_title ()">rygel_plugin_get_title</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="RygelPlugin.html#rygel-plugin-set-title" title="rygel_plugin_set_title ()">rygel_plugin_set_title</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">const <a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="RygelPlugin.html#rygel-plugin-get-description" title="rygel_plugin_get_description ()">rygel_plugin_get_description</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">const <a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="RygelPlugin.html#rygel-plugin-get-desc-path" title="rygel_plugin_get_desc_path ()">rygel_plugin_get_desc_path</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>
+</td>
+<td class="function_name">
+<a class="link" href="RygelPlugin.html#rygel-plugin-get-active" title="rygel_plugin_get_active ()">rygel_plugin_get_active</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="RygelPlugin.html#rygel-plugin-set-active" title="rygel_plugin_set_active ()">rygel_plugin_set_active</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">GeeArrayList</span> *
+</td>
+<td class="function_name">
+<a class="link" href="RygelPlugin.html#rygel-plugin-get-resource-infos" title="rygel_plugin_get_resource_infos ()">rygel_plugin_get_resource_infos</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">GeeArrayList</span> *
+</td>
+<td class="function_name">
+<a class="link" href="RygelPlugin.html#rygel-plugin-get-icon-infos" title="rygel_plugin_get_icon_infos ()">rygel_plugin_get_icon_infos</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">GeeArrayList</span> *
+</td>
+<td class="function_name">
+<a class="link" href="RygelPlugin.html#rygel-plugin-get-default-icons" title="rygel_plugin_get_default_icons ()">rygel_plugin_get_default_icons</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="RygelPlugin.properties"></a><h2>Properties</h2>
+<div class="informaltable"><table border="0">
+<colgroup>
+<col width="150px" class="properties_type">
+<col width="300px" class="properties_name">
+<col width="200px" class="properties_flags">
+</colgroup>
+<tbody>
+<tr>
+<td class="property_type"><a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a></td>
+<td class="property_name"><a class="link" href="RygelPlugin.html#RygelPlugin--active" title="The “active” property">active</a></td>
+<td class="property_flags">Read / Write</td>
+</tr>
+<tr>
+<td class="property_type"><a class="link" href="RygelPlugin.html#RygelPluginCapabilities" title="enum RygelPluginCapabilities"><span class="type">RygelPluginCapabilities</span></a></td>
+<td class="property_name"><a class="link" href="RygelPlugin.html#RygelPlugin--capabilities" title="The “capabilities” property">capabilities</a></td>
+<td class="property_flags">Read / Write / Construct</td>
+</tr>
+<tr>
+<td class="property_type">
+<span class="type">GeeArrayList</span> *</td>
+<td class="property_name"><a class="link" href="RygelPlugin.html#RygelPlugin--default-icons" title="The “default-icons” property">default-icons</a></td>
+<td class="property_flags">Read</td>
+</tr>
+<tr>
+<td class="property_type">
+<a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *</td>
+<td class="property_name"><a class="link" href="RygelPlugin.html#RygelPlugin--desc-path" title="The “desc-path” property">desc-path</a></td>
+<td class="property_flags">Read / Write / Construct Only</td>
+</tr>
+<tr>
+<td class="property_type">
+<a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *</td>
+<td class="property_name"><a class="link" href="RygelPlugin.html#RygelPlugin--description" title="The “description” property">description</a></td>
+<td class="property_flags">Read / Write / Construct Only</td>
+</tr>
+<tr>
+<td class="property_type">
+<span class="type">GeeArrayList</span> *</td>
+<td class="property_name"><a class="link" href="RygelPlugin.html#RygelPlugin--icon-infos" title="The “icon-infos” property">icon-infos</a></td>
+<td class="property_flags">Read</td>
+</tr>
+<tr>
+<td class="property_type">
+<a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *</td>
+<td class="property_name"><a class="link" href="RygelPlugin.html#RygelPlugin--name" title="The “name” property">name</a></td>
+<td class="property_flags">Read / Write / Construct Only</td>
+</tr>
+<tr>
+<td class="property_type">
+<span class="type">GeeArrayList</span> *</td>
+<td class="property_name"><a class="link" href="RygelPlugin.html#RygelPlugin--resource-infos" title="The “resource-infos” property">resource-infos</a></td>
+<td class="property_flags">Read</td>
+</tr>
+<tr>
+<td class="property_type">
+<a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *</td>
+<td class="property_name"><a class="link" href="RygelPlugin.html#RygelPlugin--title" title="The “title” property">title</a></td>
+<td class="property_flags">Read / Write / Construct</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="RygelPlugin.other"></a><h2>Types and Values</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="name">
+<col class="description">
+</colgroup>
+<tbody>
+<tr>
+<td class="datatype_keyword">struct</td>
+<td class="function_name"><a class="link" href="RygelPlugin.html#RygelPlugin-struct" title="struct RygelPlugin">RygelPlugin</a></td>
+</tr>
+<tr>
+<td class="datatype_keyword">struct</td>
+<td class="function_name"><a class="link" href="RygelPlugin.html#RygelPluginClass" title="struct RygelPluginClass">RygelPluginClass</a></td>
+</tr>
+<tr>
+<td class="datatype_keyword">enum</td>
+<td class="function_name"><a class="link" href="RygelPlugin.html#RygelPluginCapabilities" title="enum RygelPluginCapabilities">RygelPluginCapabilities</a></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="RygelPlugin.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="screen">    <a href="/opt/rygel-stable/share/gtk-doc/html/gobject/gobject-Enumeration-and-Flag-Types.html">GFlags</a>
+    <span class="lineart">╰──</span> RygelPluginCapabilities
+    <a href="../gobject/gobject-The-Base-Object-Type.html#GObject">GObject</a>
+    <span class="lineart">╰──</span> <a href="../gupnp/GUPnPResourceFactory.html">GUPnPResourceFactory</a>
+        <span class="lineart">╰──</span> RygelPlugin
+</pre>
+</div>
+<div class="refsect1">
+<a name="RygelPlugin.description"></a><h2>Description</h2>
+<p>Plugin libraries should provide an object of this class or a subclass in their <code class="function">module_init()</code> function.</p>
+<p>It is generally convenient to derive from <a href="../librygel-renderer/RygelMediaRendererPlugin.html"><span class="type">RygelMediaRendererPlugin</span></a> from librygel-renderer, or from <a href="../librygel-server/RygelMediaServerPlugin.html"><span class="type">RygelMediaServerPlugin</span></a> from librygel-server.</p>
+<p>Plugins may change their behaviour based on their configuration. See <a class="link" href="RygelMetaConfig.html#rygel-meta-config-get-default" title="rygel_meta_config_get_default ()"><code class="function">rygel_meta_config_get_default()</code></a>.</p>
+</div>
+<div class="refsect1">
+<a name="RygelPlugin.functions_details"></a><h2>Functions</h2>
+<div class="refsect2">
+<a name="RYGEL-TYPE-PLUGIN:CAPS"></a><h3>RYGEL_TYPE_PLUGIN</h3>
+<pre class="programlisting">#define RYGEL_TYPE_PLUGIN (rygel_plugin_get_type ())
+</pre>
+<p>The type for <a class="link" href="RygelPlugin.html" title="RygelPlugin"><span class="type">RygelPlugin</span></a>.</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-plugin-add-resource"></a><h3>rygel_plugin_add_resource ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+rygel_plugin_add_resource (<em class="parameter"><code><a class="link" href="RygelPlugin.html" title="RygelPlugin"><span class="type">RygelPlugin</span></a> *self</code></em>,
+                           <em class="parameter"><code><a class="link" href="RygelResourceInfo.html" title="RygelResourceInfo"><span class="type">RygelResourceInfo</span></a> *resource_info</code></em>);</pre>
+<div class="refsect3">
+<a name="id-1.3.13.8.3.4"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelPlugin.html" title="RygelPlugin"><span class="type">RygelPlugin</span></a> instance</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>resource_info</p></td>
+<td class="parameter_description"><p> </p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-plugin-add-icon"></a><h3>rygel_plugin_add_icon ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+rygel_plugin_add_icon (<em class="parameter"><code><a class="link" href="RygelPlugin.html" title="RygelPlugin"><span class="type">RygelPlugin</span></a> *self</code></em>,
+                       <em class="parameter"><code><a class="link" href="RygelIconInfo.html" title="RygelIconInfo"><span class="type">RygelIconInfo</span></a> *icon_info</code></em>);</pre>
+<div class="refsect3">
+<a name="id-1.3.13.8.4.4"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelPlugin.html" title="RygelPlugin"><span class="type">RygelPlugin</span></a> instance</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>icon_info</p></td>
+<td class="parameter_description"><p> </p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-plugin-apply-hacks"></a><h3>rygel_plugin_apply_hacks ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+rygel_plugin_apply_hacks (<em class="parameter"><code><a class="link" href="RygelPlugin.html" title="RygelPlugin"><span class="type">RygelPlugin</span></a> *self</code></em>,
+                          <em class="parameter"><code><a class="link" href="RygelRootDevice.html" title="RygelRootDevice"><span class="type">RygelRootDevice</span></a> *device</code></em>,
+                          <em class="parameter"><code>const <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *description_path</code></em>,
+                          <em class="parameter"><code><a href="../glib/glib-Error-Reporting.html#GError"><span class="type">GError</span></a> **error</code></em>);</pre>
+<div class="refsect3">
+<a name="id-1.3.13.8.5.4"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelPlugin.html" title="RygelPlugin"><span class="type">RygelPlugin</span></a> instance</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>device</p></td>
+<td class="parameter_description"><p> </p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>description_path</p></td>
+<td class="parameter_description"><p> </p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>error</p></td>
+<td class="parameter_description"><p>location to store the error occuring, or <a href="../glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a> to ignore</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-plugin-new"></a><h3>rygel_plugin_new ()</h3>
+<pre class="programlisting"><a class="link" href="RygelPlugin.html" title="RygelPlugin"><span class="returnvalue">RygelPlugin</span></a> *
+rygel_plugin_new (<em class="parameter"><code>const <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *desc_path</code></em>,
+                  <em class="parameter"><code>const <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *name</code></em>,
+                  <em class="parameter"><code>const <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *title</code></em>,
+                  <em class="parameter"><code>const <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *description</code></em>,
+                  <em class="parameter"><code><a class="link" href="RygelPlugin.html#RygelPluginCapabilities" title="enum RygelPluginCapabilities"><span class="type">RygelPluginCapabilities</span></a> capabilities</code></em>);</pre>
+<p>Create an instance of the plugin.</p>
+<div class="refsect3">
+<a name="id-1.3.13.8.6.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>desc_path</p></td>
+<td class="parameter_description"><p>  .  The path of a template file for an XML description of the UPnP service. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Parameter for input. Default is transfer none."><span class="acronym">in</span></acronym>]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>name</p></td>
+<td class="parameter_description"><p>  .  The non-human-readable name for the plugin and its service, used in UPnP messages and in the Rygel configuration file. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Parameter for input. Default is transfer none."><span class="acronym">in</span></acronym>]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>title</p></td>
+<td class="parameter_description"><p>  .  An optional human-readable name (friendlyName) of the UPnP service provided by the plugin. If the title is empty then the name will be used. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Parameter for input. Default is transfer none."><span class="acronym">in</span></acronym>][<acronym title="NULL is ok, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>description</p></td>
+<td class="parameter_description"><p>  .  An optional human-readable description (modelDescription) of the UPnP service provided by the plugin. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Parameter for input. Default is transfer none."><span class="acronym">in</span></acronym>][<acronym title="NULL is ok, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>capabilities</p></td>
+<td class="parameter_description"><p> </p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-plugin-get-capabilities"></a><h3>rygel_plugin_get_capabilities ()</h3>
+<pre class="programlisting"><a class="link" href="RygelPlugin.html#RygelPluginCapabilities" title="enum RygelPluginCapabilities"><span class="returnvalue">RygelPluginCapabilities</span></a>
+rygel_plugin_get_capabilities (<em class="parameter"><code><a class="link" href="RygelPlugin.html" title="RygelPlugin"><span class="type">RygelPlugin</span></a> *self</code></em>);</pre>
+<p>Get and return the current value of the <a class="link" href="RygelPlugin.html#RygelPlugin--capabilities" title="The “capabilities” property"><span class="type">"capabilities"</span></a> property.</p>
+<div class="refsect3">
+<a name="id-1.3.13.8.7.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelPlugin.html" title="RygelPlugin"><span class="type">RygelPlugin</span></a> instance to query</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.3.13.8.7.6"></a><h4>Returns</h4>
+<p> the value of the <a class="link" href="RygelPlugin.html#RygelPlugin--capabilities" title="The “capabilities” property"><span class="type">"capabilities"</span></a> property</p>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-plugin-set-capabilities"></a><h3>rygel_plugin_set_capabilities ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+rygel_plugin_set_capabilities (<em class="parameter"><code><a class="link" href="RygelPlugin.html" title="RygelPlugin"><span class="type">RygelPlugin</span></a> *self</code></em>,
+                               <em class="parameter"><code><a class="link" href="RygelPlugin.html#RygelPluginCapabilities" title="enum RygelPluginCapabilities"><span class="type">RygelPluginCapabilities</span></a> value</code></em>);</pre>
+<p>Set the value of the <a class="link" href="RygelPlugin.html#RygelPlugin--capabilities" title="The “capabilities” property"><span class="type">"capabilities"</span></a> property to <em class="parameter"><code>value</code></em>
+.</p>
+<div class="refsect3">
+<a name="id-1.3.13.8.8.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelPlugin.html" title="RygelPlugin"><span class="type">RygelPlugin</span></a> instance to modify</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>value</p></td>
+<td class="parameter_description"><p>the new value of the <a class="link" href="RygelPlugin.html#RygelPlugin--capabilities" title="The “capabilities” property"><span class="type">"capabilities"</span></a> property</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-plugin-get-name"></a><h3>rygel_plugin_get_name ()</h3>
+<pre class="programlisting">const <a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *
+rygel_plugin_get_name (<em class="parameter"><code><a class="link" href="RygelPlugin.html" title="RygelPlugin"><span class="type">RygelPlugin</span></a> *self</code></em>);</pre>
+<p>Get and return the current value of the <a class="link" href="RygelPlugin.html#RygelPlugin--name" title="The “name” property"><span class="type">"name"</span></a> property.</p>
+<div class="refsect3">
+<a name="id-1.3.13.8.9.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelPlugin.html" title="RygelPlugin"><span class="type">RygelPlugin</span></a> instance to query</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.3.13.8.9.6"></a><h4>Returns</h4>
+<p> the value of the <a class="link" href="RygelPlugin.html#RygelPlugin--name" title="The “name” property"><span class="type">"name"</span></a> property</p>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-plugin-get-title"></a><h3>rygel_plugin_get_title ()</h3>
+<pre class="programlisting">const <a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *
+rygel_plugin_get_title (<em class="parameter"><code><a class="link" href="RygelPlugin.html" title="RygelPlugin"><span class="type">RygelPlugin</span></a> *self</code></em>);</pre>
+<p>Get and return the current value of the <a class="link" href="RygelPlugin.html#RygelPlugin--title" title="The “title” property"><span class="type">"title"</span></a> property.</p>
+<div class="refsect3">
+<a name="id-1.3.13.8.10.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelPlugin.html" title="RygelPlugin"><span class="type">RygelPlugin</span></a> instance to query</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.3.13.8.10.6"></a><h4>Returns</h4>
+<p> the value of the <a class="link" href="RygelPlugin.html#RygelPlugin--title" title="The “title” property"><span class="type">"title"</span></a> property</p>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-plugin-set-title"></a><h3>rygel_plugin_set_title ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+rygel_plugin_set_title (<em class="parameter"><code><a class="link" href="RygelPlugin.html" title="RygelPlugin"><span class="type">RygelPlugin</span></a> *self</code></em>,
+                        <em class="parameter"><code>const <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *value</code></em>);</pre>
+<p>Set the value of the <a class="link" href="RygelPlugin.html#RygelPlugin--title" title="The “title” property"><span class="type">"title"</span></a> property to <em class="parameter"><code>value</code></em>
+.</p>
+<div class="refsect3">
+<a name="id-1.3.13.8.11.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelPlugin.html" title="RygelPlugin"><span class="type">RygelPlugin</span></a> instance to modify</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>value</p></td>
+<td class="parameter_description"><p>the new value of the <a class="link" href="RygelPlugin.html#RygelPlugin--title" title="The “title” property"><span class="type">"title"</span></a> property</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-plugin-get-description"></a><h3>rygel_plugin_get_description ()</h3>
+<pre class="programlisting">const <a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *
+rygel_plugin_get_description (<em class="parameter"><code><a class="link" href="RygelPlugin.html" title="RygelPlugin"><span class="type">RygelPlugin</span></a> *self</code></em>);</pre>
+<p>Get and return the current value of the <a class="link" href="RygelPlugin.html#RygelPlugin--description" title="The “description” property"><span class="type">"description"</span></a> property.</p>
+<div class="refsect3">
+<a name="id-1.3.13.8.12.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelPlugin.html" title="RygelPlugin"><span class="type">RygelPlugin</span></a> instance to query</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.3.13.8.12.6"></a><h4>Returns</h4>
+<p> the value of the <a class="link" href="RygelPlugin.html#RygelPlugin--description" title="The “description” property"><span class="type">"description"</span></a> property</p>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-plugin-get-desc-path"></a><h3>rygel_plugin_get_desc_path ()</h3>
+<pre class="programlisting">const <a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *
+rygel_plugin_get_desc_path (<em class="parameter"><code><a class="link" href="RygelPlugin.html" title="RygelPlugin"><span class="type">RygelPlugin</span></a> *self</code></em>);</pre>
+<p>Get and return the current value of the <a class="link" href="RygelPlugin.html#RygelPlugin--desc-path" title="The “desc-path” property"><span class="type">"desc-path"</span></a> property.</p>
+<div class="refsect3">
+<a name="id-1.3.13.8.13.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelPlugin.html" title="RygelPlugin"><span class="type">RygelPlugin</span></a> instance to query</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.3.13.8.13.6"></a><h4>Returns</h4>
+<p> the value of the <a class="link" href="RygelPlugin.html#RygelPlugin--desc-path" title="The “desc-path” property"><span class="type">"desc-path"</span></a> property</p>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-plugin-get-active"></a><h3>rygel_plugin_get_active ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>
+rygel_plugin_get_active (<em class="parameter"><code><a class="link" href="RygelPlugin.html" title="RygelPlugin"><span class="type">RygelPlugin</span></a> *self</code></em>);</pre>
+<p>Get and return the current value of the <a class="link" href="RygelPlugin.html#RygelPlugin--active" title="The “active” property"><span class="type">"active"</span></a> property.</p>
+<div class="refsect3">
+<a name="id-1.3.13.8.14.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelPlugin.html" title="RygelPlugin"><span class="type">RygelPlugin</span></a> instance to query</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.3.13.8.14.6"></a><h4>Returns</h4>
+<p> the value of the <a class="link" href="RygelPlugin.html#RygelPlugin--active" title="The “active” property"><span class="type">"active"</span></a> property</p>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-plugin-set-active"></a><h3>rygel_plugin_set_active ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+rygel_plugin_set_active (<em class="parameter"><code><a class="link" href="RygelPlugin.html" title="RygelPlugin"><span class="type">RygelPlugin</span></a> *self</code></em>,
+                         <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a> value</code></em>);</pre>
+<p>Set the value of the <a class="link" href="RygelPlugin.html#RygelPlugin--active" title="The “active” property"><span class="type">"active"</span></a> property to <em class="parameter"><code>value</code></em>
+.</p>
+<div class="refsect3">
+<a name="id-1.3.13.8.15.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelPlugin.html" title="RygelPlugin"><span class="type">RygelPlugin</span></a> instance to modify</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>value</p></td>
+<td class="parameter_description"><p>the new value of the <a class="link" href="RygelPlugin.html#RygelPlugin--active" title="The “active” property"><span class="type">"active"</span></a> property</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-plugin-get-resource-infos"></a><h3>rygel_plugin_get_resource_infos ()</h3>
+<pre class="programlisting"><span class="returnvalue">GeeArrayList</span> *
+rygel_plugin_get_resource_infos (<em class="parameter"><code><a class="link" href="RygelPlugin.html" title="RygelPlugin"><span class="type">RygelPlugin</span></a> *self</code></em>);</pre>
+<p>Get and return the current value of the <a class="link" href="RygelPlugin.html#RygelPlugin--resource-infos" title="The “resource-infos” property"><span class="type">"resource-infos"</span></a> property.</p>
+<div class="refsect3">
+<a name="id-1.3.13.8.16.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelPlugin.html" title="RygelPlugin"><span class="type">RygelPlugin</span></a> instance to query</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.3.13.8.16.6"></a><h4>Returns</h4>
+<p> the value of the <a class="link" href="RygelPlugin.html#RygelPlugin--resource-infos" title="The “resource-infos” property"><span class="type">"resource-infos"</span></a> property</p>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-plugin-get-icon-infos"></a><h3>rygel_plugin_get_icon_infos ()</h3>
+<pre class="programlisting"><span class="returnvalue">GeeArrayList</span> *
+rygel_plugin_get_icon_infos (<em class="parameter"><code><a class="link" href="RygelPlugin.html" title="RygelPlugin"><span class="type">RygelPlugin</span></a> *self</code></em>);</pre>
+<p>Get and return the current value of the <a class="link" href="RygelPlugin.html#RygelPlugin--icon-infos" title="The “icon-infos” property"><span class="type">"icon-infos"</span></a> property.</p>
+<div class="refsect3">
+<a name="id-1.3.13.8.17.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelPlugin.html" title="RygelPlugin"><span class="type">RygelPlugin</span></a> instance to query</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.3.13.8.17.6"></a><h4>Returns</h4>
+<p> the value of the <a class="link" href="RygelPlugin.html#RygelPlugin--icon-infos" title="The “icon-infos” property"><span class="type">"icon-infos"</span></a> property</p>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-plugin-get-default-icons"></a><h3>rygel_plugin_get_default_icons ()</h3>
+<pre class="programlisting"><span class="returnvalue">GeeArrayList</span> *
+rygel_plugin_get_default_icons (<em class="parameter"><code><a class="link" href="RygelPlugin.html" title="RygelPlugin"><span class="type">RygelPlugin</span></a> *self</code></em>);</pre>
+<p>Get and return the current value of the <a class="link" href="RygelPlugin.html#RygelPlugin--default-icons" title="The “default-icons” property"><span class="type">"default-icons"</span></a> property.</p>
+<div class="refsect3">
+<a name="id-1.3.13.8.18.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelPlugin.html" title="RygelPlugin"><span class="type">RygelPlugin</span></a> instance to query</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.3.13.8.18.6"></a><h4>Returns</h4>
+<p> the value of the <a class="link" href="RygelPlugin.html#RygelPlugin--default-icons" title="The “default-icons” property"><span class="type">"default-icons"</span></a> property</p>
+<p></p>
+</div>
+</div>
+</div>
+<div class="refsect1">
+<a name="RygelPlugin.other_details"></a><h2>Types and Values</h2>
+<div class="refsect2">
+<a name="RygelPlugin-struct"></a><h3>struct RygelPlugin</h3>
+<pre class="programlisting">struct RygelPlugin;</pre>
+<p>This represents a Rygel plugin.</p>
+<p>Plugin libraries should provide an object of this class or a subclass in their <code class="function">module_init()</code> function.</p>
+<p>It is generally convenient to derive from <a href="../librygel-renderer/RygelMediaRendererPlugin.html"><span class="type">RygelMediaRendererPlugin</span></a> from librygel-renderer, or from <a href="../librygel-server/RygelMediaServerPlugin.html"><span class="type">RygelMediaServerPlugin</span></a> from librygel-server.</p>
+<p>Plugins may change their behaviour based on their configuration. See <a class="link" href="RygelMetaConfig.html#rygel-meta-config-get-default" title="rygel_meta_config_get_default ()"><code class="function">rygel_meta_config_get_default()</code></a>.</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelPluginClass"></a><h3>struct RygelPluginClass</h3>
+<pre class="programlisting">struct RygelPluginClass {
+	GUPnPResourceFactoryClass parent_class;
+	void (*apply_hacks) (RygelPlugin* self, RygelRootDevice* device, const gchar* description_path, GError** error);
+};
+</pre>
+<p>The class structure for <a class="link" href="RygelPlugin.html#RYGEL-TYPE-PLUGIN:CAPS" title="RYGEL_TYPE_PLUGIN"><code class="literal">RYGEL_TYPE_PLUGIN</code></a>. All the fields in this structure are private and should never be accessed directly.</p>
+<div class="refsect3">
+<a name="id-1.3.13.9.3.5"></a><h4>Members</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="300px" class="struct_members_name">
+<col class="struct_members_description">
+<col width="200px" class="struct_members_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="struct_member_name"><p><span class="type">GUPnPResourceFactoryClass</span> <em class="structfield"><code><a name="RygelPluginClass.parent-class"></a>parent_class</code></em>;</p></td>
+<td class="struct_member_description"><p>the parent class structure</p></td>
+<td class="struct_member_annotations"> </td>
+</tr>
+<tr>
+<td class="struct_member_name"><p><em class="structfield"><code><a name="RygelPluginClass.apply-hacks"></a>apply_hacks</code></em> ()</p></td>
+<td class="struct_member_description"><p>virtual method called by <a class="link" href="RygelPlugin.html#rygel-plugin-apply-hacks" title="rygel_plugin_apply_hacks ()"><code class="function">rygel_plugin_apply_hacks()</code></a></p></td>
+<td class="struct_member_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelPluginCapabilities"></a><h3>enum RygelPluginCapabilities</h3>
+<p>RygelPluginCapabilities is a set of flags that represent various capabilities of plugins.</p>
+<div class="refsect3">
+<a name="id-1.3.13.9.4.4"></a><h4>Members</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="300px" class="enum_members_name">
+<col class="enum_members_description">
+<col width="200px" class="enum_members_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="enum_member_name"><p><a name="RYGEL-PLUGIN-CAPABILITIES-NONE:CAPS"></a>RYGEL_PLUGIN_CAPABILITIES_NONE</p></td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="RYGEL-PLUGIN-CAPABILITIES-IMAGE-UPLOAD:CAPS"></a>RYGEL_PLUGIN_CAPABILITIES_IMAGE_UPLOAD</p></td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="RYGEL-PLUGIN-CAPABILITIES-VIDEO-UPLOAD:CAPS"></a>RYGEL_PLUGIN_CAPABILITIES_VIDEO_UPLOAD</p></td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="RYGEL-PLUGIN-CAPABILITIES-AUDIO-UPLOAD:CAPS"></a>RYGEL_PLUGIN_CAPABILITIES_AUDIO_UPLOAD</p></td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="RYGEL-PLUGIN-CAPABILITIES-UPLOAD:CAPS"></a>RYGEL_PLUGIN_CAPABILITIES_UPLOAD</p></td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="RYGEL-PLUGIN-CAPABILITIES-TRACK-CHANGES:CAPS"></a>RYGEL_PLUGIN_CAPABILITIES_TRACK_CHANGES</p></td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="RYGEL-PLUGIN-CAPABILITIES-CREATE-CONTAINERS:CAPS"></a>RYGEL_PLUGIN_CAPABILITIES_CREATE_CONTAINERS</p></td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td class="enum_member_name"><p><a name="RYGEL-PLUGIN-CAPABILITIES-DIAGNOSTICS:CAPS"></a>RYGEL_PLUGIN_CAPABILITIES_DIAGNOSTICS</p></td>
+<td> </td>
+<td> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="refsect1">
+<a name="RygelPlugin.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="RygelPlugin--active"></a><h3>The <code class="literal">“active”</code> property</h3>
+<pre class="programlisting">  “active”                   <a href="../glib/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a></pre>
+<p>active.</p>
+<p>Flags: Read / Write</p>
+<p>Default value: FALSE</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelPlugin--capabilities"></a><h3>The <code class="literal">“capabilities”</code> property</h3>
+<pre class="programlisting">  “capabilities”             <a class="link" href="RygelPlugin.html#RygelPluginCapabilities" title="enum RygelPluginCapabilities"><span class="type">RygelPluginCapabilities</span></a></pre>
+<p>capabilities.</p>
+<p>Flags: Read / Write / Construct</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelPlugin--default-icons"></a><h3>The <code class="literal">“default-icons”</code> property</h3>
+<pre class="programlisting">  “default-icons”            <span class="type">GeeArrayList</span> *</pre>
+<p>default-icons.</p>
+<p>Flags: Read</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelPlugin--desc-path"></a><h3>The <code class="literal">“desc-path”</code> property</h3>
+<pre class="programlisting">  “desc-path”                <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *</pre>
+<p>desc-path.</p>
+<p>Flags: Read / Write / Construct Only</p>
+<p>Default value: NULL</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelPlugin--description"></a><h3>The <code class="literal">“description”</code> property</h3>
+<pre class="programlisting">  “description”              <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *</pre>
+<p>description.</p>
+<p>Flags: Read / Write / Construct Only</p>
+<p>Default value: NULL</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelPlugin--icon-infos"></a><h3>The <code class="literal">“icon-infos”</code> property</h3>
+<pre class="programlisting">  “icon-infos”               <span class="type">GeeArrayList</span> *</pre>
+<p>icon-infos.</p>
+<p>Flags: Read</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelPlugin--name"></a><h3>The <code class="literal">“name”</code> property</h3>
+<pre class="programlisting">  “name”                     <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *</pre>
+<p>name.</p>
+<p>Flags: Read / Write / Construct Only</p>
+<p>Default value: NULL</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelPlugin--resource-infos"></a><h3>The <code class="literal">“resource-infos”</code> property</h3>
+<pre class="programlisting">  “resource-infos”           <span class="type">GeeArrayList</span> *</pre>
+<p>resource-infos.</p>
+<p>Flags: Read</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelPlugin--title"></a><h3>The <code class="literal">“title”</code> property</h3>
+<pre class="programlisting">  “title”                    <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *</pre>
+<p>title.</p>
+<p>Flags: Read / Write / Construct</p>
+<p>Default value: NULL</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.20.1</div>
+</body>
+</html>

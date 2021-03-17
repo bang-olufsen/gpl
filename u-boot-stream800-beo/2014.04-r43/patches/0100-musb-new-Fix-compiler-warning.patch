@@ -1,0 +1,28 @@
+From 409f415ef8faeeefe566ecce5586c0457ce3c880 Mon Sep 17 00:00:00 2001
+From: Fionn Cleary <fionn.cleary@streamunlimited.com>
+Date: Tue, 12 Aug 2014 18:43:32 +0200
+Subject: [PATCH] musb-new: Fix compiler warning
+
+function was returning the wrong type of pointer.
+
+Signed-off-by: Fionn Cleary <fionn.cleary@streamunlimited.com>
+---
+ drivers/usb/musb-new/musb_uboot.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/usb/musb-new/musb_uboot.c b/drivers/usb/musb-new/musb_uboot.c
+index bf0c84c..26e22e9 100644
+--- a/drivers/usb/musb-new/musb_uboot.c
++++ b/drivers/usb/musb-new/musb_uboot.c
+@@ -84,7 +84,7 @@ static int submit_urb(struct usb_hcd *hcd, struct urb *urb)
+ 	return urb->status;
+ }
+ 
+-static struct hcd *get_hcd(struct usb_device *dev)
++static struct usb_hcd *get_hcd(struct usb_device *dev)
+ {
+ 	int hcd_index;
+ 	struct usb_hcd *ret = NULL;
+-- 
+2.7.4
+

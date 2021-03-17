@@ -1,0 +1,59 @@
+From c78591400c00bf255be8dce03cb0c25db487b2f1 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Wed, 28 Mar 2018 13:37:57 +0200
+Subject: [PATCH] adapter: Enable reconnection from undirected advertisements
+ for Essence remote
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ src/adapter.c | 26 +++++++++++++++++++-------
+ 1 file changed, 19 insertions(+), 7 deletions(-)
+
+diff --git a/src/adapter.c b/src/adapter.c
+index b130ee8..81103d6 100644
+--- a/src/adapter.c
++++ b/src/adapter.c
+@@ -79,6 +79,8 @@
+ 
+ #define ADAPTER_INTERFACE	"org.bluez.Adapter1"
+ 
++#define BEOSOUND_ESSENCE_NAME "BeoSound Essence"
++
+ #define MODE_OFF		0x00
+ #define MODE_CONNECTABLE	0x01
+ #define MODE_DISCOVERABLE	0x02
+@@ -4221,14 +4223,24 @@ void adapter_auto_connect_add(struct btd_adapter *adapter,
+ 	bacpy(&cp.addr.bdaddr, bdaddr);
+ 	cp.addr.type = bdaddr_type;
+ 
+-	/*
+-	 * Set default action from HCI_AUTO_CONN_ALWAYS to
+-	 * HCI_AUTO_CONN_DIRECT. This will stop kernel from
+-	 * connected to paired devices when it receives
+-	 * undirected advertisements from them (it will
+-	 * only connect to directable advertisements).
++
++	/* Essence remote is using undirected advertisements after
++	 * batteries are removed and inserted back.
+ 	 */
+-	cp.action = 0x01;
++	char device_name[sizeof(BEOSOUND_ESSENCE_NAME)];
++	device_get_name(device, device_name, sizeof(BEOSOUND_ESSENCE_NAME));
++	if (strcmp(device_name, BEOSOUND_ESSENCE_NAME)) {
++		/*
++		 * Set default action from HCI_AUTO_CONN_ALWAYS to
++		 * HCI_AUTO_CONN_DIRECT. This will stop kernel from
++		 * connected to paired devices when it receives
++		 * undirected advertisements from them (it will
++		 * only connect to directable advertisements).
++		 */
++		cp.action = 0x01;
++	} else {
++		cp.action = 0x02;
++	}
+ 
+ 	id = mgmt_send(adapter->mgmt, MGMT_OP_ADD_DEVICE,
+ 			adapter->dev_id, sizeof(cp), &cp, add_device_complete,
+-- 
+2.7.4
+

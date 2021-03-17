@@ -1,0 +1,3 @@
+0001-opkg_conf-create-opkg.lock-in-run-instead-of-var-run.patch -p1
+0001-remove_maintainer_scripts-use-strict-matching.patch -p1
+0001-libopkg-add-add-ignore-recommends-option.patch -p1

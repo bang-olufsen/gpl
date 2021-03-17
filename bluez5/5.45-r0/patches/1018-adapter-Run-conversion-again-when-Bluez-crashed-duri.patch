@@ -1,0 +1,30 @@
+From c077b38db149c51b821aaee32742c6706bbeea62 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Tue, 4 Jul 2017 11:55:47 +0200
+Subject: [PATCH] adapter: Run conversion again when Bluez crashed during
+ device conversion
+
+We will save setting file which indicates that conversion happened last
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ src/adapter.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/adapter.c b/src/adapter.c
+index 3dfd68c..6b49783 100644
+--- a/src/adapter.c
++++ b/src/adapter.c
+@@ -5316,8 +5316,8 @@ static void load_config(struct btd_adapter *adapter)
+ 						adapter_dir(adapter));
+ 
+ 	if (stat(filename, &st) < 0) {
+-		convert_config(adapter, filename, key_file);
+ 		convert_device_storage(adapter);
++		convert_config(adapter, filename, key_file);
+ 	}
+ 
+ 	g_key_file_load_from_file(key_file, filename, 0, NULL);
+-- 
+2.7.4
+

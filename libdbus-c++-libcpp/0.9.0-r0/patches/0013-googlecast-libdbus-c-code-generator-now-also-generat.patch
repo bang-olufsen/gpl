@@ -1,0 +1,41 @@
+From 9638965e42140b09a52d1175a40eeb2e1c32cfc5 Mon Sep 17 00:00:00 2001
+From: Stanislav Ruzani <stanislav.ruzani@streamunlimited.com>
+Date: Thu, 15 Jun 2017 06:00:32 +0200
+Subject: [PATCH 08/11] googlecast: libdbus-c++ code generator now also
+ generates code for org.freedesktop.DBus.Properties interface
+
+Signed-off-by: Stanislav Ruzani <stanislav.ruzani@streamunlimited.com>
+---
+ tools/generate_adaptor.cpp | 2 +-
+ tools/generate_proxy.cpp   | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/tools/generate_adaptor.cpp b/tools/generate_adaptor.cpp
+index 5c38678..fb44ac2 100644
+--- a/tools/generate_adaptor.cpp
++++ b/tools/generate_adaptor.cpp
+@@ -74,7 +74,7 @@ void generate_adaptor(Xml::Document &doc, const char *filename)
+ 
+     // these interface names are skipped.
+     if (ifacename == "org.freedesktop.DBus.Introspectable"
+-        || ifacename == "org.freedesktop.DBus.Properties")
++       /* || ifacename == "org.freedesktop.DBus.Properties"*/)
+     {
+       cerr << "skipping interface " << ifacename << endl;
+       continue;
+diff --git a/tools/generate_proxy.cpp b/tools/generate_proxy.cpp
+index bf1094a..603922c 100644
+--- a/tools/generate_proxy.cpp
++++ b/tools/generate_proxy.cpp
+@@ -74,7 +74,7 @@ void generate_proxy(Xml::Document &doc, const char *filename)
+ 
+     // these interface names are skipped.
+     if (ifacename == "org.freedesktop.DBus.Introspectable"
+-        || ifacename == "org.freedesktop.DBus.Properties")
++        /*|| ifacename == "org.freedesktop.DBus.Properties"*/)
+     {
+       cerr << "skipping interface " << ifacename << endl;
+       continue;
+-- 
+2.7.4
+

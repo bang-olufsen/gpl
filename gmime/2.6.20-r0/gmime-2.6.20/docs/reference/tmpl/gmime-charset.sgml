@@ -1,0 +1,184 @@
+<!-- ##### SECTION Title ##### -->
+gmime-charset
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GMimeCharset ##### -->
+<para>
+
+</para>
+
+@mask: 
+@level: 
+
+<!-- ##### FUNCTION g_mime_charset_map_init ##### -->
+<para>
+
+</para>
+
+@void: 
+
+
+<!-- ##### FUNCTION g_mime_charset_map_shutdown ##### -->
+<para>
+
+</para>
+
+@void: 
+
+
+<!-- ##### FUNCTION g_mime_locale_charset ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_locale_language ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_charset_language ##### -->
+<para>
+
+</para>
+
+@charset: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_charset_canon_name ##### -->
+<para>
+
+</para>
+
+@charset: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_charset_iconv_name ##### -->
+<para>
+
+</para>
+
+@charset: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_charset_name ##### -->
+<para>
+
+</para>
+
+@charset: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_charset_locale_name ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_charset_iso_to_windows ##### -->
+<para>
+
+</para>
+
+@isocharset: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_charset_init ##### -->
+<para>
+
+</para>
+
+@charset: 
+
+
+<!-- ##### FUNCTION g_mime_charset_step ##### -->
+<para>
+
+</para>
+
+@charset: 
+@inbuf: 
+@inlen: 
+
+
+<!-- ##### FUNCTION g_mime_charset_best_name ##### -->
+<para>
+
+</para>
+
+@charset: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_charset_best ##### -->
+<para>
+
+</para>
+
+@inbuf: 
+@inlen: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_charset_can_encode ##### -->
+<para>
+
+</para>
+
+@mask: 
+@charset: 
+@text: 
+@len: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_set_user_charsets ##### -->
+<para>
+
+</para>
+
+@charsets: 
+
+
+<!-- ##### FUNCTION g_mime_user_charsets ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+

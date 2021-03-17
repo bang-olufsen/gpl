@@ -1,0 +1,203 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GMimeFilterBest</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="GMime 2.6 Reference Manual">
+<link rel="up" href="Filters.html" title="Stream Filters">
+<link rel="prev" href="GMimeFilterBasic.html" title="GMimeFilterBasic">
+<link rel="next" href="GMimeFilterCharset.html" title="GMimeFilterCharset">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="GMimeFilterBasic.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="Filters.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">GMime 2.6 Reference Manual</th>
+<td><a accesskey="n" href="GMimeFilterCharset.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#GMimeFilterBest.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#GMimeFilterBest.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#GMimeFilterBest.object-hierarchy" class="shortcut">Object Hierarchy</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="GMimeFilterBest"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="GMimeFilterBest.top_of_page"></a>GMimeFilterBest</span></h2>
+<p>GMimeFilterBest — Determine the best charset/encoding to use for a stream</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="GMimeFilterBest.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">struct              <a class="link" href="GMimeFilterBest.html#GMimeFilterBest-struct" title="struct GMimeFilterBest">GMimeFilterBest</a>;
+enum                <a class="link" href="GMimeFilterBest.html#GMimeFilterBestFlags" title="enum GMimeFilterBestFlags">GMimeFilterBestFlags</a>;
+<a class="link" href="GMimeFilter.html" title="GMimeFilter"><span class="returnvalue">GMimeFilter</span></a> *       <a class="link" href="GMimeFilterBest.html#g-mime-filter-best-new" title="g_mime_filter_best_new ()">g_mime_filter_best_new</a>              (<em class="parameter"><code><a class="link" href="GMimeFilterBest.html#GMimeFilterBestFlags" title="enum GMimeFilterBestFlags"><span class="type">GMimeFilterBestFlags</span></a> flags</code></em>);
+const <span class="returnvalue">char</span> *        <a class="link" href="GMimeFilterBest.html#g-mime-filter-best-charset" title="g_mime_filter_best_charset ()">g_mime_filter_best_charset</a>          (<em class="parameter"><code><a class="link" href="GMimeFilterBest.html" title="GMimeFilterBest"><span class="type">GMimeFilterBest</span></a> *best</code></em>);
+<a class="link" href="gmime-gmime-encodings.html#GMimeContentEncoding" title="enum GMimeContentEncoding"><span class="returnvalue">GMimeContentEncoding</span></a> <a class="link" href="GMimeFilterBest.html#g-mime-filter-best-encoding" title="g_mime_filter_best_encoding ()">g_mime_filter_best_encoding</a>        (<em class="parameter"><code><a class="link" href="GMimeFilterBest.html" title="GMimeFilterBest"><span class="type">GMimeFilterBest</span></a> *best</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="gmime-gmime-encodings.html#GMimeEncodingConstraint" title="enum GMimeEncodingConstraint"><span class="type">GMimeEncodingConstraint</span></a> constraint</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="GMimeFilterBest.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  GObject
+   +----<a class="link" href="GMimeFilter.html" title="GMimeFilter">GMimeFilter</a>
+         +----GMimeFilterBest
+</pre>
+</div>
+<div class="refsect1">
+<a name="GMimeFilterBest.description"></a><h2>Description</h2>
+<p>
+A <a class="link" href="GMimeFilter.html" title="GMimeFilter"><span class="type">GMimeFilter</span></a> which is meant to determine the best charset and/or
+transfer encoding suitable for the stream which is filtered through
+it.
+</p>
+</div>
+<div class="refsect1">
+<a name="GMimeFilterBest.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="GMimeFilterBest-struct"></a><h3>struct GMimeFilterBest</h3>
+<pre class="programlisting">struct GMimeFilterBest;</pre>
+<p>
+A filter for calculating the best encoding and/or charset to encode
+the data passed through it.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GMimeFilterBestFlags"></a><h3>enum GMimeFilterBestFlags</h3>
+<pre class="programlisting">typedef enum {
+	GMIME_FILTER_BEST_CHARSET  = (1 &lt;&lt; 0),
+	GMIME_FILTER_BEST_ENCODING = (1 &lt;&lt; 1)
+} GMimeFilterBestFlags;
+</pre>
+<p>
+Bit flags to enable charset and/or encoding scanning to make
+educated guesses as to what the best charset and/or encodings to
+use for the content passed through the filter.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><a name="GMIME-FILTER-BEST-CHARSET:CAPS"></a><span class="term"><code class="literal">GMIME_FILTER_BEST_CHARSET</code></span></p></td>
+<td>Enable best-charset detection.
+</td>
+</tr>
+<tr>
+<td><p><a name="GMIME-FILTER-BEST-ENCODING:CAPS"></a><span class="term"><code class="literal">GMIME_FILTER_BEST_ENCODING</code></span></p></td>
+<td>Enable best-encoding detection.
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-filter-best-new"></a><h3>g_mime_filter_best_new ()</h3>
+<pre class="programlisting"><a class="link" href="GMimeFilter.html" title="GMimeFilter"><span class="returnvalue">GMimeFilter</span></a> *       g_mime_filter_best_new              (<em class="parameter"><code><a class="link" href="GMimeFilterBest.html#GMimeFilterBestFlags" title="enum GMimeFilterBestFlags"><span class="type">GMimeFilterBestFlags</span></a> flags</code></em>);</pre>
+<p>
+Creates a new GMimeFilterBest filter. <em class="parameter"><code>flags</code></em> are used to determine
+which information to keep statistics of. If the
+<a class="link" href="GMimeFilterBest.html#GMIME-FILTER-BEST-CHARSET:CAPS"><span class="type">GMIME_FILTER_BEST_CHARSET</span></a> bit is set, the filter will be able to
+compute the best charset for encoding the stream of data
+filtered. If the <a class="link" href="GMimeFilterBest.html#GMIME-FILTER-BEST-ENCODING:CAPS"><span class="type">GMIME_FILTER_BEST_ENCODING</span></a> bit is set, the filter
+will be able to compute the best Content-Transfer-Encoding for use
+with the stream being filtered.
+</p>
+<p>
+Note: In order for the <a class="link" href="GMimeFilterBest.html#g-mime-filter-best-charset" title="g_mime_filter_best_charset ()"><code class="function">g_mime_filter_best_charset()</code></a> function to
+work, the stream being filtered MUST already be encoded in UTF-8.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>flags</code></em> :</span></p></td>
+<td>filter flags</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new best filter with flags <em class="parameter"><code>flags</code></em>.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-filter-best-charset"></a><h3>g_mime_filter_best_charset ()</h3>
+<pre class="programlisting">const <span class="returnvalue">char</span> *        g_mime_filter_best_charset          (<em class="parameter"><code><a class="link" href="GMimeFilterBest.html" title="GMimeFilterBest"><span class="type">GMimeFilterBest</span></a> *best</code></em>);</pre>
+<p>
+Calculates the best charset for encoding the stream filtered
+through the <em class="parameter"><code>best</code></em> filter.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>best</code></em> :</span></p></td>
+<td>best filter</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a pointer to a string containing the name of the charset
+best suited for the text filtered through <em class="parameter"><code>best</code></em>.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-filter-best-encoding"></a><h3>g_mime_filter_best_encoding ()</h3>
+<pre class="programlisting"><a class="link" href="gmime-gmime-encodings.html#GMimeContentEncoding" title="enum GMimeContentEncoding"><span class="returnvalue">GMimeContentEncoding</span></a> g_mime_filter_best_encoding        (<em class="parameter"><code><a class="link" href="GMimeFilterBest.html" title="GMimeFilterBest"><span class="type">GMimeFilterBest</span></a> *best</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="gmime-gmime-encodings.html#GMimeEncodingConstraint" title="enum GMimeEncodingConstraint"><span class="type">GMimeEncodingConstraint</span></a> constraint</code></em>);</pre>
+<p>
+Calculates the most efficient Content-Transfer-Encoding for the
+stream filtered through <em class="parameter"><code>best</code></em> that fits within the encoding
+<em class="parameter"><code>constraint</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>best</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeFilterBest.html" title="GMimeFilterBest"><span class="type">GMimeFilterBest</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>constraint</code></em> :</span></p></td>
+<td>a <a class="link" href="gmime-gmime-encodings.html#GMimeEncodingConstraint" title="enum GMimeEncodingConstraint"><span class="type">GMimeEncodingConstraint</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the best encoding for the stream filtered by <em class="parameter"><code>best</code></em>.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<div class="refsect1">
+<a name="GMimeFilterBest.see-also"></a><h2>See Also</h2>
+<a class="link" href="GMimeFilter.html" title="GMimeFilter"><span class="type">GMimeFilter</span></a>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

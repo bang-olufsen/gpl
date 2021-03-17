@@ -1,0 +1,28 @@
+From 24debcc95e85ba9b73c6ccd60b74c71840274cf8 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Fri, 11 Apr 2014 09:17:04 +0200
+Subject: [PATCH] Makefile: Generate u-boot-env.txt file during build process
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ Makefile | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/Makefile b/Makefile
+index 3364f4b..a5d60fa 100644
+--- a/Makefile
++++ b/Makefile
+@@ -805,7 +805,9 @@ MKIMAGEFLAGS_u-boot.pbl = -n $(srctree)/$(CONFIG_SYS_FSL_PBL_RCW:"%"=%) \
+ 
+ u-boot.img u-boot.kwb u-boot.pbl: u-boot.bin FORCE
+ 	$(call if_changed,mkimage)
+-	tools/env/fw_printenv -d > u-boot-env.txt
++	ln -sf tools/env/fw_printenv_host fw_printenv
++	./fw_printenv -d > $(obj)/u-boot-env.txt
++	unlink fw_printenv
+ 
+ u-boot.sha1:	u-boot.bin
+ 		tools/ubsha1 u-boot.bin
+-- 
+2.7.4
+

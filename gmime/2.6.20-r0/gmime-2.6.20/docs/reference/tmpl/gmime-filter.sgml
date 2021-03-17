@@ -1,0 +1,93 @@
+<!-- ##### SECTION Title ##### -->
+gmime-filter
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GMimeFilter ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION g_mime_filter_copy ##### -->
+<para>
+
+</para>
+
+@filter: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_filter_filter ##### -->
+<para>
+
+</para>
+
+@filter: 
+@inbuf: 
+@inlen: 
+@prespace: 
+@outbuf: 
+@outlen: 
+@outprespace: 
+
+
+<!-- ##### FUNCTION g_mime_filter_complete ##### -->
+<para>
+
+</para>
+
+@filter: 
+@inbuf: 
+@inlen: 
+@prespace: 
+@outbuf: 
+@outlen: 
+@outprespace: 
+
+
+<!-- ##### FUNCTION g_mime_filter_reset ##### -->
+<para>
+
+</para>
+
+@filter: 
+
+
+<!-- ##### FUNCTION g_mime_filter_backup ##### -->
+<para>
+
+</para>
+
+@filter: 
+@data: 
+@length: 
+
+
+<!-- ##### FUNCTION g_mime_filter_set_size ##### -->
+<para>
+
+</para>
+
+@filter: 
+@size: 
+@keep: 
+
+

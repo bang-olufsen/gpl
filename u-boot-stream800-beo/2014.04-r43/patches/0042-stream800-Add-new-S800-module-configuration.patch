@@ -1,0 +1,30 @@
+From a770baca84048468af685290c3170aec0b0d3d05 Mon Sep 17 00:00:00 2001
+From: Hannes Riedl <hannes.riedl@streamunlimited.com>
+Date: Fri, 21 Jun 2013 11:54:34 +0200
+Subject: [PATCH] stream800: Add new S800 module configuration
+
+Signed-off-by: Hannes Riedl <hannes.riedl@streamunlimited.com>
+---
+ board/streamunlimited/stream800/board.c | 3 +++
+ 1 file changed, 3 insertions(+)
+ mode change 100644 => 100755 board/streamunlimited/stream800/board.c
+
+diff --git a/board/streamunlimited/stream800/board.c b/board/streamunlimited/stream800/board.c
+old mode 100644
+new mode 100755
+index e2d4b36..d07494e
+--- a/board/streamunlimited/stream800/board.c
++++ b/board/streamunlimited/stream800/board.c
+@@ -190,6 +190,9 @@ static struct SupportedModules {
+ 	unsigned lsb_max;
+ } supportedModules[] = {
+ 	{MV_L2,		0xCCC,	0xD54,	0x4CC,	0x555},
++	// L2 - Stream800/1WEB7: same config for different ADC values, as RAM
++	// and Bluetooth are auto-detected at runtime:
++	{MV_L2,		0xCCC,	0xD54,	0x111,	0x199},
+ 	// TODO: add another stream800 module revisions here
+ };
+ 
+-- 
+2.7.4
+

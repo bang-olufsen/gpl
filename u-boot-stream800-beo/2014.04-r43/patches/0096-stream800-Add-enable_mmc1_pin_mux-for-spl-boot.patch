@@ -1,0 +1,56 @@
+From 81f1d1999e0f74392ce1a89244484c8567ddf665 Mon Sep 17 00:00:00 2001
+From: Fionn Cleary <fionn.cleary@streamunlimited.com>
+Date: Tue, 12 Aug 2014 17:45:11 +0200
+Subject: [PATCH] stream800: Add enable_mmc1_pin_mux() for spl boot
+
+SPL boot needs to be able to initialise the mmc1 for retriving
+u-boot.img from mmc1.
+
+Signed-off-by: Fionn Cleary <fionn.cleary@streamunlimited.com>
+---
+ board/streamunlimited/stream800/mux.c | 11 +++++++++++
+ board/streamunlimited/stream800/mux.h |  3 +++
+ 2 files changed, 14 insertions(+)
+
+diff --git a/board/streamunlimited/stream800/mux.c b/board/streamunlimited/stream800/mux.c
+index 29cc518..887a17a 100644
+--- a/board/streamunlimited/stream800/mux.c
++++ b/board/streamunlimited/stream800/mux.c
+@@ -254,6 +254,8 @@ void enable_uart5_pin_mux(void)
+ 	configure_module_pin_mux(uart5_pin_mux);
+ }
+ 
++#ifndef CONFIG_SPL_BUILD
++
+ void enable_i2c0_pin_mux(void)
+ {
+ 	configure_module_pin_mux(i2c0_pin_mux);
+@@ -288,3 +290,12 @@ void enable_board_pin_mux(struct Stream800Board *board)
+ 	//configure_module_pin_mux(mmc1_pin_mux);
+ 
+ }
++
++#else
++
++void enable_mmc1_pin_mux(void)
++{
++	configure_module_pin_mux(mmc1_pin_mux);
++}
++
++#endif
+diff --git a/board/streamunlimited/stream800/mux.h b/board/streamunlimited/stream800/mux.h
+index e498693..216e365 100644
+--- a/board/streamunlimited/stream800/mux.h
++++ b/board/streamunlimited/stream800/mux.h
+@@ -31,5 +31,8 @@ void enable_uart5_pin_mux(void);
+ 
+ void enable_i2c0_pin_mux(void);
+ 
++#ifdef CONFIG_SPL_BUILD
++void enable_mmc1_pin_mux(void);
++#endif
+ 
+ #endif	/* __MUX_H */
+-- 
+2.7.4
+

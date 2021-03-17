@@ -1,0 +1,286 @@
+<!-- ##### SECTION Title ##### -->
+gmime-crypto-context
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### USER_FUNCTION GMimePasswordRequestFunc ##### -->
+<para>
+
+</para>
+
+@ctx: 
+@user_id: 
+@prompt_ctx: 
+@reprompt: 
+@response: 
+@err: 
+@Returns: 
+
+
+<!-- ##### STRUCT GMimeCryptoContext ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION g_mime_crypto_context_set_request_password ##### -->
+<para>
+
+</para>
+
+@ctx: 
+@request_passwd: 
+
+
+<!-- ##### FUNCTION g_mime_crypto_context_get_signature_protocol ##### -->
+<para>
+
+</para>
+
+@ctx: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_crypto_context_get_encryption_protocol ##### -->
+<para>
+
+</para>
+
+@ctx: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_crypto_context_get_key_exchange_protocol ##### -->
+<para>
+
+</para>
+
+@ctx: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_crypto_context_digest_id ##### -->
+<para>
+
+</para>
+
+@ctx: 
+@name: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_crypto_context_digest_name ##### -->
+<para>
+
+</para>
+
+@ctx: 
+@digest: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_crypto_context_sign ##### -->
+<para>
+
+</para>
+
+@ctx: 
+@userid: 
+@digest: 
+@istream: 
+@ostream: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_crypto_context_verify ##### -->
+<para>
+
+</para>
+
+@ctx: 
+@digest: 
+@istream: 
+@sigstream: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_crypto_context_encrypt ##### -->
+<para>
+
+</para>
+
+@ctx: 
+@sign: 
+@userid: 
+@digest: 
+@recipients: 
+@istream: 
+@ostream: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_crypto_context_decrypt ##### -->
+<para>
+
+</para>
+
+@ctx: 
+@istream: 
+@ostream: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_crypto_context_import_keys ##### -->
+<para>
+
+</para>
+
+@ctx: 
+@istream: 
+@err: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_crypto_context_export_keys ##### -->
+<para>
+
+</para>
+
+@ctx: 
+@keys: 
+@ostream: 
+@err: 
+@Returns: 
+
+
+<!-- ##### ENUM GMimeCipherAlgo ##### -->
+<para>
+
+</para>
+
+@GMIME_CIPHER_ALGO_DEFAULT: 
+@GMIME_CIPHER_ALGO_IDEA: 
+@GMIME_CIPHER_ALGO_3DES: 
+@GMIME_CIPHER_ALGO_CAST5: 
+@GMIME_CIPHER_ALGO_BLOWFISH: 
+@GMIME_CIPHER_ALGO_AES: 
+@GMIME_CIPHER_ALGO_AES192: 
+@GMIME_CIPHER_ALGO_AES256: 
+@GMIME_CIPHER_ALGO_TWOFISH: 
+@GMIME_CIPHER_ALGO_CAMELLIA128: 
+@GMIME_CIPHER_ALGO_CAMELLIA192: 
+@GMIME_CIPHER_ALGO_CAMELLIA256: 
+
+<!-- ##### STRUCT GMimeDecryptResult ##### -->
+<para>
+
+</para>
+
+@parent_object: 
+@recipients: 
+@signatures: 
+@cipher: 
+@mdc: 
+
+<!-- ##### FUNCTION g_mime_decrypt_result_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_decrypt_result_get_recipients ##### -->
+<para>
+
+</para>
+
+@result: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_decrypt_result_set_recipients ##### -->
+<para>
+
+</para>
+
+@result: 
+@recipients: 
+
+
+<!-- ##### FUNCTION g_mime_decrypt_result_get_signatures ##### -->
+<para>
+
+</para>
+
+@result: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_decrypt_result_set_signatures ##### -->
+<para>
+
+</para>
+
+@result: 
+@signatures: 
+
+
+<!-- ##### FUNCTION g_mime_decrypt_result_get_cipher ##### -->
+<para>
+
+</para>
+
+@result: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_decrypt_result_set_cipher ##### -->
+<para>
+
+</para>
+
+@result: 
+@cipher: 
+
+
+<!-- ##### FUNCTION g_mime_decrypt_result_get_mdc ##### -->
+<para>
+
+</para>
+
+@result: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_decrypt_result_set_mdc ##### -->
+<para>
+
+</para>
+
+@result: 
+@mdc: 
+
+

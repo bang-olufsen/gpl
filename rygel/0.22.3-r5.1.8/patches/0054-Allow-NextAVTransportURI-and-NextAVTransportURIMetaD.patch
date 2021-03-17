@@ -1,0 +1,33 @@
+From 83cefb6ff729d10078d1908ad9836e05ea31e005 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Tue, 14 Feb 2017 16:04:32 +0100
+Subject: [PATCH] Allow NextAVTransportURI and NextAVTransportURIMetaData
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ data/xml/AVTransport2.xml.in | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/data/xml/AVTransport2.xml.in b/data/xml/AVTransport2.xml.in
+index 41fea4e..c99b4e7 100644
+--- a/data/xml/AVTransport2.xml.in
++++ b/data/xml/AVTransport2.xml.in
+@@ -682,13 +682,13 @@
+       <stateVariable sendEvents="no">
+          <name>NextAVTransportURI</name>
+          <dataType>string</dataType>
+-         <defaultValue>NOT_IMPLEMENTED</defaultValue>
++         <defaultValue></defaultValue>
+       </stateVariable>
+ 
+       <stateVariable sendEvents="no">
+          <name>NextAVTransportURIMetaData</name>
+          <dataType>string</dataType>
+-         <defaultValue>NOT_IMPLEMENTED</defaultValue>
++         <defaultValue></defaultValue>
+       </stateVariable>
+ 
+       <stateVariable sendEvents="no">
+-- 
+2.7.4
+

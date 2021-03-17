@@ -1,0 +1,698 @@
+From 5265313a630cff5a5c0588229d21b81024cfc50d Mon Sep 17 00:00:00 2001
+From: Andrii Markhaichuk <andrii.markhaichuk@streamunlimited.com>
+Date: Fri, 19 Dec 2014 09:45:54 +0100
+Subject: [PATCH] QPlay2.0: SetNetwork
+
+Signed-off-by: Andrii Markhaichuk <andrii.markhaichuk@streamunlimited.com>
+---
+ src/librygel-renderer/rygel-av-transport.c         |   5 +
+ .../rygel-media-renderer-plugin.c                  |   5 +
+ src/librygel-renderer/rygel-media-renderer.c       |   5 +
+ .../rygel-player-controller-interface.c            |  42 +++++++
+ .../rygel-player-controller-interface.vala         |   3 +
+ src/librygel-renderer/rygel-player-controller.c    | 134 +++++++++++++++++++--
+ src/librygel-renderer/rygel-player-controller.vala |  32 +++++
+ src/librygel-renderer/rygel-qplay.c                |  61 ++++++++--
+ src/librygel-renderer/rygel-qplay.vala             |  14 ++-
+ src/librygel-renderer/rygel-renderer.h             |  10 ++
+ 10 files changed, 286 insertions(+), 25 deletions(-)
+
+diff --git a/src/librygel-renderer/rygel-av-transport.c b/src/librygel-renderer/rygel-av-transport.c
+index 7f5d327..8f30436 100644
+--- a/src/librygel-renderer/rygel-av-transport.c
++++ b/src/librygel-renderer/rygel-av-transport.c
+@@ -140,6 +140,7 @@ struct _RygelMediaPlayerIface {
+ 
+ struct _RygelPlayerControllerInterfaceIface {
+ 	GTypeInterface parent_iface;
++	void (*set_network) (RygelPlayerControllerInterface* self, const gchar* ssid, const gchar* key);
+ 	gboolean (*next) (RygelPlayerControllerInterface* self);
+ 	gboolean (*previous) (RygelPlayerControllerInterface* self);
+ 	void (*calc_auth_code) (RygelPlayerControllerInterface* self, const gchar* seed);
+@@ -174,6 +175,10 @@ struct _RygelPlayerControllerInterfaceIface {
+ 	void (*set_auth_seed) (RygelPlayerControllerInterface* self, const gchar* value);
+ 	const gchar* (*get_auth_code) (RygelPlayerControllerInterface* self);
+ 	void (*set_auth_code) (RygelPlayerControllerInterface* self, const gchar* value);
++	const gchar* (*get_network_ssid) (RygelPlayerControllerInterface* self);
++	void (*set_network_ssid) (RygelPlayerControllerInterface* self, const gchar* value);
++	const gchar* (*get_network_key) (RygelPlayerControllerInterface* self);
++	void (*set_network_key) (RygelPlayerControllerInterface* self, const gchar* value);
+ };
+ 
+ struct _RygelAVTransportPrivate {
+diff --git a/src/librygel-renderer/rygel-media-renderer-plugin.c b/src/librygel-renderer/rygel-media-renderer-plugin.c
+index d7d68ff..bd4b3cb 100644
+--- a/src/librygel-renderer/rygel-media-renderer-plugin.c
++++ b/src/librygel-renderer/rygel-media-renderer-plugin.c
+@@ -160,6 +160,7 @@ struct _RygelMediaRendererPluginClass {
+ 
+ struct _RygelPlayerControllerInterfaceIface {
+ 	GTypeInterface parent_iface;
++	void (*set_network) (RygelPlayerControllerInterface* self, const gchar* ssid, const gchar* key);
+ 	gboolean (*next) (RygelPlayerControllerInterface* self);
+ 	gboolean (*previous) (RygelPlayerControllerInterface* self);
+ 	void (*calc_auth_code) (RygelPlayerControllerInterface* self, const gchar* seed);
+@@ -194,6 +195,10 @@ struct _RygelPlayerControllerInterfaceIface {
+ 	void (*set_auth_seed) (RygelPlayerControllerInterface* self, const gchar* value);
+ 	const gchar* (*get_auth_code) (RygelPlayerControllerInterface* self);
+ 	void (*set_auth_code) (RygelPlayerControllerInterface* self, const gchar* value);
++	const gchar* (*get_network_ssid) (RygelPlayerControllerInterface* self);
++	void (*set_network_ssid) (RygelPlayerControllerInterface* self, const gchar* value);
++	const gchar* (*get_network_key) (RygelPlayerControllerInterface* self);
++	void (*set_network_key) (RygelPlayerControllerInterface* self, const gchar* value);
+ };
+ 
+ struct _RygelMediaRendererPluginPrivate {
+diff --git a/src/librygel-renderer/rygel-media-renderer.c b/src/librygel-renderer/rygel-media-renderer.c
+index e529a78..1c1f369 100644
+--- a/src/librygel-renderer/rygel-media-renderer.c
++++ b/src/librygel-renderer/rygel-media-renderer.c
+@@ -137,6 +137,7 @@ struct _PluginPrivate {
+ 
+ struct _RygelPlayerControllerInterfaceIface {
+ 	GTypeInterface parent_iface;
++	void (*set_network) (RygelPlayerControllerInterface* self, const gchar* ssid, const gchar* key);
+ 	gboolean (*next) (RygelPlayerControllerInterface* self);
+ 	gboolean (*previous) (RygelPlayerControllerInterface* self);
+ 	void (*calc_auth_code) (RygelPlayerControllerInterface* self, const gchar* seed);
+@@ -171,6 +172,10 @@ struct _RygelPlayerControllerInterfaceIface {
+ 	void (*set_auth_seed) (RygelPlayerControllerInterface* self, const gchar* value);
+ 	const gchar* (*get_auth_code) (RygelPlayerControllerInterface* self);
+ 	void (*set_auth_code) (RygelPlayerControllerInterface* self, const gchar* value);
++	const gchar* (*get_network_ssid) (RygelPlayerControllerInterface* self);
++	void (*set_network_ssid) (RygelPlayerControllerInterface* self, const gchar* value);
++	const gchar* (*get_network_key) (RygelPlayerControllerInterface* self);
++	void (*set_network_key) (RygelPlayerControllerInterface* self, const gchar* value);
+ };
+ 
+ struct _RygelMediaRenderer {
+diff --git a/src/librygel-renderer/rygel-player-controller-interface.c b/src/librygel-renderer/rygel-player-controller-interface.c
+index be580d8..73138bc 100644
+--- a/src/librygel-renderer/rygel-player-controller-interface.c
++++ b/src/librygel-renderer/rygel-player-controller-interface.c
+@@ -38,6 +38,7 @@ typedef struct _RygelPlayerControllerInterfaceIface RygelPlayerControllerInterfa
+ 
+ struct _RygelPlayerControllerInterfaceIface {
+ 	GTypeInterface parent_iface;
++	void (*set_network) (RygelPlayerControllerInterface* self, const gchar* ssid, const gchar* key);
+ 	gboolean (*next) (RygelPlayerControllerInterface* self);
+ 	gboolean (*previous) (RygelPlayerControllerInterface* self);
+ 	void (*calc_auth_code) (RygelPlayerControllerInterface* self, const gchar* seed);
+@@ -72,11 +73,16 @@ struct _RygelPlayerControllerInterfaceIface {
+ 	void (*set_auth_seed) (RygelPlayerControllerInterface* self, const gchar* value);
+ 	const gchar* (*get_auth_code) (RygelPlayerControllerInterface* self);
+ 	void (*set_auth_code) (RygelPlayerControllerInterface* self, const gchar* value);
++	const gchar* (*get_network_ssid) (RygelPlayerControllerInterface* self);
++	void (*set_network_ssid) (RygelPlayerControllerInterface* self, const gchar* value);
++	const gchar* (*get_network_key) (RygelPlayerControllerInterface* self);
++	void (*set_network_key) (RygelPlayerControllerInterface* self, const gchar* value);
+ };
+ 
+ 
+ 
+ GType rygel_player_controller_interface_get_type (void) G_GNUC_CONST;
++void rygel_player_controller_interface_set_network (RygelPlayerControllerInterface* self, const gchar* ssid, const gchar* key);
+ gboolean rygel_player_controller_interface_next (RygelPlayerControllerInterface* self);
+ gboolean rygel_player_controller_interface_previous (RygelPlayerControllerInterface* self);
+ void rygel_player_controller_interface_calc_auth_code (RygelPlayerControllerInterface* self, const gchar* seed);
+@@ -111,6 +117,16 @@ const gchar* rygel_player_controller_interface_get_auth_seed (RygelPlayerControl
+ void rygel_player_controller_interface_set_auth_seed (RygelPlayerControllerInterface* self, const gchar* value);
+ const gchar* rygel_player_controller_interface_get_auth_code (RygelPlayerControllerInterface* self);
+ void rygel_player_controller_interface_set_auth_code (RygelPlayerControllerInterface* self, const gchar* value);
++const gchar* rygel_player_controller_interface_get_network_ssid (RygelPlayerControllerInterface* self);
++void rygel_player_controller_interface_set_network_ssid (RygelPlayerControllerInterface* self, const gchar* value);
++const gchar* rygel_player_controller_interface_get_network_key (RygelPlayerControllerInterface* self);
++void rygel_player_controller_interface_set_network_key (RygelPlayerControllerInterface* self, const gchar* value);
++
++
++void rygel_player_controller_interface_set_network (RygelPlayerControllerInterface* self, const gchar* ssid, const gchar* key) {
++	g_return_if_fail (self != NULL);
++	RYGEL_PLAYER_CONTROLLER_INTERFACE_GET_INTERFACE (self)->set_network (self, ssid, key);
++}
+ 
+ 
+ gboolean rygel_player_controller_interface_next (RygelPlayerControllerInterface* self) {
+@@ -317,6 +333,30 @@ void rygel_player_controller_interface_set_auth_code (RygelPlayerControllerInter
+ }
+ 
+ 
++const gchar* rygel_player_controller_interface_get_network_ssid (RygelPlayerControllerInterface* self) {
++	g_return_val_if_fail (self != NULL, NULL);
++	return RYGEL_PLAYER_CONTROLLER_INTERFACE_GET_INTERFACE (self)->get_network_ssid (self);
++}
++
++
++void rygel_player_controller_interface_set_network_ssid (RygelPlayerControllerInterface* self, const gchar* value) {
++	g_return_if_fail (self != NULL);
++	RYGEL_PLAYER_CONTROLLER_INTERFACE_GET_INTERFACE (self)->set_network_ssid (self, value);
++}
++
++
++const gchar* rygel_player_controller_interface_get_network_key (RygelPlayerControllerInterface* self) {
++	g_return_val_if_fail (self != NULL, NULL);
++	return RYGEL_PLAYER_CONTROLLER_INTERFACE_GET_INTERFACE (self)->get_network_key (self);
++}
++
++
++void rygel_player_controller_interface_set_network_key (RygelPlayerControllerInterface* self, const gchar* value) {
++	g_return_if_fail (self != NULL);
++	RYGEL_PLAYER_CONTROLLER_INTERFACE_GET_INTERFACE (self)->set_network_key (self, value);
++}
++
++
+ static void rygel_player_controller_interface_base_init (RygelPlayerControllerInterfaceIface * iface) {
+ 	static gboolean initialized = FALSE;
+ 	if (!initialized) {
+@@ -335,6 +375,8 @@ static void rygel_player_controller_interface_base_init (RygelPlayerControllerIn
+ 		g_object_interface_install_property (iface, g_param_spec_string ("device-id", "device-id", "device-id", NULL, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE));
+ 		g_object_interface_install_property (iface, g_param_spec_string ("auth-seed", "auth-seed", "auth-seed", NULL, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE));
+ 		g_object_interface_install_property (iface, g_param_spec_string ("auth-code", "auth-code", "auth-code", NULL, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE));
++		g_object_interface_install_property (iface, g_param_spec_string ("network-ssid", "network-ssid", "network-ssid", NULL, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE));
++		g_object_interface_install_property (iface, g_param_spec_string ("network-key", "network-key", "network-key", NULL, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE));
+ 	}
+ }
+ 
+diff --git a/src/librygel-renderer/rygel-player-controller-interface.vala b/src/librygel-renderer/rygel-player-controller-interface.vala
+index 1d9e10a..dd7b5cb 100644
+--- a/src/librygel-renderer/rygel-player-controller-interface.vala
++++ b/src/librygel-renderer/rygel-player-controller-interface.vala
+@@ -53,6 +53,9 @@ public interface Rygel.PlayerControllerInterface : Object {
+     public abstract string device_id { get; set; }
+     public abstract string auth_seed { get; set; }
+     public abstract string auth_code { get; set; }
++    public abstract string network_ssid { get; set; }
++    public abstract string network_key { get; set; }
++    public abstract void set_network (string ssid, string key);
+     public abstract bool next ();
+     public abstract bool previous ();
+     public abstract void calc_auth_code (string seed);
+diff --git a/src/librygel-renderer/rygel-player-controller.c b/src/librygel-renderer/rygel-player-controller.c
+index a50b7fd..cce8dfa 100644
+--- a/src/librygel-renderer/rygel-player-controller.c
++++ b/src/librygel-renderer/rygel-player-controller.c
+@@ -65,6 +65,7 @@ typedef struct _RygelMediaPlayerIface RygelMediaPlayerIface;
+ 
+ struct _RygelPlayerControllerInterfaceIface {
+ 	GTypeInterface parent_iface;
++	void (*set_network) (RygelPlayerControllerInterface* self, const gchar* ssid, const gchar* key);
+ 	gboolean (*next) (RygelPlayerControllerInterface* self);
+ 	gboolean (*previous) (RygelPlayerControllerInterface* self);
+ 	void (*calc_auth_code) (RygelPlayerControllerInterface* self, const gchar* seed);
+@@ -99,6 +100,10 @@ struct _RygelPlayerControllerInterfaceIface {
+ 	void (*set_auth_seed) (RygelPlayerControllerInterface* self, const gchar* value);
+ 	const gchar* (*get_auth_code) (RygelPlayerControllerInterface* self);
+ 	void (*set_auth_code) (RygelPlayerControllerInterface* self, const gchar* value);
++	const gchar* (*get_network_ssid) (RygelPlayerControllerInterface* self);
++	void (*set_network_ssid) (RygelPlayerControllerInterface* self, const gchar* value);
++	const gchar* (*get_network_key) (RygelPlayerControllerInterface* self);
++	void (*set_network_key) (RygelPlayerControllerInterface* self, const gchar* value);
+ };
+ 
+ struct _RygelPlayerController {
+@@ -147,6 +152,8 @@ struct _RygelPlayerControllerPrivate {
+ 	gchar* _device_id;
+ 	gchar* _auth_seed;
+ 	gchar* _auth_code;
++	gchar* _network_ssid;
++	gchar* _network_key;
+ 	gchar* _uri;
+ 	gchar* _metadata;
+ 	gchar* _next_uri;
+@@ -181,6 +188,8 @@ enum  {
+ 	RYGEL_PLAYER_CONTROLLER_DEVICE_ID,
+ 	RYGEL_PLAYER_CONTROLLER_AUTH_SEED,
+ 	RYGEL_PLAYER_CONTROLLER_AUTH_CODE,
++	RYGEL_PLAYER_CONTROLLER_NETWORK_SSID,
++	RYGEL_PLAYER_CONTROLLER_NETWORK_KEY,
+ 	RYGEL_PLAYER_CONTROLLER_TRACK,
+ 	RYGEL_PLAYER_CONTROLLER_URI,
+ 	RYGEL_PLAYER_CONTROLLER_METADATA,
+@@ -220,6 +229,9 @@ void rygel_player_controller_interface_set_next_uri (RygelPlayerControllerInterf
+ void rygel_player_controller_interface_set_next_metadata (RygelPlayerControllerInterface* self, const gchar* value);
+ static gboolean rygel_player_controller_real_previous (RygelPlayerControllerInterface* base);
+ static void rygel_player_controller_real_calc_auth_code (RygelPlayerControllerInterface* base, const gchar* seed);
++static void rygel_player_controller_real_set_network (RygelPlayerControllerInterface* base, const gchar* ssid, const gchar* key);
++void rygel_player_controller_interface_set_network_ssid (RygelPlayerControllerInterface* self, const gchar* value);
++void rygel_player_controller_interface_set_network_key (RygelPlayerControllerInterface* self, const gchar* value);
+ static void rygel_player_controller_real_set_single_play_uri (RygelPlayerControllerInterface* base, const gchar* uri, const gchar* metadata, const gchar* mime, const gchar* features);
+ static gchar* rygel_player_controller_unescape (RygelPlayerController* self, const gchar* input);
+ void rygel_player_controller_interface_set_metadata (RygelPlayerControllerInterface* self, const gchar* value);
+@@ -265,6 +277,8 @@ const gchar* rygel_player_controller_interface_get_manufacture_id (RygelPlayerCo
+ const gchar* rygel_player_controller_interface_get_device_id (RygelPlayerControllerInterface* self);
+ const gchar* rygel_player_controller_interface_get_auth_seed (RygelPlayerControllerInterface* self);
+ const gchar* rygel_player_controller_interface_get_auth_code (RygelPlayerControllerInterface* self);
++const gchar* rygel_player_controller_interface_get_network_ssid (RygelPlayerControllerInterface* self);
++const gchar* rygel_player_controller_interface_get_network_key (RygelPlayerControllerInterface* self);
+ gchar* rygel_player_controller_interface_get_track_uri (RygelPlayerControllerInterface* self);
+ gchar* rygel_player_controller_interface_get_track_metadata (RygelPlayerControllerInterface* self);
+ gchar* rygel_player_controller_interface_get_current_transport_actions (RygelPlayerControllerInterface* self);
+@@ -448,6 +462,20 @@ static void rygel_player_controller_real_calc_auth_code (RygelPlayerControllerIn
+ }
+ 
+ 
++static void rygel_player_controller_real_set_network (RygelPlayerControllerInterface* base, const gchar* ssid, const gchar* key) {
++	RygelPlayerController * self;
++	const gchar* _tmp0_ = NULL;
++	const gchar* _tmp1_ = NULL;
++	self = (RygelPlayerController*) base;
++	g_return_if_fail (ssid != NULL);
++	g_return_if_fail (key != NULL);
++	_tmp0_ = ssid;
++	rygel_player_controller_interface_set_network_ssid ((RygelPlayerControllerInterface*) self, _tmp0_);
++	_tmp1_ = key;
++	rygel_player_controller_interface_set_network_key ((RygelPlayerControllerInterface*) self, _tmp1_);
++}
++
++
+ static void rygel_player_controller_real_set_single_play_uri (RygelPlayerControllerInterface* base, const gchar* uri, const gchar* metadata, const gchar* mime, const gchar* features) {
+ 	RygelPlayerController * self;
+ 	guint _tmp0_ = 0U;
+@@ -821,7 +849,7 @@ static void rygel_player_controller_setup_image_timeouts (RygelPlayerController*
+ 		timeout = (guint) _tmp2_;
+ 	}
+ 	_tmp3_ = timeout;
+-	g_debug ("rygel-player-controller.vala:438: Item is image, setup timer: %ld", (glong) _tmp3_);
++	g_debug ("rygel-player-controller.vala:470: Item is image, setup timer: %ld", (glong) _tmp3_);
+ 	_tmp4_ = self->priv->timeout_id;
+ 	if (_tmp4_ != ((guint) 0)) {
+ 		guint _tmp5_ = 0U;
+@@ -883,7 +911,7 @@ static void rygel_player_controller_on_setting_changed (RygelPlayerController* s
+ 		return;
+ 	}
+ 	_tmp7_ = self->priv->default_image_timeout;
+-	g_debug ("rygel-player-controller.vala:468: New image timeout: %lu", (gulong) _tmp7_);
++	g_debug ("rygel-player-controller.vala:500: New image timeout: %lu", (gulong) _tmp7_);
+ }
+ 
+ 
+@@ -1211,6 +1239,67 @@ static void rygel_player_controller_real_set_auth_code (RygelPlayerControllerInt
+ }
+ 
+ 
++static const gchar* rygel_player_controller_real_get_network_ssid (RygelPlayerControllerInterface* base) {
++	const gchar* result;
++	RygelPlayerController* self;
++	const gchar* _tmp0_ = NULL;
++	self = (RygelPlayerController*) base;
++	_tmp0_ = self->priv->_network_ssid;
++	result = _tmp0_;
++	return result;
++}
++
++
++static void rygel_player_controller_real_set_network_ssid (RygelPlayerControllerInterface* base, const gchar* value) {
++	RygelPlayerController* self;
++	const gchar* _tmp0_ = NULL;
++	const gchar* _tmp1_ = NULL;
++	self = (RygelPlayerController*) base;
++	_tmp0_ = value;
++	_tmp1_ = self->priv->_network_ssid;
++	if (g_strcmp0 (_tmp0_, _tmp1_) != 0) {
++		const gchar* _tmp2_ = NULL;
++		gchar* _tmp3_ = NULL;
++		_tmp2_ = value;
++		_tmp3_ = g_strdup (_tmp2_);
++		_g_free0 (self->priv->_network_ssid);
++		self->priv->_network_ssid = _tmp3_;
++		g_object_notify ((GObject*) self, "network-ssid");
++	}
++	g_object_notify ((GObject *) self, "network-ssid");
++}
++
++
++static const gchar* rygel_player_controller_real_get_network_key (RygelPlayerControllerInterface* base) {
++	const gchar* result;
++	RygelPlayerController* self;
++	const gchar* _tmp0_ = NULL;
++	self = (RygelPlayerController*) base;
++	_tmp0_ = self->priv->_network_key;
++	result = _tmp0_;
++	return result;
++}
++
++
++static void rygel_player_controller_real_set_network_key (RygelPlayerControllerInterface* base, const gchar* value) {
++	RygelPlayerController* self;
++	const gchar* _tmp0_ = NULL;
++	const gchar* _tmp1_ = NULL;
++	self = (RygelPlayerController*) base;
++	_tmp0_ = value;
++	_tmp1_ = self->priv->_network_key;
++	if (g_strcmp0 (_tmp0_, _tmp1_) != 0) {
++		const gchar* _tmp2_ = NULL;
++		gchar* _tmp3_ = NULL;
++		_tmp2_ = value;
++		_tmp3_ = g_strdup (_tmp2_);
++		_g_free0 (self->priv->_network_key);
++		self->priv->_network_key = _tmp3_;
++		g_object_notify ((GObject*) self, "network-key");
++	}
++}
++
++
+ static guint rygel_player_controller_real_get_track (RygelPlayerControllerInterface* base) {
+ 	guint result;
+ 	RygelPlayerController* self;
+@@ -1685,6 +1774,8 @@ static void rygel_player_controller_class_init (RygelPlayerControllerClass * kla
+ 	g_object_class_install_property (G_OBJECT_CLASS (klass), RYGEL_PLAYER_CONTROLLER_DEVICE_ID, g_param_spec_string ("device-id", "device-id", "device-id", NULL, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE));
+ 	g_object_class_install_property (G_OBJECT_CLASS (klass), RYGEL_PLAYER_CONTROLLER_AUTH_SEED, g_param_spec_string ("auth-seed", "auth-seed", "auth-seed", NULL, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE));
+ 	g_object_class_install_property (G_OBJECT_CLASS (klass), RYGEL_PLAYER_CONTROLLER_AUTH_CODE, g_param_spec_string ("auth-code", "auth-code", "auth-code", NULL, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE));
++	g_object_class_install_property (G_OBJECT_CLASS (klass), RYGEL_PLAYER_CONTROLLER_NETWORK_SSID, g_param_spec_string ("network-ssid", "network-ssid", "network-ssid", NULL, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE));
++	g_object_class_install_property (G_OBJECT_CLASS (klass), RYGEL_PLAYER_CONTROLLER_NETWORK_KEY, g_param_spec_string ("network-key", "network-key", "network-key", NULL, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE));
+ 	g_object_class_install_property (G_OBJECT_CLASS (klass), RYGEL_PLAYER_CONTROLLER_TRACK, g_param_spec_uint ("track", "track", "track", 0, G_MAXUINT, 0, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE));
+ 	g_object_class_install_property (G_OBJECT_CLASS (klass), RYGEL_PLAYER_CONTROLLER_URI, g_param_spec_string ("uri", "uri", "uri", NULL, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE));
+ 	g_object_class_install_property (G_OBJECT_CLASS (klass), RYGEL_PLAYER_CONTROLLER_METADATA, g_param_spec_string ("metadata", "metadata", "metadata", NULL, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE));
+@@ -1701,6 +1792,7 @@ static void rygel_player_controller_rygel_player_controller_interface_interface_
+ 	iface->next = (gboolean (*)(RygelPlayerControllerInterface*)) rygel_player_controller_real_next;
+ 	iface->previous = (gboolean (*)(RygelPlayerControllerInterface*)) rygel_player_controller_real_previous;
+ 	iface->calc_auth_code = (void (*)(RygelPlayerControllerInterface*, const gchar*)) rygel_player_controller_real_calc_auth_code;
++	iface->set_network = (void (*)(RygelPlayerControllerInterface*, const gchar*, const gchar*)) rygel_player_controller_real_set_network;
+ 	iface->set_single_play_uri = (void (*)(RygelPlayerControllerInterface*, const gchar*, const gchar*, const gchar*, const gchar*)) rygel_player_controller_real_set_single_play_uri;
+ 	iface->set_playlist_uri = (void (*)(RygelPlayerControllerInterface*, const gchar*, const gchar*, GUPnPMediaCollection*)) rygel_player_controller_real_set_playlist_uri;
+ 	iface->set_next_single_play_uri = (void (*)(RygelPlayerControllerInterface*, const gchar*, const gchar*, const gchar*, const gchar*)) rygel_player_controller_real_set_next_single_play_uri;
+@@ -1717,6 +1809,10 @@ static void rygel_player_controller_rygel_player_controller_interface_interface_
+ 	iface->set_auth_seed = rygel_player_controller_real_set_auth_seed;
+ 	iface->get_auth_code = rygel_player_controller_real_get_auth_code;
+ 	iface->set_auth_code = rygel_player_controller_real_set_auth_code;
++	iface->get_network_ssid = rygel_player_controller_real_get_network_ssid;
++	iface->set_network_ssid = rygel_player_controller_real_set_network_ssid;
++	iface->get_network_key = rygel_player_controller_real_get_network_key;
++	iface->set_network_key = rygel_player_controller_real_set_network_key;
+ 	iface->get_track = rygel_player_controller_real_get_track;
+ 	iface->set_track = rygel_player_controller_real_set_track;
+ 	iface->get_uri = rygel_player_controller_real_get_uri;
+@@ -1745,6 +1841,8 @@ static void rygel_player_controller_instance_init (RygelPlayerController * self)
+ 	gchar* _tmp6_ = NULL;
+ 	gchar* _tmp7_ = NULL;
+ 	gchar* _tmp8_ = NULL;
++	gchar* _tmp9_ = NULL;
++	gchar* _tmp10_ = NULL;
+ 	self->priv = RYGEL_PLAYER_CONTROLLER_GET_PRIVATE (self);
+ 	_tmp0_ = g_strdup ("");
+ 	self->priv->_manufacture_id = _tmp0_;
+@@ -1755,19 +1853,25 @@ static void rygel_player_controller_instance_init (RygelPlayerController * self)
+ 	_tmp3_ = g_strdup ("");
+ 	self->priv->_auth_code = _tmp3_;
+ 	_tmp4_ = g_strdup ("");
+-	self->priv->_uri = _tmp4_;
++	self->priv->_network_ssid = _tmp4_;
+ 	_tmp5_ = g_strdup ("");
+-	self->priv->_metadata = _tmp5_;
++	self->priv->_network_key = _tmp5_;
+ 	_tmp6_ = g_strdup ("");
+-	self->priv->_next_uri = _tmp6_;
++	self->priv->_uri = _tmp6_;
+ 	_tmp7_ = g_strdup ("");
+-	self->priv->_next_metadata = _tmp7_;
+-	_tmp8_ = g_strdup ("NO_MEDIA_PRESENT");
+-	self->priv->_playback_state = _tmp8_;
++	self->priv->_metadata = _tmp7_;
++	_tmp8_ = g_strdup ("");
++	self->priv->_next_uri = _tmp8_;
++	_tmp9_ = g_strdup ("");
++	self->priv->_next_metadata = _tmp9_;
++	_tmp10_ = g_strdup ("NO_MEDIA_PRESENT");
++	self->priv->_playback_state = _tmp10_;
+ 	rygel_player_controller_interface_set_manufacture_id (self, "");
+ 	rygel_player_controller_interface_set_device_id (self, "");
+ 	rygel_player_controller_interface_set_auth_seed (self, "");
+ 	rygel_player_controller_interface_set_auth_code (self, "");
++	rygel_player_controller_interface_set_network_ssid (self, "");
++	rygel_player_controller_interface_set_network_key (self, "");
+ }
+ 
+ 
+@@ -1780,6 +1884,8 @@ static void rygel_player_controller_finalize (GObject* obj) {
+ 	_g_free0 (self->priv->_device_id);
+ 	_g_free0 (self->priv->_auth_seed);
+ 	_g_free0 (self->priv->_auth_code);
++	_g_free0 (self->priv->_network_ssid);
++	_g_free0 (self->priv->_network_key);
+ 	_g_free0 (self->priv->_uri);
+ 	_g_free0 (self->priv->_metadata);
+ 	_g_free0 (self->priv->_next_uri);
+@@ -1851,6 +1957,12 @@ static void _vala_rygel_player_controller_get_property (GObject * object, guint
+ 		case RYGEL_PLAYER_CONTROLLER_AUTH_CODE:
+ 		g_value_set_string (value, rygel_player_controller_interface_get_auth_code ((RygelPlayerControllerInterface*) self));
+ 		break;
++		case RYGEL_PLAYER_CONTROLLER_NETWORK_SSID:
++		g_value_set_string (value, rygel_player_controller_interface_get_network_ssid ((RygelPlayerControllerInterface*) self));
++		break;
++		case RYGEL_PLAYER_CONTROLLER_NETWORK_KEY:
++		g_value_set_string (value, rygel_player_controller_interface_get_network_key ((RygelPlayerControllerInterface*) self));
++		break;
+ 		case RYGEL_PLAYER_CONTROLLER_TRACK:
+ 		g_value_set_uint (value, rygel_player_controller_interface_get_track ((RygelPlayerControllerInterface*) self));
+ 		break;
+@@ -1910,6 +2022,12 @@ static void _vala_rygel_player_controller_set_property (GObject * object, guint
+ 		case RYGEL_PLAYER_CONTROLLER_AUTH_CODE:
+ 		rygel_player_controller_interface_set_auth_code ((RygelPlayerControllerInterface*) self, g_value_get_string (value));
+ 		break;
++		case RYGEL_PLAYER_CONTROLLER_NETWORK_SSID:
++		rygel_player_controller_interface_set_network_ssid ((RygelPlayerControllerInterface*) self, g_value_get_string (value));
++		break;
++		case RYGEL_PLAYER_CONTROLLER_NETWORK_KEY:
++		rygel_player_controller_interface_set_network_key ((RygelPlayerControllerInterface*) self, g_value_get_string (value));
++		break;
+ 		case RYGEL_PLAYER_CONTROLLER_TRACK:
+ 		rygel_player_controller_interface_set_track ((RygelPlayerControllerInterface*) self, g_value_get_uint (value));
+ 		break;
+diff --git a/src/librygel-renderer/rygel-player-controller.vala b/src/librygel-renderer/rygel-player-controller.vala
+index d03791d..32c9896 100644
+--- a/src/librygel-renderer/rygel-player-controller.vala
++++ b/src/librygel-renderer/rygel-player-controller.vala
+@@ -53,6 +53,9 @@ public class Rygel.PlayerController : Object, PlayerControllerInterface {
+     private string _device_id = "";
+     private string _auth_seed = "";
+     private string _auth_code = "";
++    /* QPlay2.0 setNetwork */
++    private string _network_ssid = "";
++    private string _network_key = "";
+ 
+     /* public properties */
+ 
+@@ -122,6 +125,30 @@ public class Rygel.PlayerController : Object, PlayerControllerInterface {
+         default = "";
+     }
+ 
++    /* setNetwork */
++    public string network_ssid {
++        get { return this._network_ssid; }
++        set {
++            if (value != this._network_ssid) {
++                this._network_ssid = value;
++                this.notify_property ("network-ssid");
++            }
++        }
++        default = "";
++    }
++
++    [CCode (notify = false)]
++    public string network_key {
++        get { return this._network_key; }
++        set {
++            if (value != this._network_key) {
++                this._network_key = value;
++                this.notify_property ("network-key");
++            }
++        }
++        default = "";
++    }
++
+     [CCode (notify = false)]
+     public uint track {
+         get { return this._track; }
+@@ -303,6 +330,11 @@ public class Rygel.PlayerController : Object, PlayerControllerInterface {
+ 
+     }
+ 
++    public void set_network (string ssid, string key) {
++        this.network_ssid = ssid;
++        this.network_key = key;
++    }
++
+     public void set_single_play_uri (string uri,
+                                      string metadata,
+                                      string? mime,
+diff --git a/src/librygel-renderer/rygel-qplay.c b/src/librygel-renderer/rygel-qplay.c
+index e49abee..ba8c7a4 100644
+--- a/src/librygel-renderer/rygel-qplay.c
++++ b/src/librygel-renderer/rygel-qplay.c
+@@ -75,6 +75,7 @@ struct _QPlayClass {
+ 
+ struct _RygelPlayerControllerInterfaceIface {
+ 	GTypeInterface parent_iface;
++	void (*set_network) (RygelPlayerControllerInterface* self, const gchar* ssid, const gchar* key);
+ 	gboolean (*next) (RygelPlayerControllerInterface* self);
+ 	gboolean (*previous) (RygelPlayerControllerInterface* self);
+ 	void (*calc_auth_code) (RygelPlayerControllerInterface* self, const gchar* seed);
+@@ -109,6 +110,10 @@ struct _RygelPlayerControllerInterfaceIface {
+ 	void (*set_auth_seed) (RygelPlayerControllerInterface* self, const gchar* value);
+ 	const gchar* (*get_auth_code) (RygelPlayerControllerInterface* self);
+ 	void (*set_auth_code) (RygelPlayerControllerInterface* self, const gchar* value);
++	const gchar* (*get_network_ssid) (RygelPlayerControllerInterface* self);
++	void (*set_network_ssid) (RygelPlayerControllerInterface* self, const gchar* value);
++	const gchar* (*get_network_key) (RygelPlayerControllerInterface* self);
++	void (*set_network_key) (RygelPlayerControllerInterface* self, const gchar* value);
+ };
+ 
+ struct _QPlayPrivate {
+@@ -139,6 +144,9 @@ static void qplay_set_fake_action_cb (QPlay* self, GUPnPService* registrar, GUPn
+ static void _qplay_set_fake_action_cb_gupnp_service_action_invoked (GUPnPService* _sender, GUPnPServiceAction* action, gpointer self);
+ static void qplay_query_state (QPlay* self, GUPnPService* registrar, const gchar* variable, GValue* value);
+ static void _qplay_query_state_gupnp_service_query_variable (GUPnPService* _sender, const gchar* variable, GValue* value, gpointer self);
++void rygel_player_controller_interface_set_network_key (RygelPlayerControllerInterface* self, const gchar* value);
++void rygel_player_controller_interface_set_network_ssid (RygelPlayerControllerInterface* self, const gchar* value);
++void rygel_player_controller_interface_set_network (RygelPlayerControllerInterface* self, const gchar* ssid, const gchar* key);
+ void rygel_player_controller_interface_calc_auth_code (RygelPlayerControllerInterface* self, const gchar* seed);
+ const gchar* rygel_player_controller_interface_get_auth_code (RygelPlayerControllerInterface* self);
+ const gchar* rygel_player_controller_interface_get_manufacture_id (RygelPlayerControllerInterface* self);
+@@ -210,9 +218,19 @@ static void qplay_set_network_cb (QPlay* self, GUPnPService* registrar, GUPnPSer
+ 	GUPnPServiceAction* _tmp0_ = NULL;
+ 	guint _tmp1_ = 0U;
+ 	gchar* ssid = NULL;
++	gchar* key = NULL;
+ 	GUPnPServiceAction* _tmp4_ = NULL;
+-	const gchar* _tmp5_ = NULL;
+-	GUPnPServiceAction* _tmp8_ = NULL;
++	GUPnPServiceAction* _tmp5_ = NULL;
++	gboolean _tmp6_ = FALSE;
++	const gchar* _tmp7_ = NULL;
++	RygelPlayerControllerInterface* _tmp11_ = NULL;
++	const gchar* _tmp12_ = NULL;
++	RygelPlayerControllerInterface* _tmp13_ = NULL;
++	const gchar* _tmp14_ = NULL;
++	RygelPlayerControllerInterface* _tmp15_ = NULL;
++	const gchar* _tmp16_ = NULL;
++	const gchar* _tmp17_ = NULL;
++	GUPnPServiceAction* _tmp18_ = NULL;
+ 	g_return_if_fail (self != NULL);
+ 	g_return_if_fail (registrar != NULL);
+ 	g_return_if_fail (action != NULL);
+@@ -228,18 +246,39 @@ static void qplay_set_network_cb (QPlay* self, GUPnPService* registrar, GUPnPSer
+ 	}
+ 	_tmp4_ = action;
+ 	gupnp_service_action_get (_tmp4_, "SSID", G_TYPE_STRING, &ssid, NULL);
+-	_tmp5_ = ssid;
+-	if (g_strcmp0 (_tmp5_, "") != 0) {
+-		GUPnPServiceAction* _tmp6_ = NULL;
+-		const gchar* _tmp7_ = NULL;
+-		_tmp6_ = action;
+-		_tmp7_ = _ ("Invalid Name");
+-		gupnp_service_action_return_error (_tmp6_, (guint) 701, _tmp7_);
++	_tmp5_ = action;
++	gupnp_service_action_get (_tmp5_, "Key", G_TYPE_STRING, &key, NULL);
++	_tmp7_ = ssid;
++	if (_tmp7_ == NULL) {
++		_tmp6_ = TRUE;
++	} else {
++		const gchar* _tmp8_ = NULL;
++		_tmp8_ = ssid;
++		_tmp6_ = g_strcmp0 (_tmp8_, "") == 0;
++	}
++	if (_tmp6_) {
++		GUPnPServiceAction* _tmp9_ = NULL;
++		const gchar* _tmp10_ = NULL;
++		_tmp9_ = action;
++		_tmp10_ = _ ("Invocation Error");
++		gupnp_service_action_return_error (_tmp9_, (guint) 600, _tmp10_);
++		_g_free0 (key);
+ 		_g_free0 (ssid);
+ 		return;
+ 	}
+-	_tmp8_ = action;
+-	gupnp_service_action_return (_tmp8_);
++	_tmp11_ = self->priv->controller;
++	_tmp12_ = key;
++	rygel_player_controller_interface_set_network_key (_tmp11_, _tmp12_);
++	_tmp13_ = self->priv->controller;
++	_tmp14_ = ssid;
++	rygel_player_controller_interface_set_network_ssid (_tmp13_, _tmp14_);
++	_tmp15_ = self->priv->controller;
++	_tmp16_ = ssid;
++	_tmp17_ = key;
++	rygel_player_controller_interface_set_network (_tmp15_, _tmp16_, _tmp17_);
++	_tmp18_ = action;
++	gupnp_service_action_return (_tmp18_);
++	_g_free0 (key);
+ 	_g_free0 (ssid);
+ }
+ 
+diff --git a/src/librygel-renderer/rygel-qplay.vala b/src/librygel-renderer/rygel-qplay.vala
+index f7e52e7..1272c83 100644
+--- a/src/librygel-renderer/rygel-qplay.vala
++++ b/src/librygel-renderer/rygel-qplay.vala
+@@ -59,20 +59,22 @@ internal class QPlay: Service {
+                                  ServiceAction action) {
+         if (action.get_argument_count () != 2) {
+             action.return_error (402, _("Invalid argument"));
+-
+             return;
+         }
+ 
+-        string ssid;
+-
++        string ssid, key;
+         action.get ("SSID", typeof (string), out ssid);
++        action.get ("Key", typeof (string), out key);
+ 
+-        if (ssid != "") {
+-            action.return_error (701, _("Invalid Name"));
+-
++        if (ssid == null || ssid == "") {
++            action.return_error (600, _("Invocation Error"));
+             return;
+         }
+ 
++        this.controller.network_key = key;
++        this.controller.network_ssid = ssid;
++        this.controller.set_network (ssid, key);
++
+         action.return ();
+     }
+ 
+diff --git a/src/librygel-renderer/rygel-renderer.h b/src/librygel-renderer/rygel-renderer.h
+index 174835a..166735c 100644
+--- a/src/librygel-renderer/rygel-renderer.h
++++ b/src/librygel-renderer/rygel-renderer.h
+@@ -107,6 +107,7 @@ struct _RygelMediaRendererPluginClass {
+ 
+ struct _RygelPlayerControllerInterfaceIface {
+ 	GTypeInterface parent_iface;
++	void (*set_network) (RygelPlayerControllerInterface* self, const gchar* ssid, const gchar* key);
+ 	gboolean (*next) (RygelPlayerControllerInterface* self);
+ 	gboolean (*previous) (RygelPlayerControllerInterface* self);
+ 	void (*calc_auth_code) (RygelPlayerControllerInterface* self, const gchar* seed);
+@@ -141,6 +142,10 @@ struct _RygelPlayerControllerInterfaceIface {
+ 	void (*set_auth_seed) (RygelPlayerControllerInterface* self, const gchar* value);
+ 	const gchar* (*get_auth_code) (RygelPlayerControllerInterface* self);
+ 	void (*set_auth_code) (RygelPlayerControllerInterface* self, const gchar* value);
++	const gchar* (*get_network_ssid) (RygelPlayerControllerInterface* self);
++	void (*set_network_ssid) (RygelPlayerControllerInterface* self, const gchar* value);
++	const gchar* (*get_network_key) (RygelPlayerControllerInterface* self);
++	void (*set_network_key) (RygelPlayerControllerInterface* self, const gchar* value);
+ };
+ 
+ struct _RygelPlayerController {
+@@ -204,6 +209,7 @@ gchar* rygel_media_player_get_protocol_info (RygelMediaPlayer* self);
+ GType rygel_player_controller_get_type (void) G_GNUC_CONST;
+ RygelPlayerController* rygel_player_controller_new (RygelMediaPlayer* player, const gchar* protocol_info);
+ RygelPlayerController* rygel_player_controller_construct (GType object_type, RygelMediaPlayer* player, const gchar* protocol_info);
++void rygel_player_controller_interface_set_network (RygelPlayerControllerInterface* self, const gchar* ssid, const gchar* key);
+ gboolean rygel_player_controller_interface_next (RygelPlayerControllerInterface* self);
+ gboolean rygel_player_controller_interface_previous (RygelPlayerControllerInterface* self);
+ void rygel_player_controller_interface_calc_auth_code (RygelPlayerControllerInterface* self, const gchar* seed);
+@@ -238,6 +244,10 @@ const gchar* rygel_player_controller_interface_get_auth_seed (RygelPlayerControl
+ void rygel_player_controller_interface_set_auth_seed (RygelPlayerControllerInterface* self, const gchar* value);
+ const gchar* rygel_player_controller_interface_get_auth_code (RygelPlayerControllerInterface* self);
+ void rygel_player_controller_interface_set_auth_code (RygelPlayerControllerInterface* self, const gchar* value);
++const gchar* rygel_player_controller_interface_get_network_ssid (RygelPlayerControllerInterface* self);
++void rygel_player_controller_interface_set_network_ssid (RygelPlayerControllerInterface* self, const gchar* value);
++const gchar* rygel_player_controller_interface_get_network_key (RygelPlayerControllerInterface* self);
++void rygel_player_controller_interface_set_network_key (RygelPlayerControllerInterface* self, const gchar* value);
+ GType rygel_media_renderer_get_type (void) G_GNUC_CONST;
+ RygelMediaRenderer* rygel_media_renderer_new (const gchar* title, RygelMediaPlayer* player, RygelPluginCapabilities capabilities, RygelPlayerControllerInterface* controller);
+ RygelMediaRenderer* rygel_media_renderer_construct (GType object_type, const gchar* title, RygelMediaPlayer* player, RygelPluginCapabilities capabilities, RygelPlayerControllerInterface* controller);
+-- 
+1.9.1
+

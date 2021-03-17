@@ -1,0 +1,13 @@
+diff --git a/src/device.c b/src/device.c
+index c62803b..7893538 100644
+--- a/src/device.c
++++ b/src/device.c
+@@ -4934,7 +4934,7 @@ bool device_attach_att(struct btd_device *dev, GIOChannel *io)
+ 	dst = device_get_address(dev);
+ 	ba2str(dst, dstaddr);
+ 
+-	if (gatt_db_isempty(dev->db))
++	if (!legacy_gatt_api && gatt_db_isempty(dev->db))
+ 		load_gatt_db(dev, srcaddr, dstaddr);
+ 
+ 	gatt_client_init(dev);

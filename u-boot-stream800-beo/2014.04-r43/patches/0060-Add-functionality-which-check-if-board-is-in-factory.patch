@@ -1,0 +1,62 @@
+From b23360462c0c36fe81490e022bae476faef3ea66 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Fri, 29 Nov 2013 10:42:27 +0100
+Subject: [PATCH] Add functionality which check if board is in factory state
+ and then start FW update from USB or tftp.
+
+We check some partition if they are erased and then when board is booted we start
+FW update (as with pressed FW update button).
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ include/configs/stream800.h | 27 ++++++++++++++++++++++++++-
+ 1 file changed, 26 insertions(+), 1 deletion(-)
+
+diff --git a/include/configs/stream800.h b/include/configs/stream800.h
+index aeb7127..9387edf 100644
+--- a/include/configs/stream800.h
++++ b/include/configs/stream800.h
+@@ -410,6 +410,30 @@
+         "fi;\0" \
+  \
+  \
++    "check_factory_state=" \
++	"echo \"INFO: Checking settings,kernel,dts,rootfs,download partitions if are empty.\"; " \
++	"setenv target_addr ${sfu_load_addr}; " \
++	"setenv factory 1; " \
++	"mw ${sfu_load_addr} 0xffffffff; " \
++	"setexpr target_addr ${target_addr} + 4; " \
++	"for part in settings kernel dts rootfs download; " \
++	    "do; " \
++	    "nand read ${target_addr} $part 4; " \
++	    "cmp.l ${sfu_load_addr} ${target_addr} 1; " \
++		"if test $? -eq 1; " \
++		    "then; " \
++		    "setenv factory 0; " \
++		    "echo \"INFO: partition $part is not empty.\"; " \
++		"fi; " \
++	"done; " \
++	"if test ${factory} -eq 0; " \
++	    "then " \
++	    "echo \"Board is NOT in factory state.\"; " \
++	"else " \
++	    "echo \"Board is in factory state.\"; " \
++	"fi;\0" \
++ \
++ \
+     "update_download_from_usb=" \
+         "echo \"INFO: usb thumbdrive sfupdate check...\"; " \
+         "if fatload usb ${usbdev} ${sfu_load_addr} sfupdate; " \
+@@ -799,7 +823,8 @@
+         "fi; " \
+         "if test ${bootcount} -eq 1; " \
+             "then " \
+-            "if fwup usb_update_req; " \
++	    "run check_factory_state; " \
++            "if fwup usb_update_req || test ${factory} -eq 1; " \
+                 "then " \
+                 "echo \"INFO: USB update request active, checking USB for update file ...\"; " \
+                 "run usbmount; " \
+-- 
+2.7.4
+

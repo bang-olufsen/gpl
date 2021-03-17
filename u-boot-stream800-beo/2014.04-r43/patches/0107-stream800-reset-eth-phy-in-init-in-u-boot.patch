@@ -1,0 +1,58 @@
+From 0f200c88e3eff7b16973e7280587f10f1e80066c Mon Sep 17 00:00:00 2001
+From: Radek Dostal <radek.dostal@streamunlimited.com>
+Date: Fri, 11 Jul 2014 10:24:25 +0200
+Subject: [PATCH] stream800: reset eth phy in init in u-boot
+
+Signed-off-by: Matus Ujhelyi <matus.ujhelyi@streamunlimited.com>
+Signed-off-by: Radek Dostal <radek.dostal@streamunlimited.com>
+---
+ board/streamunlimited/stream800/board.c | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
+
+diff --git a/board/streamunlimited/stream800/board.c b/board/streamunlimited/stream800/board.c
+index 020b697..d0ee484 100755
+--- a/board/streamunlimited/stream800/board.c
++++ b/board/streamunlimited/stream800/board.c
+@@ -28,6 +28,7 @@
+ #include <asm/arch/gpio.h>
+ #include <asm/arch/mmc_host_def.h>
+ #include <asm/arch/sys_proto.h>
++#include <asm/arch/mux.h>
+ #include <asm/io.h>
+ #include <asm/emif.h>
+ #include <asm/gpio.h>
+@@ -66,6 +67,15 @@ extern void watchdog_start(void);
+ #define DB_PART_VID_HDR_OFFSET  "2048"
+ #define DB_VOLUME_NAME          "stream800-settings"
+ 
++/* GPIO3_7 - eth phy reset gpio */
++#define ETH_PHY_RESET_GPIO	(32 + 32 + 32 + 7)
++
++static struct module_pin_mux eth_phy_reset_pin[] = {
++		{OFFSET(emu0), (MODE(7) | PULLUP_EN)},	/* Reset button for eth phy */
++		{-1},
++	};
++
++
+ extern int ubi_part(const char* part_name, const char* vid_header_offset);
+ extern int ubi_create(char* vol_name);
+ extern int ubi_remove(char* vol_name);
+@@ -183,6 +193,15 @@ int board_init(void)
+ 	if ((board_interface != NULL) && (board_interface->init != NULL))
+ 		board_interface->init(&board);
+ 
++
++	configure_module_pin_mux(eth_phy_reset_pin);
++	if (gpio_request(ETH_PHY_RESET_GPIO, "Eth phy"))
++		printf("error: cannot request GPIO %d\n", ETH_PHY_RESET_GPIO);
++	gpio_direction_output(ETH_PHY_RESET_GPIO, 0);
++
++	udelay(2000);
++	gpio_set_value(ETH_PHY_RESET_GPIO, 1);
++
+ 	set_board_state(BS_Normal);
+ 
+ 	gd->bd->bi_boot_params = CONFIG_SYS_SDRAM_BASE + 0x100;
+-- 
+2.7.4
+

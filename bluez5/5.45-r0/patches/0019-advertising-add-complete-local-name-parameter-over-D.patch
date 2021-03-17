@@ -1,0 +1,220 @@
+From a321fbc42624c2407845838634c7c3f373a9cdb8 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Mon, 12 Jun 2017 15:00:11 +0200
+Subject: [PATCH] advertising: add complete local name parameter over DBus
+
+Local name filed is reported only if name is set to non empty string
+
+Local name can be included in advertisements also by kernel by using
+MGMT_ADV_FLAG_LOCAL_NAME flag. But this way we cannot change this name to
+something else without changing local name completely for all profiles.
+
+Signed-off-by: Martin Geier <martin.geier@streamunlimited.com>
+
+Made patch easier to rebase
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ doc/advertising-api.txt |  5 +++++
+ src/advertising.c       | 51 +++++++++++++++++++++++++++++++++++++++++++++----
+ src/shared/ad.c         | 46 ++++++++++++++++++++++++++++++++++++++++++++
+ src/shared/ad.h         |  4 ++++
+ 4 files changed, 102 insertions(+), 4 deletions(-)
+
+diff --git a/doc/advertising-api.txt b/doc/advertising-api.txt
+index 1c18ae3..c9787a7 100644
+--- a/doc/advertising-api.txt
++++ b/doc/advertising-api.txt
+@@ -61,6 +61,11 @@ Properties	string Type
+ 			Service Data elements to include. The keys are the
+ 			UUID to associate with the data.
+ 
++		string LocalName
++
++			Includes the Local Name in the advertising packet when
++			there is space available
++
+ 		bool IncludeTxPower
+ 
+ 			Includes the Tx Power in the advertising packet.
+diff --git a/src/advertising.c b/src/advertising.c
+index de07a98..b4da6f9 100644
+--- a/src/advertising.c
++++ b/src/advertising.c
+@@ -388,6 +388,36 @@ fail:
+ 	return false;
+ }
+ 
++static bool parse_local_name(GDBusProxy *proxy,
++							struct bt_ad *data)
++{
++	DBusMessageIter iter;
++	const char *local_name;
++
++	if (!g_dbus_proxy_get_property(proxy, "LocalName", &iter)) {
++		DBG("LocaName not found");
++		return true;
++	}
++
++	if (dbus_message_iter_get_arg_type(&iter) != DBUS_TYPE_STRING)
++		return false;
++
++	dbus_message_iter_get_basic(&iter, &local_name);
++
++	if (strlen(local_name) == 0) {
++		DBG("Local name is not set, clear");
++		bt_ad_clear_local_name(data);
++	} else {
++		DBG("Adding local name: '%s'", local_name);
++		if (!bt_ad_set_local_name(data, local_name)) {
++			bt_ad_clear_local_name(data);
++			return false;
++		}
++	}
++
++	return true;
++}
++
+ static bool parse_include_tx_power(GDBusProxy *proxy, bool *included)
+ {
+ 	DBusMessageIter iter;
+@@ -490,11 +520,19 @@ static DBusMessage *refresh_advertisement(struct btd_adv_client *client)
+ 	adv_data = bt_ad_generate(client->data, &adv_data_len);
+ 
+ 	if (!adv_data || (adv_data_len > calc_max_adv_len(client, flags))) {
+-		error("Advertising data too long or couldn't be generated.");
++		// if the data are too long, try to remove local name
++		bt_ad_clear_local_name(client->data);
++		g_free(adv_data);
++
++		adv_data = bt_ad_generate(client->data, &adv_data_len);
+ 
+-		return g_dbus_create_error(client->reg, ERROR_INTERFACE
+-						".InvalidLength",
+-						"Advertising data too long.");
++		if (!adv_data || (adv_data_len > calc_max_adv_len(client, flags))) {
++			error("Advertising data too long or couldn't be generated.");
++
++			return g_dbus_create_error(client->reg, ERROR_INTERFACE
++							".InvalidLength",
++							"Advertising data too long.");
++		}
+ 	}
+ 
+ 	param_len = sizeof(struct mgmt_cp_add_advertising) + adv_data_len;
+@@ -558,6 +596,11 @@ static DBusMessage *parse_advertisement(struct btd_adv_client *client)
+ 		goto fail;
+ 	}
+ 
++	if (!parse_local_name(client->proxy, client->data)) {
++		error("Property \"LocalName\" failed to parse");
++		goto fail;
++	}
++
+ 	if (!parse_include_tx_power(client->proxy, &client->include_tx_power)) {
+ 		error("Property \"IncludeTxPower\" failed to parse");
+ 		goto fail;
+diff --git a/src/shared/ad.c b/src/shared/ad.c
+index 1bf013d..70cd0a9 100644
+--- a/src/shared/ad.c
++++ b/src/shared/ad.c
+@@ -35,6 +35,7 @@ struct bt_ad {
+ 	struct queue *manufacturer_data;
+ 	struct queue *solicit_uuids;
+ 	struct queue *service_data;
++	char *local_name;
+ };
+ 
+ struct bt_ad *bt_ad_new(void)
+@@ -107,6 +108,8 @@ void bt_ad_unref(struct bt_ad *ad)
+ 
+ 	queue_destroy(ad->service_data, uuid_destroy);
+ 
++	g_free(ad->local_name);
++
+ 	free(ad);
+ }
+ 
+@@ -195,6 +198,9 @@ static size_t calculate_length(struct bt_ad *ad)
+ 
+ 	length += uuid_data_length(ad->service_data);
+ 
++	if (ad->local_name)
++		length += strlen(ad->local_name) + 2;
++
+ 	return length;
+ }
+ 
+@@ -313,6 +319,25 @@ static void serialize_service_data(struct queue *service_data, uint8_t *buf,
+ 	}
+ }
+ 
++static void serialize_local_name(const char *local_name, uint8_t *buf,
++								uint8_t *pos)
++{
++	size_t local_name_len;
++
++	if (!local_name)
++		return;
++
++	local_name_len = strlen(local_name);
++
++	buf[(*pos)++] = local_name_len + 1;
++
++	buf[(*pos)++] = EIR_NAME_COMPLETE;
++
++	memcpy(buf + *pos, local_name, local_name_len);
++
++	*pos += local_name_len;
++}
++
+ uint8_t *bt_ad_generate(struct bt_ad *ad, size_t *length)
+ {
+ 	uint8_t *adv_data;
+@@ -338,6 +363,8 @@ uint8_t *bt_ad_generate(struct bt_ad *ad, size_t *length)
+ 
+ 	serialize_service_data(ad->service_data, adv_data, &pos);
+ 
++	serialize_local_name(ad->local_name, adv_data, &pos);
++
+ 	return adv_data;
+ }
+ 
+@@ -656,3 +683,22 @@ void bt_ad_clear_service_data(struct bt_ad *ad)
+ 
+ 	queue_remove_all(ad->service_data, NULL, NULL, uuid_destroy);
+ }
++
++bool bt_ad_set_local_name(struct bt_ad *ad, const char *local_name)
++{
++	if (!ad)
++		return false;
++
++	g_free(ad->local_name);
++
++	ad->local_name = strdup(local_name);
++
++	return true;
++}
++
++void bt_ad_clear_local_name(struct bt_ad *ad)
++{
++	g_free(ad->local_name);
++
++	ad->local_name = NULL;
++}
+diff --git a/src/shared/ad.h b/src/shared/ad.h
+index 709563d..6152ee8 100644
+--- a/src/shared/ad.h
++++ b/src/shared/ad.h
+@@ -88,3 +88,7 @@ void bt_ad_foreach_service_data(struct bt_ad *ad, bt_ad_func_t func,
+ bool bt_ad_remove_service_data(struct bt_ad *ad, bt_uuid_t *uuid);
+ 
+ void bt_ad_clear_service_data(struct bt_ad *ad);
++
++bool bt_ad_set_local_name(struct bt_ad *ad, const char *local_name);
++
++void bt_ad_clear_local_name(struct bt_ad *ad);
+-- 
+2.7.4
+

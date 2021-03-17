@@ -1,0 +1,51 @@
+From 44bba7878eb2f7ccf7e76c52c680e8914777aa15 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Wed, 27 Nov 2013 15:37:28 +0100
+Subject: [PATCH] bootp: Add support for getting server ip from dhcp request.
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ include/configs/stream800.h | 1 +
+ net/bootp.c                 | 7 +++++++
+ 2 files changed, 8 insertions(+)
+
+diff --git a/include/configs/stream800.h b/include/configs/stream800.h
+index ebb8cb8..cbea2b4 100644
+--- a/include/configs/stream800.h
++++ b/include/configs/stream800.h
+@@ -1131,6 +1131,7 @@
+ #define CONFIG_BOOTP_GATEWAY
+ #define CONFIG_BOOTP_SUBNETMASK
+ #define CONFIG_BOOTP_BOOTPATH
++#define CONFIG_BOOTP_SERVER_IP
+ #define CONFIG_NET_RETRY_COUNT         10
+ #define CONFIG_NET_MULTI
+ #define CONFIG_PHY_GIGE
+diff --git a/net/bootp.c b/net/bootp.c
+index 189a003..9bdceb5 100644
+--- a/net/bootp.c
++++ b/net/bootp.c
+@@ -496,6 +496,10 @@ static int DhcpExtended(u8 *e, int message_type, IPaddr_t ServerID,
+ 	*e++  = 42;
+ 	*cnt += 1;
+ #endif
++#if defined(CONFIG_BOOTP_SERVER_IP)
++	*e++  = 150;
++	*cnt += 1;
++#endif
+ 	/* no options, so back up to avoid sending an empty request list */
+ 	if (*cnt == 0)
+ 		e -= 2;
+@@ -790,6 +794,9 @@ static void DhcpOptionsProcess(uchar *popt, struct Bootp_t *bp)
+ 				bp->bp_file[size] = '\0';
+ 			}
+ 			break;
++		case 150:	/* Server ip address */
++			NetCopyIP(&NetServerIP, popt + 2);
++			break;
+ 		default:
+ #if defined(CONFIG_BOOTP_VENDOREX)
+ 			if (dhcp_vendorex_proc(popt))
+-- 
+2.7.4
+

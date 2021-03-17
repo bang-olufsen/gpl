@@ -1,0 +1,297 @@
+From 330412856c55c522a4c49844eae6351dd67cf0a9 Mon Sep 17 00:00:00 2001
+From: Xia Zhou <xia.zhou@streamunlimited.com>
+Date: Wed, 19 Nov 2014 16:21:12 +0100
+Subject: [PATCH] Rygel: Store DLNA uuid permanent until factory reset
+ [ASE-587]
+
+Signed-off-by: Martin Geier <martin.geier@streamunlimited.com>
+Signed-off-by: Xia Zhou <xia.zhou@streamunlimited.com>
+---
+ src/librygel-core/rygel-root-device-factory.c    | 192 +++++++----------------
+ src/librygel-core/rygel-root-device-factory.vala |  23 +--
+ 2 files changed, 57 insertions(+), 158 deletions(-)
+
+diff --git a/src/librygel-core/rygel-root-device-factory.c b/src/librygel-core/rygel-root-device-factory.c
+index fd8b11a..47db48f 100644
+--- a/src/librygel-core/rygel-root-device-factory.c
++++ b/src/librygel-core/rygel-root-device-factory.c
+@@ -695,13 +695,12 @@ static gboolean rygel_root_device_factory_real_init (GInitable* base, GCancellab
+ 	RygelConfiguration* _tmp0_ = NULL;
+ 	RygelMetaConfig* _tmp1_ = NULL;
+ 	gchar* config_dir = NULL;
+-	const gchar* _tmp2_ = NULL;
+-	gchar* _tmp3_ = NULL;
++	gchar* _tmp2_ = NULL;
++	const gchar* _tmp3_ = NULL;
+ 	const gchar* _tmp4_ = NULL;
+ 	const gchar* _tmp5_ = NULL;
+-	const gchar* _tmp6_ = NULL;
+-	gchar* _tmp7_ = NULL;
+-	const gchar* _tmp8_ = NULL;
++	gchar* _tmp6_ = NULL;
++	const gchar* _tmp7_ = NULL;
+ 	GError * _inner_error_ = NULL;
+ 	self = (RygelRootDeviceFactory*) base;
+ 	_tmp0_ = self->priv->config;
+@@ -712,23 +711,22 @@ static gboolean rygel_root_device_factory_real_init (GInitable* base, GCancellab
+ 	_tmp1_ = rygel_meta_config_get_default ();
+ 	_g_object_unref0 (self->priv->config);
+ 	self->priv->config = (RygelConfiguration*) _tmp1_;
+-	_tmp2_ = g_get_user_config_dir ();
+-	_tmp3_ = g_strdup (_tmp2_);
+-	config_dir = _tmp3_;
+-	_tmp4_ = config_dir;
+-	rygel_root_device_factory_ensure_dir_exists (self, _tmp4_, &_inner_error_);
++	_tmp2_ = g_strdup ("/media/settings/rygel/");
++	config_dir = _tmp2_;
++	_tmp3_ = config_dir;
++	rygel_root_device_factory_ensure_dir_exists (self, _tmp3_, &_inner_error_);
+ 	if (_inner_error_ != NULL) {
+ 		g_propagate_error (error, _inner_error_);
+ 		_g_free0 (config_dir);
+ 		return FALSE;
+ 	}
+-	_tmp5_ = config_dir;
+-	_tmp6_ = g_get_application_name ();
+-	_tmp7_ = g_build_filename (_tmp5_, _tmp6_, NULL);
++	_tmp4_ = config_dir;
++	_tmp5_ = g_get_application_name ();
++	_tmp6_ = g_build_filename (_tmp4_, _tmp5_, NULL);
+ 	_g_free0 (self->priv->desc_dir);
+-	self->priv->desc_dir = _tmp7_;
+-	_tmp8_ = self->priv->desc_dir;
+-	rygel_root_device_factory_ensure_dir_exists (self, _tmp8_, &_inner_error_);
++	self->priv->desc_dir = _tmp6_;
++	_tmp7_ = self->priv->desc_dir;
++	rygel_root_device_factory_ensure_dir_exists (self, _tmp7_, &_inner_error_);
+ 	if (_inner_error_ != NULL) {
+ 		g_propagate_error (error, _inner_error_);
+ 		_g_free0 (config_dir);
+@@ -1615,23 +1613,6 @@ static GUPnPXMLDoc* rygel_root_device_factory_get_latest_doc (RygelRootDeviceFac
+ 	GFile* _tmp1_ = NULL;
+ 	GFile* _tmp2_ = NULL;
+ 	gboolean _tmp3_ = FALSE;
+-	GFileInfo* info = NULL;
+-	GFile* _tmp8_ = NULL;
+-	GFileInfo* _tmp9_ = NULL;
+-	guint64 mod1 = 0ULL;
+-	GFileInfo* _tmp10_ = NULL;
+-	guint64 _tmp11_ = 0ULL;
+-	const gchar* _tmp12_ = NULL;
+-	GFile* _tmp13_ = NULL;
+-	GFileInfo* _tmp14_ = NULL;
+-	GFile* _tmp15_ = NULL;
+-	GFileInfo* _tmp16_ = NULL;
+-	GFileInfo* _tmp17_ = NULL;
+-	guint64 mod2 = 0ULL;
+-	GFileInfo* _tmp18_ = NULL;
+-	guint64 _tmp19_ = 0ULL;
+-	guint64 _tmp20_ = 0ULL;
+-	guint64 _tmp21_ = 0ULL;
+ 	GError * _inner_error_ = NULL;
+ 	g_return_val_if_fail (self != NULL, NULL);
+ 	g_return_val_if_fail (path1 != NULL, NULL);
+@@ -1661,120 +1642,53 @@ static GUPnPXMLDoc* rygel_root_device_factory_get_latest_doc (RygelRootDeviceFac
+ 		_g_object_unref0 (file);
+ 		return result;
+ 	}
+-	_tmp8_ = file;
+-	_tmp9_ = g_file_query_info (_tmp8_, G_FILE_ATTRIBUTE_TIME_MODIFIED, G_FILE_QUERY_INFO_NONE, NULL, &_inner_error_);
+-	info = _tmp9_;
+-	if (_inner_error_ != NULL) {
+-		g_propagate_error (error, _inner_error_);
+-		_g_object_unref0 (file);
+-		return NULL;
+-	}
+-	_tmp10_ = info;
+-	_tmp11_ = g_file_info_get_attribute_uint64 (_tmp10_, G_FILE_ATTRIBUTE_TIME_MODIFIED);
+-	mod1 = _tmp11_;
+-	_tmp12_ = path2;
+-	_tmp13_ = g_file_new_for_path (_tmp12_);
+-	_g_object_unref0 (file);
+-	file = _tmp13_;
+-	_tmp15_ = file;
+-	_tmp16_ = g_file_query_info (_tmp15_, G_FILE_ATTRIBUTE_TIME_MODIFIED, G_FILE_QUERY_INFO_NONE, NULL, &_inner_error_);
+-	_tmp14_ = _tmp16_;
+-	if (_inner_error_ != NULL) {
+-		g_propagate_error (error, _inner_error_);
+-		_g_object_unref0 (info);
+-		_g_object_unref0 (file);
+-		return NULL;
+-	}
+-	_tmp17_ = _tmp14_;
+-	_tmp14_ = NULL;
+-	_g_object_unref0 (info);
+-	info = _tmp17_;
+-	_tmp18_ = info;
+-	_tmp19_ = g_file_info_get_attribute_uint64 (_tmp18_, G_FILE_ATTRIBUTE_TIME_MODIFIED);
+-	mod2 = _tmp19_;
+-	_tmp20_ = mod1;
+-	_tmp21_ = mod2;
+-	if (_tmp20_ > _tmp21_) {
+-		{
+-			GUPnPXMLDoc* _tmp22_ = NULL;
+-			const gchar* _tmp23_ = NULL;
+-			GUPnPXMLDoc* _tmp24_ = NULL;
+-			GUPnPXMLDoc* _tmp25_ = NULL;
+-			_tmp23_ = path1;
+-			_tmp24_ = gupnp_xml_doc_new_from_path (_tmp23_, &_inner_error_);
+-			_tmp22_ = _tmp24_;
+-			if (_inner_error_ != NULL) {
+-				goto __catch10_g_error;
+-			}
+-			_tmp25_ = _tmp22_;
+-			_tmp22_ = NULL;
+-			result = _tmp25_;
+-			_g_object_unref0 (_tmp22_);
+-			_g_object_unref0 (_tmp14_);
+-			_g_object_unref0 (info);
+-			_g_object_unref0 (file);
+-			return result;
+-		}
+-		goto __finally10;
+-		__catch10_g_error:
+-		{
+-			GError* _error_ = NULL;
+-			GUPnPXMLDoc* _tmp26_ = NULL;
+-			const gchar* _tmp27_ = NULL;
+-			GUPnPXMLDoc* _tmp28_ = NULL;
+-			GUPnPXMLDoc* _tmp29_ = NULL;
+-			_error_ = _inner_error_;
+-			_inner_error_ = NULL;
+-			_tmp27_ = path2;
+-			_tmp28_ = gupnp_xml_doc_new_from_path (_tmp27_, &_inner_error_);
+-			_tmp26_ = _tmp28_;
+-			if (_inner_error_ != NULL) {
+-				_g_error_free0 (_error_);
+-				goto __finally10;
+-			}
+-			_tmp29_ = _tmp26_;
+-			_tmp26_ = NULL;
+-			result = _tmp29_;
+-			_g_object_unref0 (_tmp26_);
+-			_g_error_free0 (_error_);
+-			_g_object_unref0 (_tmp14_);
+-			_g_object_unref0 (info);
+-			_g_object_unref0 (file);
+-			return result;
++	{
++		GUPnPXMLDoc* _tmp8_ = NULL;
++		const gchar* _tmp9_ = NULL;
++		GUPnPXMLDoc* _tmp10_ = NULL;
++		GUPnPXMLDoc* _tmp11_ = NULL;
++		_tmp9_ = path1;
++		_tmp10_ = gupnp_xml_doc_new_from_path (_tmp9_, &_inner_error_);
++		_tmp8_ = _tmp10_;
++		if (_inner_error_ != NULL) {
++			goto __catch10_g_error;
+ 		}
+-		__finally10:
+-		g_propagate_error (error, _inner_error_);
+-		_g_object_unref0 (_tmp14_);
+-		_g_object_unref0 (info);
++		_tmp11_ = _tmp8_;
++		_tmp8_ = NULL;
++		result = _tmp11_;
++		_g_object_unref0 (_tmp8_);
+ 		_g_object_unref0 (file);
+-		return NULL;
+-	} else {
+-		GUPnPXMLDoc* _tmp30_ = NULL;
+-		const gchar* _tmp31_ = NULL;
+-		GUPnPXMLDoc* _tmp32_ = NULL;
+-		GUPnPXMLDoc* _tmp33_ = NULL;
+-		_tmp31_ = path2;
+-		_tmp32_ = gupnp_xml_doc_new_from_path (_tmp31_, &_inner_error_);
+-		_tmp30_ = _tmp32_;
++		return result;
++	}
++	goto __finally10;
++	__catch10_g_error:
++	{
++		GError* _error_ = NULL;
++		GUPnPXMLDoc* _tmp12_ = NULL;
++		const gchar* _tmp13_ = NULL;
++		GUPnPXMLDoc* _tmp14_ = NULL;
++		GUPnPXMLDoc* _tmp15_ = NULL;
++		_error_ = _inner_error_;
++		_inner_error_ = NULL;
++		_tmp13_ = path2;
++		_tmp14_ = gupnp_xml_doc_new_from_path (_tmp13_, &_inner_error_);
++		_tmp12_ = _tmp14_;
+ 		if (_inner_error_ != NULL) {
+-			g_propagate_error (error, _inner_error_);
+-			_g_object_unref0 (_tmp14_);
+-			_g_object_unref0 (info);
+-			_g_object_unref0 (file);
+-			return NULL;
++			_g_error_free0 (_error_);
++			goto __finally10;
+ 		}
+-		_tmp33_ = _tmp30_;
+-		_tmp30_ = NULL;
+-		result = _tmp33_;
+-		_g_object_unref0 (_tmp30_);
+-		_g_object_unref0 (_tmp14_);
+-		_g_object_unref0 (info);
++		_tmp15_ = _tmp12_;
++		_tmp12_ = NULL;
++		result = _tmp15_;
++		_g_object_unref0 (_tmp12_);
++		_g_error_free0 (_error_);
+ 		_g_object_unref0 (file);
+ 		return result;
+ 	}
+-	_g_object_unref0 (_tmp14_);
+-	_g_object_unref0 (info);
++	__finally10:
++	g_propagate_error (error, _inner_error_);
+ 	_g_object_unref0 (file);
++	return NULL;
+ }
+ 
+ 
+diff --git a/src/librygel-core/rygel-root-device-factory.vala b/src/librygel-core/rygel-root-device-factory.vala
+index 40d11d7..a2ae959 100644
+--- a/src/librygel-core/rygel-root-device-factory.vala
++++ b/src/librygel-core/rygel-root-device-factory.vala
+@@ -91,7 +91,7 @@ public class Rygel.RootDeviceFactory : Object,
+         this.config = MetaConfig.get_default ();
+ 
+         /* We store the modified descriptions in the user's config dir */
+-        var config_dir = Environment.get_user_config_dir ();
++        var config_dir = "/media/settings/rygel/";
+         this.ensure_dir_exists (config_dir);
+         this.desc_dir = Path.build_filename (config_dir,
+                                              Environment.get_application_name ());
+@@ -218,24 +218,9 @@ public class Rygel.RootDeviceFactory : Object,
+             return new XMLDoc.from_path (path2);
+         }
+ 
+-        var info = file.query_info (FileAttribute.TIME_MODIFIED,
+-                                    FileQueryInfoFlags.NONE);
+-        var mod1 = info.get_attribute_uint64 (FileAttribute.TIME_MODIFIED);
+-
+-        file = File.new_for_path (path2);
+-        info = file.query_info (FileAttribute.TIME_MODIFIED,
+-                                FileQueryInfoFlags.NONE);
+-        var mod2 = info.get_attribute_uint64 (FileAttribute.TIME_MODIFIED);
+-
+-        if (mod1 > mod2) {
+-            // If we fail to load the derived description file, try the
+-            // template instead.
+-            try {
+-                return new XMLDoc.from_path (path1);
+-            } catch (Error error) {
+-                return new XMLDoc.from_path (path2);
+-            }
+-        } else {
++        try {
++            return new XMLDoc.from_path (path1);
++        } catch (Error error) {
+             return new XMLDoc.from_path (path2);
+         }
+     }
+-- 
+1.9.1
+

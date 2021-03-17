@@ -1,0 +1,98 @@
+From a972ffaa998582e5c67e73b83145482818246f16 Mon Sep 17 00:00:00 2001
+From: Stanislav Ruzani <stanislav.ruzani@streamunlimited.com>
+Date: Thu, 22 Jun 2017 08:16:59 +0200
+Subject: [PATCH 10/11] googlecast: added API for verification of validity of
+ DBus::Variant to prevent crashes in certain situations
+
+Signed-off-by: Stanislav Ruzani <stanislav.ruzani@streamunlimited.com>
+---
+ include/dbus-c++/property.h         |  4 ++++
+ include/dbus-c++/types.h |  3 +++
+ src/property.cpp |  4 +++-
+ src/types.cpp    | 12 ++++++++++++
+ 4 files changed, 22 insertions(+), 1 deletion(-)
+
+diff --git a/include/dbus-c++/property.h b/include/dbus-c++/property.h
+index 00095c9..4cfd748 100644
+--- a/include/dbus-c++/property.h
++++ b/include/dbus-c++/property.h
+@@ -54,6 +54,10 @@ public:
+   {
+     _data->value.clear();
+     MessageIter wi = _data->value.writer();
++
++	// a new value has been assigned to the propery; from this moment on,
++	// this property is valid
++	_data->value.setIsValid(true);
+     wi << t;
+     return *this;
+   }
+diff --git a/include/dbus-c++/types.h b/include/dbus-c++/types.h
+index 15c414e..4986570 100755
+--- a/include/dbus-c++/types.h
++++ b/include/dbus-c++/types.h
+@@ -224,6 +224,8 @@ public:
+   const Signature signature() const;
+ 
+   void clear();
++  void setIsValid(const bool &valid);
++  bool isValid() const;
+ 
+   MessageIter reader() const
+   {
+@@ -247,6 +249,7 @@ public:
+ private:
+ 
+   Message _msg;
++  bool    _isValid;
+ };
+ 
+ template<typename K, typename V>
+diff --git a/src/property.cpp b/src/property.cpp
+index 763a12e..0777f55 100644
+--- a/src/property.cpp
++++ b/src/property.cpp
+@@ -68,7 +68,9 @@ Message PropertiesAdaptor::Get(const CallMessage &call)
+ 
+   MessageIter wi = reply.writer();
+ 
+-  wi << *value;
++  if (value->isValid())
++	wi << *value;
++
+   return reply;
+ }
+ 
+diff --git a/src/types.cpp b/src/types.cpp
+index d414a3e..3d35f7a 100644
+--- a/src/types.cpp
++++ b/src/types.cpp
+@@ -38,6 +38,7 @@ using namespace DBus;
+ 
+ Variant::Variant()
+   : _msg(CallMessage()) // dummy message used as temporary storage for variant data
++  , _isValid(false)     // Variant is not valid until we assign some value to it!
+ {
+ }
+ 
+@@ -62,6 +63,17 @@ void Variant::clear()
+ {
+   CallMessage empty;
+   _msg = empty;
++  _isValid = false;
++}
++
++void Variant::setIsValid(const bool &valid)
++{
++	_isValid = valid;
++}
++
++bool Variant::isValid() const
++{
++	return _isValid;
+ }
+ 
+ const Signature Variant::signature() const
+-- 
+2.7.4
+

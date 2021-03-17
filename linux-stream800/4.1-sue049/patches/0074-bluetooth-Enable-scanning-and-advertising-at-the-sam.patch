@@ -1,0 +1,48 @@
+From 99117ae34b51fd63d01c2be4d5fb58c7b0ebb84b Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Thu, 6 Jul 2017 16:29:01 +0200
+Subject: [PATCH] bluetooth: Enable scanning and advertising at the same time
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ net/bluetooth/hci_conn.c | 2 ++
+ net/bluetooth/mgmt.c     | 2 ++
+ 2 files changed, 4 insertions(+)
+
+diff --git a/net/bluetooth/hci_conn.c b/net/bluetooth/hci_conn.c
+index ee5e598..7e7f8bb 100644
+--- a/net/bluetooth/hci_conn.c
++++ b/net/bluetooth/hci_conn.c
+@@ -810,12 +810,14 @@ struct hci_conn *hci_connect_le(struct hci_dev *hdev, bdaddr_t *dst,
+ 		/* If we're active scanning most controllers are unable
+ 		 * to initiate advertising. Simply reject the attempt.
+ 		 */
++		/* Enable scanning while advertising
+ 		if (hci_dev_test_flag(hdev, HCI_LE_SCAN) &&
+ 		    hdev->le_scan_type == LE_SCAN_ACTIVE) {
+ 			skb_queue_purge(&req.cmd_q);
+ 			hci_conn_del(conn);
+ 			return ERR_PTR(-EBUSY);
+ 		}
++		*/
+ 
+ 		hci_req_directed_advertising(&req, conn);
+ 		goto create_conn;
+diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
+index 7a2570e..333bd03 100644
+--- a/net/bluetooth/mgmt.c
++++ b/net/bluetooth/mgmt.c
+@@ -4217,8 +4217,10 @@ static bool trigger_le_scan(struct hci_request *req, u16 interval, u8 *status)
+ 			return false;
+ 		}
+ 
++		/* Enable scan while advertising
+ 		cancel_adv_timeout(hdev);
+ 		disable_advertising(req);
++		*/
+ 	}
+ 
+ 	/* If controller is scanning, it means the background scanning is
+-- 
+2.7.4
+

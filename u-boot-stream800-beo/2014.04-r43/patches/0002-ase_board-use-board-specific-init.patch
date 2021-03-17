@@ -1,0 +1,161 @@
+From 85aab3948b2379838b89a3c3b9f90cea6a753f43 Mon Sep 17 00:00:00 2001
+From: Matus Ujhelyi <matus.ujhelyi@streamunlimited.com>
+Date: Fri, 4 Apr 2014 10:59:18 +0200
+Subject: [PATCH] ase_board: use board specific init
+
+Signed-off-by: Matus Ujhelyi <matus.ujhelyi@streamunlimited.com>
+---
+ .../stream800/board-beo_ase_board.c                | 73 +++-------------------
+ board/streamunlimited/stream800/board.c            |  2 +-
+ board/streamunlimited/stream800/mux.c              |  4 +-
+ 3 files changed, 11 insertions(+), 68 deletions(-)
+
+diff --git a/board/streamunlimited/stream800/board-beo_ase_board.c b/board/streamunlimited/stream800/board-beo_ase_board.c
+index 548f075..ece6799 100644
+--- a/board/streamunlimited/stream800/board-beo_ase_board.c
++++ b/board/streamunlimited/stream800/board-beo_ase_board.c
+@@ -30,26 +30,16 @@
+ #include <asm-generic/gpio.h>
+ #include <asm/arch/mux.h>
+ #include <spi.h>
++#include <i2c.h>
+ 
+ static struct ctrl_dev *cdev = (struct ctrl_dev *)CTRL_DEVICE_BASE;
+ static struct spi_slave *spi_mcu;
+ static int update_flag = 0;
+ 
+-/* GPIO1_9 - reset button status - check sfupdate file on USB if pressed during the boot-up */
+-#define FW_UPDATE_BUTTON_STATUS_GPIO	(32 + 9)
+-
+-static struct module_pin_mux fw_update_button_pin_mux[] = {
+-		{OFFSET(uart0_rtsn), (MODE(7) | PULLUP_EN | RXACTIVE)},	/* Reset button status gpio1_9, conflict: uart0_pin_mux rts */
+-		{-1},
+-	};
+-
+-static struct module_pin_mux spi1_pin_mux[] = {
+-	{OFFSET(ecap0_in_pwm0_out), (MODE(4) | RXACTIVE | PULLUDDIS)},	/* SPI1_SCLK */
+-	{OFFSET(uart0_ctsn), (MODE(4) | RXACTIVE |
+-			PULLUDDIS | PULLUP_EN)},			/* SPI1_D0 */
+-	{OFFSET(uart0_rtsn), (MODE(4) | RXACTIVE | PULLUDDIS)},	/* SPI1_D1 */
+-	{OFFSET(uart1_rtsn), (MODE(4) | RXACTIVE |
+-			PULLUDDIS | PULLUP_EN)},			/* SPI1_CS1 */
++static struct module_pin_mux gpio_pin_mux[] = {
++	{OFFSET(xdma_event_intr1), MODE(7)},
++	{OFFSET(xdma_event_intr0), MODE(7)},
++	{OFFSET(gpmc_ad8),  (MODE(7) & (~RXACTIVE))},
+ 	{-1},
+ };
+ 
+@@ -58,14 +48,7 @@ void beo_ase__init(const struct Stream800Board *board)
+ 	if (!board || board->carrierBoardType != CBT_BeoASEBoard)
+ 		BUG();
+ 
+-	configure_module_pin_mux(fw_update_button_pin_mux);
+-
+-	//if (gpio_request(FW_UPDATE_BUTTON_STATUS_GPIO, "Reset status"))
+-	//	printf("error: cannot request GPIO %d\n", FW_UPDATE_BUTTON_STATUS_GPIO);
+-	//gpio_direction_input(FW_UPDATE_BUTTON_STATUS_GPIO);
+-	//update_flag = ((gpio_get_value(FW_UPDATE_BUTTON_STATUS_GPIO) == 0) ? 1 : 0);
+-
+-	//configure_module_pin_mux(spi1_pin_mux);
++	configure_module_pin_mux(gpio_pin_mux);
+ }
+ 
+ void beo_ase__late_init(const struct Stream800Board *board)
+@@ -74,12 +57,6 @@ void beo_ase__late_init(const struct Stream800Board *board)
+ 		BUG();
+ 
+ 	printf("TODO: 'B&O ASE' board late initialization.\n");
+-
+-	/* MCU is on 1:1, 1khz, mode 3 */
+-	//spi_mcu = spi_setup_slave(1, 1, 0x1000, 3);
+-	//if (!spi_mcu) {
+-	//	printf("SPI: Failed to set up slave\n");
+-	//}
+ }
+ 
+ #ifdef CONFIG_DRIVER_TI_CPSW
+@@ -109,48 +86,14 @@ void beo_ase__cpsw_eth_init(const struct Stream800Board *board, struct cpsw_plat
+ 
+ int beo_ase__get_fw_update_button_status(void)
+ {
++	//FOR NOW, LATER CHECK BASED ON BUTTON
++	update_flag = 1;
+ 	return update_flag;
+ }
+ 
+ void beo_ase__on_board_state_changed(const struct Stream800Board *board, BoardState state)
+ {
+ 	printf("TODO: Board state changed to '%s'\n", boardStateStrings[state]);
+-
+-	///* custom SPI MCU defined protocol, look at the kernel driver specification */
+-
+-	//// WIFI_white, slow blink (600/200ms)
+-	//const u8 bootingStateLedCmd[] = { 0x20,0x80,0x10,0x00,0x04,0x00,0x00,0x00,0x04,0x00,0x01,0x0,0x26,0x0,0x0,0x0 };
+-
+-	//// WIFI_red, fast blink (200/100ms)
+-	//const u8 failureStateLedCmd[] = { 0x20,0x80,0x10,0x00,0x04,0x00,0x00,0x00,0x09,0x00,0x01,0x0,0x12,0x0,0x0,0x0 };
+-
+-	//// ON_red, fast blink (100/100ms)
+-	//const u8 flashingStateLedCmd[] = { 0x20,0x80,0x10,0x00,0x04,0x00,0x00,0x00,0x01,0x00,0x01,0x0,0x11,0x0,0x0,0x0 };
+-
+-	//// ON_red, off
+-	//const u8 flashingOffStateLedCmd[] = { 0x20,0x80,0x10,0x00,0x04,0x00,0x00,0x00,0x01,0x00,0x00,0x00,0x00,0x0,0x0,0x0 };
+-
+-	//u8 bootStateReplay[20];
+-
+-	//switch (state) {
+-	//	case BS_DontUnplug:
+-	//		am335x_spi_write(spi_mcu, flashingStateLedCmd, 16);
+-	//		am335x_spi_read(spi_mcu, bootStateReplay, 20);
+-	//		break;
+-	//	case BS_BootingKernel:
+-	//		/* We power on the led only at boot withouth firmware update */
+-	//		if (bootcount_load() <= 1) {
+-	//			am335x_spi_write(spi_mcu, bootingStateLedCmd, 16);
+-	//			am335x_spi_read(spi_mcu, bootStateReplay, 20);
+-	//		}
+-	//		break;
+-	//	case BS_HardFailure:
+-	//		am335x_spi_write(spi_mcu, flashingOffStateLedCmd, 16);
+-	//		am335x_spi_read(spi_mcu, bootStateReplay, 20);
+-	//		am335x_spi_write(spi_mcu, failureStateLedCmd, 16);
+-	//		am335x_spi_read(spi_mcu, bootStateReplay, 20);
+-	//		break;
+-	//}
+ }
+ 
+ int beo_ase__do_usb_update(void)
+diff --git a/board/streamunlimited/stream800/board.c b/board/streamunlimited/stream800/board.c
+index ce3a28f..3287308 100755
+--- a/board/streamunlimited/stream800/board.c
++++ b/board/streamunlimited/stream800/board.c
+@@ -142,7 +142,7 @@ void set_board_interface(struct StreamBoardInterface * interface) {
+  */
+ int board_init(void)
+ {
+-	init_adc();
++	//init_adc();
+ 	board_detect(&board);
+ 	board_printf_info(&board);
+ 
+diff --git a/board/streamunlimited/stream800/mux.c b/board/streamunlimited/stream800/mux.c
+index f19d49f..582ddff 100644
+--- a/board/streamunlimited/stream800/mux.c
++++ b/board/streamunlimited/stream800/mux.c
+@@ -257,10 +257,10 @@ void enable_i2c0_pin_mux(void)
+ 
+ void enable_board_pin_mux(struct Stream800Board *board)
+ {
+-	//TODO ASE pinmux based on board interface
+ 	configure_module_pin_mux(i2c0_pin_mux);
+ 	configure_module_pin_mux(i2c1_pin_mux);
+-	configure_module_pin_mux(clk2_pll_pin_mux);
++	//ASE DO NOT USE IT AS OUTPUT
++	//configure_module_pin_mux(clk2_pll_pin_mux);
+ 	configure_module_pin_mux(nand_pin_mux);
+ 
+ 	if (board_interface != NULL) {
+-- 
+2.7.4
+

@@ -1,0 +1,275 @@
+<!-- ##### SECTION Title ##### -->
+gmime-object
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GMimeObject ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### USER_FUNCTION GMimeObjectForeachFunc ##### -->
+<para>
+
+</para>
+
+@parent: 
+@part: 
+@user_data: 
+
+
+<!-- ##### FUNCTION g_mime_object_register_type ##### -->
+<para>
+
+</para>
+
+@type: 
+@subtype: 
+@object_type: 
+
+
+<!-- ##### FUNCTION g_mime_object_new ##### -->
+<para>
+
+</para>
+
+@content_type: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_object_new_type ##### -->
+<para>
+
+</para>
+
+@type: 
+@subtype: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_object_set_content_type ##### -->
+<para>
+
+</para>
+
+@object: 
+@content_type: 
+
+
+<!-- ##### FUNCTION g_mime_object_get_content_type ##### -->
+<para>
+
+</para>
+
+@object: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_object_set_content_type_parameter ##### -->
+<para>
+
+</para>
+
+@object: 
+@name: 
+@value: 
+
+
+<!-- ##### FUNCTION g_mime_object_get_content_type_parameter ##### -->
+<para>
+
+</para>
+
+@object: 
+@name: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_object_set_disposition ##### -->
+<para>
+
+</para>
+
+@object: 
+@disposition: 
+
+
+<!-- ##### FUNCTION g_mime_object_get_disposition ##### -->
+<para>
+
+</para>
+
+@object: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_object_set_content_disposition ##### -->
+<para>
+
+</para>
+
+@object: 
+@disposition: 
+
+
+<!-- ##### FUNCTION g_mime_object_get_content_disposition ##### -->
+<para>
+
+</para>
+
+@object: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_object_set_content_disposition_parameter ##### -->
+<para>
+
+</para>
+
+@object: 
+@attribute: 
+@value: 
+
+
+<!-- ##### FUNCTION g_mime_object_get_content_disposition_parameter ##### -->
+<para>
+
+</para>
+
+@object: 
+@attribute: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_object_set_content_id ##### -->
+<para>
+
+</para>
+
+@object: 
+@content_id: 
+
+
+<!-- ##### FUNCTION g_mime_object_get_content_id ##### -->
+<para>
+
+</para>
+
+@object: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_object_prepend_header ##### -->
+<para>
+
+</para>
+
+@object: 
+@header: 
+@value: 
+
+
+<!-- ##### FUNCTION g_mime_object_append_header ##### -->
+<para>
+
+</para>
+
+@object: 
+@header: 
+@value: 
+
+
+<!-- ##### FUNCTION g_mime_object_remove_header ##### -->
+<para>
+
+</para>
+
+@object: 
+@header: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_object_set_header ##### -->
+<para>
+
+</para>
+
+@object: 
+@header: 
+@value: 
+
+
+<!-- ##### FUNCTION g_mime_object_get_header ##### -->
+<para>
+
+</para>
+
+@object: 
+@header: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_object_get_headers ##### -->
+<para>
+
+</para>
+
+@object: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_object_get_header_list ##### -->
+<para>
+
+</para>
+
+@object: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_object_write_to_stream ##### -->
+<para>
+
+</para>
+
+@object: 
+@stream: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_object_to_string ##### -->
+<para>
+
+</para>
+
+@object: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_object_encode ##### -->
+<para>
+
+</para>
+
+@object: 
+@constraint: 
+
+

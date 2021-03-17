@@ -1,0 +1,179 @@
+From 5e5b6dec1df7d1c2478390f7a96758f5af42ee4b Mon Sep 17 00:00:00 2001
+From: Martin Geier <martin.geier@streamunlimited.com>
+Date: Fri, 13 Nov 2015 09:15:00 +0100
+Subject: [PATCH] stream800: use real download partition size to validate
+ sfupdate file [STREAMEIGHT-1000]
+
+Signed-off-by: Martin Geier <martin.geier@streamunlimited.com>
+---
+ board/streamunlimited/stream800/board.c      | 10 ++++++
+ board/streamunlimited/stream800/sfu_parser.c | 49 +++++++++++++++++++++++-----
+ board/streamunlimited/stream800/sfu_parser.h |  1 -
+ 3 files changed, 51 insertions(+), 9 deletions(-)
+
+diff --git a/board/streamunlimited/stream800/board.c b/board/streamunlimited/stream800/board.c
+index 048beab..46bb7e3 100755
+--- a/board/streamunlimited/stream800/board.c
++++ b/board/streamunlimited/stream800/board.c
+@@ -340,6 +340,16 @@ static int detect_flash(void)
+ 		printf("Setting mtdparts: %s\n", mtdparts);
+ 
+ 		setenv("mtdparts", mtdparts);
++
++		for (i = 0; i < part_size; i++) {
++			if (!strcmp(s800_parts[i].name, "download")) {
++				char buf[30];
++				sprintf(buf, "%lu", s800_parts[i].size / 1024);
++				setenv("mtd_download_size", buf);
++				break;
++			}
++		}
++
+ 	} else {
+ 		printf("Unknown flash size!!!!\n");
+ 		ret = -ENODEV;
+diff --git a/board/streamunlimited/stream800/sfu_parser.c b/board/streamunlimited/stream800/sfu_parser.c
+index 1ccb11e..6393d91 100644
+--- a/board/streamunlimited/stream800/sfu_parser.c
++++ b/board/streamunlimited/stream800/sfu_parser.c
+@@ -49,7 +49,7 @@ extern uint32_t crc32(uint32_t crc, const uint8_t* baseaddr, uint32_t length);
+ extern void md5(unsigned char *input, int len, unsigned char output[16]);
+ 
+ 
+-static int32_t ImageValid(uint32_t startAddr);
++static int32_t ImageValid(uint32_t startAddr, uint32_t maxSize);
+ static int32_t GetGlobalVersion(uint32_t startAddr,
+ 		sfu_cpuver_t* pGlobVer);
+ static int32_t ExtractChunkSfuHdr(sfu_option_t* pOption,
+@@ -73,6 +73,30 @@ int set_hush_var_with_str_value(const char *var_name,
+ 	return ((status < 0) ? 1 : 0);
+ }
+ 
++//----------------------------------------------------------------------------
++//  Function: DownloadMtdPartSize
++//
++//  Description:
++//      	This function gets the size of download partition
++//
++//  Returns:
++//	        int32_t status    where !0 indicates size
++//                                  0 indicates unknown
++//----------------------------------------------------------------------------
++static uint32_t DownloadMtdPartSize(void)
++{
++	unsigned long mtdDownloadSize = 0;
++	char* buf = getenv("mtd_download_size");
++	if (buf != NULL)
++	{
++		if (strict_strtoul(buf, 10, &mtdDownloadSize) != 0)
++		{
++			mtdDownloadSize = 0;
++		}
++	}
++	return mtdDownloadSize * 1024;
++}
++
+ #ifdef CONFIG_SFU_FILE
+ #include <sys/types.h>
+ #include <unistd.h>
+@@ -99,6 +123,7 @@ int32_t sfu_ImageValid(
+ 	uint32_t                 calcCrc32;
+ 	int32_t                  imageValid;
+ 	uint8_t                  byte;
++	uint32_t                 maxSfuSize
+ 
+ 	if (0 > fd)
+ 	{
+@@ -121,7 +146,8 @@ int32_t sfu_ImageValid(
+ 		return IMG_VALIDITY__FILE_ERR;
+ 	}
+ 
+-	imageValid = ImageValid((uint32_t)header);
++	maxSfuSize = DownloadMtdPartSize();
++	imageValid = ImageValid((uint32_t)header, maxSfuSize);
+ 	if (imageValid)
+ 	{
+ 		return imageValid;
+@@ -498,6 +524,7 @@ int32_t sfu_MagicValid(
+ 	int                      status = 0;
+ 	sfu_global_hdr_w_data_t* pGlobHdr = (sfu_global_hdr_w_data_t*)startAddr;
+ 	uint32_t                 totalLen;
++	uint32_t                 maxSfuSize;
+ 	char                     strbuf[16];
+ 
+ 	// Verify that the SFU image's magic field is valid
+@@ -520,11 +547,12 @@ int32_t sfu_MagicValid(
+ 
+ 	// Verify that the SFU image's total length is less or equal to the
+ 	// maximum download partition byte length
++	maxSfuSize = DownloadMtdPartSize();
+ 	totalLen = SFU_32BIT_VALUE(pGlobHdr->total_length);
+-	if (MAX_SFU_DWNLD_MTD_PART_SIZE < totalLen)
++	if (maxSfuSize != 0 && totalLen > maxSfuSize)
+ 	{
+ 		SFU_ERR("ERROR: IMG_VALIDITY__TOTLEN_ERR  max(%08x) file(%08x)\n",
+-				(uint32_t)MAX_SFU_DWNLD_MTD_PART_SIZE, totalLen);
++				maxSfuSize, totalLen);
+ 		return IMG_VALIDITY__TOTLEN_ERR;
+ 	}
+ 
+@@ -554,16 +582,20 @@ int32_t sfu_ImageValid(
+ 	sfu_global_hdr_w_data_t* pGlobHdr = (sfu_global_hdr_w_data_t*)startAddr;
+ 	uint32_t                 totalLen;
+ 	uint32_t                 calcCrc32;
+-	int32_t                  imageValid = ImageValid(startAddr);
++	int32_t                  imageValid;
+ 
+ 	uint32_t                 num_chunks;
+ 	uint32_t                 chunk;
+ 	sfu_cpuhdr_t             chunk_hdr;
+ 	uint32_t        chnk_data_addr;
++	uint32_t        maxSfuSize;
+ 	char            md5_output[16];
+ 	char            sha256_output[32];
+ 	sha256_context sha256;
+ 
++
++	maxSfuSize = DownloadMtdPartSize();
++	imageValid = ImageValid(startAddr, maxSfuSize);
+ 	if (imageValid)
+ 	{
+ 		return imageValid;
+@@ -861,7 +893,8 @@ int32_t sfu_Decrypt(
+ //                                     <0 indicates invalid
+ //----------------------------------------------------------------------------
+ static int32_t ImageValid(
+-		uint32_t startAddr // RAM start address
++		uint32_t startAddr, // RAM start address
++		uint32_t maxSize
+ 		)
+ {
+ 	sfu_global_hdr_w_data_t* pGlobHdr = (sfu_global_hdr_w_data_t*)startAddr;
+@@ -888,10 +921,10 @@ static int32_t ImageValid(
+ 	// Verify that the SFU image's total length is less or equal to the
+ 	// maximum download partition byte length
+ 	totalLen = SFU_32BIT_VALUE(pGlobHdr->total_length);
+-	if (MAX_SFU_DWNLD_MTD_PART_SIZE < totalLen)
++	if (maxSize != 0 && totalLen > maxSize)
+ 	{
+ 		SFU_ERR("ERROR: IMG_VALIDITY__TOTLEN_ERR  max(%08x) file(%08x)\n",
+-				(uint32_t)MAX_SFU_DWNLD_MTD_PART_SIZE, totalLen);
++				maxSize, totalLen);
+ 		return IMG_VALIDITY__TOTLEN_ERR;
+ 	}
+ 
+diff --git a/board/streamunlimited/stream800/sfu_parser.h b/board/streamunlimited/stream800/sfu_parser.h
+index fe44e89..ad8afb2 100644
+--- a/board/streamunlimited/stream800/sfu_parser.h
++++ b/board/streamunlimited/stream800/sfu_parser.h
+@@ -44,7 +44,6 @@
+ 
+ #define SFU_FILE_HEADER_MAGIC                 "S800_UPD"
+ #define SFU_DOWNLOAD_MTD_PARTITION      "/dev/mtd7"
+-#define MAX_SFU_DWNLD_MTD_PART_SIZE     (0x05F00000UL)
+ #define MAX_SFU_IMG_FMT_VERSION         (0x00000001UL)
+ #define SFU_GLBL_CHNK_ID                "CHNK"
+ #define SFU_CHNK_OPT_ID_VERS            "vers"
+-- 
+2.7.4
+

@@ -1,0 +1,459 @@
+From 5cbebef5df3136adabc60b5fe16eb415d05911ff Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@gmail.com>
+Date: Thu, 8 Oct 2015 09:11:26 +0200
+Subject: [PATCH] ASE: fep uart communication, update button state
+
+Signed-off-by: Martin Geier <martin.geier@streamunlimited.com>
+[add method fet_instance because detection was moved to different file]
+Signed-off-by: Marek Belisko <marek.belisko@gmail.com>
+---
+ board/streamunlimited/stream800/Makefile           |   2 +-
+ board/streamunlimited/stream800/ase_fep.c          | 170 +++++++++++++++++++++
+ board/streamunlimited/stream800/ase_fep.h          |  45 ++++++
+ .../stream800/board-beo_ase_board.c                |  43 +++++-
+ .../stream800/board-beo_ase_board.h                |   9 +-
+ board/streamunlimited/stream800/board.c            |   4 +
+ board/streamunlimited/stream800/board_defines.c    |  23 ++-
+ board/streamunlimited/stream800/board_defines.h    |   2 +
+ board/streamunlimited/stream800/mux.c              |   4 +-
+ 9 files changed, 288 insertions(+), 14 deletions(-)
+ create mode 100644 board/streamunlimited/stream800/ase_fep.c
+ create mode 100644 board/streamunlimited/stream800/ase_fep.h
+
+diff --git a/board/streamunlimited/stream800/Makefile b/board/streamunlimited/stream800/Makefile
+index 203ae85..8f157e1 100644
+--- a/board/streamunlimited/stream800/Makefile
++++ b/board/streamunlimited/stream800/Makefile
+@@ -17,7 +17,7 @@
+ ifdef CONFIG_SPL_BUILD
+ obj-y += mux.o board-spl.o adc.o board_defines.o
+ else
+-obj-y += board.o mux.o adc.o board-sue_demo_client_board.o board-sue_first_carrier_board.o board-sue_factory_test_board.o board-beo_ase_board.o fwupdate.o sfu_parser.o tftp_update.o board_defines.o
++obj-y += ase_fep.o board.o mux.o adc.o board-sue_demo_client_board.o board-sue_first_carrier_board.o board-sue_factory_test_board.o board-beo_ase_board.o fwupdate.o sfu_parser.o tftp_update.o board_defines.o
+ endif
+ 
+ 
+diff --git a/board/streamunlimited/stream800/ase_fep.c b/board/streamunlimited/stream800/ase_fep.c
+new file mode 100644
+index 0000000..df85179
+--- /dev/null
++++ b/board/streamunlimited/stream800/ase_fep.c
+@@ -0,0 +1,170 @@
++/*
++ * ase_fep.c
++ *
++ * Copyright (C) 2014, StreamUnlimited Engineering GmbH, http://www.streamunlimited.com/
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation; either version 2 of
++ * the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR /PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++#include "common.h"
++#include "ase_fep.h"
++#include "mux.h"
++#include <malloc.h>
++
++#define MSG_HEADER_SIZE 4
++#define UART_SPEED 1000000
++#define UART_PORT	5
++#define UPDATE_BUTTON 0x13
++
++struct beo_ase_button {
++	u16 button_id;
++	u16 button_value;
++};
++
++struct beo_ase_rsp_buttons {
++	u32 hdr;
++	struct beo_ase_button buttons[16];
++};
++
++static void dump_data(u8* data, int size)
++{
++	u8 dump[3*32 + 1] = {0};
++	int i;
++	int max_size = size <= 32 ? size : 32;
++
++	for (i = 0; i < max_size; i++)
++		sprintf(&dump[3*i], "%02x ", data[i]);
++	printf("received %d bytes: %s\n", max_size, dump);
++}
++
++static void add_character(u8* data, int max_size, int position, int character)
++{
++	if(max_size > position) {
++		data[position] = character;
++	}
++}
++
++static void send_ase_fep(struct ase_fep *fep, const u8* data, int size)
++{
++	int i;
++	if(!fep || !fep->fep_uart)
++		return;
++
++	for (i = 0; i < size; i++) {
++		_serial_putc(data[i], fep->fep_uart);
++	}
++}
++
++static int receive_ase_fep(struct ase_fep *fep, u8* data, int max_size)
++{
++	int i, data_size, character;
++	if (!fep || !fep->fep_uart) {
++		return -1;
++	}
++
++	do {
++	  character = _serial_getc(fep->fep_uart);
++	} while (character == 0);
++	add_character(data, max_size, 0, character);
++
++	for (i = 1; i < MSG_HEADER_SIZE; i++) {
++		character = _serial_getc(fep->fep_uart);
++		add_character(data, max_size, i, character);
++		if (i == 2) {
++			data_size = character;
++		}
++	}
++
++	for (i = 0; i < data_size - MSG_HEADER_SIZE; i++) {
++		character = _serial_getc(fep->fep_uart);
++		add_character(data, max_size, i + MSG_HEADER_SIZE, character);
++	}
++	return data_size > max_size ? max_size : data_size;
++}
++
++struct ase_fep *init_ase_fep(void)
++{
++	struct ase_fep *fep;
++
++	enable_uart4_pin_mux();
++	_serial_init(UART_PORT, UART_SPEED);
++
++	fep = (struct ase_fep *) malloc(sizeof(struct ase_fep));
++	fep->fep_uart = UART_PORT;
++	return fep;
++}
++
++struct ase_fep_version version_ase_fep(struct ase_fep *fep)
++{
++	struct ase_fep_version version;
++	return version;
++}
++
++bool is_pressed_update_button(struct ase_fep *fep)
++{
++	int i;
++	const u8 buttonsStateCmd[] = { 0x30, 0x80, 0x08, 0x00, 0x44, 0x00, 0x00, 0x00};
++	u8 buttonsStateReplay[80];
++
++	send_ase_fep(fep, buttonsStateCmd, 8);
++	int len = receive_ase_fep(fep, buttonsStateReplay, 80);
++
++	for (i = MSG_HEADER_SIZE; i < len; i += sizeof(struct beo_ase_button) ) {
++		struct beo_ase_button *button = buttonsStateReplay + i;
++
++		button->button_id = le16_to_cpu(button->button_id);
++		button->button_value = le16_to_cpu(button->button_value);
++
++		if (button->button_id == UPDATE_BUTTON) {
++			return button->button_value;
++		}
++	}
++
++	return true;
++}
++
++void set_boot_state_ase_fep(struct ase_fep *fep)
++{
++	// WIFI_white, slow blink (600/200ms)
++	const u8 bootingStateLedCmd[] = { 0x20,0x80,0x10,0x00,0x04,0x00,0x00,0x00,0x04,0x00,0x01,0x0,0x26,0x0,0x0,0x0 };
++	u8 bootStateReplay[20];
++	send_ase_fep(fep, bootingStateLedCmd, 16);
++	receive_ase_fep(fep, bootStateReplay, 20);
++}
++
++void set_error_state_ase_fep(struct ase_fep *fep)
++{
++	// WIFI_red, fast blink (200/100ms)
++	const u8 failureStateLedCmd[] = { 0x20,0x80,0x10,0x00,0x04,0x00,0x00,0x00,0x09,0x00,0x01,0x0,0x12,0x0,0x0,0x0 };
++	u8 bootStateReplay[20];
++	send_ase_fep(fep, failureStateLedCmd, 16);
++	receive_ase_fep(fep, bootStateReplay, 20);
++}
++
++void set_flashing_on_state_ase_fep(struct ase_fep *fep)
++{
++	// ON_red, fast blink (100/100ms)
++	int received;
++	const u8 flashingStateLedCmd[] = { 0x20,0x80,0x10,0x00,0x04,0x00,0x00,0x00,0x01,0x00,0x01,0x0,0x11,0x0,0x0,0x0 };
++	u8 bootStateReplay[20];
++	send_ase_fep(fep, flashingStateLedCmd, 16);
++	int s = receive_ase_fep(fep, bootStateReplay, 20);
++	dump_data(bootStateReplay, s);
++}
++
++void set_flashing_off_state_ase_fep(struct ase_fep *fep)
++{
++	// ON_red, off
++	const u8 flashingOffStateLedCmd[] = { 0x20,0x80,0x10,0x00,0x04,0x00,0x00,0x00,0x01,0x00,0x00,0x00,0x00,0x0,0x0,0x0 };
++	u8 bootStateReplay[20];
++	send_ase_fep(fep, flashingOffStateLedCmd, 16);
++	receive_ase_fep(fep, bootStateReplay, 20);
++}
+diff --git a/board/streamunlimited/stream800/ase_fep.h b/board/streamunlimited/stream800/ase_fep.h
+new file mode 100644
+index 0000000..2d2ff57
+--- /dev/null
++++ b/board/streamunlimited/stream800/ase_fep.h
+@@ -0,0 +1,45 @@
++/*
++ * ase_fep.h
++ *
++ * Copyright (C) 2014, StreamUnlimited Engineering GmbH, http://www.streamunlimited.com/
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation; either version 2 of
++ * the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR /PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++#ifndef __ASE_FEP_H
++#define __ASE_FEP_H
++
++#include <common.h>
++
++struct ase_fep_version {
++	u16 bom_version;
++	u16 pcba_variant;
++};
++
++struct ase_fep {
++	int fep_uart;
++};
++
++struct ase_fep *init_ase_fep(void);
++
++struct ase_fep_version version_ase_fep(struct ase_fep *fep);
++
++bool is_pressed_update_button(struct ase_fep *fep);
++
++void set_boot_state_ase_fep(struct ase_fep *fep);
++
++void set_error_state_ase_fep(struct ase_fep *fep);
++
++void set_flashing_on_state_ase_fep(struct ase_fep *fep);
++
++void set_flashing_off_state_ase_fep(struct ase_fep *fep);
++
++#endif /*__ASE_FEP_H*/
+diff --git a/board/streamunlimited/stream800/board-beo_ase_board.c b/board/streamunlimited/stream800/board-beo_ase_board.c
+index c254292..7937bfa 100644
+--- a/board/streamunlimited/stream800/board-beo_ase_board.c
++++ b/board/streamunlimited/stream800/board-beo_ase_board.c
+@@ -31,9 +31,11 @@
+ #include <asm/arch/mux.h>
+ #include <spi.h>
+ #include <i2c.h>
++#include "ase_fep.h"
++#include "board.h"
+ 
+ static struct ctrl_dev *cdev = (struct ctrl_dev *)CTRL_DEVICE_BASE;
+-static struct spi_slave *spi_mcu;
++static struct ase_fep *fep_mcu = NULL;
+ static int update_flag = 0;
+ 
+ #define GPIO_PHY_RESET (60) /* gpio1_28 */
+@@ -93,14 +95,41 @@ void beo_ase__cpsw_eth_init(const struct Stream800Board *board, struct cpsw_plat
+ 
+ int beo_ase__get_fw_update_button_status(void)
+ {
+-	//FOR NOW, LATER CHECK BASED ON BUTTON
+-	update_flag = 1;
+-	return update_flag;
++	if (!fep_mcu) {
++		printf("Fep isn't inicialized yet\n");
++		update_flag = 1;
++		return update_flag;
++	}
++
++	return is_pressed_update_button(fep_mcu);
+ }
+ 
+ void beo_ase__on_board_state_changed(const struct Stream800Board *board, BoardState state)
+ {
+-	printf("TODO: Board state changed to '%s'\n", boardStateStrings[state]);
++	printf("Board state changed to '%s'\n", boardStateStrings[state]);
++
++	if (!fep_mcu) {
++		printf("Fep isn't inicialized yet\n");
++		return;
++	}
++
++	switch (state) {
++	case BS_DontUnplug:
++		set_flashing_on_state_ase_fep(fep_mcu);
++		break;
++	case BS_BootingKernel:
++		/* We power on the led only at boot withouth firmware update */
++		if (bootcount_load() <= 1) {
++			set_boot_state_ase_fep(fep_mcu);
++		}
++		break;
++	case BS_HardFailure:
++		set_flashing_off_state_ase_fep(fep_mcu);
++		set_error_state_ase_fep(fep_mcu);
++		break;
++	default:
++		break;
++	}
+ }
+ 
+ int beo_ase__do_usb_update(void)
+@@ -122,3 +151,7 @@ static struct StreamBoardInterface beo_ase_board_interface = {
+ void beo_ase__set_board_interface(void) {
+ 	set_board_interface(&beo_ase_board_interface);
+ }
++
++void beo_ase__set_ase_fep(struct ase_fep *fep) {
++	fep_mcu = fep;
++}
+diff --git a/board/streamunlimited/stream800/board-beo_ase_board.h b/board/streamunlimited/stream800/board-beo_ase_board.h
+index 5511a83..2dd892f 100644
+--- a/board/streamunlimited/stream800/board-beo_ase_board.h
++++ b/board/streamunlimited/stream800/board-beo_ase_board.h
+@@ -14,11 +14,12 @@
+  * GNU General Public License for more details.
+  */
+ 
+-#ifndef __BOARD_BEO_HH1_BOARD_H
+-#define __BOARD_BEO_HH1_BOARD_H
++#ifndef __BOARD_BEO_ASE_BOARD_H
++#define __BOARD_BEO_ASE_BOARD_H
+ 
+ #include <common.h>
+ #include "board.h"
++#include "ase_fep.h"
+ #include <cpsw.h>
+ 
+ void beo_ase__set_board_interface(void);
+@@ -34,4 +35,6 @@ void beo_ase__cpsw_eth_init(const struct Stream800Board *board, struct cpsw_plat
+ /* Handling board state change (LED indication, ...) */
+ void beo_ase__on_board_state_changed(const struct Stream800Board *board, BoardState state);
+ 
+-#endif	// __BOARD_BEO_HH1_BOARD_H
++void beo_ase__set_ase_fep(struct ase_fep *fep);
++
++#endif	// __BOARD_BEO_ASE_BOARD_H
+diff --git a/board/streamunlimited/stream800/board.c b/board/streamunlimited/stream800/board.c
+index 883bfb0..6930c58 100755
+--- a/board/streamunlimited/stream800/board.c
++++ b/board/streamunlimited/stream800/board.c
+@@ -45,10 +45,13 @@
+ #include "board-sue_demo_client_board.h"
+ #include "board-sue_first_carrier_board.h"
+ #include "board-sue_factory_test_board.h"
++#include "board-beo_ase_board.h"
+ #include "adc.h"
+ #include "fwupdate.h"
+ #include "si5351x.h"
+ #include "partitions.h"
++#include <linux/err.h>
++#include "ase_fep.h"
+ 
+ #ifdef CONFIG_SPL_BUILD
+ #error This file should not be built for SPL
+@@ -159,6 +162,7 @@ int board_init(void)
+ 			break;
+ 		case CBT_BeoASEBoard:
+ 			beo_ase__set_board_interface();
++			beo_ase__set_ase_fep(fep_instance());
+ 			break;
+ 
+ 		// CUSTOMIZE: Add your board __set_board_interface() call here
+diff --git a/board/streamunlimited/stream800/board_defines.c b/board/streamunlimited/stream800/board_defines.c
+index 3e384fe..9237c71 100644
+--- a/board/streamunlimited/stream800/board_defines.c
++++ b/board/streamunlimited/stream800/board_defines.c
+@@ -1,5 +1,8 @@
+ #include "board_defines.h"
+ #include "adc.h"
++#include "ase_fep.h"
++
++static struct ase_fep *fep = NULL;
+ 
+ const char *stream800ModuleVersionStrings[] = {
+ 	[MV_unknown]	= "unknown",
+@@ -78,9 +81,17 @@ void board_detect(struct Stream800Board *board)
+ 	}
+ 
+ #ifdef ASE_BUILD
+-	board->moduleVersion = MV_L2;
+-	board->carrierBoardType = CBT_BeoASEBoard;
+-	return;
++	{
++		struct ase_fep_version version;
++		printf("detecting ASE board\n");
++
++		fep = init_ase_fep();
++
++		version = version_ase_fep(fep);
++		board->moduleVersion = MV_L2;					//version.bom_version;
++		board->carrierBoardType = CBT_BeoASEBoard;		//version.pcba_variant;
++		return;
++	}
+ #endif
+ 
+ 	board->moduleVersion = MV_unknown;
+@@ -156,3 +167,9 @@ void board_printf_info(const struct Stream800Board *board)
+ 	       stream800ModuleVersionStrings[board->moduleVersion],
+ 	       stream800CarrierBoardTypeStrings[board->carrierBoardType]);
+ }
++
++
++struct ase_fep *fep_instance(void)
++{
++	return fep;
++}
+diff --git a/board/streamunlimited/stream800/board_defines.h b/board/streamunlimited/stream800/board_defines.h
+index ad3d4b7..8c8ec37 100644
+--- a/board/streamunlimited/stream800/board_defines.h
++++ b/board/streamunlimited/stream800/board_defines.h
+@@ -53,4 +53,6 @@ void board_detect(struct Stream800Board*);
+ 
+ void board_printf_info(const struct Stream800Board *);
+ 
++struct ase_fep *fep_instance(void);
++
+ #endif /* _BOARD_DEFINES_H_ */
+diff --git a/board/streamunlimited/stream800/mux.c b/board/streamunlimited/stream800/mux.c
+index 22006af..03e456b 100644
+--- a/board/streamunlimited/stream800/mux.c
++++ b/board/streamunlimited/stream800/mux.c
+@@ -47,8 +47,8 @@ static struct module_pin_mux uart3_pin_mux[] = {
+ };
+ 
+ static struct module_pin_mux uart4_pin_mux[] = {
+-	{OFFSET(gpmc_wait0), (MODE(6) | PULLUP_EN | RXACTIVE)},	/* UART4_RXD */
+-	{OFFSET(gpmc_wpn), (MODE(6) | PULLUDEN)},		/* UART4_TXD */
++	{OFFSET(uart0_ctsn), (MODE(1) | PULLUP_EN | RXACTIVE )},	/* UART4_RXD */
++	{OFFSET(uart0_rtsn), (MODE(1) )},				/* UART4_TXD */
+ 	{-1},
+ };
+ 
+-- 
+2.7.4
+

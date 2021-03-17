@@ -1,0 +1,254 @@
+From 9615d1a606588ecc76536624b31fe19283de8573 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@gmail.com>
+Date: Tue, 6 Oct 2015 11:41:17 +0200
+Subject: [PATCH] mwifiex: Add mfg_mode parameter to skip some commands of FW
+ loading.
+
+Compared to old marwell driver some commands aren't send to FW during init
+when loading testing MFG FW. Add new module parameter and skip loading
+of some commands.
+
+Note:
+kernel log with:
+"mwifiex_process_cmdresp: cmd 0xcd failed during initialization"
+doesn't harm and FW works fine.
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ drivers/net/wireless/mwifiex/init.c    |  4 ++
+ drivers/net/wireless/mwifiex/main.c    |  3 +-
+ drivers/net/wireless/mwifiex/main.h    |  3 +-
+ drivers/net/wireless/mwifiex/sdio.c    |  9 +++-
+ drivers/net/wireless/mwifiex/sta_cmd.c | 83 ++++++++++++++++------------------
+ drivers/net/wireless/mwifiex/usb.c     |  9 +++-
+ 6 files changed, 64 insertions(+), 47 deletions(-)
+
+diff --git a/drivers/net/wireless/mwifiex/init.c b/drivers/net/wireless/mwifiex/init.c
+index e12192f..9d4cb42 100644
+--- a/drivers/net/wireless/mwifiex/init.c
++++ b/drivers/net/wireless/mwifiex/init.c
+@@ -528,6 +528,10 @@ int mwifiex_init_fw(struct mwifiex_adapter *adapter)
+ 
+ 	adapter->hw_status = MWIFIEX_HW_STATUS_INITIALIZING;
+ 
++	/* Skip init sequence cmds to FW */
++	if (adapter->mfg_mode)
++		first_sta = false;
++
+ 	/* Allocate memory for member of adapter structure */
+ 	ret = mwifiex_allocate_adapter(adapter);
+ 	if (ret)
+diff --git a/drivers/net/wireless/mwifiex/main.c b/drivers/net/wireless/mwifiex/main.c
+index bb71653..ff6ca0f 100644
+--- a/drivers/net/wireless/mwifiex/main.c
++++ b/drivers/net/wireless/mwifiex/main.c
+@@ -1100,7 +1100,7 @@ static void mwifiex_main_work_queue(struct work_struct *work)
+  */
+ int
+ mwifiex_add_card(void *card, struct semaphore *sem,
+-		 struct mwifiex_if_ops *if_ops, u8 iface_type)
++		 struct mwifiex_if_ops *if_ops, u8 iface_type, u8 mfg_mode)
+ {
+ 	struct mwifiex_adapter *adapter;
+ 
+@@ -1124,6 +1124,7 @@ mwifiex_add_card(void *card, struct semaphore *sem,
+ 	init_waitqueue_head(&adapter->cmd_wait_q.wait);
+ 	adapter->cmd_wait_q.status = 0;
+ 	adapter->scan_wait_q_woken = false;
++	adapter->mfg_mode = mfg_mode;
+ 
+ 	if ((num_possible_cpus() > 1) || adapter->iface_type == MWIFIEX_USB) {
+ 		adapter->rx_work_enabled = true;
+diff --git a/drivers/net/wireless/mwifiex/main.h b/drivers/net/wireless/mwifiex/main.h
+index d92c367..d0d9c04 100644
+--- a/drivers/net/wireless/mwifiex/main.h
++++ b/drivers/net/wireless/mwifiex/main.h
+@@ -909,6 +909,7 @@ struct mwifiex_adapter {
+ 	u32 num_in_chan_stats;
+ 	int survey_idx;
+ 	bool auto_tdls;
++	u8 mfg_mode;
+ };
+ 
+ void mwifiex_process_tx_queue(struct mwifiex_adapter *adapter);
+@@ -1254,7 +1255,7 @@ static inline u8 mwifiex_is_any_intf_active(struct mwifiex_private *priv)
+ 
+ int mwifiex_init_shutdown_fw(struct mwifiex_private *priv,
+ 			     u32 func_init_shutdown);
+-int mwifiex_add_card(void *, struct semaphore *, struct mwifiex_if_ops *, u8);
++int mwifiex_add_card(void *, struct semaphore *, struct mwifiex_if_ops *, u8, u8);
+ int mwifiex_remove_card(struct mwifiex_adapter *, struct semaphore *);
+ 
+ void mwifiex_get_version(struct mwifiex_adapter *adapter, char *version,
+diff --git a/drivers/net/wireless/mwifiex/sdio.c b/drivers/net/wireless/mwifiex/sdio.c
+index d10320f..b490fd5 100644
+--- a/drivers/net/wireless/mwifiex/sdio.c
++++ b/drivers/net/wireless/mwifiex/sdio.c
+@@ -69,6 +69,9 @@ static struct memory_type_mapping mem_type_mapping_tbl[] = {
+ 	{"EXTLAST", NULL, 0, 0xFE},
+ };
+ 
++/* Indicate if load FW in MFG (testing) mode */
++static int mfg_mode = 0;
++
+ /*
+  * SDIO probe.
+  *
+@@ -122,7 +125,7 @@ mwifiex_sdio_probe(struct sdio_func *func, const struct sdio_device_id *id)
+ 	}
+ 
+ 	if (mwifiex_add_card(card, &add_remove_card_sem, &sdio_ops,
+-			     MWIFIEX_SDIO)) {
++			     MWIFIEX_SDIO, mfg_mode)) {
+ 		pr_err("%s: add card failed\n", __func__);
+ 		kfree(card);
+ 		sdio_claim_host(func);
+@@ -2429,6 +2432,10 @@ mwifiex_sdio_cleanup_module(void)
+ module_init(mwifiex_sdio_init_module);
+ module_exit(mwifiex_sdio_cleanup_module);
+ 
++module_param(mfg_mode, int, 0);
++MODULE_PARM_DESC(mfg_mode,
++		"0: Download normal firmware; 1: Download MFG firmware");
++
+ MODULE_AUTHOR("Marvell International Ltd.");
+ MODULE_DESCRIPTION("Marvell WiFi-Ex SDIO Driver version " SDIO_VERSION);
+ MODULE_VERSION(SDIO_VERSION);
+diff --git a/drivers/net/wireless/mwifiex/sta_cmd.c b/drivers/net/wireless/mwifiex/sta_cmd.c
+index 49422f2..280dfe0 100644
+--- a/drivers/net/wireless/mwifiex/sta_cmd.c
++++ b/drivers/net/wireless/mwifiex/sta_cmd.c
+@@ -2049,56 +2049,53 @@ int mwifiex_sta_init_cmd(struct mwifiex_private *priv, u8 first_sta, bool init)
+ 		}
+ 	}
+ 
+-	/* get tx rate */
+-	ret = mwifiex_send_cmd(priv, HostCmd_CMD_TX_RATE_CFG,
+-			       HostCmd_ACT_GEN_GET, 0, NULL, true);
+-	if (ret)
+-		return -1;
+-	priv->data_rate = 0;
++	if (priv->adapter->mfg_mode) {
++		priv->data_rate = 0;
++		memset(&amsdu_aggr_ctrl, 0, sizeof(amsdu_aggr_ctrl));
++		amsdu_aggr_ctrl.enable = true;
++	} else {
++		/* get tx rate */
++		ret = mwifiex_send_cmd(priv, HostCmd_CMD_TX_RATE_CFG,
++					    HostCmd_ACT_GEN_GET, 0, NULL, true);
++		if (ret)
++			return -1;
++		priv->data_rate = 0;
+ 
+-	/* get tx power */
+-	ret = mwifiex_send_cmd(priv, HostCmd_CMD_RF_TX_PWR,
+-			       HostCmd_ACT_GEN_GET, 0, NULL, true);
+-	if (ret)
+-		return -1;
++		/* get tx power */
++		ret = mwifiex_send_cmd(priv, HostCmd_CMD_RF_TX_PWR,
++					    HostCmd_ACT_GEN_GET, 0, NULL, true);
+ 
+-	if (priv->bss_type == MWIFIEX_BSS_TYPE_STA) {
+-		/* set ibss coalescing_status */
+-		ret = mwifiex_send_cmd(
+-				priv,
+-				HostCmd_CMD_802_11_IBSS_COALESCING_STATUS,
+-				HostCmd_ACT_GEN_SET, 0, &enable, true);
+ 		if (ret)
+ 			return -1;
+-	}
+-
+-	memset(&amsdu_aggr_ctrl, 0, sizeof(amsdu_aggr_ctrl));
+-	amsdu_aggr_ctrl.enable = true;
+-	/* Send request to firmware */
+-	ret = mwifiex_send_cmd(priv, HostCmd_CMD_AMSDU_AGGR_CTRL,
+-			       HostCmd_ACT_GEN_SET, 0,
+-			       &amsdu_aggr_ctrl, true);
+-	if (ret)
+-		return -1;
+-	/* MAC Control must be the last command in init_fw */
+-	/* set MAC Control */
+-	ret = mwifiex_send_cmd(priv, HostCmd_CMD_MAC_CONTROL,
+-			       HostCmd_ACT_GEN_SET, 0,
+-			       &priv->curr_pkt_filter, true);
+-	if (ret)
+-		return -1;
+ 
+-	if (!disable_auto_ds &&
+-	    first_sta && priv->adapter->iface_type != MWIFIEX_USB &&
+-	    priv->bss_type != MWIFIEX_BSS_TYPE_UAP) {
+-		/* Enable auto deep sleep */
+-		auto_ds.auto_ds = DEEP_SLEEP_ON;
+-		auto_ds.idle_time = DEEP_SLEEP_IDLE_TIME;
+-		ret = mwifiex_send_cmd(priv, HostCmd_CMD_802_11_PS_MODE_ENH,
+-				       EN_AUTO_PS, BITMAP_AUTO_DS,
+-				       &auto_ds, true);
++		memset(&amsdu_aggr_ctrl, 0, sizeof(amsdu_aggr_ctrl));
++		amsdu_aggr_ctrl.enable = true;
++		/* Send request to firmware */
++		ret = mwifiex_send_cmd(priv, HostCmd_CMD_AMSDU_AGGR_CTRL,
++				       HostCmd_ACT_GEN_SET, 0,
++				       &amsdu_aggr_ctrl, true);
++		if (ret)
++			return -1;
++		/* MAC Control must be the last command in init_fw */
++		/* set MAC Control */
++		ret = mwifiex_send_cmd(priv, HostCmd_CMD_MAC_CONTROL,
++				       HostCmd_ACT_GEN_SET, 0,
++				       &priv->curr_pkt_filter, true);
+ 		if (ret)
+ 			return -1;
++
++		if (!disable_auto_ds &&
++		    first_sta && priv->adapter->iface_type != MWIFIEX_USB &&
++		    priv->bss_type != MWIFIEX_BSS_TYPE_UAP) {
++			/* Enable auto deep sleep */
++			auto_ds.auto_ds = DEEP_SLEEP_ON;
++			auto_ds.idle_time = DEEP_SLEEP_IDLE_TIME;
++			ret = mwifiex_send_cmd(priv, HostCmd_CMD_802_11_PS_MODE_ENH,
++					       EN_AUTO_PS, BITMAP_AUTO_DS,
++					       &auto_ds, true);
++			if (ret)
++				return -1;
++		}
+ 	}
+ 
+ 	if (priv->bss_type != MWIFIEX_BSS_TYPE_UAP) {
+diff --git a/drivers/net/wireless/mwifiex/usb.c b/drivers/net/wireless/mwifiex/usb.c
+index fd8027f..53657b6 100644
+--- a/drivers/net/wireless/mwifiex/usb.c
++++ b/drivers/net/wireless/mwifiex/usb.c
+@@ -52,6 +52,9 @@ static struct usb_device_id mwifiex_usb_table[] = {
+ 
+ MODULE_DEVICE_TABLE(usb, mwifiex_usb_table);
+ 
++/* Indicate if load FW in MFG (testing) mode */
++static int mfg_mode = 0;
++
+ static int mwifiex_usb_submit_rx_urb(struct urb_context *ctx, int size);
+ 
+ /* This function handles received packet. Necessary action is taken based on
+@@ -435,7 +438,7 @@ static int mwifiex_usb_probe(struct usb_interface *intf,
+ 	usb_set_intfdata(intf, card);
+ 
+ 	ret = mwifiex_add_card(card, &add_remove_card_sem, &usb_ops,
+-			       MWIFIEX_USB);
++			       MWIFIEX_USB, mfg_mode);
+ 	if (ret) {
+ 		pr_err("%s: mwifiex_add_card failed: %d\n", __func__, ret);
+ 		usb_reset_device(udev);
+@@ -1092,6 +1095,10 @@ static void mwifiex_usb_cleanup_module(void)
+ module_init(mwifiex_usb_init_module);
+ module_exit(mwifiex_usb_cleanup_module);
+ 
++module_param(mfg_mode, int, 0);
++MODULE_PARM_DESC(mfg_mode,
++		"0: Download normal firmware; 1: Download MFG firmware");
++
+ MODULE_AUTHOR("Marvell International Ltd.");
+ MODULE_DESCRIPTION("Marvell WiFi-Ex USB Driver version" USB_VERSION);
+ MODULE_VERSION(USB_VERSION);
+-- 
+1.9.1
+

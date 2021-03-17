@@ -1,0 +1,64 @@
+From c93be09756233f3e100060807243c31bcc11e793 Mon Sep 17 00:00:00 2001
+From: Florian Grandel <fgrandel@gmail.com>
+Date: Thu, 18 Jun 2015 03:16:41 +0200
+Subject: [PATCH] Bluetooth: mgmt: improve get_adv_instance_flags() readability
+
+Switch if and else conditions to replace a negative statement by a
+positive one which makes the condition more readable.
+
+Signed-off-by: Florian Grandel <fgrandel@gmail.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+---
+ net/bluetooth/mgmt.c | 30 ++++++++++++++++--------------
+ 1 file changed, 16 insertions(+), 14 deletions(-)
+
+diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
+index 3eac4a4..c633764e 100644
+--- a/net/bluetooth/mgmt.c
++++ b/net/bluetooth/mgmt.c
+@@ -962,26 +962,28 @@ static u32 get_adv_instance_flags(struct hci_dev *hdev, u8 instance)
+ 	u32 flags;
+ 	struct adv_info *adv_instance;
+ 
+-	if (instance != 0x00) {
+-		adv_instance = hci_find_adv_instance(hdev, instance);
++	if (instance == 0x00) {
++		/* Instance 0 always manages the "Tx Power" and "Flags"
++		 * fields
++		 */
++		flags = MGMT_ADV_FLAG_TX_POWER | MGMT_ADV_FLAG_MANAGED_FLAGS;
+ 
+-		/* Return 0 when we got an invalid instance identifier. */
+-		if (!adv_instance)
+-			return 0;
++		/* For instance 0, the HCI_ADVERTISING_CONNECTABLE setting
++		 * corresponds to the "connectable" instance flag.
++		 */
++		if (hci_dev_test_flag(hdev, HCI_ADVERTISING_CONNECTABLE))
++			flags |= MGMT_ADV_FLAG_CONNECTABLE;
+ 
+-		return adv_instance->flags;
++		return flags;
+ 	}
+ 
+-	/* Instance 0 always manages the "Tx Power" and "Flags" fields */
+-	flags = MGMT_ADV_FLAG_TX_POWER | MGMT_ADV_FLAG_MANAGED_FLAGS;
++	adv_instance = hci_find_adv_instance(hdev, instance);
+ 
+-	/* For instance 0, the HCI_ADVERTISING_CONNECTABLE setting corresponds
+-	 * to the "connectable" instance flag.
+-	 */
+-	if (hci_dev_test_flag(hdev, HCI_ADVERTISING_CONNECTABLE))
+-		flags |= MGMT_ADV_FLAG_CONNECTABLE;
++	/* Return 0 when we got an invalid instance identifier. */
++	if (!adv_instance)
++		return 0;
+ 
+-	return flags;
++	return adv_instance->flags;
+ }
+ 
+ static u8 get_adv_instance_scan_rsp_len(struct hci_dev *hdev, u8 instance)
+-- 
+2.7.4
+

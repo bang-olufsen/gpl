@@ -1,0 +1,166 @@
+From aba5897e718f9956a7c5468b76a24eee118d7d7e Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Wed, 4 Mar 2015 12:19:45 +0100
+Subject: [PATCH] Removed unused state variables for QPlay and fake services
+ and states
+
+This fixes DLNA 7.2.12.2 test case and removes created fake variables that
+was created to fix this case.
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ data/xml/QPlayDescription.xml.in       | 16 ------------
+ src/librygel-renderer/rygel-qplay.c    | 48 ----------------------------------
+ src/librygel-renderer/rygel-qplay.vala | 22 ----------------
+ 3 files changed, 86 deletions(-)
+
+diff --git a/data/xml/QPlayDescription.xml.in b/data/xml/QPlayDescription.xml.in
+index d05a5a4..e76507f 100644
+--- a/data/xml/QPlayDescription.xml.in
++++ b/data/xml/QPlayDescription.xml.in
+@@ -192,22 +192,6 @@
+             <dataType>string</dataType>
+         </stateVariable>
+         <stateVariable sendEvents="no">
+-            <name>A_ARG_TYPE_InstanceID</name>
+-            <dataType>ui4</dataType>
+-        </stateVariable>
+-        <stateVariable sendEvents="no">
+-            <name>AVTransportURI</name>
+-            <dataType>string</dataType>
+-        </stateVariable>
+-        <stateVariable sendEvents="no">
+-            <name>AVTransportURIMetaData</name>
+-            <dataType>string</dataType>
+-        </stateVariable>
+-        <stateVariable sendEvents="yes">
+-            <name>FakeState</name>
+-            <dataType>ui4</dataType>
+-        </stateVariable>
+-        <stateVariable sendEvents="no">
+             <name>A_ARG_TYPE_QueueID</name>
+             <dataType>string</dataType>
+         </stateVariable>
+diff --git a/src/librygel-renderer/rygel-qplay.c b/src/librygel-renderer/rygel-qplay.c
+index bdaf372..2c82272 100644
+--- a/src/librygel-renderer/rygel-qplay.c
++++ b/src/librygel-renderer/rygel-qplay.c
+@@ -165,10 +165,6 @@ static void qplay_set_network_cb (QPlay* self, GUPnPService* registrar, GUPnPSer
+ static void _qplay_set_network_cb_gupnp_service_action_invoked (GUPnPService* _sender, GUPnPServiceAction* action, gpointer self);
+ static void qplay_set_qplay_auth_cb (QPlay* self, GUPnPService* registrar, GUPnPServiceAction* action);
+ static void _qplay_set_qplay_auth_cb_gupnp_service_action_invoked (GUPnPService* _sender, GUPnPServiceAction* action, gpointer self);
+-static void qplay_set_fake_action_cb (QPlay* self, GUPnPService* registrar, GUPnPServiceAction* action);
+-static void _qplay_set_fake_action_cb_gupnp_service_action_invoked (GUPnPService* _sender, GUPnPServiceAction* action, gpointer self);
+-static void qplay_query_state (QPlay* self, GUPnPService* registrar, const gchar* variable, GValue* value);
+-static void _qplay_query_state_gupnp_service_query_variable (GUPnPService* _sender, const gchar* variable, GValue* value, gpointer self);
+ static void qplay_insert_tracks_cb (QPlay* self, GUPnPService* registrar, GUPnPServiceAction* action);
+ static void _qplay_insert_tracks_cb_gupnp_service_action_invoked (GUPnPService* _sender, GUPnPServiceAction* action, gpointer self);
+ static void qplay_remove_tracks_cb (QPlay* self, GUPnPService* registrar, GUPnPServiceAction* action);
+@@ -219,16 +215,6 @@ static void _qplay_set_qplay_auth_cb_gupnp_service_action_invoked (GUPnPService*
+ }
+ 
+ 
+-static void _qplay_set_fake_action_cb_gupnp_service_action_invoked (GUPnPService* _sender, GUPnPServiceAction* action, gpointer self) {
+-	qplay_set_fake_action_cb ((QPlay*) self, _sender, action);
+-}
+-
+-
+-static void _qplay_query_state_gupnp_service_query_variable (GUPnPService* _sender, const gchar* variable, GValue* value, gpointer self) {
+-	qplay_query_state ((QPlay*) self, _sender, variable, value);
+-}
+-
+-
+ static void _qplay_insert_tracks_cb_gupnp_service_action_invoked (GUPnPService* _sender, GUPnPServiceAction* action, gpointer self) {
+ 	qplay_insert_tracks_cb ((QPlay*) self, _sender, action);
+ }
+@@ -286,8 +272,6 @@ static void qplay_real_constructed (GObject* base) {
+ 	self->priv->controller = _tmp7_;
+ 	g_signal_connect_object ((GUPnPService*) self, "action-invoked::SetNetwork", (GCallback) _qplay_set_network_cb_gupnp_service_action_invoked, self, 0);
+ 	g_signal_connect_object ((GUPnPService*) self, "action-invoked::QPlayAuth", (GCallback) _qplay_set_qplay_auth_cb_gupnp_service_action_invoked, self, 0);
+-	g_signal_connect_object ((GUPnPService*) self, "action-invoked::FakeAction", (GCallback) _qplay_set_fake_action_cb_gupnp_service_action_invoked, self, 0);
+-	g_signal_connect_object ((GUPnPService*) self, "query-variable::FakeState", (GCallback) _qplay_query_state_gupnp_service_query_variable, self, 0);
+ 	g_signal_connect_object ((GUPnPService*) self, "action-invoked::InsertTracks", (GCallback) _qplay_insert_tracks_cb_gupnp_service_action_invoked, self, 0);
+ 	g_signal_connect_object ((GUPnPService*) self, "action-invoked::RemoveTracks", (GCallback) _qplay_remove_tracks_cb_gupnp_service_action_invoked, self, 0);
+ 	g_signal_connect_object ((GUPnPService*) self, "action-invoked::GetTracksInfo", (GCallback) _qplay_get_tracks_info_cb_gupnp_service_action_invoked, self, 0);
+@@ -445,38 +429,6 @@ static void qplay_set_qplay_auth_cb (QPlay* self, GUPnPService* registrar, GUPnP
+ }
+ 
+ 
+-static void qplay_set_fake_action_cb (QPlay* self, GUPnPService* registrar, GUPnPServiceAction* action) {
+-	GUPnPServiceAction* _tmp0_ = NULL;
+-	guint _tmp1_ = 0U;
+-	GUPnPServiceAction* _tmp4_ = NULL;
+-	g_return_if_fail (self != NULL);
+-	g_return_if_fail (registrar != NULL);
+-	g_return_if_fail (action != NULL);
+-	_tmp0_ = action;
+-	_tmp1_ = gupnp_service_action_get_argument_count (_tmp0_);
+-	if (_tmp1_ != ((guint) 1)) {
+-		GUPnPServiceAction* _tmp2_ = NULL;
+-		const gchar* _tmp3_ = NULL;
+-		_tmp2_ = action;
+-		_tmp3_ = _ ("Invalid argument");
+-		gupnp_service_action_return_error (_tmp2_, (guint) 402, _tmp3_);
+-		return;
+-	}
+-	_tmp4_ = action;
+-	gupnp_service_action_return (_tmp4_);
+-}
+-
+-
+-static void qplay_query_state (QPlay* self, GUPnPService* registrar, const gchar* variable, GValue* value) {
+-	g_return_if_fail (self != NULL);
+-	g_return_if_fail (registrar != NULL);
+-	g_return_if_fail (variable != NULL);
+-	g_return_if_fail (value != NULL);
+-	g_value_init (value, G_TYPE_INT);
+-	g_value_set_int (value, 0);
+-}
+-
+-
+ static void qplay_insert_tracks_cb (QPlay* self, GUPnPService* registrar, GUPnPServiceAction* action) {
+ 	GUPnPServiceAction* _tmp0_ = NULL;
+ 	guint _tmp1_ = 0U;
+diff --git a/src/librygel-renderer/rygel-qplay.vala b/src/librygel-renderer/rygel-qplay.vala
+index ffbc2f1..b38814a 100644
+--- a/src/librygel-renderer/rygel-qplay.vala
++++ b/src/librygel-renderer/rygel-qplay.vala
+@@ -48,10 +48,6 @@ internal class QPlay: Service {
+         this.controller = plugin.get_controller ();
+         this.action_invoked["SetNetwork"].connect (this.set_network_cb);
+         this.action_invoked["QPlayAuth"].connect (this.set_qplay_auth_cb);
+-        this.action_invoked["FakeAction"].connect (this.set_fake_action_cb);
+-
+-        this.query_variable["FakeState"].connect
+-                                        (this.query_state);
+         this.action_invoked["InsertTracks"].connect (this.insert_tracks_cb);
+         this.action_invoked["RemoveTracks"].connect (this.remove_tracks_cb);
+         this.action_invoked["GetTracksInfo"].connect (this.get_tracks_info_cb);
+@@ -107,24 +103,6 @@ internal class QPlay: Service {
+         action.return ();
+     }
+ 
+-    private void set_fake_action_cb (Service       registrar,
+-                                     ServiceAction action) {
+-        if (action.get_argument_count () != 1) {
+-            action.return_error (402, _("Invalid argument"));
+-
+-            return;
+-        }
+-
+-        action.return ();
+-    }
+-
+-    private void query_state (Service        registrar,
+-                              string         variable,
+-                              ref GLib.Value value) {
+-        value.init (typeof (int));
+-        value.set_int (0);
+-    }
+-
+     private void insert_tracks_cb (Service       registrar,
+                                    ServiceAction action) {
+         if (action.get_argument_count () != 3) {
+-- 
+1.9.1
+

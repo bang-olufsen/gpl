@@ -1,0 +1,29 @@
+From 97fd4d5a3c0bed76a0f6aaa5ecda6ea09a4f0348 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Thu, 8 Jan 2015 14:48:00 +0100
+Subject: [PATCH] conf: stream800: Add watchdog timeout
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+[Reduced timeout from 10 to 5 minutes as discussed with Marek]
+Signed-off-by: Radek Dostal <radek.dostal@streamunlimited.com>
+---
+ include/configs/stream800.h | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/include/configs/stream800.h b/include/configs/stream800.h
+index 38b1e00..732af5c 100644
+--- a/include/configs/stream800.h
++++ b/include/configs/stream800.h
+@@ -1130,6 +1130,9 @@
+ 
+ #define CONFIG_CONST_ECC_AUTOCORRECT
+ 
++/* watchdog timeout set for 5 minutes */
++#define CONFIG_WATCHDOG_TIMEOUT_MSECS 300000
++
+ #define CONFIG_HUSH_INIT_VAR
+ #define CONFIG_MD5
+ #define CONFIG_SHA256
+-- 
+2.7.4
+

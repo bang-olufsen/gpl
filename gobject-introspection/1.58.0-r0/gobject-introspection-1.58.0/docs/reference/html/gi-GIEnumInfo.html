@@ -1,0 +1,413 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GIEnumInfo: GObject Introspection Reference Manual</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
+<link rel="home" href="index.html" title="GObject Introspection Reference Manual">
+<link rel="up" href="ch01.html" title="GIRepository">
+<link rel="prev" href="gi-GIRegisteredTypeInfo.html" title="GIRegisteredTypeInfo">
+<link rel="next" href="gi-GIStructInfo.html" title="GIStructInfo">
+<meta name="generator" content="GTK-Doc V1.29.1 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#gi-GIEnumInfo.description" class="shortcut">Description</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="gi-GIRegisteredTypeInfo.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="gi-GIStructInfo.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry">
+<a name="gi-GIEnumInfo"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="gi-GIEnumInfo.top_of_page"></a>GIEnumInfo</span></h2>
+<p>GIEnumInfo — Structs representing an enumeration and its values</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1">
+<a name="gi-GIEnumInfo.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="functions_return">
+<col class="functions_name">
+</colgroup>
+<tbody>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name">
+<a class="link" href="gi-GIEnumInfo.html#GI-IS-ENUM-INFO:CAPS" title="GI_IS_ENUM_INFO()">GI_IS_ENUM_INFO</a><span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name">
+<a class="link" href="gi-GIEnumInfo.html#GI-IS-VALUE-INFO:CAPS" title="GI_IS_VALUE_INFO()">GI_IS_VALUE_INFO</a><span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">gint</span>
+</td>
+<td class="function_name">
+<a class="link" href="gi-GIEnumInfo.html#g-enum-info-get-n-values" title="g_enum_info_get_n_values ()">g_enum_info_get_n_values</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="gi-GIValueInfo.html#GIValueInfo" title="GIValueInfo"><span class="returnvalue">GIValueInfo</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="gi-GIEnumInfo.html#g-enum-info-get-value" title="g_enum_info_get_value ()">g_enum_info_get_value</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">gint</span>
+</td>
+<td class="function_name">
+<a class="link" href="gi-GIEnumInfo.html#g-enum-info-get-n-methods" title="g_enum_info_get_n_methods ()">g_enum_info_get_n_methods</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="gi-GIFunctionInfo.html#GIFunctionInfo" title="GIFunctionInfo"><span class="returnvalue">GIFunctionInfo</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="gi-GIEnumInfo.html#g-enum-info-get-method" title="g_enum_info_get_method ()">g_enum_info_get_method</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="gi-common-types.html#GITypeTag" title="enum GITypeTag"><span class="returnvalue">GITypeTag</span></a>
+</td>
+<td class="function_name">
+<a class="link" href="gi-GIEnumInfo.html#g-enum-info-get-storage-type" title="g_enum_info_get_storage_type ()">g_enum_info_get_storage_type</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">const <span class="returnvalue">gchar</span> *
+</td>
+<td class="function_name">
+<a class="link" href="gi-GIEnumInfo.html#g-enum-info-get-error-domain" title="g_enum_info_get_error_domain ()">g_enum_info_get_error_domain</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">gint64</span>
+</td>
+<td class="function_name">
+<a class="link" href="gi-GIEnumInfo.html#g-value-info-get-value" title="g_value_info_get_value ()">g_value_info_get_value</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="gi-GIEnumInfo.other"></a><h2>Types and Values</h2>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="name">
+<col class="description">
+</colgroup>
+<tbody><tr>
+<td class="typedef_keyword">typedef</td>
+<td class="function_name"><a class="link" href="gi-GIEnumInfo.html#GIEnumInfo" title="GIEnumInfo">GIEnumInfo</a></td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="gi-GIEnumInfo.description"></a><h2>Description</h2>
+<p>A GIEnumInfo represents an enumeration and a GIValueInfo struct represents a value
+of an enumeration. The GIEnumInfo contains a set of values and a type
+The GIValueInfo is fetched by calling <a class="link" href="gi-GIEnumInfo.html#g-enum-info-get-value" title="g_enum_info_get_value ()"><code class="function">g_enum_info_get_value()</code></a> on a <a class="link" href="gi-GIEnumInfo.html#GIEnumInfo" title="GIEnumInfo"><span class="type">GIEnumInfo</span></a>.</p>
+<div class="refsect1">
+<a name="gi-gienuminfo.struct-hierarchy"></a><h2>Struct hierarchy</h2>
+<pre class="synopsis">
+  <a class="link" href="gi-GIBaseInfo.html" title="GIBaseInfo">GIBaseInfo</a>
+   +----<a class="link" href="gi-GIRegisteredTypeInfo.html" title="GIRegisteredTypeInfo">GIRegisteredTypeInfo</a>
+         +----GIEnumInfo
+</pre>
+</div>
+</div>
+<div class="refsect1">
+<a name="gi-GIEnumInfo.functions_details"></a><h2>Functions</h2>
+<div class="refsect2">
+<a name="GI-IS-ENUM-INFO:CAPS"></a><h3>GI_IS_ENUM_INFO()</h3>
+<pre class="programlisting">#define             GI_IS_ENUM_INFO(info)</pre>
+<p>Checks if <em class="parameter"><code>info</code></em>
+ is a <a class="link" href="gi-GIEnumInfo.html#GIEnumInfo" title="GIEnumInfo"><span class="type">GIEnumInfo</span></a>.</p>
+<div class="refsect3">
+<a name="GI-IS-ENUM-INFO.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>an info structure</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GI-IS-VALUE-INFO:CAPS"></a><h3>GI_IS_VALUE_INFO()</h3>
+<pre class="programlisting">#define             GI_IS_VALUE_INFO(info)</pre>
+<p>Checks if <em class="parameter"><code>info</code></em>
+ is a <a class="link" href="gi-GIValueInfo.html#GIValueInfo" title="GIValueInfo"><span class="type">GIValueInfo</span></a>.</p>
+<div class="refsect3">
+<a name="GI-IS-VALUE-INFO.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>an info structure</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-enum-info-get-n-values"></a><h3>g_enum_info_get_n_values ()</h3>
+<pre class="programlisting"><span class="returnvalue">gint</span>
+g_enum_info_get_n_values (<em class="parameter"><code><a class="link" href="gi-GIEnumInfo.html#GIEnumInfo" title="GIEnumInfo"><span class="type">GIEnumInfo</span></a> *info</code></em>);</pre>
+<p>Obtain the number of values this enumeration contains.</p>
+<div class="refsect3">
+<a name="g-enum-info-get-n-values.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>a <a class="link" href="gi-GIEnumInfo.html#GIEnumInfo" title="GIEnumInfo"><span class="type">GIEnumInfo</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="g-enum-info-get-n-values.returns"></a><h4>Returns</h4>
+<p> the number of enumeration values</p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-enum-info-get-value"></a><h3>g_enum_info_get_value ()</h3>
+<pre class="programlisting"><a class="link" href="gi-GIValueInfo.html#GIValueInfo" title="GIValueInfo"><span class="returnvalue">GIValueInfo</span></a> *
+g_enum_info_get_value (<em class="parameter"><code><a class="link" href="gi-GIEnumInfo.html#GIEnumInfo" title="GIEnumInfo"><span class="type">GIEnumInfo</span></a> *info</code></em>,
+                       <em class="parameter"><code><span class="type">gint</span> n</code></em>);</pre>
+<p>Obtain a value for this enumeration.</p>
+<div class="refsect3">
+<a name="g-enum-info-get-value.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>a <a class="link" href="gi-GIEnumInfo.html#GIEnumInfo" title="GIEnumInfo"><span class="type">GIEnumInfo</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>n</p></td>
+<td class="parameter_description"><p>index of value to fetch</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="g-enum-info-get-value.returns"></a><h4>Returns</h4>
+<p>the enumeration value or <code class="literal">NULL</code> if type tag is wrong,
+free the struct with <a class="link" href="gi-GIBaseInfo.html#g-base-info-unref" title="g_base_info_unref ()"><code class="function">g_base_info_unref()</code></a> when done. </p>
+<p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-enum-info-get-n-methods"></a><h3>g_enum_info_get_n_methods ()</h3>
+<pre class="programlisting"><span class="returnvalue">gint</span>
+g_enum_info_get_n_methods (<em class="parameter"><code><a class="link" href="gi-GIEnumInfo.html#GIEnumInfo" title="GIEnumInfo"><span class="type">GIEnumInfo</span></a> *info</code></em>);</pre>
+<p>Obtain the number of methods that this enum type has.</p>
+<div class="refsect3">
+<a name="g-enum-info-get-n-methods.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>a <a class="link" href="gi-GIEnumInfo.html#GIEnumInfo" title="GIEnumInfo"><span class="type">GIEnumInfo</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="g-enum-info-get-n-methods.returns"></a><h4>Returns</h4>
+<p> number of methods</p>
+</div>
+<p class="since">Since: <a class="link" href="api-index-1-29-17.html#api-index-1.29.17">1.29.17</a></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-enum-info-get-method"></a><h3>g_enum_info_get_method ()</h3>
+<pre class="programlisting"><a class="link" href="gi-GIFunctionInfo.html#GIFunctionInfo" title="GIFunctionInfo"><span class="returnvalue">GIFunctionInfo</span></a> *
+g_enum_info_get_method (<em class="parameter"><code><a class="link" href="gi-GIEnumInfo.html#GIEnumInfo" title="GIEnumInfo"><span class="type">GIEnumInfo</span></a> *info</code></em>,
+                        <em class="parameter"><code><span class="type">gint</span> n</code></em>);</pre>
+<p>Obtain an enum type method at index <em class="parameter"><code>n</code></em>
+.</p>
+<div class="refsect3">
+<a name="g-enum-info-get-method.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>a <a class="link" href="gi-GIEnumInfo.html#GIEnumInfo" title="GIEnumInfo"><span class="type">GIEnumInfo</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>n</p></td>
+<td class="parameter_description"><p>index of method to get</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="g-enum-info-get-method.returns"></a><h4>Returns</h4>
+<p>the <a class="link" href="gi-GIFunctionInfo.html#GIFunctionInfo" title="GIFunctionInfo"><span class="type">GIFunctionInfo</span></a>. Free the struct by calling
+<a class="link" href="gi-GIBaseInfo.html#g-base-info-unref" title="g_base_info_unref ()"><code class="function">g_base_info_unref()</code></a> when done. </p>
+<p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span></p>
+</div>
+<p class="since">Since: <a class="link" href="api-index-1-29-17.html#api-index-1.29.17">1.29.17</a></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-enum-info-get-storage-type"></a><h3>g_enum_info_get_storage_type ()</h3>
+<pre class="programlisting"><a class="link" href="gi-common-types.html#GITypeTag" title="enum GITypeTag"><span class="returnvalue">GITypeTag</span></a>
+g_enum_info_get_storage_type (<em class="parameter"><code><a class="link" href="gi-GIEnumInfo.html#GIEnumInfo" title="GIEnumInfo"><span class="type">GIEnumInfo</span></a> *info</code></em>);</pre>
+<p>Obtain the tag of the type used for the enum in the C ABI. This will
+will be a signed or unsigned integral type.</p>
+<p>Note that in the current implementation the width of the type is
+computed correctly, but the signed or unsigned nature of the type
+may not match the sign of the type used by the C compiler.</p>
+<div class="refsect3">
+<a name="g-enum-info-get-storage-type.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>a <a class="link" href="gi-GIEnumInfo.html#GIEnumInfo" title="GIEnumInfo"><span class="type">GIEnumInfo</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="g-enum-info-get-storage-type.returns"></a><h4>Returns</h4>
+<p> the storage type for the enumeration</p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-enum-info-get-error-domain"></a><h3>g_enum_info_get_error_domain ()</h3>
+<pre class="programlisting">const <span class="returnvalue">gchar</span> *
+g_enum_info_get_error_domain (<em class="parameter"><code><a class="link" href="gi-GIEnumInfo.html#GIEnumInfo" title="GIEnumInfo"><span class="type">GIEnumInfo</span></a> *info</code></em>);</pre>
+<p>Obtain the string form of the quark for the error domain associated with
+this enum, if any.</p>
+<div class="refsect3">
+<a name="g-enum-info-get-error-domain.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>a <a class="link" href="gi-GIEnumInfo.html#GIEnumInfo" title="GIEnumInfo"><span class="type">GIEnumInfo</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="g-enum-info-get-error-domain.returns"></a><h4>Returns</h4>
+<p>the string form of the error domain associated
+with this enum, or <code class="literal">NULL</code>. </p>
+<p><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></p>
+</div>
+<p class="since">Since: <a class="link" href="api-index-1-29-17.html#api-index-1.29.17">1.29.17</a></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-value-info-get-value"></a><h3>g_value_info_get_value ()</h3>
+<pre class="programlisting"><span class="returnvalue">gint64</span>
+g_value_info_get_value (<em class="parameter"><code><a class="link" href="gi-GIValueInfo.html#GIValueInfo" title="GIValueInfo"><span class="type">GIValueInfo</span></a> *info</code></em>);</pre>
+<p>Obtain the enumeration value of the <a class="link" href="gi-GIValueInfo.html#GIValueInfo" title="GIValueInfo"><span class="type">GIValueInfo</span></a>.</p>
+<div class="refsect3">
+<a name="g-value-info-get-value.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>a <a class="link" href="gi-GIValueInfo.html#GIValueInfo" title="GIValueInfo"><span class="type">GIValueInfo</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="g-value-info-get-value.returns"></a><h4>Returns</h4>
+<p> the enumeration value. This will always be representable
+as a 32-bit signed or unsigned value. The use of gint64 as the
+return type is to allow both.</p>
+</div>
+</div>
+</div>
+<div class="refsect1">
+<a name="gi-GIEnumInfo.other_details"></a><h2>Types and Values</h2>
+<div class="refsect2">
+<a name="GIEnumInfo"></a><h3>GIEnumInfo</h3>
+<pre class="programlisting">typedef GIBaseInfo GIEnumInfo;
+</pre>
+<p>Represents an enum or a flag.</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>Generated by GTK-Doc V1.29.1</div>
+</body>
+</html>

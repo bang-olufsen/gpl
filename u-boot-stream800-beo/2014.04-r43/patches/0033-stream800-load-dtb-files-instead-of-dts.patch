@@ -1,0 +1,62 @@
+From 7b334e3fddb4f9f093a1ad0db0385e04dd7b9eeb Mon Sep 17 00:00:00 2001
+From: Matus Ujhelyi <matus.ujhelyi@streamunlimited.com>
+Date: Thu, 18 Apr 2013 13:35:44 +0200
+Subject: [PATCH] stream800: load dtb files instead of dts
+
+Signed-off-by: Matus Ujhelyi <matus.ujhelyi@streamunlimited.com>
+---
+ board/streamunlimited/stream800/board.c | 2 +-
+ include/configs/stream800.h             | 8 ++++----
+ 2 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/board/streamunlimited/stream800/board.c b/board/streamunlimited/stream800/board.c
+index e30e3d8..eb8a9a7 100644
+--- a/board/streamunlimited/stream800/board.c
++++ b/board/streamunlimited/stream800/board.c
+@@ -340,7 +340,7 @@ int board_late_init(void)
+ {
+ 
+ 	/*
+-	 * DTBs files are stored in cramfs image, path in cramfs filesystem to the correct file is: /${cramfsdir}/${board_name}_${board_rev}.dts
++	 * DTBs files are stored in cramfs image, path in cramfs filesystem to the correct file is: /${cramfsdir}/${board_name}_${board_rev}.dtb
+ 	 * Loading of DTB is located in include/configs/stream800.h
+ 	 * Change any variable of board_name, cramfsdir, board_rev can corrupt board boot !!
+ 	 */
+diff --git a/include/configs/stream800.h b/include/configs/stream800.h
+index 3810a2b..8215824 100644
+--- a/include/configs/stream800.h
++++ b/include/configs/stream800.h
+@@ -198,7 +198,7 @@
+  * 			Userspace after correct boot should clear FAIL flag.
+  *
+  * METHODS:
+- *		readDts                         - loads DTB file for board from cramfs image, path in cramfs: /${cramfsdir}/${board_name}_${board_rev}.dts
++ *		readDtb                         - loads DTB file for board from cramfs image, path in cramfs: /${cramfsdir}/${board_name}_${board_rev}.dtb
+  *		readUimage                      - loads uImage to RAM
+  *		handle_encm                     - decrypts chunk configured by last "sfu chnkhdr", if it was encrypted
+  *		update_download_from_usb        - loads sfupdate file from usb and saves it into download partition
+@@ -319,10 +319,10 @@
+         "fi;\0" \
+ \
+ \
+-    "readDts=" \
++    "readDtb=" \
+         "if nand read ${sfu_load_addr} dts; " \
+             "then " \
+-            "if cramfsload ${dtb_load_addr} /${cramfsdir}/${board_name}_${board_rev}.dts; " \
++            "if cramfsload ${dtb_load_addr} /${cramfsdir}/${board_name}_${board_rev}.dtb; " \
+                 "then " \
+                 "echo \"INFO: dts file load successful\"; " \
+                 "if fdt addr ${dtb_load_addr} ; " \
+@@ -358,7 +358,7 @@
+         "run nandargs; " \
+         "echo \"INFO: loading kernel image into RAM...\"; " \
+         "bstate booting; " \
+-        "run readDts; " \
++        "run readDtb; " \
+         "run readuImage; " \
+         "echo \"INFO: booting kernel image...\"; " \
+         "bootm ${sfu_load_addr} - ${dtb_load_addr} ${bootargs}; " \
+-- 
+2.7.4
+

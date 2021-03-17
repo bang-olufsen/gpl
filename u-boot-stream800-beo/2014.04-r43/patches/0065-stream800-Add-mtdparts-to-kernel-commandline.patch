@@ -1,0 +1,26 @@
+From dd4165309ecb68121d3c7f6a84e630a0fbca585b Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Wed, 4 Dec 2013 16:06:30 +0100
+Subject: [PATCH] stream800: Add mtdparts to kernel commandline.
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ include/configs/stream800.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/configs/stream800.h b/include/configs/stream800.h
+index 929b968..cca74cb 100644
+--- a/include/configs/stream800.h
++++ b/include/configs/stream800.h
+@@ -309,7 +309,7 @@
+     "nandrootfstype=ubifs rootwait=1\0" \
+     "nandargs=setenv bootargs console=${console} " \
+         "root=${nandroot} noinitrd " \
+-        "rootfstype=${nandrootfstype}\0" \
++        "rootfstype=${nandrootfstype} ${mtdparts}\0" \
+     "nand_boot=echo \"Booting from nand ...\"; " \
+         "run nandargs; " \
+         "echo \"INFO: loading kernel image into RAM...\"; " \
+-- 
+2.7.4
+

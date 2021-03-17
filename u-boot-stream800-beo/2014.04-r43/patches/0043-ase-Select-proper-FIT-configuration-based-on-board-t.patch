@@ -1,0 +1,52 @@
+From 08dd8399f3f7e84b5c218b3ecdc9a4ecdc6016ed Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Thu, 20 Nov 2014 07:06:55 +0100
+Subject: [PATCH] ase: Select proper FIT configuration based on board type
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ board/streamunlimited/stream800/board.c | 14 ++++++++++++++
+ include/configs/stream800.h             |  2 +-
+ 2 files changed, 15 insertions(+), 1 deletion(-)
+
+diff --git a/board/streamunlimited/stream800/board.c b/board/streamunlimited/stream800/board.c
+index 069f503..6dc3221 100755
+--- a/board/streamunlimited/stream800/board.c
++++ b/board/streamunlimited/stream800/board.c
+@@ -366,6 +366,20 @@ static int detect_flash(void)
+ #ifdef CONFIG_BOARD_LATE_INIT
+ int board_late_init(void)
+ {
++#if ASE_BUILD
++	switch (get_carrier_board_type()) {
++		case CBT_BeoASE_A9MK2:
++			setenv("board_conf", "#conf@1");
++			break;
++		case CBT_BeoASE_EZ2MK2:
++			setenv("board_conf", "#conf@2");
++			break;
++		default:
++			setenv("board_conf", "");
++			break;
++	}
++
++#endif /* ASE_BUILD */
+ 
+ 	/*
+ 	 * DTBs files are stored in cramfs image, path in cramfs filesystem to the correct file is: /${cramfsdir}/${board_name}_${board_rev}.dtb
+diff --git a/include/configs/stream800.h b/include/configs/stream800.h
+index db60d68..51e25d9 100644
+--- a/include/configs/stream800.h
++++ b/include/configs/stream800.h
+@@ -290,7 +290,7 @@
+         "bstate booting; " \
+         "run readuImage; " \
+         "echo \"INFO: booting kernel image...\"; " \
+-        "bootm ${fitaddr}; " \
++        "bootm ${fitaddr}${board_conf}; " \
+         "echo \"INFO: kernel boot failed...\"; " \
+         "echo \"INFO: resetting...\"; " \
+         "reset;\0" \
+-- 
+2.7.4
+

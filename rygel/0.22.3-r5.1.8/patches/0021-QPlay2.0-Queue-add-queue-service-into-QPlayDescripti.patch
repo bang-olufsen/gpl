@@ -1,0 +1,178 @@
+From 6615b8a5057aacf167b34dbd001211c47ca9582b Mon Sep 17 00:00:00 2001
+From: Andrii Markhaichuk <andrii.markhaichuk@streamunlimited.com>
+Date: Mon, 5 Jan 2015 09:33:53 +0100
+Subject: [PATCH] QPlay2.0: Queue: add queue service into
+ QPlayDescription.xml.in
+
+  - InsertTracks
+  - RemoveTracks
+  - GetTracksInfo
+  - SetTracksInfo
+  - GetTracksCount
+  - GetMaxTracks
+
+Signed-off-by: Andrii Markhaichuk <andrii.markhaichuk@streamunlimited.com>
+---
+ data/xml/QPlayDescription.xml.in | 140 +++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 140 insertions(+)
+
+diff --git a/data/xml/QPlayDescription.xml.in b/data/xml/QPlayDescription.xml.in
+index 0dfe043..d05a5a4 100644
+--- a/data/xml/QPlayDescription.xml.in
++++ b/data/xml/QPlayDescription.xml.in
+@@ -45,6 +45,126 @@
+                 </argument>
+             </argumentList>
+         </action>
++      <action>
++      <name>InsertTracks</name>
++      <argumentList>
++        <argument>
++          <name>QueueID</name>
++          <direction>in</direction>
++          <relatedStateVariable>A_ARG_TYPE_QueueID</relatedStateVariable>
++        </argument>
++        <argument>
++          <name>StartingIndex</name>
++          <direction>in</direction>
++          <relatedStateVariable>A_ARG_TYPE_StartingIndex</relatedStateVariable>
++        </argument>
++        <argument>
++          <name>TracksMetaData</name>
++          <direction>in</direction>
++          <relatedStateVariable>A_ARG_TYPE_TracksMetaData</relatedStateVariable>
++        </argument>
++        <argument>
++          <name>NumberOfSuccess</name>
++          <direction>out</direction>
++          <relatedStateVariable>A_ARG_TYPE_NumberOfTracks</relatedStateVariable>
++        </argument>
++      </argumentList>
++    </action>
++    <action>
++      <name>RemoveTracks</name>
++      <argumentList>
++        <argument>
++          <name>QueueID</name>
++          <direction>in</direction>
++          <relatedStateVariable>A_ARG_TYPE_QueueID</relatedStateVariable>
++        </argument>
++        <argument>
++          <name>StartingIndex</name>
++          <direction>in</direction>
++          <relatedStateVariable>A_ARG_TYPE_StartingIndex</relatedStateVariable>
++        </argument>
++        <argument>
++          <name>NumberOfTracks</name>
++          <direction>in</direction>
++          <relatedStateVariable>A_ARG_TYPE_NumberOfTracks</relatedStateVariable>
++        </argument>
++        <argument>
++          <name>NumberOfSuccess</name>
++          <direction>out</direction>
++          <relatedStateVariable>A_ARG_TYPE_NumberOfTracks</relatedStateVariable>
++        </argument>
++      </argumentList>
++    </action>
++    <action>
++      <name>GetTracksInfo</name>
++      <argumentList>
++        <argument>
++          <name>StartingIndex</name>
++          <direction>in</direction>
++          <relatedStateVariable>A_ARG_TYPE_StartingIndex</relatedStateVariable>
++        </argument>
++        <argument>
++          <name>NumberOfTracks</name>
++          <direction>in</direction>
++          <relatedStateVariable>A_ARG_TYPE_NumberOfTracks</relatedStateVariable>
++        </argument>
++        <argument>
++          <name>TracksMetaData</name>
++          <direction>out</direction>
++          <relatedStateVariable>A_ARG_TYPE_TracksMetaData</relatedStateVariable>
++        </argument>
++      </argumentList>
++    </action>
++    <action>
++      <name>SetTracksInfo</name>
++      <argumentList>
++        <argument>
++          <name>QueueID</name>
++          <direction>in</direction>
++          <relatedStateVariable>A_ARG_TYPE_QueueID</relatedStateVariable>
++        </argument>
++        <argument>
++          <name>StartingIndex</name>
++          <direction>in</direction>
++          <relatedStateVariable>A_ARG_TYPE_StartingIndex</relatedStateVariable>
++        </argument>
++        <argument>
++          <name>NextIndex</name>
++          <direction>in</direction>
++          <relatedStateVariable>A_ARG_TYPE_NextIndex</relatedStateVariable>
++        </argument>
++        <argument>
++          <name>TracksMetaData</name>
++          <direction>in</direction>
++          <relatedStateVariable>A_ARG_TYPE_TracksMetaData</relatedStateVariable>
++        </argument>
++        <argument>
++          <name>NumberOfSuccess</name>
++          <direction>out</direction>
++          <relatedStateVariable>A_ARG_TYPE_NumberOfTracks</relatedStateVariable>
++        </argument>
++      </argumentList>
++    </action>
++    <action>
++      <name>GetTracksCount</name>
++      <argumentList>
++        <argument>
++          <name>NrTracks</name>
++          <direction>out</direction>
++          <relatedStateVariable>A_ARG_TYPE_NumberOfTracks</relatedStateVariable>
++        </argument>
++      </argumentList>
++    </action>
++    <action>
++      <name>GetMaxTracks</name>
++      <argumentList>
++        <argument>
++          <name>MaxTracks</name>
++          <direction>out</direction>
++          <relatedStateVariable>A_ARG_TYPE_NumberOfTracks</relatedStateVariable>
++        </argument>
++      </argumentList>
++    </action>
+     </actionList>
+     <serviceStateTable>
+         <stateVariable sendEvents="no">
+@@ -87,5 +207,25 @@
+             <name>FakeState</name>
+             <dataType>ui4</dataType>
+         </stateVariable>
++        <stateVariable sendEvents="no">
++            <name>A_ARG_TYPE_QueueID</name>
++            <dataType>string</dataType>
++        </stateVariable>
++        <stateVariable sendEvents="no">
++            <name>A_ARG_TYPE_StartingIndex</name>
++            <dataType>string</dataType>
++        </stateVariable>
++        <stateVariable sendEvents="no">
++            <name>A_ARG_TYPE_NextIndex</name>
++            <dataType>string</dataType>
++        </stateVariable>
++        <stateVariable sendEvents="no">
++            <name>A_ARG_TYPE_NumberOfTracks</name>
++            <dataType>string</dataType>
++        </stateVariable>
++        <stateVariable sendEvents="no">
++            <name>A_ARG_TYPE_TracksMetaData</name>
++            <dataType>string</dataType>
++        </stateVariable>
+     </serviceStateTable>
+ </scpd>
+-- 
+1.9.1
+

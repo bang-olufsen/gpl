@@ -1,0 +1,180 @@
+<!-- ##### SECTION Title ##### -->
+internet-address-list
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT InternetAddressList ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION internet_address_list_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+
+<!-- ##### FUNCTION internet_address_list_length ##### -->
+<para>
+
+</para>
+
+@list: 
+@Returns: 
+
+
+<!-- ##### FUNCTION internet_address_list_clear ##### -->
+<para>
+
+</para>
+
+@list: 
+
+
+<!-- ##### FUNCTION internet_address_list_add ##### -->
+<para>
+
+</para>
+
+@list: 
+@ia: 
+@Returns: 
+
+
+<!-- ##### FUNCTION internet_address_list_insert ##### -->
+<para>
+
+</para>
+
+@list: 
+@index: 
+@ia: 
+
+
+<!-- ##### FUNCTION internet_address_list_remove ##### -->
+<para>
+
+</para>
+
+@list: 
+@ia: 
+@Returns: 
+
+
+<!-- ##### FUNCTION internet_address_list_remove_at ##### -->
+<para>
+
+</para>
+
+@list: 
+@index: 
+@Returns: 
+
+
+<!-- ##### FUNCTION internet_address_list_contains ##### -->
+<para>
+
+</para>
+
+@list: 
+@ia: 
+@Returns: 
+
+
+<!-- ##### FUNCTION internet_address_list_index_of ##### -->
+<para>
+
+</para>
+
+@list: 
+@ia: 
+@Returns: 
+
+
+<!-- ##### FUNCTION internet_address_list_get_address ##### -->
+<para>
+
+</para>
+
+@list: 
+@index: 
+@Returns: 
+
+
+<!-- ##### FUNCTION internet_address_list_set_address ##### -->
+<para>
+
+</para>
+
+@list: 
+@index: 
+@ia: 
+
+
+<!-- ##### FUNCTION internet_address_list_prepend ##### -->
+<para>
+
+</para>
+
+@list: 
+@prepend: 
+
+
+<!-- ##### FUNCTION internet_address_list_append ##### -->
+<para>
+
+</para>
+
+@list: 
+@append: 
+
+
+<!-- ##### FUNCTION internet_address_list_to_string ##### -->
+<para>
+
+</para>
+
+@list: 
+@encode: 
+@Returns: 
+
+
+<!-- ##### FUNCTION internet_address_list_parse_string ##### -->
+<para>
+
+</para>
+
+@str: 
+@Returns: 
+
+
+<!-- ##### FUNCTION internet_address_list_writer ##### -->
+<para>
+
+</para>
+
+@list: 
+@str: 
+
+

@@ -1,0 +1,136 @@
+From d41253285047870ac2a900592ea744d8cac4fb01 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@gmail.com>
+Date: Tue, 6 Oct 2015 11:42:13 +0200
+Subject: [PATCH] mwifiex: Add hostcmd debugfs handling.
+
+This allowas us to pass data directly to FW. Used for mfg testing.
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ drivers/net/wireless/mwifiex/debugfs.c   | 61 ++++++++++++++++++++++++++++++++
+ drivers/net/wireless/mwifiex/main.h      |  1 +
+ drivers/net/wireless/mwifiex/sta_ioctl.c | 10 ++++++
+ 3 files changed, 72 insertions(+)
+
+diff --git a/drivers/net/wireless/mwifiex/debugfs.c b/drivers/net/wireless/mwifiex/debugfs.c
+index 1fb329d..dc4bfb1 100644
+--- a/drivers/net/wireless/mwifiex/debugfs.c
++++ b/drivers/net/wireless/mwifiex/debugfs.c
+@@ -717,6 +717,65 @@ mwifiex_hscfg_read(struct file *file, char __user *ubuf,
+ 	return ret;
+ }
+ 
++/* Temp buffer for response data */
++static struct mwifiex_ds_misc_cmd host_cmd_buf;
++
++/*
++ * Proc hostcmd file write handler.
++ *
++ * This function is called when the 'hostcmd' file is opened for writing
++ *
++ */
++static ssize_t
++mwifiex_hostcmd_write(struct file *file,
++		       const char __user *ubuf, size_t count, loff_t *ppos)
++{
++	struct mwifiex_private *priv =
++		(struct mwifiex_private *) file->private_data;
++	int ret = 0;
++
++	if (copy_from_user(host_cmd_buf.cmd, ubuf, count)) {
++		ret = -EFAULT;
++		goto done;
++	}
++
++	host_cmd_buf.len = count;
++
++	ret = mwifiex_hostcmd(priv, &host_cmd_buf);
++
++	if (ret < 0)
++		pr_err("hostcmd err: %d\n", ret);
++	else
++		ret = count;
++done:
++	return ret;
++}
++
++/*
++ * Proc hostcmd read handler.
++ *
++ * This function is called when the 'hostcmd' file is opened for reading
++ *
++ */
++static ssize_t
++mwifiex_hostcmd_read(struct file *file, char __user *ubuf,
++		      size_t count, loff_t *ppos)
++{
++	int ret;
++
++	if (host_cmd_buf.len == 0) {
++		pr_err("No data in response buffer. Did you perform write?\n");
++		return -ENOMEM;
++	}
++
++	ret = simple_read_from_buffer(ubuf, count, ppos, host_cmd_buf.cmd,
++					host_cmd_buf.len);
++
++	host_cmd_buf.len = 0;
++
++	return ret;
++}
++
+ #define MWIFIEX_DFS_ADD_FILE(name) do {                                 \
+ 	if (!debugfs_create_file(#name, 0644, priv->dfs_dev_dir,        \
+ 			priv, &mwifiex_dfs_##name##_fops))              \
+@@ -751,6 +810,7 @@ MWIFIEX_DFS_FILE_OPS(regrdwr);
+ MWIFIEX_DFS_FILE_OPS(rdeeprom);
+ MWIFIEX_DFS_FILE_OPS(hscfg);
+ MWIFIEX_DFS_FILE_OPS(histogram);
++MWIFIEX_DFS_FILE_OPS(hostcmd);
+ 
+ /*
+  * This function creates the debug FS directory structure and the files.
+@@ -775,6 +835,7 @@ mwifiex_dev_debugfs_init(struct mwifiex_private *priv)
+ 	MWIFIEX_DFS_ADD_FILE(fw_dump);
+ 	MWIFIEX_DFS_ADD_FILE(hscfg);
+ 	MWIFIEX_DFS_ADD_FILE(histogram);
++	MWIFIEX_DFS_ADD_FILE(hostcmd);
+ }
+ 
+ /*
+diff --git a/drivers/net/wireless/mwifiex/main.h b/drivers/net/wireless/mwifiex/main.h
+index fe12560..d92c367 100644
+--- a/drivers/net/wireless/mwifiex/main.h
++++ b/drivers/net/wireless/mwifiex/main.h
+@@ -1300,6 +1300,7 @@ int mwifiex_reg_read(struct mwifiex_private *priv, u32 reg_type,
+ 
+ int mwifiex_eeprom_read(struct mwifiex_private *priv, u16 offset, u16 bytes,
+ 			u8 *value);
++int mwifiex_hostcmd(struct mwifiex_private *priv, void *data);
+ 
+ int mwifiex_set_11n_httx_cfg(struct mwifiex_private *priv, int data);
+ 
+diff --git a/drivers/net/wireless/mwifiex/sta_ioctl.c b/drivers/net/wireless/mwifiex/sta_ioctl.c
+index 0599e41..fcd8ff7 100644
+--- a/drivers/net/wireless/mwifiex/sta_ioctl.c
++++ b/drivers/net/wireless/mwifiex/sta_ioctl.c
+@@ -1261,6 +1261,16 @@ mwifiex_eeprom_read(struct mwifiex_private *priv, u16 offset, u16 bytes,
+ 	return ret;
+ }
+ 
++int mwifiex_hostcmd(struct mwifiex_private *priv, void *data)
++{
++	int ret = 0;
++
++	/* Send request to firmware */
++	ret = mwifiex_send_cmd(priv, 0, HostCmd_ACT_GEN_SET, 0, data, true);
++
++	return ret;
++}
++
+ /*
+  * This function sets a generic IE. In addition to generic IE, it can
+  * also handle WPA, WPA2 and WAPI IEs.
+-- 
+1.9.1
+

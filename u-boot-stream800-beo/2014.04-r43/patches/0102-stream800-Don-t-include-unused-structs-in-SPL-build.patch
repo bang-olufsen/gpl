@@ -1,0 +1,131 @@
+From ce75cc03ce9445099c3dfbd1e64ee619bb7d2aa4 Mon Sep 17 00:00:00 2001
+From: Fionn Cleary <fionn.cleary@streamunlimited.com>
+Date: Tue, 12 Aug 2014 18:45:00 +0200
+Subject: [PATCH] =?UTF-8?q?stream800:=20Don=E2=80=99t=20include=20unused?=
+ =?UTF-8?q?=20structs=20in=20SPL=20build?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Signed-off-by: Fionn Cleary <fionn.cleary@streamunlimited.com>
+---
+ board/streamunlimited/stream800/mux.c | 45 +++++++++++++++--------------------
+ 1 file changed, 19 insertions(+), 26 deletions(-)
+
+diff --git a/board/streamunlimited/stream800/mux.c b/board/streamunlimited/stream800/mux.c
+index 3885c18..26cccfb 100644
+--- a/board/streamunlimited/stream800/mux.c
++++ b/board/streamunlimited/stream800/mux.c
+@@ -58,7 +58,8 @@ static struct module_pin_mux uart5_pin_mux[] = {
+ 	{-1},
+ };
+ 
+-static struct module_pin_mux mmc0_pin_mux[] = {
++#ifndef CONFIG_SPL_BUILD
++static struct module_pin_mux mmc0_pin_mux[] __attribute__((unused)) = {
+ 	{OFFSET(mmc0_dat3), (MODE(0) | RXACTIVE | PULLUP_EN)},	/* MMC0_DAT3 */
+ 	{OFFSET(mmc0_dat2), (MODE(0) | RXACTIVE | PULLUP_EN)},	/* MMC0_DAT2 */
+ 	{OFFSET(mmc0_dat1), (MODE(0) | RXACTIVE | PULLUP_EN)},	/* MMC0_DAT1 */
+@@ -70,7 +71,7 @@ static struct module_pin_mux mmc0_pin_mux[] = {
+ 	{-1},
+ };
+ 
+-static struct module_pin_mux mmc0_no_cd_pin_mux[] = {
++static struct module_pin_mux mmc0_no_cd_pin_mux[] __attribute__((unused)) = {
+ 	{OFFSET(mmc0_dat3), (MODE(0) | RXACTIVE | PULLUP_EN)},	/* MMC0_DAT3 */
+ 	{OFFSET(mmc0_dat2), (MODE(0) | RXACTIVE | PULLUP_EN)},	/* MMC0_DAT2 */
+ 	{OFFSET(mmc0_dat1), (MODE(0) | RXACTIVE | PULLUP_EN)},	/* MMC0_DAT1 */
+@@ -81,7 +82,7 @@ static struct module_pin_mux mmc0_no_cd_pin_mux[] = {
+ 	{-1},
+ };
+ 
+-static struct module_pin_mux mmc0_pin_mux_sk_evm[] = {
++static struct module_pin_mux mmc0_pin_mux_sk_evm[] __attribute__((unused)) = {
+ 	{OFFSET(mmc0_dat3), (MODE(0) | RXACTIVE | PULLUP_EN)},	/* MMC0_DAT3 */
+ 	{OFFSET(mmc0_dat2), (MODE(0) | RXACTIVE | PULLUP_EN)},	/* MMC0_DAT2 */
+ 	{OFFSET(mmc0_dat1), (MODE(0) | RXACTIVE | PULLUP_EN)},	/* MMC0_DAT1 */
+@@ -91,30 +92,21 @@ static struct module_pin_mux mmc0_pin_mux_sk_evm[] = {
+ 	{OFFSET(spi0_cs1), (MODE(5) | RXACTIVE | PULLUP_EN)},	/* MMC0_CD */
+ 	{-1},
+ };
+-
+-static struct module_pin_mux mmc1_pin_mux[] = {
+-#if 0
+-	{OFFSET(gpmc_ad3), (MODE(1) | RXACTIVE | PULLUP_EN)},	/* MMC1_DAT3 */
+-	{OFFSET(gpmc_ad2), (MODE(1) | RXACTIVE | PULLUP_EN)},	/* MMC1_DAT2 */
+-	{OFFSET(gpmc_ad1), (MODE(1) | RXACTIVE | PULLUP_EN)},	/* MMC1_DAT1 */
+-	{OFFSET(gpmc_ad0), (MODE(1) | RXACTIVE | PULLUP_EN)},	/* MMC1_DAT0 */
+-	{OFFSET(gpmc_csn1), (MODE(2) | RXACTIVE | PULLUP_EN)},	/* MMC1_CLK */
+-	{OFFSET(gpmc_csn2), (MODE(2) | RXACTIVE | PULLUP_EN)},	/* MMC1_CMD */
+-	{OFFSET(gpmc_csn0), (MODE(7) | RXACTIVE | PULLUP_EN)},	/* MMC1_WP */
+-	{OFFSET(gpmc_advn_ale), (MODE(7) | RXACTIVE | PULLUP_EN)},	/* MMC1_CD */
+ #endif
+ 
+-	{OFFSET(gpmc_ad8),  (MODE(2) | RXACTIVE | PULLUP_EN)},
+-	{OFFSET(gpmc_ad9),  (MODE(2) | RXACTIVE | PULLUP_EN)},
+-	{OFFSET(gpmc_ad10), (MODE(2) | RXACTIVE | PULLUP_EN)},
+-	{OFFSET(gpmc_ad11), (MODE(2) | RXACTIVE | PULLUP_EN)},
+-	{OFFSET(gpmc_csn1), (MODE(2) | RXACTIVE | PULLUP_EN)},
+-	{OFFSET(gpmc_csn2), (MODE(2) | RXACTIVE | PULLUP_EN)},
+-	{OFFSET(gpmc_ad12), (MODE(7) | RXACTIVE | PULLUP_EN)},
+-	{OFFSET(gpmc_ad13), (MODE(7) | RXACTIVE | PULLUP_EN)},
++static struct module_pin_mux mmc1_pin_mux[] = {
++	{OFFSET(gpmc_ad8),  (MODE(2) | RXACTIVE | PULLUP_EN)},  /* MMC1_DAT3 */
++	{OFFSET(gpmc_ad9),  (MODE(2) | RXACTIVE | PULLUP_EN)},  /* MMC1_DAT2 */
++	{OFFSET(gpmc_ad10), (MODE(2) | RXACTIVE | PULLUP_EN)},  /* MMC1_DAT1 */
++	{OFFSET(gpmc_ad11), (MODE(2) | RXACTIVE | PULLUP_EN)},  /* MMC1_DAT0 */
++	{OFFSET(gpmc_csn1), (MODE(2) | RXACTIVE | PULLUP_EN)},  /* MMC1_CLK */
++	{OFFSET(gpmc_csn2), (MODE(2) | RXACTIVE | PULLUP_EN)},  /* MMC1_CMD */
++	{OFFSET(gpmc_ad12), (MODE(7) | RXACTIVE | PULLUP_EN)},  /* MMC1_WP */
++	{OFFSET(gpmc_ad13), (MODE(7) | RXACTIVE | PULLUP_EN)},  /* MMC1_CD */
+ 	{-1},
+ };
+ 
++#ifndef CONFIG_SPL_BUILD
+ static struct module_pin_mux i2c0_pin_mux[] = {
+ 	{OFFSET(i2c0_sda), (MODE(0) | RXACTIVE |
+ 			PULLUDEN | SLEWCTRL)}, /* I2C_DATA */
+@@ -131,7 +123,7 @@ static struct module_pin_mux i2c1_pin_mux[] = {
+ 	{-1},
+ };
+ 
+-static struct module_pin_mux spi0_pin_mux[] = {
++static struct module_pin_mux spi0_pin_mux[] __attribute__((unused)) = {
+ 	{OFFSET(spi0_sclk), (MODE(0) | RXACTIVE | PULLUDEN)},	/* SPI0_SCLK */
+ 	{OFFSET(spi0_d0), (MODE(0) | RXACTIVE |
+ 			PULLUDEN | PULLUP_EN)},			/* SPI0_D0 */
+@@ -141,12 +133,12 @@ static struct module_pin_mux spi0_pin_mux[] = {
+ 	{-1},
+ };
+ 
+-static struct module_pin_mux gpio0_7_pin_mux[] = {
++static struct module_pin_mux gpio0_7_pin_mux[] __attribute__((unused)) = {
+ 	{OFFSET(ecap0_in_pwm0_out), (MODE(7) | PULLUDEN)},	/* GPIO0_7 */
+ 	{-1},
+ };
+ 
+-static struct module_pin_mux rgmii1_pin_mux[] = {
++static struct module_pin_mux rgmii1_pin_mux[] __attribute__((unused)) = {
+ 	{OFFSET(mii1_txen), MODE(2)},			/* RGMII1_TCTL */
+ 	{OFFSET(mii1_rxdv), MODE(2) | RXACTIVE},	/* RGMII1_RCTL */
+ 	{OFFSET(mii1_txd3), MODE(2)},			/* RGMII1_TD3 */
+@@ -196,7 +188,7 @@ static struct module_pin_mux rgmii2_pin_mux[] = {
+ 	{-1},
+ };
+ 
+-static struct module_pin_mux suos_asc_phy_reset_pin_mux[] = {
++static struct module_pin_mux suos_asc_phy_reset_pin_mux[] __attribute__((unused)) = {
+ 	{OFFSET(gpmc_ad14), MODE(7) | PULLUP_EN},	/* GPIO1_14 - pull up should be sufficient to keep phy out of reset! */
+ 	{-1},
+ };
+@@ -224,6 +216,7 @@ static struct module_pin_mux nand_pin_mux[] = {
+ 	{OFFSET(gpmc_be0n_cle), (MODE(0) | PULLUDEN)},	/* NAND_BE_CLE */
+ 	{-1},
+ };
++#endif
+ 
+ void enable_uart0_pin_mux(void)
+ {
+-- 
+2.7.4
+

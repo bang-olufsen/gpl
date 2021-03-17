@@ -1,0 +1,250 @@
+From f3ceb788223ae4d9c3a427f97982b48bdb45c60b Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Thu, 6 Apr 2017 15:27:06 +0200
+Subject: [PATCH] Implement configurable software drift compensation
+
+We can set drift element name and drift multiplication in asound config.
+This also makes software drift compensation optional.
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+
+%% original patch: 0014-Implement-configurable-software-drift-compensation.patch
+---
+ src/pcm/pcm_switch.c | 146 +++++++++++++++++++++++++++++++++++++++------------
+ 1 file changed, 112 insertions(+), 34 deletions(-)
+
+diff --git a/src/pcm/pcm_switch.c b/src/pcm/pcm_switch.c
+index 1d5712f..0ae8173 100644
+--- a/src/pcm/pcm_switch.c
++++ b/src/pcm/pcm_switch.c
+@@ -43,6 +43,7 @@ typedef struct {
+ 	snd_ctl_t *ctl;
+ 	snd_ctl_elem_value_t elem;
+ 	snd_ctl_elem_value_t drift_elem;
++	double drift_mult;
+ 	int cchannels;
+ 	int cur_switch;
+ 	int active_switch;
+@@ -81,12 +82,15 @@ static int update_softvare_clock(snd_pcm_t *pcm, int forward_hw_ptr)
+ 
+ 	if ((!swtch->gen.slave || !forward_hw_ptr) && swtch->clock.tv_sec > 0) {
+ 		u_int64_t forward_usec, diff_nsec;
+-		signed long long comp, drift;
++		signed long long comp = 0, drift;
+ 
+-		/* Handle drift compensator <-5000, 5000> */
+-		snd_ctl_elem_read(swtch->ctl, &swtch->drift_elem);
+-		drift = swtch->drift_elem.value.integer.value[0];
+-		comp = (((signed long long) pcm->rate) * drift ) / 1000000;
++		if (swtch->drift_mult != 0 &&
++		    snd_ctl_elem_read(swtch->ctl, &swtch->drift_elem) >= 0) {
++
++			/* Handle drift compensator */
++			drift = swtch->drift_elem.value.integer.value[0] * swtch->drift_mult;
++			comp = (((signed long long) pcm->rate) * drift ) / 1000000;
++		}
+ 
+ 		/* Calculate software clock */
+ 		diff_nsec = 1000000000ULL * (clock.tv_sec - swtch->clock.tv_sec) + (clock.tv_nsec - swtch->clock.tv_nsec);
+@@ -1232,7 +1236,8 @@ static int add_user_ctl(snd_pcm_switch_t *swtch, snd_ctl_elem_info_t *cinfo)
+  * or a negative error code
+  */
+ static int switch_load_control(snd_pcm_t *pcm, snd_pcm_switch_t *swtch,
+-                               int ctl_card, snd_ctl_elem_id_t *ctl_id)
++                               int ctl_card, snd_ctl_elem_id_t *ctl_id,
++                               const char *drift_elem_name, double drift_mult)
+ {
+ 	DEBUG("");
+ 	char tmp_name[32];
+@@ -1308,40 +1313,102 @@ static int switch_load_control(snd_pcm_t *pcm, snd_pcm_switch_t *swtch,
+ 		return err;
+ 	}
+ 
+-	/* Get drift compensator element */
+-	snd_ctl_elem_list_alloca(&elem_list);
+-	snd_ctl_elem_list_alloc_space(elem_list, 1);
++	if (drift_elem_name && drift_mult != 0) {
++		/* Get drift compensator element */
+ 
+-	for (n = 0, elem_list->count = 1; n < snd_ctl_elem_list_get_count(elem_list); ++n) {
+-		snd_ctl_elem_list(swtch->ctl, elem_list);
+-		if (snd_ctl_elem_list_get_used(elem_list) &&
+-		    !strcmp(snd_ctl_elem_list_get_name(elem_list, 0), "Drift compensator")) {
+-			numid = snd_ctl_elem_list_get_numid(elem_list, 0);
+-			break;
++		snd_ctl_elem_list_alloca(&elem_list);
++		snd_ctl_elem_list_alloc_space(elem_list, 1);
++
++		for (n = 0, elem_list->count = 1; n < snd_ctl_elem_list_get_count(elem_list); ++n) {
++			snd_ctl_elem_list(swtch->ctl, elem_list);
++			if (snd_ctl_elem_list_get_used(elem_list) &&
++				!strcmp(snd_ctl_elem_list_get_name(elem_list, 0), drift_elem_name)) {
++				numid = snd_ctl_elem_list_get_numid(elem_list, 0);
++				break;
++			}
++			++elem_list->offset;
+ 		}
+-		++elem_list->offset;
+-	}
+ 
+-	snd_ctl_elem_list_free_space(elem_list);
++		snd_ctl_elem_list_free_space(elem_list);
+ 
+-	if (numid < 0) {
+-		SNDERR("Drift compensator element not found");
+-		return numid;
++		if (numid < 0) {
++			SNDERR("Drift compensator element not found");
++			return numid;
++		}
++
++		snd_ctl_elem_id_alloca(&drift_ctl_id);
++		snd_ctl_elem_id_set_numid(drift_ctl_id, numid);
++
++		snd_ctl_elem_info_alloca(&cinfo);
++		snd_ctl_elem_info_set_id(cinfo, drift_ctl_id);
++
++		err = snd_ctl_elem_info(swtch->ctl, cinfo);
++		if (err < 0) {
++			SNDERR("Cannot open drift compensator element");
++			return err;
++		}
++		swtch->drift_elem.id = *drift_ctl_id;
+ 	}
+ 
+-	snd_ctl_elem_id_alloca(&drift_ctl_id);
+-	snd_ctl_elem_id_set_numid(drift_ctl_id, numid);
++	return 0;
++}
+ 
+-	snd_ctl_elem_info_alloca(&cinfo);
+-	snd_ctl_elem_info_set_id(cinfo, drift_ctl_id);
+ 
+-	err = snd_ctl_elem_info(swtch->ctl, cinfo);
+-	if (err < 0) {
+-		SNDERR("Cannot open drift compensator element");
+-		return err;
++int snd_pcm_switch_parse_drift_config(snd_config_t *conf, const char **drift_elem_name, double *drift_mult)
++{
++	snd_config_iterator_t i, next;
++	int err, found_mult = 0, found_name = 0;
++
++	if (snd_config_get_type(conf) != SND_CONFIG_TYPE_COMPOUND)
++		return -EINVAL;
++
++	snd_config_for_each(i, next, conf) {
++		snd_config_t *n = snd_config_iterator_entry(i);
++		const char *id;
++		if (snd_config_get_id(n, &id) < 0)
++			continue;
++		if (snd_pcm_conf_generic_id(id))
++			continue;
++		if (strcmp(id, "name") == 0) {
++			err = snd_config_get_string(n, drift_elem_name);
++			if (err < 0) {
++				SNDERR("Invalid type for %s", id);
++				return err;
++			}
++			found_name = 1;
++			continue;
++		}
++		if (strcmp(id, "mult") == 0) {
++			switch (snd_config_get_type(n)) {
++			case SND_CONFIG_TYPE_INTEGER: {
++				long value;
++				err = snd_config_get_integer(n, &value);
++				*drift_mult = value;
++				break;
++			}
++			case SND_CONFIG_TYPE_REAL:
++				err = snd_config_get_real(n, drift_mult);
++				break;
++			default:
++				err = -EINVAL;
++				break;
++			}
++			if (err < 0) {
++				SNDERR("Invalid type for %s", id);
++				return err;
++			}
++			found_mult = 1;
++			continue;
++		}
+ 	}
+-	swtch->drift_elem.id = *drift_ctl_id;
+ 
++	// Set default values if not found
++	if (!found_name)
++		*drift_elem_name = "Drift compensator";
++	if (!found_mult)
++		*drift_mult = 1;
++
++	DEBUG("Drift compensator config parsed: name=\"%s\" mult=%lf", *drift_elem_name, *drift_mult);
+ 	return 0;
+ }
+ 
+@@ -1408,7 +1475,8 @@ static const snd_pcm_fast_ops_t snd_pcm_switch_fast_ops = {
+ int snd_pcm_switch_open(snd_pcm_t **pcmp, const char *name,
+                         snd_pcm_stream_t stream, int mode ATTRIBUTE_UNUSED,
+                         int ctl_card, snd_ctl_elem_id_t *ctl_id,
+-                        int cchannels)
++                        int cchannels,
++                        const char *drift_elem_name, double drift_mult)
+ {
+ 	DEBUG("");
+ 	snd_pcm_t *pcm;
+@@ -1450,7 +1518,7 @@ int snd_pcm_switch_open(snd_pcm_t **pcmp, const char *name,
+ 	pcm->poll_events = POLLOUT;
+ 	pcm->tstamp_type = SND_PCM_TSTAMP_TYPE_MONOTONIC_RAW; // TODO: check if correct
+ 
+-	err = switch_load_control(pcm, swtch, ctl_card, ctl_id);
++	err = switch_load_control(pcm, swtch, ctl_card, ctl_id, drift_elem_name, drift_mult);
+ 	if (err < 0) {
+ 		switch_free(swtch);
+ 		return err;
+@@ -1528,6 +1596,8 @@ int _snd_pcm_switch_open(snd_pcm_t **pcmp, const char *name,
+ 	snd_ctl_elem_id_t *ctl_id;
+ 	snd_pcm_chmap_query_t **chmap = NULL;
+ 	int ctl_card = -1, cchannels = 2, err;
++	double drift_mult = 0;
++	const char *drift_elem_name = NULL;
+ 
+ 	snd_config_for_each(i, next, conf) {
+ 		snd_config_t *n = snd_config_iterator_entry(i);
+@@ -1544,6 +1614,14 @@ int _snd_pcm_switch_open(snd_pcm_t **pcmp, const char *name,
+ 			control = n;
+ 			continue;
+ 		}
++		if (strcmp(id, "drift") == 0) {
++			err = snd_pcm_switch_parse_drift_config(n, &drift_elem_name, &drift_mult);
++			if (err < 0) {
++				SNDERR("Invalid drift compensator config for %s", id);
++				return err;
++			}
++			continue;
++		}
+ 		if (strcmp(id, "chmap") == 0) {
+ 			snd_pcm_free_chmaps(chmap);
+ 			chmap = _snd_pcm_parse_config_chmaps(n);
+@@ -1577,7 +1655,7 @@ int _snd_pcm_switch_open(snd_pcm_t **pcmp, const char *name,
+ 	if (err < 0)
+ 		goto failed_open;
+ 
+-	err = snd_pcm_switch_open(pcmp, name, stream, mode, ctl_card, ctl_id, cchannels);
++	err = snd_pcm_switch_open(pcmp, name, stream, mode, ctl_card, ctl_id, cchannels, drift_elem_name, drift_mult);
+ 	if (err < 0)
+ 		goto failed_open;
+ 
+@@ -1588,8 +1666,8 @@ int _snd_pcm_switch_open(snd_pcm_t **pcmp, const char *name,
+ 	swtch->stream = stream;
+ 	swtch->stream_mode = mode;
+ 	swtch->active_switch = swtch->cur_switch;
+-	swtch->needs_update = 0;
+ 	swtch->gen.close_slave = 1;
++	swtch->drift_mult = drift_mult;
+ 
+ 	/* Store hw configuration to handle use cases when we are opening
+ 	 * swith plugin while it is disabled.
+-- 
+2.7.4
+

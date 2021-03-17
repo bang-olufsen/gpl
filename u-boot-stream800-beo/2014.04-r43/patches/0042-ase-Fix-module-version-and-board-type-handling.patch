@@ -1,0 +1,171 @@
+From f87fa4d208cf3dd9dcb1a31d0951fb9b8341ac61 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@gmail.com>
+Date: Thu, 8 Oct 2015 09:16:19 +0200
+Subject: [PATCH] ase: Fix module version and board type handling
+
+We use module version BeoASE and board type will be products based on ASE
+platform.
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ .../stream800/board-beo_ase_board.c                |  6 ++--
+ board/streamunlimited/stream800/board.c            | 11 +++++--
+ board/streamunlimited/stream800/board_defines.c    | 34 ++++++++++++++++++----
+ board/streamunlimited/stream800/board_defines.h    |  4 ++-
+ 4 files changed, 43 insertions(+), 12 deletions(-)
+
+diff --git a/board/streamunlimited/stream800/board-beo_ase_board.c b/board/streamunlimited/stream800/board-beo_ase_board.c
+index a1c84cf..2db1bf3 100644
+--- a/board/streamunlimited/stream800/board-beo_ase_board.c
++++ b/board/streamunlimited/stream800/board-beo_ase_board.c
+@@ -53,7 +53,7 @@ static struct module_pin_mux gpio_pin_mux[] = {
+ 
+ void beo_ase__init(const struct Stream800Board *board)
+ {
+-	if (!board || board->carrierBoardType != CBT_BeoASEBoard)
++	if (!board || board->moduleVersion != MV_BeoASE)
+ 		BUG();
+ 
+ 	configure_module_pin_mux(gpio_pin_mux);
+@@ -64,7 +64,7 @@ void beo_ase__init(const struct Stream800Board *board)
+ 
+ void beo_ase__late_init(const struct Stream800Board *board)
+ {
+-	if (!board || board->carrierBoardType != CBT_BeoASEBoard)
++	if (!board || board->moduleVersion != MV_BeoASE)
+ 		BUG();
+ 
+ 	printf("TODO: 'B&O ASE' board late initialization.\n");
+@@ -82,7 +82,7 @@ static struct cpsw_slave_data cpsw_slaves[] = {
+ 
+ void beo_ase__cpsw_eth_init(const struct Stream800Board *board, struct cpsw_platform_data *cpsw_data)
+ {
+-	if (!board || board->carrierBoardType != CBT_BeoASEBoard)
++	if (!board || board->moduleVersion != MV_BeoASE)
+ 		BUG();
+ 
+ 	/* setup phy reset direction and level (reset active - HIGH) */
+diff --git a/board/streamunlimited/stream800/board.c b/board/streamunlimited/stream800/board.c
+index 11c072f..069f503 100755
+--- a/board/streamunlimited/stream800/board.c
++++ b/board/streamunlimited/stream800/board.c
+@@ -160,7 +160,8 @@ int board_init(void)
+ 		case CBT_SueFactoryTestBoard:
+ 			factory_test__set_board_interface();
+ 			break;
+-		case CBT_BeoASEBoard:
++		case CBT_BeoASE_A9MK2:
++		case CBT_BeoASE_EZ2MK2:
+ 			beo_ase__set_board_interface();
+ 			beo_ase__set_ase_fep(fep_instance());
+ 			break;
+@@ -395,6 +396,10 @@ int board_late_init(void)
+ 			setenv("board_name", "stream820");
+ 			setenv("board_rev", "l1");
+ 			break;
++		case MV_BeoASE:
++			setenv("board_name", "stream800");
++			setenv("board_rev", "BeoASE");
++			break;
+ 		case MV_unknown:
+ 		default:
+ 			setenv("board_name", "unknown");
+@@ -416,8 +421,8 @@ int board_late_init(void)
+ 		case CBT_SueFactoryTestBoard:
+ 			setenv("cramfsdir", "sue_factory_test_board");
+ 			break;
+-		case CBT_BeoASEBoard:
+-			setenv("cramfsdir", "beo_ase_board");
++		case CBT_BeoASE_A9MK2:
++		case CBT_BeoASE_EZ2MK2:
+ 			break;
+ 
+ 		// CUSTOMIZE: Add your board here
+diff --git a/board/streamunlimited/stream800/board_defines.c b/board/streamunlimited/stream800/board_defines.c
+index 9237c71..c8a03d4 100644
+--- a/board/streamunlimited/stream800/board_defines.c
++++ b/board/streamunlimited/stream800/board_defines.c
+@@ -10,7 +10,8 @@ const char *stream800ModuleVersionStrings[] = {
+ 	[MV_L1]		= "stream800 rev.L1",
+ 	[MV_L2]		= "stream800 rev.L2",
+ 	[MV_L0_DDR3]	= "stream800 rev.L0 w/ddr3",
+-	[MV_L1_DDR3_HE]	= "stream800 rev.L1 w/ddr3 High-End"
++	[MV_L1_DDR3_HE]	= "stream800 rev.L1 w/ddr3 High-End",
++	[MV_BeoASE] = "Beo ASE",
+ };
+ 
+ const char *stream800CarrierBoardTypeStrings[] = {
+@@ -19,7 +20,8 @@ const char *stream800CarrierBoardTypeStrings[] = {
+ 	[CBT_SueFirstCarrierBoard]	= "SUE first carrier board",
+ 	[CBT_SueDemoClientBoard]	= "SUE demo client board",
+ 	[CBT_SueHighendDemoClientBoard]	= "SUE highend demo client board",
+-	[CBT_BeoASEBoard]		= "B&O ASE board"
++	[CBT_BeoASE_A9MK2]		= "B&O ASE A9MK2 board",
++	[CBT_BeoASE_EZ2MK2]		= "B&O ASE EZ2MK2 board",
+ };
+ 
+ const char *boardStateStrings[] = {
+@@ -83,13 +85,35 @@ void board_detect(struct Stream800Board *board)
+ #ifdef ASE_BUILD
+ 	{
+ 		struct ase_fep_version version;
+-		printf("detecting ASE board\n");
++		printf("Detecting ASE board\n");
+ 
+ 		fep = init_ase_fep();
+ 
+ 		version = version_ase_fep(fep);
+-		board->moduleVersion = MV_L2;					//version.bom_version;
+-		board->carrierBoardType = CBT_BeoASEBoard;		//version.pcba_variant;
++		if (version.revision >= 'A' && version.revision <= 'V') {
++			board->moduleVersion = MV_BeoASE;
++		}
++
++		if ((version.productId == a29mk2_version_a) ||
++			(version.productId == a29mk2))  {
++			board->carrierBoardType = CBT_BeoASE_A9MK2;
++		} else if (version.productId == ez2mk2) {
++			board->carrierBoardType = CBT_BeoASE_EZ2MK2;
++		}
++
++		/*
++		* We need to set to some default values otherwise board
++		* will not boot and loop in bootloader which brick board
++		*/
++		if (board->moduleVersion == MV_unknown) {
++			printf("Module unknown. Setting to ASE\n");
++			board->moduleVersion = MV_BeoASE;
++		}
++
++		if (board->carrierBoardType == CBT_unknown) {
++			printf("Carrierboard unknown. Setting to A9MK2.\n");
++			board->carrierBoardType = CBT_BeoASE_A9MK2;
++		}
+ 		return;
+ 	}
+ #endif
+diff --git a/board/streamunlimited/stream800/board_defines.h b/board/streamunlimited/stream800/board_defines.h
+index 8c8ec37..c4416e1 100644
+--- a/board/streamunlimited/stream800/board_defines.h
++++ b/board/streamunlimited/stream800/board_defines.h
+@@ -13,6 +13,7 @@ typedef enum {
+ 	MV_L2,
+ 	MV_L0_DDR3,
+ 	MV_L1_DDR3_HE,
++	MV_BeoASE,
+ } Stream800ModuleVersion;
+ 
+ extern const char *stream800ModuleVersionStrings[];
+@@ -26,7 +27,8 @@ typedef enum {
+ 	CBT_SueFirstCarrierBoard,		///< SUE Carrier Board
+ 	CBT_SueDemoClientBoard,			///< SUE demo client
+ 	CBT_SueHighendDemoClientBoard,		///< SUE highend demo client
+-	CBT_BeoASEBoard				///< B&O ASE
++	CBT_BeoASE_A9MK2,
++	CBT_BeoASE_EZ2MK2,
+ } Stream800CarrierBoardType;
+ 
+ extern const char *stream800CarrierBoardTypeStrings[];
+-- 
+2.7.4
+

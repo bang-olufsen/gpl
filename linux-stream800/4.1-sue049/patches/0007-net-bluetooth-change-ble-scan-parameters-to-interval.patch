@@ -1,0 +1,33 @@
+From 22108d312e8f71c25e08291f75994469c9f621b8 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@gmail.com>
+Date: Tue, 6 Oct 2015 12:49:29 +0200
+Subject: [PATCH] net: bluetooth: change ble scan parameters to interval=0x10
+ window=0x04
+
+Parameters are according to B&O's recommendation. This should fix ASE-285.
+
+Signed-off-by: Bernhard Miller <bernhard.miller@streamunlimited.com>
+[MBE - ported to new kernel]
+Signed-off-by: Marek Belisko <marek.belisko@gmail.com>
+---
+ include/net/bluetooth/hci_core.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
+index a056c2b..cd8e28e 100644
+--- a/include/net/bluetooth/hci_core.h
++++ b/include/net/bluetooth/hci_core.h
+@@ -1335,8 +1335,8 @@ void hci_mgmt_chan_unregister(struct hci_mgmt_chan *c);
+ /* These LE scan and inquiry parameters were chosen according to LE General
+  * Discovery Procedure specification.
+  */
+-#define DISCOV_LE_SCAN_WIN		0x12
+-#define DISCOV_LE_SCAN_INT		0x12
++#define DISCOV_LE_SCAN_WIN		0x04
++#define DISCOV_LE_SCAN_INT		0x10
+ #define DISCOV_LE_TIMEOUT		10240	/* msec */
+ #define DISCOV_INTERLEAVED_TIMEOUT	5120	/* msec */
+ #define DISCOV_INTERLEAVED_INQUIRY_LEN	0x04
+-- 
+1.9.1
+

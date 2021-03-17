@@ -1,0 +1,102 @@
+From 5cc09b17cf554b7c4f3c5e292f8d0642b39bcad0 Mon Sep 17 00:00:00 2001
+From: Michal Dzik <michal.dzik@streamunlimited.com>
+Date: Thu, 28 Dec 2017 14:09:13 +0100
+Subject: [PATCH] avrcp: poll device if position notification is not supported
+
+Some devices (like all iOS phones) don't support notification about
+time position change. This means that we will never be notified about
+seeking track. The only way to solve this is to poll device every second
+with get play status command.
+
+Signed-off-by: Michal Dzik <michal.dzik@streamunlimited.com>
+---
+ profiles/audio/avrcp.c | 30 +++++++++++++++++++++++++++++-
+ 1 file changed, 29 insertions(+), 1 deletion(-)
+
+diff --git a/profiles/audio/avrcp.c b/profiles/audio/avrcp.c
+index 5d05422..d074b4b 100644
+--- a/profiles/audio/avrcp.c
++++ b/profiles/audio/avrcp.c
+@@ -282,6 +282,8 @@ struct avrcp {
+ 	uint16_t registered_events;
+ 	uint8_t transaction;
+ 	uint8_t transaction_events[AVRCP_EVENT_LAST + 1];
++	gboolean position_notification_supported;
++	guint position_polling_timeout;
+ 	struct pending_pdu *pending_pdu;
+ };
+ 
+@@ -313,6 +315,7 @@ static uint32_t company_ids[] = {
+ };
+ 
+ static void avrcp_register_notification(struct avrcp *session, uint8_t event);
++static gboolean position_polling(gpointer user_data);
+ 
+ static sdp_record_t *avrcp_ct_record(void)
+ {
+@@ -2161,6 +2164,17 @@ static gboolean avrcp_get_play_status_rsp(struct avctp *conn, uint8_t code,
+ 	memcpy(&status, pdu->params + 8, sizeof(uint8_t));
+ 	media_player_set_status(mp, status_to_string(status));
+ 
++	if (!session->position_notification_supported) {
++		if (status == AVRCP_PLAY_STATUS_PLAYING) {
++			if (session->position_polling_timeout == 0)
++				session->position_polling_timeout = g_timeout_add(1000, position_polling, session);
++		} else {
++			if (session->position_polling_timeout > 0) {
++				g_source_remove(session->position_polling_timeout);
++				session->position_polling_timeout = 0;
++			}
++		}
++	}
+ 	return FALSE;
+ }
+ 
+@@ -2181,6 +2195,13 @@ static void avrcp_get_play_status(struct avrcp *session)
+ 					session);
+ }
+ 
++static gboolean position_polling(gpointer user_data)
++{
++	struct avrcp *session = user_data;
++	avrcp_get_play_status(session);
++	return TRUE;
++}
++
+ static const char *status_to_str(uint8_t status)
+ {
+ 	switch (status) {
+@@ -3854,8 +3875,10 @@ static void avrcp_register_notification(struct avrcp *session, uint8_t event)
+ 	/*
+ 	 * Set maximum interval possible for position changed to 1 second
+ 	 */
+-	if (event == AVRCP_EVENT_PLAYBACK_POS_CHANGED)
++	if (event == AVRCP_EVENT_PLAYBACK_POS_CHANGED) {
+ 		bt_put_be32(1, &pdu->params[1]);
++		session->position_notification_supported = TRUE;
++	}
+ 
+ 	pdu->params_len = htons(AVRCP_REGISTER_NOTIFICATION_PARAM_LENGTH);
+ 
+@@ -4143,6 +4166,8 @@ static void session_init_control(struct avrcp *session)
+ 							handle_vendordep_pdu,
+ 							session);
+ 	session->control_handlers = control_handlers;
++	session->position_notification_supported = FALSE;
++	session->position_polling_timeout = 0;
+ 
+ 	if (btd_device_get_service(session->dev, AVRCP_TARGET_UUID) != NULL)
+ 		controller_init(session);
+@@ -4218,6 +4243,9 @@ static void session_destroy(struct avrcp *session, int err)
+ 	if (session->browsing_id > 0)
+ 		avctp_unregister_browsing_pdu_handler(session->browsing_id);
+ 
++	if (session->position_polling_timeout > 0)
++		g_source_remove(session->position_polling_timeout);
++
+ 	g_free(session);
+ }
+ 
+-- 
+1.9.1
+

@@ -1,0 +1,606 @@
+/*
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ */
+
+#include "am33xx.dtsi"
+
+/ {
+	compatible = "ti,am335x-beo-hh1", "ti,am33xx";
+
+	chosen {
+		bootargs = "console=ttyO0,115200n8";
+	};
+
+	memory {
+		device_type = "memory";
+		reg = <0x80000000 0x10000000>; /* 256 MB */
+	};
+
+	cpus {
+		cpu@0 {
+			cpu0-supply = <&dcdc2_reg>;
+		};
+	};
+
+
+	ocp {
+
+		//Stream800 -> dsp shared memory
+		spi1: spi@481a0000 {
+			status = "okay";
+			ti,pindir-d0-out-d1-in;
+			pinctrl-names = "default";
+			pinctrl-0 = <&spi1_pins &dsp_pins>;
+
+			dsp: dsp@0 {
+				compatible = "beo,beo-hh1-dsp";
+				// compatible = "spidev";
+				// compatible = "m25px80-nonjedec";		// works (flash only)
+				reg = <0>;
+
+				spi-max-frequency = <5000000>;
+
+				reset_gpios = <&gpio1 14 1>;
+			};
+		};
+
+		//Stream800 -> FEP virtual device
+		fep: fep@0 {
+			compatible = "beo,beo-ase-fep";
+			gpios = <&gpio0 15 1>;		// GPIO0_15 (UART1_TX)
+
+			pinctrl-names = "default";
+			pinctrl-0 = <&fep_pins>;
+
+			// interrupt-from-fep gpio line
+			irq_gpios = <&gpio1 13 0>;		// GPIO1_13
+
+			// interface Stream800 -> FEP
+			interface = "ttyO4";
+
+			volume {
+				compatible = "beo,beo-ase-dsp";
+			};
+
+			fep_info {
+				compatible = "beo,beo-ase-fephw";
+			};
+
+			fwupdate {
+				compatible = "beo,beo-hh1-fwupdate";
+				fw_name = "beo-ase-fep.bin";
+			};
+
+			beo_power: power {
+				compatible = "beo,beo-hh1-power";
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				supply0@0 {
+					label = "SMPS";
+					reg = <0x00>;
+				};
+				supply0@1 {
+					label = "DSP";
+					reg = <0x01>;
+				};
+				supply0@2 {
+					label = "SUPP";
+					reg = <0x02>;
+				};
+				supply0@3 {
+					label = "DSP_RESET";
+					reg = <0x03>;
+				};
+				supply0@4 {
+					label = "AUDIO";
+					reg = <0x04>;
+				};
+				supply0@6 {
+					label = "OFF";
+					reg = <0x06>;
+				};
+			};
+		};
+
+		leds {
+			compatible = "gpio-leds";
+			pinctrl-names = "default";
+			pinctrl-0 = <&led_pins>;
+
+			Debug_LED_9086 {
+				label = "LED_9086";
+				gpios = <&gpio1 26 0>;
+				default-state = "on";
+				linux,default-trigger = "heartbeat";
+			};
+		};
+
+		// tdm/8 setup:
+		mcasp@48038000 {
+			status = "okay";
+			op-mode = <0>;          /* MCASP_IIS_MODE */
+			tdm-slots = <2>; 	/*I2S = 2 channles, other: TDM */
+			num-serializer = <4>; 	/*num of serializers*/
+			serial-dir = <  1 2 0 0 >; /* 0: INACTIVE, 1: TX, 2: RX */
+			tx-num-evt = <2>; 	/*tx FIFO buffer lenght */
+			rx-num-evt = <1>; 	/*rx FIFO buffer lenght */
+			tx-rx-clk-separate;
+		};
+
+		mcasp@4803C000 {
+			status = "okay";
+			op-mode = <1>;          /* MCASP_DIT_MODE */
+			tdm-slots = <2>;
+			num-serializer = <4>;
+			serial-dir = <  0 0 1 0 >;/* 0: INACTIVE, 1: TX, 2: RX */
+			tx-num-evt = <1>;
+			rx-num-evt = <0>;
+		};
+
+		gpmc: gpmc@50000000 {
+			status = "okay";
+
+			nand@0,0 {
+				reg = <0 0 0>; /* CS0 */
+				gpmc,device-width = <1>;
+				nand-bus-width = <8>;
+				ti,nand-ecc-opt = "bch8";
+				elm_id = <&elm>;
+
+				gpmc,sync-clk-ps = <0>;
+				gpmc,cs-on-ns = <0>;
+				gpmc,cs-rd-off-ns = <44>;
+				gpmc,cs-wr-off-ns = <44>;
+				gpmc,adv-on-ns = <6>;
+				gpmc,adv-rd-off-ns = <34>;
+				gpmc,adv-wr-off-ns = <44>;
+				gpmc,we-on-ns = <6>;
+				gpmc,we-off-ns = <40>;
+				gpmc,oe-on-ns = <6>;
+				gpmc,oe-off-ns = <54>;
+				gpmc,page-burst-access-ns = <0>;
+				gpmc,access-ns = <64>;
+				gpmc,rd-cycle-ns = <82>;
+				gpmc,wr-cycle-ns = <82>;
+				gpmc,cycle2cycle-delay-ns = <0>;
+				gpmc,bus-turnaround-ns = <0>;
+				gpmc,wait-monitoring-ns = <0>;
+				gpmc,clk-activation-ns = <0>;
+				gpmc,wr-data-mux-bus-ns = <0>;
+				gpmc,wait-on-read = "true";
+				gpmc,wait-on-write = "true";
+
+				#address-cells = <1>;
+				#size-cells = <1>;
+			};
+		};
+
+		i2c@44e0b000 {
+			status = "okay";
+			clock-frequency = <100000>;
+			pinctrl-names = "default";
+			pinctrl-0 = <&i2c0_pins>;
+
+			tps: tps@24 {
+				reg = <0x24>;
+			};
+
+			eeprom: at24@50 {
+				compatible = "24c08";
+				reg = <0x50>;
+				pagesize = <16>;
+			};
+		};
+
+		i2c@4802a000 {
+			status = "okay";
+			clock-frequency = <100000>;
+			pinctrl-names = "default";
+			pinctrl-0 = <&i2c1_pins>;
+
+			/* Si5351a i2c clock generator */
+			si5351a: clock-generator@60 {
+				compatible = "silabs,si5351a";
+				reg = <0x60>;
+				#address-cells = <1>;
+				#size-cells = <0>;
+				#clock-cells = <1>;
+
+				/* connect xtal input to 25MHz reference */
+				clocks = <&ref25>;
+				clock-names = "xtal";
+
+				/* connect xtal input as source of pll0 and pll1 */
+				silabs,pll-source = <0 0>, <1 0>;
+
+				/*
+				 * overwrite clkout0 configuration with:
+				 * - 8mA output drive strength
+				 * - pll0 as clock source of multisynth0
+				 * - multisynth0 as clock source of output divider
+				 * - multisynth0 can change pll0
+				 */
+				clkout0 {
+					reg = <0>;
+					silabs,drive-strength = <8>;
+					silabs,multisynth-source = <0>;
+					silabs,clock-source = <0>;
+					silabs,pll-master;
+					clock-frequency = <12288000>;
+				};
+
+				/*
+				 * overwrite clkout1 configuration with:
+				 * - 2mA output drive strength
+				 * - pll1 as clock source of multisynth1
+				 * - multisynth1 as clock source of output divider
+				 * - multisynth1 can change pll1
+				 */
+				clkout1 {
+					reg = <1>;
+					silabs,drive-strength = <2>;
+					silabs,multisynth-source = <1>;
+					silabs,clock-source = <0>;
+					silabs,pll-master;
+					silabs,disable-state = <2>;
+					clock-frequency = <12288000>;
+				};
+
+				/*
+				 * overwrite clkout2 configuration with:
+				 * - 8mA output drive strength
+				 * - pll1 as clock source of multisynth1
+				 * - multisynth1 as clock source of output divider
+				 * - multisynth0 can change pll1
+				 */
+
+				clkout2 {
+					reg = <2>;
+					silabs,drive-strength = <8>;
+					silabs,multisynth-source = <1>;
+					silabs,clock-source = <0>;
+					silabs,disable-state = <2>;
+					clock-frequency = <24576000>;
+				};
+			};
+		};
+
+		/* platform driver to init marwell chip */
+		mrvl_init: mrvl_init{
+			compatible = "mrvl-init";
+			gpios = <&gpio2 0 0>;
+			linux,clock-name = "clkout2_ck";
+		};
+	};
+
+	dummy_tx_codec:dummy_tx_codec {
+		compatible = "linux,spdif-dit";
+	};
+
+	dummy_rx_codec:dummy_rx_codec {
+		compatible = "linux,spdif-dir";
+	};
+
+	audio {
+		compatible = "sue,am33xx-generic-audio";
+		pinctrl-names = "default";
+		pinctrl-0 = <&audio_pins>;
+		sue,card-name = "Stream Audio";
+		clocks = <&si5351a 0>, <&si5351a 0>, <&si5351a 1>, <&si5351a 2>; /* playback clk, receive clk, dsp1, dsp2 */
+		sue,mclk-base-48k = <12288000>;
+		sue,persistent-clocks;
+
+		// dsp setup:
+// TDM setup:
+//		sue,tdm-channels = <8>;
+//		sue,dsp-b-1;
+//		sue,invert-bclk;
+
+// I2S setup:
+		sue,invert-wclk;
+		links {
+			link@0 {
+				sue,name = "tx-tdm8";
+				sue,stream-name = "TDM";
+				sue,platform = <&mcasp0>;
+				sue,cpu-dai-name = "48038000.mcasp";
+				sue,codec = <&dummy_tx_codec>;
+				sue,codec-dai-name = "dit-hifi";
+	//			sue,mute-amp-pin = <&gpio1 12 0>;
+			};
+			link@1 {
+				sue,name = "rx-tdm8";
+				sue,stream-name = "TDM";
+				sue,platform = <&mcasp0>;
+				sue,cpu-dai-name = "48038000.mcasp";
+				sue,codec = <&dummy_rx_codec>;
+				sue,codec-dai-name = "dir-hifi";
+				sue,codec-is-bfclk-master;
+				sue,codec-is-mclk-master;
+			};
+		};
+	};
+
+	/* 25MHz output from AR8030 Ethernet PHY */
+	ref25: ref25M {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <25000000>;
+	};
+
+	vmmc: reg_vmmc_gpio {
+		compatible = "regulator-fixed";
+		regulator-name = "vmmc";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+		regulator-enable-high;
+
+	};
+
+	mdio: davinci_mdio@4a101000 {
+		compatible = "ti,davinci-mdio";
+		ti,hwmods = "davinci_mdio";
+	};
+
+};
+
+&cpsw_emac0 {
+	phy_id = <&davinci_mdio 4>;
+	phy-mode = "rmii";
+};
+
+&phy_sel {
+	rmii-clock-ext;
+};
+
+&mac {
+	status = "okay";
+};
+
+&davinci_mdio {
+	status = "okay";
+	phy: phy@4 {
+		reg = <4>;
+		reset-gpios = <&gpio1 28 1>;
+	};
+};
+
+#include "tps65217.dtsi"
+
+&tps {
+	regulators {
+		dcdc1_reg: regulator@0 {
+			/* VDD_1V8 */
+			regulator-min-microvolt = <925000>;
+			regulator-max-microvolt = <1800000>;
+			regulator-boot-on;
+			regulator-always-on;
+		};
+
+		dcdc2_reg: regulator@1 {
+			/* VDD_MPU voltage limits 0.95V - 1.26V with +/-4% tolerance */
+			regulator-name = "vdd_mpu";
+			regulator-min-microvolt = <925000>;
+			regulator-max-microvolt = <1325000>; /* ??? */
+			regulator-boot-on;
+			regulator-always-on;
+		};
+
+		dcdc3_reg: regulator@2 {
+			/* VDD_CORE voltage limits 0.95V - 1.1V with +/-4% tolerance */
+			regulator-name = "vdd_core";
+			regulator-min-microvolt = <925000>;
+			regulator-max-microvolt = <1150000>; /* ??? */
+			regulator-boot-on;
+			regulator-always-on;
+		};
+
+		ldo1_reg: regulator@3 {
+			/* VRTC */
+			regulator-min-microvolt = <1000000>;
+			regulator-max-microvolt = <3300000>;
+			regulator-boot-on;
+			regulator-always-on;
+		};
+
+		ldo2_reg: regulator@4 {
+			/* WIFI_REG_EN */
+			regulator-min-microvolt = <900000>;
+			regulator-max-microvolt = <3300000>;
+			regulator-boot-on;
+			regulator-always-on;
+		};
+
+		ldo3_reg: regulator@5 {
+			regulator-min-microvolt = <1800000>;
+			regulator-max-microvolt = <3300000>;
+			regulator-boot-on;
+			regulator-always-on;
+		};
+
+		ldo4_reg: regulator@6 {
+			regulator-min-microvolt = <1800000>;
+			regulator-max-microvolt = <3300000>;
+			regulator-boot-on;
+			regulator-always-on;
+		};
+	};
+
+	backlight {
+		isel = <1>;  /* 1 - ISET1, 2 ISET2 */
+		fdim = <100>; /* TPS65217_BL_FDIM_100HZ */
+		default-brightness = <100>;
+	};
+
+};
+
+&uart0 {
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart0_pins>;
+};
+
+//Stream800 -> FEP serial interface
+&uart4 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart4_pins>;
+	status = "okay";
+};
+
+&am33xx_pinmux {
+	pinctrl-names = "default";
+	pinctrl-0 = <&gpio_pins &gpio_phy_reset_pins>;
+
+	gpio_phy_reset_pins: pinmux_gpio_phy_reset_pins {
+		pinctrl-single,pins = <
+			0x78 0x07 >;
+	};
+
+	spi1_pins: pinmux_spi1_pins {
+		pinctrl-single,pins = <
+			0x190 0x2b	/* mcasp0_aclkx;  SPI1_CLK  (GPIO3_14) 990,3 */
+			0x194 0x3b	/* mcasp0_fsx;    SPI1_D0   (GPIO3_15) 994,3 */
+			0x198 0x2b	/* mcasp0_axr0;   SPI1_D1   (GPIO3_16) 998,3 */
+			0x19c 0x3b	/* mcasp0_ahclkr; SPI1_CS0  (GPIO3_17) 99c,3 */
+		>;
+	};
+
+	uart4_pins: pinmux_uart4_pins {
+		pinctrl-single,pins = <
+			0x168 0x39 /* uart0_ctsn.uart4_rxd */
+			0x16c 0x01 /* uart0_rtsn.uart4_txd */
+		>;
+	};
+
+	// extra DSP connections
+	dsp_pins: pinmux_dsp_pins {
+		pinctrl-single,pins = <
+			0x30 0x07		/* dsp reset + flash;   LCD_DATA17 -> GPIO1_14    830,7 */
+		>;
+	};
+
+	// extra FEP connections
+	fep_pins: pinmux_fep_pins {
+		pinctrl-single,pins = <
+			0x34 0x37	/* irq from fep; pin 45; GPMC_AD13 -> GPIO1_13      834,7 */
+		>;
+	};
+
+	// various GPIOs
+	gpio_pins: pinmux_gpio_pins {
+		pinctrl-single,pins = <
+			0x38 0x37	/* mains fail; pin 55;  GPMC_AD14 -> GPIO1_14   838,7 (LCD_DATA_17)*/
+			0x3c 0x07	/* wifi reset; pin 53;  GPMC_AD15 -> GPIO1_15   83c,7 (LCD_DATA_18) */
+			0x178 0x37	/* wakeup;     pin 152; UART1_CTSN -> GPIO0_12  978,7 */
+		>;
+	};
+
+	// debug LEDs
+	led_pins: pinmux_led_pins {
+		pinctrl-single,pins = <
+			0x68 0x07	/* led D9086; pin 58; GPMC_A10 -> GPIO1_26 */
+			0x58 0x07	/* led D9085; pin 54; GPMC_A6 -> GPIO1_22 */
+		>;
+	};
+
+	audio_pins: pinmux_audio_pins {
+		pinctrl-single,pins = <
+			/* pin-name    -> function(id)     ASE name       - comment */
+
+			0x120 0x26	/* GMII1_TXD2  -> MCASP0_AHCLKX(6) (OSC_AP_MCLK)  - PD, in (si chip) */
+
+			0x12c 0x06	/* GMII1_TXCLK -> MCASP0_ACLKX(6)  (AP_BCLK_OUT)  - PD, out */
+			0x130 0x06	/* GMII1_RXCLK -> MCASP0_FSX(6)    (AP_WCLK_OUT)  - PD, out */
+			0x134 0x06	/* GMII1_RXD3  -> MCASP0_AXR0(6)   (AP_SDATA_OUT) - PD, out */
+
+			0x118 0x26	/* GMII1_RXDV  -> MCASP0_ACLKR(6)  (AP_BCLK_IN)   - PD, in */
+			0x11c 0x26	/* GMII1_TXD3  -> MCASP0_FSR(6)    (AP_WCLK_IN)   - PD, in */
+			0x138 0x26	/* GMII1_RXD2  -> MCASP0_AXR1(6)   (AP_SDATA_IN)  - PD, in */
+		>;
+	};
+
+	uart0_pins: pinmux_uart0_pins {
+		pinctrl-single,pins = <
+			0x170 0x38	/* UART0_RXD */
+			0x174 0x00	/* UART0_TXD */
+		>;
+	};
+
+	i2c0_pins: pinmux_i2c0_pins {
+		pinctrl-single,pins = <
+			0x188 0x68	/* I2C0_SDA */
+			0x18c 0x68	/* I2C0_SCL */
+		>;
+	};
+
+	i2c1_pins: pinmux_i2c1_pins {
+		pinctrl-single,pins = <
+			0x184 0x6b	/* I2C1_SCL */
+			0x180 0x6b	/* I2C1_SDA */
+		>;
+	};
+
+	mmc1_pins: pinmux_mmc1_pins {
+		pinctrl-single,pins = <
+			0x0fc 0x38	/* MMC0_DAT0 */
+			0x0f8 0x38	/* MMC0_DAT1 */
+			0x0f4 0x38	/* MMC0_DAT2 */
+			0x0f0 0x38	/* MMC0_DAT3 */
+			0x100 0x38	/* MMC0_CLK */
+			0x104 0x38	/* MMC0_CMD */
+		>;
+	};
+
+	mmc1_cirq_pin: pinmux_cirq_pin {
+		pinctrl-single,pins = <
+			0x0f8 0x3f	/* MMC0_DAT1 as GPIO2_28 */
+		>;
+	};
+
+	spi0_pins: pinmux_spi0_pins {
+		pinctrl-single,pins = <
+			0x150 0x28	/* SPI0_SCLK */
+			0x154 0x38	/* SPI0_D0 */
+			0x158 0x28	/* SPI0_D1 */
+			0x15c 0x38	/* SPI0_CS0 */
+		>;
+	};
+};
+
+&elm {
+	status = "okay";
+};
+
+&usb {
+	status = "okay";
+};
+
+&usb_ctrl_mod {
+	status = "okay";
+};
+
+&usb0_phy {
+	status = "okay";
+};
+
+&usb1_phy {
+	status = "okay";
+};
+
+&usb0 {
+	status = "okay";
+	dr_mode = "host";
+};
+
+&usb1 {
+	status = "okay";
+	dr_mode = "host";
+};
+
+&cppi41dma  {
+	status = "okay";
+};
+

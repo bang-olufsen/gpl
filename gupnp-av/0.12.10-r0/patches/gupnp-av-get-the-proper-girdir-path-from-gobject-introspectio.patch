@@ -1,0 +1,47 @@
+From 38be5ace3c39a43b8c7218048b661c9f180d7221 Mon Sep 17 00:00:00 2001
+From: Andriy Danylovskyy <andriy.danylovskyy@streamunlimited.com>
+Date: Mon, 15 Apr 2019 13:24:03 +0200
+Subject: [PATCH] get the proper girdir path from gobject-introspection
+
+Signed-off-by: Andriy Danylovskyy <andriy.danylovskyy@streamunlimited.com>
+---
+ libgupnp-av/Makefile.am | 2 +-
+ vala/Makefile.am        | 3 +++
+ 2 files changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/libgupnp-av/Makefile.am b/libgupnp-av/Makefile.am
+index 66a7db8..71dc6e1 100644
+--- a/libgupnp-av/Makefile.am
++++ b/libgupnp-av/Makefile.am
+@@ -129,7 +129,7 @@ GUPnPAV_1_0_gir_SCANNERFLAGS = --identifier-prefix=GUPnP --symbol-prefix=gupnp -
+ GUPnPAV_1_0_gir_FILES = $(introspection_sources)
+ INTROSPECTION_GIRS += GUPnPAV-1.0.gir
+ 
+-girdir = $(datadir)/gir-1.0
++girdir = $$($(PKG_CONFIG) gobject-introspection-1.0 --variable=girdir)
+ gir_DATA = $(INTROSPECTION_GIRS)
+ 
+ typelibdir = $(libdir)/girepository-1.0
+diff --git a/vala/Makefile.am b/vala/Makefile.am
+index 43c6c27..fe0f614 100644
+--- a/vala/Makefile.am
++++ b/vala/Makefile.am
+@@ -1,5 +1,7 @@
+ if HAVE_INTROSPECTION
+ if HAVE_VAPIGEN
++GIRDIR = $$($(PKG_CONFIG) gobject-introspection-1.0 --variable=girdir)
++
+ gupnp-av-1.0.vapi: gupnp-av-1.0.stamp
+ 	@true
+ 
+@@ -10,6 +12,7 @@ gupnp-av-1.0.stamp: $(top_builddir)/libgupnp-av/GUPnPAV-1.0.gir \
+ 	$(AM_V_GEN)$(VAPIGEN) --metadatadir=$(srcdir) \
+ 				  --pkg=libsoup-2.4 \
+ 			      --library=gupnp-av-1.0 --pkg=gio-2.0 --pkg=libxml-2.0 \
++			      --girdir=$(PKG_CONFIG_SYSROOT_DIR)$(GIRDIR) \
+ 			      $(top_builddir)/libgupnp-av/GUPnPAV-1.0.gir \
+ 				  $(srcdir)/gupnp-av-1.0-custom.vala && \
+ 	echo timestmap > $(@F)
+-- 
+2.7.4
+

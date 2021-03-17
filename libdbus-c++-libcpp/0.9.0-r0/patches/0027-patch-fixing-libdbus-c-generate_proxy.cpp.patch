@@ -1,0 +1,30 @@
+From 7e70973f130ccc257bd3de8fc1a6c6236a2d7273 Mon Sep 17 00:00:00 2001
+From: Omar Luque <omar.luque@streamunlimited.com>
+Date: Thu, 28 Nov 2019 12:35:05 +0100
+Subject: [PATCH] patch fixing libdbus-c++ generate_proxy.cpp
+
+It corrects the assertion, to not assert the call of a
+function, but its result.
+
+Signed-off-by: Omar Luque <omar.luque@streamunlimited.com>
+---
+ tools/generate_proxy.cpp | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/tools/generate_proxy.cpp b/tools/generate_proxy.cpp
+index bf1094a..9f7e8d4 100644
+--- a/tools/generate_proxy.cpp
++++ b/tools/generate_proxy.cpp
+@@ -381,7 +381,8 @@ void generate_proxy(Xml::Document &doc, const char *filename)
+         }
+         else
+         {
+-          body << tab << tab << "assert (invoke_method_noreply (call));" << endl; // will only assert in case of no memory
++          body << tab << tab << "bool ret = invoke_method_noreply (call);" << endl;
++          body << tab << tab << "assert ((int) ret);" << endl;
+         }
+       }
+       else
+-- 
+2.7.4
+

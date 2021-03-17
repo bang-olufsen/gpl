@@ -1,0 +1,120 @@
+From a7efecd0cdf73d37218d9e9c531c577b289b1d61 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Fri, 6 Nov 2020 13:14:49 +0100
+Subject: [PATCH] GstAudioRate:upper-tolerance
+
+If the difference between incoming timestamp and next timestamp exceeds
+the given value audiorate will not add or drop samples. Default value of
+0 means disabled.
+---
+ gst/audiorate/gstaudiorate.c | 42 ++++++++++++++++++++++++++++++++++++++++++
+ gst/audiorate/gstaudiorate.h |  1 +
+ 2 files changed, 43 insertions(+)
+
+diff --git a/gst/audiorate/gstaudiorate.c b/gst/audiorate/gstaudiorate.c
+index 30a5d6f..715dd35 100644
+--- a/gst/audiorate/gstaudiorate.c
++++ b/gst/audiorate/gstaudiorate.c
+@@ -86,6 +86,7 @@ enum
+ 
+ #define DEFAULT_SILENT     TRUE
+ #define DEFAULT_TOLERANCE  (40 * GST_MSECOND)
++#define DEFAULT_UPPER_TOLERANCE  (0)
+ #define DEFAULT_SKIP_TO_FIRST FALSE
+ 
+ enum
+@@ -97,6 +98,7 @@ enum
+   PROP_DROP,
+   PROP_SILENT,
+   PROP_TOLERANCE,
++  PROP_UPPER_TOLERANCE,
+   PROP_SKIP_TO_FIRST
+ };
+ 
+@@ -178,6 +180,20 @@ gst_audio_rate_class_init (GstAudioRateClass * klass)
+           G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
+ 
+   /**
++   * GstAudioRate:upper-tolerance
++   *
++   * If the difference between incoming timestamp and next timestamp exceeds
++   * the given value audiorate will not add or drop samples. Default value of
++   * 0 means disabled.
++   *
++   **/
++  g_object_class_install_property (object_class, PROP_UPPER_TOLERANCE,
++      g_param_spec_uint64 ("upper-tolerance", "Upper-tolerance",
++          "Only act if timestamp jitter/imperfection is below indicated upper tolerance (ns)",
++          0, G_MAXUINT64, DEFAULT_UPPER_TOLERANCE,
++          G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
++
++  /**
+    * GstAudioRate:skip-to-first:
+    *
+    * Don't produce buffers before the first one we receive.
+@@ -266,6 +282,7 @@ gst_audio_rate_init (GstAudioRate * audiorate)
+   audiorate->add = 0;
+   audiorate->silent = DEFAULT_SILENT;
+   audiorate->tolerance = DEFAULT_TOLERANCE;
++  audiorate->upper_tolerance = DEFAULT_UPPER_TOLERANCE;
+ }
+ 
+ static void
+@@ -537,6 +554,25 @@ gst_audio_rate_chain (GstPad * pad, GstObject * parent, GstBuffer * buf)
+     audiorate->out += in_samples;
+     goto send;
+   }
++  /* Only check this if it's modified. */
++  else if (DEFAULT_UPPER_TOLERANCE != audiorate->upper_tolerance) {
++    /* This happens when we are paused for a while and attempt to resume
++     * playback. We will jump the offset accordingly.
++     */
++    if (diff >= (GstClockTimeDiff) audiorate->upper_tolerance ||
++      diff <= (GstClockTimeDiff) - audiorate->upper_tolerance) {
++      /* Produce a perfect stream by simply 'shifting'
++       * it to next ts and offset and sending */
++      GST_LOG_OBJECT (audiorate, "outside upper tolerance %" GST_TIME_FORMAT "... adjusting offset",
++          GST_TIME_ARGS (audiorate->upper_tolerance));
++      /* The outgoing buffer's offset will be set to ->next_offset, we also
++       * need to adjust the offset_end value accordingly */
++
++      in_offset_end = audiorate->next_offset + in_samples;
++      audiorate->out += in_samples;
++      goto send;
++    }
++  }
+ 
+   /* do we need to insert samples */
+   if (in_offset > audiorate->next_offset) {
+@@ -713,6 +749,9 @@ gst_audio_rate_set_property (GObject * object,
+     case PROP_TOLERANCE:
+       audiorate->tolerance = g_value_get_uint64 (value);
+       break;
++    case PROP_UPPER_TOLERANCE:
++      audiorate->upper_tolerance = g_value_get_uint64 (value);
++      break;
+     case PROP_SKIP_TO_FIRST:
+       audiorate->skip_to_first = g_value_get_boolean (value);
+       break;
+@@ -747,6 +786,9 @@ gst_audio_rate_get_property (GObject * object,
+     case PROP_TOLERANCE:
+       g_value_set_uint64 (value, audiorate->tolerance);
+       break;
++    case PROP_UPPER_TOLERANCE:
++      g_value_set_uint64 (value, audiorate->upper_tolerance);
++      break;
+     case PROP_SKIP_TO_FIRST:
+       g_value_set_boolean (value, audiorate->skip_to_first);
+       break;
+diff --git a/gst/audiorate/gstaudiorate.h b/gst/audiorate/gstaudiorate.h
+index c7dfd23..4c933c1 100644
+--- a/gst/audiorate/gstaudiorate.h
++++ b/gst/audiorate/gstaudiorate.h
+@@ -57,6 +57,7 @@ struct _GstAudioRate
+   guint64 in, out, add, drop;
+   gboolean silent;
+   guint64 tolerance;
++  guint64 upper_tolerance;
+   gboolean skip_to_first;
+ 
+   /* audio state */

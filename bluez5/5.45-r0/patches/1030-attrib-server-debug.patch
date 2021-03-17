@@ -1,0 +1,56 @@
+diff --git a/src/attrib-server.c b/src/attrib-server.c
+index 0df6f06..6c83083 100644
+--- a/src/attrib-server.c
++++ b/src/attrib-server.c
+@@ -109,7 +109,8 @@ static void attrib_free(void *data)
+ 
+ static void channel_free(struct gatt_channel *channel)
+ {
+-
++	DBG("channel_free()");
++
+ 	if (channel->cleanup_id)
+ 		g_source_remove(channel->cleanup_id);
+ 
+@@ -122,6 +123,7 @@ static void channel_free(struct gatt_channel *channel)
+ 
+ static void gatt_server_free(struct gatt_server *server)
+ {
++	DBG("gatt_server_free()");
+ 	g_list_free_full(server->database, attrib_free);
+ 
+ 	if (server->l2cap_io != NULL) {
+@@ -1015,6 +1017,7 @@ static uint16_t mtu_exchange(struct gatt_channel *channel, uint16_t mtu,
+ 
+ static void channel_remove(struct gatt_channel *channel)
+ {
++	DBG("channel_remove()");
+ 	channel->server->clients = g_slist_remove(channel->server->clients,
+ 								channel);
+ 	channel_free(channel);
+@@ -1023,6 +1026,7 @@ static void channel_remove(struct gatt_channel *channel)
+ static gboolean channel_watch_cb(GIOChannel *io, GIOCondition cond,
+ 						gpointer user_data)
+ {
++	DBG("channel_watch_cb()");
+ 	channel_remove(user_data);
+ 
+ 	return FALSE;
+@@ -1279,7 +1283,7 @@ static struct gatt_channel *find_channel(guint id)
+ gboolean attrib_channel_detach(GAttrib *attrib, guint id)
+ {
+ 	struct gatt_channel *channel;
+-
++	DBG("attrib_channel_detach()");
+ 	channel = find_channel(id);
+ 	if (channel == NULL)
+ 		return FALSE;
+@@ -1446,6 +1450,8 @@ void btd_adapter_gatt_server_stop(struct btd_adapter *adapter)
+ {
+ 	struct gatt_server *server;
+ 	GSList *l;
++
++	DBG("btd_adapter_gatt_server_stop()");
+ 
+ 	l = g_slist_find_custom(servers, adapter, adapter_cmp);
+ 	if (l == NULL)

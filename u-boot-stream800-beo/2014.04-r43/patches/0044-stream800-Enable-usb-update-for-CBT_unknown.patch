@@ -1,0 +1,47 @@
+From 1c08abe823c61c281dfde38fca3100e1930b3c63 Mon Sep 17 00:00:00 2001
+From: Hannes Riedl <hannes.riedl@streamunlimited.com>
+Date: Tue, 25 Jun 2013 15:56:11 +0200
+Subject: [PATCH] stream800: Enable usb update for CBT_unknown
+
+Signed-off-by: Hannes Riedl <hannes.riedl@streamunlimited.com>
+---
+ board/streamunlimited/stream800/board-sue_demo_client_board.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+ mode change 100644 => 100755 board/streamunlimited/stream800/board-sue_demo_client_board.c
+
+diff --git a/board/streamunlimited/stream800/board-sue_demo_client_board.c b/board/streamunlimited/stream800/board-sue_demo_client_board.c
+old mode 100644
+new mode 100755
+index 1d3cc85..3b5c81b
+--- a/board/streamunlimited/stream800/board-sue_demo_client_board.c
++++ b/board/streamunlimited/stream800/board-sue_demo_client_board.c
+@@ -42,7 +42,7 @@ static struct module_pin_mux fw_update_button_pin_mux[] = {
+ // "SUE demo client" board initialization
+ void demo_client__init(const struct Stream800Board *board)
+ {
+-	if (!board || board->carrierBoardType != CBT_SueDemoClientBoard)
++	if (!board || (board->carrierBoardType != CBT_SueDemoClientBoard && board->carrierBoardType != CBT_unknown))
+ 		BUG();
+ 
+ 	configure_module_pin_mux(fw_update_button_pin_mux);
+@@ -55,7 +55,7 @@ void demo_client__init(const struct Stream800Board *board)
+ // "SUE demo client" board late initialization
+ void demo_client__late_init(const struct Stream800Board *board)
+ {
+-	if (!board || board->carrierBoardType != CBT_SueDemoClientBoard)
++	if (!board || (board->carrierBoardType != CBT_SueDemoClientBoard && board->carrierBoardType != CBT_unknown))
+ 		BUG();
+ 
+ 	printf("TODO: 'SUE demo client' board late initialization.\n");
+@@ -73,7 +73,7 @@ static struct cpsw_slave_data cpsw_slaves[] = {
+ 
+ void demo_client__cpsw_eth_init(const struct Stream800Board *board, struct cpsw_platform_data *cpsw_data)
+ {
+-	if (!board || board->carrierBoardType != CBT_SueDemoClientBoard)
++	if (!board || (board->carrierBoardType != CBT_SueDemoClientBoard && board->carrierBoardType != CBT_unknown))
+ 		BUG();
+ 
+ 	cpsw_data->slaves = 1;
+-- 
+2.7.4
+

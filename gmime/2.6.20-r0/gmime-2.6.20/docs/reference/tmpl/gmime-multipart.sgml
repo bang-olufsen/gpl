@@ -1,0 +1,217 @@
+<!-- ##### SECTION Title ##### -->
+gmime-multipart
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GMimeMultipart ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION g_mime_multipart_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_multipart_new_with_subtype ##### -->
+<para>
+
+</para>
+
+@subtype: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_multipart_set_preface ##### -->
+<para>
+
+</para>
+
+@multipart: 
+@preface: 
+
+
+<!-- ##### FUNCTION g_mime_multipart_get_preface ##### -->
+<para>
+
+</para>
+
+@multipart: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_multipart_set_postface ##### -->
+<para>
+
+</para>
+
+@multipart: 
+@postface: 
+
+
+<!-- ##### FUNCTION g_mime_multipart_get_postface ##### -->
+<para>
+
+</para>
+
+@multipart: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_multipart_set_boundary ##### -->
+<para>
+
+</para>
+
+@multipart: 
+@boundary: 
+
+
+<!-- ##### FUNCTION g_mime_multipart_get_boundary ##### -->
+<para>
+
+</para>
+
+@multipart: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_multipart_get_count ##### -->
+<para>
+
+</para>
+
+@multipart: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_multipart_contains ##### -->
+<para>
+
+</para>
+
+@multipart: 
+@part: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_multipart_index_of ##### -->
+<para>
+
+</para>
+
+@multipart: 
+@part: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_multipart_add ##### -->
+<para>
+
+</para>
+
+@multipart: 
+@part: 
+
+
+<!-- ##### FUNCTION g_mime_multipart_clear ##### -->
+<para>
+
+</para>
+
+@multipart: 
+
+
+<!-- ##### FUNCTION g_mime_multipart_insert ##### -->
+<para>
+
+</para>
+
+@multipart: 
+@index: 
+@part: 
+
+
+<!-- ##### FUNCTION g_mime_multipart_remove ##### -->
+<para>
+
+</para>
+
+@multipart: 
+@part: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_multipart_remove_at ##### -->
+<para>
+
+</para>
+
+@multipart: 
+@index: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_multipart_replace ##### -->
+<para>
+
+</para>
+
+@multipart: 
+@index: 
+@replacement: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_multipart_get_part ##### -->
+<para>
+
+</para>
+
+@multipart: 
+@index: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_multipart_foreach ##### -->
+<para>
+
+</para>
+
+@multipart: 
+@callback: 
+@user_data: 
+
+
+<!-- ##### FUNCTION g_mime_multipart_get_subpart_from_content_id ##### -->
+<para>
+
+</para>
+
+@multipart: 
+@content_id: 
+@Returns: 
+
+

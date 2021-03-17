@@ -1,0 +1,306 @@
+# Process this file with autoconf to produce a configure script.
+m4_include([m4/zw_automodern.m4])
+AC_INIT([xcrypt],
+        [4.1.1],
+        [https://github.com/besser82/libxcrypt/issues],
+        [libxcrypt],
+        [https://github.com/besser82/libxcrypt])
+AC_CONFIG_MACRO_DIR([m4])
+AC_CONFIG_AUX_DIR([m4])
+AC_CONFIG_SRCDIR([crypt.c])
+AC_CONFIG_HEADERS([config.h])
+AC_CONFIG_FILES([
+  Makefile
+  libxcrypt.pc
+])
+AM_INIT_AUTOMAKE
+
+AH_TOP(
+[#ifndef _CRYPT_CONFIG_H
+#define _CRYPT_CONFIG_H 1])
+AH_BOTTOM(
+[#endif /* config.h */])
+
+# Checks for programs.
+AC_CANONICAL_HOST
+AC_PROG_CC
+
+# Dependencies
+PKG_PROG_PKG_CONFIG
+PKG_INSTALLDIR
+
+# C99 language and library features are used unconditionally.
+# Don't even try to build with an older compiler.
+case "$ac_prog_cc_stdc" in
+     c89 | no) AC_MSG_ERROR([a C99- or C11-compliant compiler is required]) ;;
+esac
+
+AC_PROG_CPP
+AC_PROG_AWK
+AC_PROG_MAKE_SET
+AC_PROG_LN_S
+AC_USE_SYSTEM_EXTENSIONS
+AC_SYS_LARGEFILE
+zw_SIMPLE_ENABLE_WARNINGS
+LT_INIT
+
+# Check for system's endianness
+AC_C_BIGENDIAN(
+   AC_DEFINE([IS_BIGENDIAN], 1,
+    [Define to 1 if system's architecture is big-endian.]),
+   AC_DEFINE([IS_BIGENDIAN], 0,
+    [Define to 0 if system's architecture is little-endian.])
+)
+
+# One of the test scripts needs to use -dD.
+AC_CACHE_CHECK([whether the preprocessor ($CPP) supports -dD],
+  [ac_cv_prog_cc_dD],
+  [printf '#include <errno.h>' |
+    $CPP -dD -xc - > conftest.i 2>&AS_MESSAGE_LOG_FD
+  if test $? -ne 0; then
+    ac_cv_prog_cc_dD=no
+  elif grep -q '#define EDOM' conftest.i; then
+    ac_cv_prog_cc_dD=yes
+  else
+    ac_cv_prog_cc_dD=no
+  fi
+  rm -f conftest.i
+])
+AM_CONDITIONAL([HAVE_CPP_dD], [test $ac_cv_prog_cc_dD = yes])
+
+# Checks for libraries.
+
+# Checks for header files.
+AC_CHECK_HEADERS_ONCE(
+  [fcntl.h stdbool.h sys/cdefs.h sys/random.h sys/syscall.h])
+
+# stdint.h and inttypes.h were checked for by AC_INCLUDES_DEFAULT,
+# invoked implicitly by the above.
+if test $ac_cv_header_stdbool_h != yes ||
+   test $ac_cv_header_stdint_h != yes ||
+   test $ac_cv_header_inttypes_h != yes; then
+   AC_MSG_ERROR([a C99- or C11-compliant runtime library is required])
+fi
+
+# Checks for the specific things that we need from sys/cdefs.h, which
+# might or might not be there (there's no standard for this header).
+AS_IF([test $ac_cv_header_sys_cdefs_h = yes],
+  [AC_CACHE_CHECK([whether sys/cdefs.h defines __BEGIN_DECLS and __END_DECLS],
+                 [ac_cv_header_sys_cdefs_begin_end_decls], [
+    AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+#include <sys/cdefs.h>
+__BEGIN_DECLS
+extern int foo(void);
+__END_DECLS
+    ]])],
+    [ac_cv_header_sys_cdefs_begin_end_decls=yes],
+    [ac_cv_header_sys_cdefs_begin_end_decls=no])
+  ])
+  AC_CACHE_CHECK([whether sys/cdefs.h defines __nonnull],
+                 [ac_cv_header_sys_cdefs_nonnull], [
+    AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+#include <sys/cdefs.h>
+extern char *foo(char *, char *) __nonnull ((1, 2));
+    ]])],
+    [ac_cv_header_sys_cdefs_nonnull=yes],
+    [ac_cv_header_sys_cdefs_nonnull=no])
+  ])
+  AC_CACHE_CHECK([whether sys/cdefs.h defines __THROW],
+                 [ac_cv_header_sys_cdefs_THROW], [
+    AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+#include <sys/cdefs.h>
+extern void foo(void) __THROW;
+    ]])],
+    [ac_cv_header_sys_cdefs_THROW=yes],
+    [ac_cv_header_sys_cdefs_THROW=no])
+  ])],
+dnl AS_IF else
+ [ac_cv_header_sys_cdefs_begin_end_decls=no
+  ac_cv_header_sys_cdefs_nonnull=no
+  ac_cv_header_sys_cdefs_THROW=no])
+
+if test $ac_cv_header_sys_cdefs_begin_end_decls = yes; then
+  AC_DEFINE([HAVE_SYS_CDEFS_BEGIN_END_DECLS], 1,
+    [Define if <sys/cdefs.h> defines __BEGIN_DECLS and __END_DECLS.])
+fi
+if test $ac_cv_header_sys_cdefs_nonnull = yes; then
+  AC_DEFINE([HAVE_SYS_CDEFS_NONNULL], 1,
+    [Define if <sys/cdefs.h> defines __nonnull.])
+fi
+if test $ac_cv_header_sys_cdefs_THROW = yes; then
+  AC_DEFINE([HAVE_SYS_CDEFS_THROW], 1,
+    [Define if <sys/cdefs.h> defines __THROW.])
+fi
+
+# Checks for typedefs, structures, and compiler characteristics.
+zw_C_ALIGNAS
+zw_C_ALIGNOF
+zw_C_MAX_ALIGN_T
+zw_C_STATIC_ASSERT
+zw_PROG_LD_WRAP
+
+# Checks for library functions.
+AC_CHECK_FUNCS_ONCE([
+  arc4random_buf
+  explicit_bzero
+  explicit_memset
+  getentropy
+  getrandom
+  memset_s
+  open64
+  syscall
+])
+
+# Configure options.
+
+AC_ARG_ENABLE([obsolete-api],
+    AS_HELP_STRING(
+        [--enable-obsolete-api[=ARG]],
+        [When set to "yes", include all compatibility interfaces.
+         When set to "alt", include interfaces for compatibility with ALT.
+         When set to "glibc", include interfaces for compatibility with glibc.
+         When set to "owl", include interfaces for compatibility with Owl.
+         When set to "suse", include interfaces for compatibility with SUSE.
+         When set to "no", do not include any compatibility definitions at all,
+         and change the soname of the installed library to libcrypt.so.2.
+         This setting only affects existing binaries; new programs cannot
+         be linked against the obsolete APIs (bigcrypt, fcrypt, encrypt, setkey)
+         in any case. [default=yes]]
+    ),
+    [case "${enableval}" in
+        alt|glibc|owl)
+            enable_obsolete_api=1
+            enable_compat_suse=0
+            COMPAT_ABI=${enableval} ;;
+        yes|suse)
+            enable_obsolete_api=1
+            enable_compat_suse=1
+            COMPAT_ABI=${enableval} ;;
+         no)
+            enable_obsolete_api=0
+            enable_compat_suse=0
+            COMPAT_ABI=${enableval} ;;
+          *) AC_MSG_ERROR([bad value ${enableval} for --enable-obsolete-api]) ;;
+     esac],
+     [enable_obsolete_api=1
+      enable_compat_suse=1
+      COMPAT_ABI=yes]
+)
+AC_SUBST(COMPAT_ABI)
+
+AC_ARG_ENABLE([hashes],
+    AS_HELP_STRING(
+        [--enable-hashes=HASHES],
+        [Select hash algorithms to support.  Acceptable values are
+         'all' or a comma-separated list of names from the file
+         'hashes.lst' and/or the keywords 'strong', 'freebsd',
+         'glibc', 'netbsd', 'openbsd', 'osx', and 'solaris',
+         which select groups of hashes as described in that file.
+         The default is 'all'.
+         Note: if binary compatibility with any historic libcrypt is
+         desired (i.e. any --enable-obsolete-api setting other than
+         'no'), the 'des' hash must be enabled.]),
+    [hashes_selected=$enableval],
+    [hashes_selected=all]
+)
+# This code must run after AC_PROG_AWK.
+hashes_enabled=$(
+    $AWK -f ${srcdir}/sel-hashes.awk -v SELECTED_HASHES="$hashes_selected" \
+            ${srcdir}/hashes.lst
+)
+if test x"$hashes_enabled" = x || test x"$hashes_enabled" = x,; then
+    AC_MSG_ERROR([bad value '${hashes_selected}' for --enable-hashes])
+fi
+AC_SUBST([hashes_enabled])
+
+# If the traditional DES hash is disabled, then the obsolete APIs are
+# implicitly disabled.
+case "$hashes_enabled" in
+    *,des,*) ;;
+    *)
+       if test x"$COMPAT_ABI" != xno; then
+         AC_MSG_WARN(
+           [--enable-hashes=${hashes_selected} forces --enable-obsolete-api=no])
+       fi
+       enable_obsolete_api=0
+       enable_compat_suse=0
+       COMPAT_ABI=no
+       ;;
+esac
+
+# The obsolete APIs are unconditionally excluded from the static library,
+# so if we are not building the shared library, we are effectively not
+# building obsolete APIs, and we shouldn't try to test them.
+if test x$enable_shared != xyes; then enable_obsolete_api=0; fi
+
+# Determine whether there's even a GNU libc on this system that we
+# need to be binary backward compatible with.
+SYMVER_FLOOR=none
+if test $enable_obsolete_api = 1; then
+  AC_MSG_CHECKING([minimum symbol version to use for compatibility symbols])
+  case $host_os in
+    *linux*)
+      while read pattern version cond; do
+        if test -z "$pattern" || test "x$pattern" = 'x#'; then
+          continue
+        fi
+        if expr "$host_cpu" : "$pattern" > /dev/null; then
+          if test -z "$cond"; then
+            cond_matched=yes
+          else
+            AC_PREPROC_IFELSE([AC_LANG_SOURCE([[
+#include <limits.h>
+#if $cond
+#error yes
+#endif
+            ]])],
+            [cond_matched=no], [cond_matched=yes])
+          fi
+          if test $cond_matched = yes; then
+            SYMVER_FLOOR="$version"
+            break
+          fi
+        fi
+      done < ${srcdir}/libcrypt.minver
+    ;;
+
+    *gnu*)
+        # glibc exists for GNU Hurd, but it is unclear to me whether
+        # it has a stable ABI yet.  For now, we are assuming not.
+    ;;
+
+    *)
+        # Other host OSes do not use glibc, so there is no reason to
+        # attempt to be binary compatible with it.
+    ;;
+  esac
+  AC_MSG_RESULT([$SYMVER_FLOOR])
+fi
+if test x"$SYMVER_FLOOR" = xnone; then
+  SYMVER_FLOOR=XCRYPT_2.0
+  SYMVER_MIN=XCRYPT_2.0
+  enable_obsolete_api=0
+else
+  SYMVER_MIN=GLIBC_2.0
+fi
+AC_SUBST([SYMVER_FLOOR])
+AC_SUBST([SYMVER_MIN])
+
+AC_DEFINE_UNQUOTED([SYMVER_FLOOR], [$SYMVER_FLOOR],
+  [Define as the lowest compatibility symbol version that is actually
+   included in libcrypt.so.])
+
+AC_DEFINE_UNQUOTED([ENABLE_OBSOLETE_API], [$enable_obsolete_api],
+ [Define as 1 if the obsolete APIs (fcrypt, encrypt, setkey)
+  should be included, 0 otherwise.])
+AM_CONDITIONAL([ENABLE_OBSOLETE_API], [test $enable_obsolete_api = 1])
+AM_CONDITIONAL([ENABLE_COMPAT_SUSE], [test $enable_compat_suse = 1])
+
+# The Makefile needs to know which versions of the library we are building.
+AM_CONDITIONAL([ENABLE_STATIC], [test $enable_static = yes])
+AM_CONDITIONAL([ENABLE_SHARED], [test $enable_shared = yes])
+
+# The Makefile needs to know if we are cross-compiling.
+AM_CONDITIONAL([CROSS_COMPILING], [test $cross_compiling = yes])
+
+AC_OUTPUT

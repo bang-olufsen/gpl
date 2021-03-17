@@ -1,0 +1,52 @@
+<!-- ##### SECTION Title ##### -->
+gmime-stream-mmap
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GMimeStreamMmap ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION g_mime_stream_mmap_new ##### -->
+<para>
+
+</para>
+
+@fd: 
+@prot: 
+@flags: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_stream_mmap_new_with_bounds ##### -->
+<para>
+
+</para>
+
+@fd: 
+@prot: 
+@flags: 
+@start: 
+@end: 
+@Returns: 
+
+

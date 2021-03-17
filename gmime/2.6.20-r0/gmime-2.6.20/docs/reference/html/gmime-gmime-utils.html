@@ -1,0 +1,647 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>gmime-utils</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="GMime 2.6 Reference Manual">
+<link rel="up" href="core.html" title="Part III. GMime Core Reference">
+<link rel="prev" href="gmime-gmime-encodings.html" title="gmime-encodings">
+<link rel="next" href="classes.html" title="Part IV. GMime Classes">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="gmime-gmime-encodings.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="core.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">GMime 2.6 Reference Manual</th>
+<td><a accesskey="n" href="classes.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#gmime-gmime-utils.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#gmime-gmime-utils.description" class="shortcut">Description</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="gmime-gmime-utils"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="gmime-gmime-utils.top_of_page"></a>gmime-utils</span></h2>
+<p>gmime-utils — MIME utility functions</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="gmime-gmime-utils.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">struct              <a class="link" href="gmime-gmime-utils.html#GMimeReferences" title="struct GMimeReferences">GMimeReferences</a>;
+<span class="returnvalue">time_t</span>              <a class="link" href="gmime-gmime-utils.html#g-mime-utils-header-decode-date" title="g_mime_utils_header_decode_date ()">g_mime_utils_header_decode_date</a>     (<em class="parameter"><code>const <span class="type">char</span> *str</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> *tz_offset</code></em>);
+<span class="returnvalue">char</span> *              <a class="link" href="gmime-gmime-utils.html#g-mime-utils-header-format-date" title="g_mime_utils_header_format_date ()">g_mime_utils_header_format_date</a>     (<em class="parameter"><code><span class="type">time_t</span> date</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> tz_offset</code></em>);
+<span class="returnvalue">char</span> *              <a class="link" href="gmime-gmime-utils.html#g-mime-utils-generate-message-id" title="g_mime_utils_generate_message_id ()">g_mime_utils_generate_message_id</a>    (<em class="parameter"><code>const <span class="type">char</span> *fqdn</code></em>);
+<span class="returnvalue">char</span> *              <a class="link" href="gmime-gmime-utils.html#g-mime-utils-decode-message-id" title="g_mime_utils_decode_message_id ()">g_mime_utils_decode_message_id</a>      (<em class="parameter"><code>const <span class="type">char</span> *message_id</code></em>);
+const <span class="returnvalue">char</span> *        <a class="link" href="gmime-gmime-utils.html#g-mime-references-get-message-id" title="g_mime_references_get_message_id ()">g_mime_references_get_message_id</a>    (<em class="parameter"><code>const <a class="link" href="gmime-gmime-utils.html#GMimeReferences" title="struct GMimeReferences"><span class="type">GMimeReferences</span></a> *ref</code></em>);
+const <a class="link" href="gmime-gmime-utils.html#GMimeReferences" title="struct GMimeReferences"><span class="returnvalue">GMimeReferences</span></a> * <a class="link" href="gmime-gmime-utils.html#g-mime-references-get-next" title="g_mime_references_get_next ()">g_mime_references_get_next</a>      (<em class="parameter"><code>const <a class="link" href="gmime-gmime-utils.html#GMimeReferences" title="struct GMimeReferences"><span class="type">GMimeReferences</span></a> *ref</code></em>);
+<a class="link" href="gmime-gmime-utils.html#GMimeReferences" title="struct GMimeReferences"><span class="returnvalue">GMimeReferences</span></a> *   <a class="link" href="gmime-gmime-utils.html#g-mime-references-decode" title="g_mime_references_decode ()">g_mime_references_decode</a>            (<em class="parameter"><code>const <span class="type">char</span> *text</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="gmime-gmime-utils.html#g-mime-references-append" title="g_mime_references_append ()">g_mime_references_append</a>            (<em class="parameter"><code><a class="link" href="gmime-gmime-utils.html#GMimeReferences" title="struct GMimeReferences"><span class="type">GMimeReferences</span></a> **refs</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *msgid</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="gmime-gmime-utils.html#g-mime-references-clear" title="g_mime_references_clear ()">g_mime_references_clear</a>             (<em class="parameter"><code><a class="link" href="gmime-gmime-utils.html#GMimeReferences" title="struct GMimeReferences"><span class="type">GMimeReferences</span></a> **refs</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="gmime-gmime-utils.html#g-mime-references-free" title="g_mime_references_free ()">g_mime_references_free</a>              (<em class="parameter"><code><a class="link" href="gmime-gmime-utils.html#GMimeReferences" title="struct GMimeReferences"><span class="type">GMimeReferences</span></a> *refs</code></em>);
+<span class="returnvalue">char</span> *              <a class="link" href="gmime-gmime-utils.html#g-mime-utils-header-fold" title="g_mime_utils_header_fold ()">g_mime_utils_header_fold</a>            (<em class="parameter"><code>const <span class="type">char</span> *header</code></em>);
+<span class="returnvalue">char</span> *              <a class="link" href="gmime-gmime-utils.html#g-mime-utils-header-printf" title="g_mime_utils_header_printf ()">g_mime_utils_header_printf</a>          (<em class="parameter"><code>const <span class="type">char</span> *format</code></em>,
+                                                         <em class="parameter"><code>...</code></em>);
+<span class="returnvalue">char</span> *              <a class="link" href="gmime-gmime-utils.html#g-mime-utils-quote-string" title="g_mime_utils_quote_string ()">g_mime_utils_quote_string</a>           (<em class="parameter"><code>const <span class="type">char</span> *str</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="gmime-gmime-utils.html#g-mime-utils-unquote-string" title="g_mime_utils_unquote_string ()">g_mime_utils_unquote_string</a>         (<em class="parameter"><code><span class="type">char</span> *str</code></em>);
+<span class="returnvalue">gboolean</span>            <a class="link" href="gmime-gmime-utils.html#g-mime-utils-text-is-8bit" title="g_mime_utils_text_is_8bit ()">g_mime_utils_text_is_8bit</a>           (<em class="parameter"><code>const unsigned <span class="type">char</span> *text</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> len</code></em>);
+<a class="link" href="gmime-gmime-encodings.html#GMimeContentEncoding" title="enum GMimeContentEncoding"><span class="returnvalue">GMimeContentEncoding</span></a> <a class="link" href="gmime-gmime-utils.html#g-mime-utils-best-encoding" title="g_mime_utils_best_encoding ()">g_mime_utils_best_encoding</a>         (<em class="parameter"><code>const unsigned <span class="type">char</span> *text</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> len</code></em>);
+<span class="returnvalue">char</span> *              <a class="link" href="gmime-gmime-utils.html#g-mime-utils-decode-8bit" title="g_mime_utils_decode_8bit ()">g_mime_utils_decode_8bit</a>            (<em class="parameter"><code>const <span class="type">char</span> *text</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> len</code></em>);
+<span class="returnvalue">char</span> *              <a class="link" href="gmime-gmime-utils.html#g-mime-utils-header-decode-text" title="g_mime_utils_header_decode_text ()">g_mime_utils_header_decode_text</a>     (<em class="parameter"><code>const <span class="type">char</span> *text</code></em>);
+<span class="returnvalue">char</span> *              <a class="link" href="gmime-gmime-utils.html#g-mime-utils-header-encode-text" title="g_mime_utils_header_encode_text ()">g_mime_utils_header_encode_text</a>     (<em class="parameter"><code>const <span class="type">char</span> *text</code></em>);
+<span class="returnvalue">char</span> *              <a class="link" href="gmime-gmime-utils.html#g-mime-utils-header-decode-phrase" title="g_mime_utils_header_decode_phrase ()">g_mime_utils_header_decode_phrase</a>   (<em class="parameter"><code>const <span class="type">char</span> *phrase</code></em>);
+<span class="returnvalue">char</span> *              <a class="link" href="gmime-gmime-utils.html#g-mime-utils-header-encode-phrase" title="g_mime_utils_header_encode_phrase ()">g_mime_utils_header_encode_phrase</a>   (<em class="parameter"><code>const <span class="type">char</span> *phrase</code></em>);
+<span class="returnvalue">char</span> *              <a class="link" href="gmime-gmime-utils.html#g-mime-utils-structured-header-fold" title="g_mime_utils_structured_header_fold ()">g_mime_utils_structured_header_fold</a> (<em class="parameter"><code>const <span class="type">char</span> *header</code></em>);
+<span class="returnvalue">char</span> *              <a class="link" href="gmime-gmime-utils.html#g-mime-utils-unstructured-header-fold" title="g_mime_utils_unstructured_header_fold ()">g_mime_utils_unstructured_header_fold</a>
+                                                        (<em class="parameter"><code>const <span class="type">char</span> *header</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="gmime-gmime-utils.description"></a><h2>Description</h2>
+<p>
+Utility functions to parse, encode and decode various MIME tokens
+and encodings.
+</p>
+</div>
+<div class="refsect1">
+<a name="gmime-gmime-utils.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="GMimeReferences"></a><h3>struct GMimeReferences</h3>
+<pre class="programlisting">struct GMimeReferences {
+	GMimeReferences *next;
+	char *msgid;
+};
+</pre>
+<p>
+A List of references, as per the References or In-Reply-To header
+fields.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><a class="link" href="gmime-gmime-utils.html#GMimeReferences" title="struct GMimeReferences"><span class="type">GMimeReferences</span></a> *<em class="structfield"><code><a name="GMimeReferences.next"></a>next</code></em>;</span></p></td>
+<td>Pointer to the next reference.</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="type">char</span> *<em class="structfield"><code><a name="GMimeReferences.msgid"></a>msgid</code></em>;</span></p></td>
+<td>Reference message-id.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-utils-header-decode-date"></a><h3>g_mime_utils_header_decode_date ()</h3>
+<pre class="programlisting"><span class="returnvalue">time_t</span>              g_mime_utils_header_decode_date     (<em class="parameter"><code>const <span class="type">char</span> *str</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> *tz_offset</code></em>);</pre>
+<p>
+Decodes the rfc822 date string and saves the GMT offset into
+<em class="parameter"><code>tz_offset</code></em> if non-NULL.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>str</code></em> :</span></p></td>
+<td>input date string</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>tz_offset</code></em> :</span></p></td>
+<td>timezone offset. <span class="annotation">[<a href="http://foldoc.org/out"><span class="acronym">out</span></a>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the time_t representation of the date string specified by
+<em class="parameter"><code>str</code></em> or (time_t) <code class="literal">0</code> on error. If <em class="parameter"><code>tz_offset</code></em> is non-NULL, the value
+of the timezone offset will be stored.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-utils-header-format-date"></a><h3>g_mime_utils_header_format_date ()</h3>
+<pre class="programlisting"><span class="returnvalue">char</span> *              g_mime_utils_header_format_date     (<em class="parameter"><code><span class="type">time_t</span> date</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> tz_offset</code></em>);</pre>
+<p>
+Allocates a string buffer containing the rfc822 formatted date
+string represented by <em class="parameter"><code>time</code></em> and <em class="parameter"><code>tz_offset</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>date</code></em> :</span></p></td>
+<td>time_t date representation</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>tz_offset</code></em> :</span></p></td>
+<td>Timezone offset</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a valid string representation of the date.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-utils-generate-message-id"></a><h3>g_mime_utils_generate_message_id ()</h3>
+<pre class="programlisting"><span class="returnvalue">char</span> *              g_mime_utils_generate_message_id    (<em class="parameter"><code>const <span class="type">char</span> *fqdn</code></em>);</pre>
+<p>
+Generates a unique Message-Id.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>fqdn</code></em> :</span></p></td>
+<td>Fully qualified domain name</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a unique string in an addr-spec format suitable for use as
+a Message-Id.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-utils-decode-message-id"></a><h3>g_mime_utils_decode_message_id ()</h3>
+<pre class="programlisting"><span class="returnvalue">char</span> *              g_mime_utils_decode_message_id      (<em class="parameter"><code>const <span class="type">char</span> *message_id</code></em>);</pre>
+<p>
+Decodes a msg-id as defined by rfc822.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>message_id</code></em> :</span></p></td>
+<td>string containing a message-id</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the addr-spec portion of the msg-id.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-references-get-message-id"></a><h3>g_mime_references_get_message_id ()</h3>
+<pre class="programlisting">const <span class="returnvalue">char</span> *        g_mime_references_get_message_id    (<em class="parameter"><code>const <a class="link" href="gmime-gmime-utils.html#GMimeReferences" title="struct GMimeReferences"><span class="type">GMimeReferences</span></a> *ref</code></em>);</pre>
+<p>
+Gets the Message-Id reference from the <a class="link" href="gmime-gmime-utils.html#GMimeReferences" title="struct GMimeReferences"><span class="type">GMimeReferences</span></a> node.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>ref</code></em> :</span></p></td>
+<td>a <a class="link" href="gmime-gmime-utils.html#GMimeReferences" title="struct GMimeReferences"><span class="type">GMimeReferences</span></a> list</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the Message-Id reference from the <a class="link" href="gmime-gmime-utils.html#GMimeReferences" title="struct GMimeReferences"><span class="type">GMimeReferences</span></a> node.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-references-get-next"></a><h3>g_mime_references_get_next ()</h3>
+<pre class="programlisting">const <a class="link" href="gmime-gmime-utils.html#GMimeReferences" title="struct GMimeReferences"><span class="returnvalue">GMimeReferences</span></a> * g_mime_references_get_next      (<em class="parameter"><code>const <a class="link" href="gmime-gmime-utils.html#GMimeReferences" title="struct GMimeReferences"><span class="type">GMimeReferences</span></a> *ref</code></em>);</pre>
+<p>
+Advances to the next reference node in the <a class="link" href="gmime-gmime-utils.html#GMimeReferences" title="struct GMimeReferences"><span class="type">GMimeReferences</span></a> list.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>ref</code></em> :</span></p></td>
+<td>a <a class="link" href="gmime-gmime-utils.html#GMimeReferences" title="struct GMimeReferences"><span class="type">GMimeReferences</span></a> list</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the next reference node in the <a class="link" href="gmime-gmime-utils.html#GMimeReferences" title="struct GMimeReferences"><span class="type">GMimeReferences</span></a> list.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-references-decode"></a><h3>g_mime_references_decode ()</h3>
+<pre class="programlisting"><a class="link" href="gmime-gmime-utils.html#GMimeReferences" title="struct GMimeReferences"><span class="returnvalue">GMimeReferences</span></a> *   g_mime_references_decode            (<em class="parameter"><code>const <span class="type">char</span> *text</code></em>);</pre>
+<p>
+Decodes a list of msg-ids as in the References and/or In-Reply-To
+headers defined in rfc822.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>text</code></em> :</span></p></td>
+<td>string containing a list of msg-ids</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a list of referenced msg-ids.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-references-append"></a><h3>g_mime_references_append ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_references_append            (<em class="parameter"><code><a class="link" href="gmime-gmime-utils.html#GMimeReferences" title="struct GMimeReferences"><span class="type">GMimeReferences</span></a> **refs</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *msgid</code></em>);</pre>
+<p>
+Appends a reference to msgid to the list of references.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>refs</code></em> :</span></p></td>
+<td>the address of a <a class="link" href="gmime-gmime-utils.html#GMimeReferences" title="struct GMimeReferences"><span class="type">GMimeReferences</span></a> list</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>msgid</code></em> :</span></p></td>
+<td>a message-id string</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-references-clear"></a><h3>g_mime_references_clear ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_references_clear             (<em class="parameter"><code><a class="link" href="gmime-gmime-utils.html#GMimeReferences" title="struct GMimeReferences"><span class="type">GMimeReferences</span></a> **refs</code></em>);</pre>
+<p>
+Clears the <a class="link" href="gmime-gmime-utils.html#GMimeReferences" title="struct GMimeReferences"><span class="type">GMimeReferences</span></a> list and resets it to <code class="literal">NULL</code>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><em class="parameter"><code>refs</code></em> :</span></p></td>
+<td>address of a <a class="link" href="gmime-gmime-utils.html#GMimeReferences" title="struct GMimeReferences"><span class="type">GMimeReferences</span></a> list</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-references-free"></a><h3>g_mime_references_free ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_references_free              (<em class="parameter"><code><a class="link" href="gmime-gmime-utils.html#GMimeReferences" title="struct GMimeReferences"><span class="type">GMimeReferences</span></a> *refs</code></em>);</pre>
+<p>
+Frees the <a class="link" href="gmime-gmime-utils.html#GMimeReferences" title="struct GMimeReferences"><span class="type">GMimeReferences</span></a> list.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><em class="parameter"><code>refs</code></em> :</span></p></td>
+<td>a <a class="link" href="gmime-gmime-utils.html#GMimeReferences" title="struct GMimeReferences"><span class="type">GMimeReferences</span></a> list</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-utils-header-fold"></a><h3>g_mime_utils_header_fold ()</h3>
+<pre class="programlisting"><span class="returnvalue">char</span> *              g_mime_utils_header_fold            (<em class="parameter"><code>const <span class="type">char</span> *header</code></em>);</pre>
+<p>
+Folds a structured header according to the rules in rfc822.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>header</code></em> :</span></p></td>
+<td>header field and value string</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>an allocated string containing the folded header.
+WARNING: This function is obsolete. Use
+<a class="link" href="gmime-gmime-utils.html#g-mime-utils-structured-header-fold" title="g_mime_utils_structured_header_fold ()"><code class="function">g_mime_utils_structured_header_fold()</code></a> instead.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-utils-header-printf"></a><h3>g_mime_utils_header_printf ()</h3>
+<pre class="programlisting"><span class="returnvalue">char</span> *              g_mime_utils_header_printf          (<em class="parameter"><code>const <span class="type">char</span> *format</code></em>,
+                                                         <em class="parameter"><code>...</code></em>);</pre>
+<p>
+Allocates a buffer containing a formatted header specified by the
+<em class="parameter"><code>Varargs</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>format</code></em> :</span></p></td>
+<td>string format</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>an allocated string containing the folded header specified
+by <em class="parameter"><code>format</code></em> and the following arguments.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-utils-quote-string"></a><h3>g_mime_utils_quote_string ()</h3>
+<pre class="programlisting"><span class="returnvalue">char</span> *              g_mime_utils_quote_string           (<em class="parameter"><code>const <span class="type">char</span> *str</code></em>);</pre>
+<p>
+Quotes <em class="parameter"><code>string</code></em> as needed according to the rules in rfc2045.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>str</code></em> :</span></p></td>
+<td>input string</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>an allocated string containing the escaped and quoted (if
+needed to be) input string. The decision to quote the string is
+based on whether or not the input string contains any 'tspecials'
+as defined by rfc2045.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-utils-unquote-string"></a><h3>g_mime_utils_unquote_string ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_utils_unquote_string         (<em class="parameter"><code><span class="type">char</span> *str</code></em>);</pre>
+<p>
+Unquotes and unescapes a string.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><em class="parameter"><code>str</code></em> :</span></p></td>
+<td>input string</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-utils-text-is-8bit"></a><h3>g_mime_utils_text_is_8bit ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>            g_mime_utils_text_is_8bit           (<em class="parameter"><code>const unsigned <span class="type">char</span> *text</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> len</code></em>);</pre>
+<p>
+Determines if <em class="parameter"><code>text</code></em> contains 8bit characters within the first <em class="parameter"><code>len</code></em>
+bytes.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>text</code></em> :</span></p></td>
+<td>text to check for 8bit chars</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>len</code></em> :</span></p></td>
+<td>text length</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>
+<code class="literal">TRUE</code> if the text contains 8bit characters or <code class="literal">FALSE</code>
+otherwise.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-utils-best-encoding"></a><h3>g_mime_utils_best_encoding ()</h3>
+<pre class="programlisting"><a class="link" href="gmime-gmime-encodings.html#GMimeContentEncoding" title="enum GMimeContentEncoding"><span class="returnvalue">GMimeContentEncoding</span></a> g_mime_utils_best_encoding         (<em class="parameter"><code>const unsigned <span class="type">char</span> *text</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> len</code></em>);</pre>
+<p>
+Determines the best content encoding for the first <em class="parameter"><code>len</code></em> bytes of
+<em class="parameter"><code>text</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>text</code></em> :</span></p></td>
+<td>text to encode</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>len</code></em> :</span></p></td>
+<td>text length</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a <a class="link" href="gmime-gmime-encodings.html#GMimeContentEncoding" title="enum GMimeContentEncoding"><span class="type">GMimeContentEncoding</span></a> that is determined to be the best
+encoding type for the specified block of text. ("best" in this
+particular case means smallest output size)</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-utils-decode-8bit"></a><h3>g_mime_utils_decode_8bit ()</h3>
+<pre class="programlisting"><span class="returnvalue">char</span> *              g_mime_utils_decode_8bit            (<em class="parameter"><code>const <span class="type">char</span> *text</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> len</code></em>);</pre>
+<p>
+Attempts to convert text in an unknown 8bit/multibyte charset into
+UTF-8 by finding the charset which will convert the most bytes into
+valid UTF-8 characters as possible. If no exact match can be found,
+it will choose the best match and convert invalid byte sequences
+into question-marks (?) in the returned string buffer.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>text</code></em> :</span></p></td>
+<td>input text in
+unknown 8bit/multibyte character set. <span class="annotation">[<a href="http://foldoc.org/array"><span class="acronym">array</span></a> length=len][<a href="http://foldoc.org/element-type"><span class="acronym">element-type</span></a> guint8]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>len</code></em> :</span></p></td>
+<td>input text length</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a UTF-8 string representation of <em class="parameter"><code>text</code></em>.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-utils-header-decode-text"></a><h3>g_mime_utils_header_decode_text ()</h3>
+<pre class="programlisting"><span class="returnvalue">char</span> *              g_mime_utils_header_decode_text     (<em class="parameter"><code>const <span class="type">char</span> *text</code></em>);</pre>
+<p>
+Decodes an rfc2047 encoded 'text' header.
+</p>
+<p>
+Note: See <a class="link" href="gmime-gmime-charset.html#g-mime-set-user-charsets" title="g_mime_set_user_charsets ()"><code class="function">g_mime_set_user_charsets()</code></a> for details on how charset
+conversion is handled for unencoded 8bit text and/or wrongly
+specified rfc2047 encoded-word tokens.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>text</code></em> :</span></p></td>
+<td>header text to decode</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a newly allocated UTF-8 string representing the the decoded
+header.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-utils-header-encode-text"></a><h3>g_mime_utils_header_encode_text ()</h3>
+<pre class="programlisting"><span class="returnvalue">char</span> *              g_mime_utils_header_encode_text     (<em class="parameter"><code>const <span class="type">char</span> *text</code></em>);</pre>
+<p>
+Encodes a 'text' header according to the rules in rfc2047.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>text</code></em> :</span></p></td>
+<td>text to encode</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the encoded header. Useful for encoding
+headers like "Subject".</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-utils-header-decode-phrase"></a><h3>g_mime_utils_header_decode_phrase ()</h3>
+<pre class="programlisting"><span class="returnvalue">char</span> *              g_mime_utils_header_decode_phrase   (<em class="parameter"><code>const <span class="type">char</span> *phrase</code></em>);</pre>
+<p>
+Decodes an rfc2047 encoded 'phrase' header.
+</p>
+<p>
+Note: See <a class="link" href="gmime-gmime-charset.html#g-mime-set-user-charsets" title="g_mime_set_user_charsets ()"><code class="function">g_mime_set_user_charsets()</code></a> for details on how charset
+conversion is handled for unencoded 8bit text and/or wrongly
+specified rfc2047 encoded-word tokens.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>phrase</code></em> :</span></p></td>
+<td>header to decode</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a newly allocated UTF-8 string representing the the decoded
+header.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-utils-header-encode-phrase"></a><h3>g_mime_utils_header_encode_phrase ()</h3>
+<pre class="programlisting"><span class="returnvalue">char</span> *              g_mime_utils_header_encode_phrase   (<em class="parameter"><code>const <span class="type">char</span> *phrase</code></em>);</pre>
+<p>
+Encodes a 'phrase' header according to the rules in rfc2047.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>phrase</code></em> :</span></p></td>
+<td>phrase to encode</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the encoded 'phrase'. Useful for encoding internet
+addresses.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-utils-structured-header-fold"></a><h3>g_mime_utils_structured_header_fold ()</h3>
+<pre class="programlisting"><span class="returnvalue">char</span> *              g_mime_utils_structured_header_fold (<em class="parameter"><code>const <span class="type">char</span> *header</code></em>);</pre>
+<p>
+Folds a structured header according to the rules in rfc822.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>header</code></em> :</span></p></td>
+<td>header field and value string</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>an allocated string containing the folded header.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-utils-unstructured-header-fold"></a><h3>g_mime_utils_unstructured_header_fold ()</h3>
+<pre class="programlisting"><span class="returnvalue">char</span> *              g_mime_utils_unstructured_header_fold
+                                                        (<em class="parameter"><code>const <span class="type">char</span> *header</code></em>);</pre>
+<p>
+Folds an unstructured header according to the rules in rfc822.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>header</code></em> :</span></p></td>
+<td>header field and value string</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>an allocated string containing the folded header.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

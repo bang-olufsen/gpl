@@ -1,0 +1,30 @@
+From b4b7fd58c7b9697514a70a8b404332a56910504d Mon Sep 17 00:00:00 2001
+From: Radek Dostal <radek.dostal@streamunlimited.com>
+Date: Thu, 9 Oct 2014 10:14:14 +0200
+Subject: [PATCH] omap_gpmc: remove annoying debug prints as they flood console
+ output
+
+Signed-off-by: Radek Dostal <radek.dostal@streamunlimited.com>
+---
+ drivers/mtd/nand/omap_gpmc.c | 3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/drivers/mtd/nand/omap_gpmc.c b/drivers/mtd/nand/omap_gpmc.c
+index 881a636..04d9588 100644
+--- a/drivers/mtd/nand/omap_gpmc.c
++++ b/drivers/mtd/nand/omap_gpmc.c
+@@ -401,11 +401,8 @@ static int omap_correct_data_bch(struct mtd_info *mtd, uint8_t *dat,
+ 		bit_pos  = error_loc[count] % 8;
+ 		if (byte_pos < SECTOR_BYTES) {
+ 			dat[byte_pos] ^= 1 << bit_pos;
+-			printf("nand: bit-flip corrected @data=%d\n", byte_pos);
+ 		} else if (byte_pos < error_max) {
+ 			read_ecc[byte_pos - SECTOR_BYTES] = 1 << bit_pos;
+-			printf("nand: bit-flip corrected @oob=%d\n", byte_pos -
+-								SECTOR_BYTES);
+ 		} else {
+ 			err = -EBADMSG;
+ 			printf("nand: error: invalid bit-flip location\n");
+-- 
+2.7.4
+

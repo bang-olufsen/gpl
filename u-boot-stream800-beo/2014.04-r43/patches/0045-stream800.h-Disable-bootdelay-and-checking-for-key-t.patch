@@ -1,0 +1,42 @@
+From 75f525ba32c35b2aa49a70cee30bd0a95e5d3e4e Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Mon, 23 Feb 2015 10:00:20 +0100
+Subject: [PATCH] stream800.h: Disable bootdelay and checking for key to stop
+ autoboot
+
+Because some issue with HW sometimes we get stuck in u-boot prompt.
+Disable bootdelay and stopping autoboot by any key.
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ include/configs/stream800.h | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/include/configs/stream800.h b/include/configs/stream800.h
+index 51e25d9..ebcfa47 100644
+--- a/include/configs/stream800.h
++++ b/include/configs/stream800.h
+@@ -96,7 +96,10 @@
+ #undef SHA256_DEBUG
+ 
+ /* Environment information */
+-#define CONFIG_BOOTDELAY		1
++#ifdef CONFIG_BOOTDELAY	/* defined in ti_armv7_common.h */
++#undef CONFIG_BOOTDELAY
++#define CONFIG_BOOTDELAY	-2 /* autoboot with no delay and not check for abort */
++#endif /* CONFIG_BOOTDELAY */
+ #define CONFIG_BOOTCOUNT_LIMIT  6
+ 
+ #define _stra(s) #s
+@@ -111,8 +114,6 @@
+ #define CONFIG_CONSTANTS_BASE   0x00300000
+ #define CONFIG_CONSTANTS_RANGE  0x00080000
+ 
+-/* set to negative value for no autoboot */
+-#define CONFIG_BOOTDELAY		1
+ #define CONFIG_ENV_VARS_UBOOT_CONFIG
+ 
+ 
+-- 
+2.7.4
+

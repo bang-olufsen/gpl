@@ -1,0 +1,29 @@
+From 4fd7b58be66ab2fbacd1b0319f3bd2ac2926c51e Mon Sep 17 00:00:00 2001
+From: Florian Grandel <fgrandel@gmail.com>
+Date: Thu, 18 Jun 2015 03:16:50 +0200
+Subject: [PATCH] Bluetooth: mgmt: multi-adv for trigger_le_scan()
+
+This patch ensures that instance advertising is correctly canceled
+before starting a le scan.
+
+Signed-off-by: Florian Grandel <fgrandel@gmail.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+---
+ net/bluetooth/mgmt.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
+index 8b31199..897941d 100644
+--- a/net/bluetooth/mgmt.c
++++ b/net/bluetooth/mgmt.c
+@@ -4217,6 +4217,7 @@ static bool trigger_le_scan(struct hci_request *req, u16 interval, u8 *status)
+ 			return false;
+ 		}
+ 
++		cancel_adv_timeout(hdev);
+ 		disable_advertising(req);
+ 	}
+ 
+-- 
+2.7.4
+

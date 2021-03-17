@@ -1,0 +1,82 @@
+From af4455fe7cae95c9ff05549130f753dd688a75d0 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Fri, 19 May 2017 08:56:29 +0200
+Subject: [PATCH] adapter: Convert EIR
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ src/adapter.c | 51 +++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 51 insertions(+)
+
+diff --git a/src/adapter.c b/src/adapter.c
+index 01fad35..b93aaa4 100644
+--- a/src/adapter.c
++++ b/src/adapter.c
+@@ -5092,6 +5092,53 @@ static void convert_proximity_entry(char *key, char *value, void *user_data)
+ 	g_key_file_free(key_file);
+ }
+ 
++static void convert_eir_entry(char *key, char *value, void *user_data)
++{
++	char *address = user_data;
++	char *str = key;
++	char filename[PATH_MAX];
++	GKeyFile *key_file;
++	char *data;
++	gsize length = 0;
++
++	struct eir_data eir = {0};
++	uint8_t eir_data[UINT8_MAX] = {0};
++	uint8_t eir_len = 0;
++	int i;
++
++	struct stat st;
++	int err;
++
++	snprintf(filename, PATH_MAX, STORAGEDIR "/%s/%s",
++			address, key);
++
++	err = stat(filename, &st);
++	if (err || !S_ISDIR(st.st_mode))
++		return;
++
++	eir_len = strlen(value) / 2;
++	for (i = 0; i < eir_len; i++)
++		sscanf(value + (i * 2), "%02hhX", &eir_data[i]);
++	eir_parse(&eir, eir_data, eir_len);
++
++	snprintf(filename, PATH_MAX, STORAGEDIR "/%s/%s/info", address, str);
++
++	key_file = g_key_file_new();
++	g_key_file_load_from_file(key_file, filename, 0, NULL);
++	create_file(filename, S_IRUSR | S_IWUSR);
++
++	if (eir.name)
++		g_key_file_set_string(key_file, "General", "Name", eir.name);
++	if (eir.flags & EIR_BREDR_UNSUP)
++		g_key_file_set_string(key_file, "General", "SupportedTechnologies", "LE;");
++
++	data = g_key_file_to_data(key_file, &length, NULL);
++	g_file_set_contents(filename, data, length, NULL);
++	g_free(data);
++
++	g_key_file_free(key_file);
++}
++
+ static void convert_device_storage(struct btd_adapter *adapter)
+ {
+ 	char filename[PATH_MAX];
+@@ -5149,6 +5196,10 @@ static void convert_device_storage(struct btd_adapter *adapter)
+ 	/* Convert proximity */
+ 	snprintf(filename, PATH_MAX, STORAGEDIR "/%s/proximity", address);
+ 	textfile_foreach(filename, convert_proximity_entry, address);
++
++	/* Convert eir */
++	snprintf(filename, PATH_MAX, STORAGEDIR "/%s/eir", address);
++	textfile_foreach(filename, convert_eir_entry, address);
+ }
+ 
+ static void convert_config(struct btd_adapter *adapter, const char *filename,
+-- 
+2.7.4
+

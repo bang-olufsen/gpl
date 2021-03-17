@@ -1,0 +1,71 @@
+From 6cf108cd35370687b0369cf2df14286ff907f017 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Fri, 29 Nov 2013 10:43:16 +0100
+Subject: [PATCH] Move sfupdate verification to separate command.
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ include/configs/stream800.h | 42 +++++++++++++++++++++++-------------------
+ 1 file changed, 23 insertions(+), 19 deletions(-)
+
+diff --git a/include/configs/stream800.h b/include/configs/stream800.h
+index cbea2b4..be8039e 100644
+--- a/include/configs/stream800.h
++++ b/include/configs/stream800.h
+@@ -388,30 +388,34 @@
+         "fi;\0" \
+  \
+  \
++    "verify_sfu_image="\
++	"if sfu valid ${sfu_load_addr}; " \
++           "then " \
++           "echo \"INFO: SFU image valid\"; " \
++           "echo \"INFO: download partition being erased\"; " \
++           "nand erase.part download; " \
++           "echo \"INFO: writing sfupdate image to flash...\"; " \
++           "if nand write ${sfu_load_addr} download ${filesize}; " \
++               "then " \
++               "echo \"INFO: nand write successful\"; " \
++           "else " \
++               "echo \"ERROR: nand write failed\"; " \
++               "sfu errstate; " \
++           "fi; " \
++           "echo \"INFO: setting fail flag...\"; " \
++           "fwup set fail; " \
++           "echo \"INFO: reseting...\"; " \
++           "reset; " \
++        "else echo \"INFO: SFU image invalid\"; " \
++        "fi;\0" \
++ \
++ \
+     "update_download_from_usb=" \
+         "echo \"INFO: usb thumbdrive sfupdate check...\"; " \
+         "if fatload usb ${usbdev} ${sfu_load_addr} sfupdate; " \
+             "then " \
+             "echo \"INFO: SFU update image found on usb thumbdrive\"; " \
+-            "if sfu valid ${sfu_load_addr}; " \
+-                "then " \
+-                "echo \"INFO: SFU image valid\"; " \
+-                "echo \"INFO: download partition being erased\"; " \
+-                "nand erase.part download; " \
+-                "echo \"INFO: writing sfupdate image to flash...\"; " \
+-                "if nand write ${sfu_load_addr} download ${filesize}; " \
+-                    "then " \
+-                    "echo \"INFO: nand write successful\"; " \
+-                "else " \
+-                    "echo \"ERROR: nand write failed\"; " \
+-                    "sfu errstate; " \
+-                "fi; " \
+-                "echo \"INFO: setting fail flag...\"; " \
+-                "fwup set fail; " \
+-                "echo \"INFO: reseting...\"; " \
+-                "reset; " \
+-            "else echo \"INFO: SFU image invalid\"; " \
+-            "fi; " \
++	    "run verify_sfu_image;" \
+         "else echo \"INFO: SFU image USB load failed\"; " \
+         "fi; " \
+         "echo \"INFO: usb thumbdrive sfupdate check complete\";\0" \
+-- 
+2.7.4
+

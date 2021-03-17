@@ -1,0 +1,535 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GUPnP DLNA: GUPnP DLNA Reference Manual</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
+<link rel="home" href="index.html" title="GUPnP DLNA Reference Manual">
+<link rel="up" href="index.html" title="GUPnP DLNA Reference Manual">
+<link rel="prev" href="index.html" title="GUPnP DLNA Reference Manual">
+<link rel="next" href="GUPnPDLNAProfileGuesser.html" title="GUPnPDLNAProfileGuesser">
+<meta name="generator" content="GTK-Doc V1.25.1 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts"><span id="nav_index"><a class="shortcut" href="#idxD">D</a></span></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><img src="up-insensitive.png" width="16" height="16" border="0"></td>
+<td><a accesskey="p" href="index.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="GUPnPDLNAProfileGuesser.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="chapter">
+<div class="titlepage"><div><div><h1 class="title">
+<a name="id-1.2"></a>GUPnP DLNA</h1></div></div></div>
+<div class="toc"><dl class="toc">
+<dt>
+<span class="refentrytitle"><a href="GUPnPDLNAProfileGuesser.html">GUPnPDLNAProfileGuesser</a></span><span class="refpurpose"> — Utility API for discovering DLNA profile for
+given media.</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GUPnPDLNAProfile.html">GUPnPDLNAProfile</a></span><span class="refpurpose"> — Object representing a DLNA profile</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GUPnPDLNAInformation.html">GUPnPDLNAInformation</a></span><span class="refpurpose"> — Base class for storing various types of
+metadata informations.</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="gupnp-dlna-GUPnP-DLNA-Values.html">GUPnP DLNA Values</a></span><span class="refpurpose"> — State values for metadata attributes.</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GUPnPDLNAAudioInformation.html">GUPnPDLNAAudioInformation</a></span><span class="refpurpose"> — Base class representing audio metadata needed
+for DLNA profiles matching.</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GUPnPDLNAContainerInformation.html">GUPnPDLNAContainerInformation</a></span><span class="refpurpose"> — Base class representing container metadata
+needed for DLNA profiles matching.</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GUPnPDLNAImageInformation.html">GUPnPDLNAImageInformation</a></span><span class="refpurpose"> — Base class representing image metadata needed
+for DLNA profiles matching.</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="GUPnPDLNAVideoInformation.html">GUPnPDLNAVideoInformation</a></span><span class="refpurpose"> — Base class representing video metadata needed
+for DLNA profiles matching.</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="gupnp-dlna-gupnp-dlna-restriction.html">gupnp-dlna-restriction</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="gupnp-dlna-gupnp-dlna-value-list.html">gupnp-dlna-value-list</a></span><span class="refpurpose"></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="gupnp-dlna-gupnp-dlna-g-values.html">gupnp-dlna-g-values</a></span><span class="refpurpose"></span>
+</dt>
+</dl></div>
+<p>
+      GUPnP DLNA is a set of utility APIs to simplify DLNA-specific bits of
+      MediaServer implementations, such as DLNA media profile guessing.
+    </p>
+<a name="idx"></a><a name="idxD"></a><h3 class="title">D</h3>
+<dt>
+<a class="link" href="GUPnPDLNAAudioInformation.html#GUPnPDLNAAudioInformationClass" title="GUPnPDLNAAudioInformationClass">GUPnPDLNAAudioInformationClass</a>, struct in <a class="link" href="GUPnPDLNAAudioInformation.html" title="GUPnPDLNAAudioInformation">GUPnPDLNAAudioInformation</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="gupnp-dlna-GUPnP-DLNA-Values.html#GUPnPDLNABoolValue" title="GUPnPDLNABoolValue">GUPnPDLNABoolValue</a>, struct in <a class="link" href="gupnp-dlna-GUPnP-DLNA-Values.html" title="GUPnP DLNA Values">GUPnP DLNA Values</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAContainerInformation.html#GUPnPDLNAContainerInformationClass" title="GUPnPDLNAContainerInformationClass">GUPnPDLNAContainerInformationClass</a>, struct in <a class="link" href="GUPnPDLNAContainerInformation.html" title="GUPnPDLNAContainerInformation">GUPnPDLNAContainerInformation</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="gupnp-dlna-GUPnP-DLNA-Values.html#GUPnPDLNAFractionValue" title="GUPnPDLNAFractionValue">GUPnPDLNAFractionValue</a>, struct in <a class="link" href="gupnp-dlna-GUPnP-DLNA-Values.html" title="GUPnP DLNA Values">GUPnP DLNA Values</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAImageInformation.html#GUPnPDLNAImageInformationClass" title="GUPnPDLNAImageInformationClass">GUPnPDLNAImageInformationClass</a>, struct in <a class="link" href="GUPnPDLNAImageInformation.html" title="GUPnPDLNAImageInformation">GUPnPDLNAImageInformation</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAInformation.html#GUPnPDLNAInformation--audio-information" title="The “audio-information” property">GUPnPDLNAInformation:audio-information</a>, object property in <a class="link" href="GUPnPDLNAInformation.html" title="GUPnPDLNAInformation">GUPnPDLNAInformation</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAInformation.html#GUPnPDLNAInformation--container-information" title="The “container-information” property">GUPnPDLNAInformation:container-information</a>, object property in <a class="link" href="GUPnPDLNAInformation.html" title="GUPnPDLNAInformation">GUPnPDLNAInformation</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAInformation.html#GUPnPDLNAInformation--image-information" title="The “image-information” property">GUPnPDLNAInformation:image-information</a>, object property in <a class="link" href="GUPnPDLNAInformation.html" title="GUPnPDLNAInformation">GUPnPDLNAInformation</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAInformation.html#GUPnPDLNAInformation--uri" title="The “uri” property">GUPnPDLNAInformation:uri</a>, object property in <a class="link" href="GUPnPDLNAInformation.html" title="GUPnPDLNAInformation">GUPnPDLNAInformation</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAInformation.html#GUPnPDLNAInformation--video-information" title="The “video-information” property">GUPnPDLNAInformation:video-information</a>, object property in <a class="link" href="GUPnPDLNAInformation.html" title="GUPnPDLNAInformation">GUPnPDLNAInformation</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAInformation.html#GUPnPDLNAInformationClass" title="GUPnPDLNAInformationClass">GUPnPDLNAInformationClass</a>, struct in <a class="link" href="GUPnPDLNAInformation.html" title="GUPnPDLNAInformation">GUPnPDLNAInformation</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="gupnp-dlna-GUPnP-DLNA-Values.html#GUPnPDLNAIntValue" title="GUPnPDLNAIntValue">GUPnPDLNAIntValue</a>, struct in <a class="link" href="gupnp-dlna-GUPnP-DLNA-Values.html" title="GUPnP DLNA Values">GUPnP DLNA Values</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAProfile.html#GUPnPDLNAProfile-struct" title="GUPnPDLNAProfile">GUPnPDLNAProfile</a>, struct in <a class="link" href="GUPnPDLNAProfile.html" title="GUPnPDLNAProfile">GUPnPDLNAProfile</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAProfile.html#GUPnPDLNAProfile--audio-restrictions" title="The “audio-restrictions” property">GUPnPDLNAProfile:audio-restrictions</a>, object property in <a class="link" href="GUPnPDLNAProfile.html" title="GUPnPDLNAProfile">GUPnPDLNAProfile</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAProfile.html#GUPnPDLNAProfile--container-restrictions" title="The “container-restrictions” property">GUPnPDLNAProfile:container-restrictions</a>, object property in <a class="link" href="GUPnPDLNAProfile.html" title="GUPnPDLNAProfile">GUPnPDLNAProfile</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAProfile.html#GUPnPDLNAProfile--extended" title="The “extended” property">GUPnPDLNAProfile:extended</a>, object property in <a class="link" href="GUPnPDLNAProfile.html" title="GUPnPDLNAProfile">GUPnPDLNAProfile</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAProfile.html#GUPnPDLNAProfile--image-restrictions" title="The “image-restrictions” property">GUPnPDLNAProfile:image-restrictions</a>, object property in <a class="link" href="GUPnPDLNAProfile.html" title="GUPnPDLNAProfile">GUPnPDLNAProfile</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAProfile.html#GUPnPDLNAProfile--mime" title="The “mime” property">GUPnPDLNAProfile:mime</a>, object property in <a class="link" href="GUPnPDLNAProfile.html" title="GUPnPDLNAProfile">GUPnPDLNAProfile</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAProfile.html#GUPnPDLNAProfile--name" title="The “name” property">GUPnPDLNAProfile:name</a>, object property in <a class="link" href="GUPnPDLNAProfile.html" title="GUPnPDLNAProfile">GUPnPDLNAProfile</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAProfile.html#GUPnPDLNAProfile--video-restrictions" title="The “video-restrictions” property">GUPnPDLNAProfile:video-restrictions</a>, object property in <a class="link" href="GUPnPDLNAProfile.html" title="GUPnPDLNAProfile">GUPnPDLNAProfile</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAProfile.html#GUPnPDLNAProfileClass" title="GUPnPDLNAProfileClass">GUPnPDLNAProfileClass</a>, struct in <a class="link" href="GUPnPDLNAProfile.html" title="GUPnPDLNAProfile">GUPnPDLNAProfile</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAProfileGuesser.html#GUPnPDLNAProfileGuesser-struct" title="GUPnPDLNAProfileGuesser">GUPnPDLNAProfileGuesser</a>, struct in <a class="link" href="GUPnPDLNAProfileGuesser.html" title="GUPnPDLNAProfileGuesser">GUPnPDLNAProfileGuesser</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAProfileGuesser.html#GUPnPDLNAProfileGuesser-done" title="The “done” signal">GUPnPDLNAProfileGuesser::done</a>, object signal in <a class="link" href="GUPnPDLNAProfileGuesser.html" title="GUPnPDLNAProfileGuesser">GUPnPDLNAProfileGuesser</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAProfileGuesser.html#GUPnPDLNAProfileGuesser--extended-mode" title="The “extended-mode” property">GUPnPDLNAProfileGuesser:extended-mode</a>, object property in <a class="link" href="GUPnPDLNAProfileGuesser.html" title="GUPnPDLNAProfileGuesser">GUPnPDLNAProfileGuesser</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAProfileGuesser.html#GUPnPDLNAProfileGuesser--relaxed-mode" title="The “relaxed-mode” property">GUPnPDLNAProfileGuesser:relaxed-mode</a>, object property in <a class="link" href="GUPnPDLNAProfileGuesser.html" title="GUPnPDLNAProfileGuesser">GUPnPDLNAProfileGuesser</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAProfileGuesser.html#GUPnPDLNAProfileGuesserClass" title="GUPnPDLNAProfileGuesserClass">GUPnPDLNAProfileGuesserClass</a>, struct in <a class="link" href="GUPnPDLNAProfileGuesser.html" title="GUPnPDLNAProfileGuesser">GUPnPDLNAProfileGuesser</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="gupnp-dlna-GUPnP-DLNA-Values.html#GUPnPDLNAStringValue" title="GUPnPDLNAStringValue">GUPnPDLNAStringValue</a>, struct in <a class="link" href="gupnp-dlna-GUPnP-DLNA-Values.html" title="GUPnP DLNA Values">GUPnP DLNA Values</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="gupnp-dlna-GUPnP-DLNA-Values.html#GUPnPDLNAValueState" title="enum GUPnPDLNAValueState">GUPnPDLNAValueState</a>, enum in <a class="link" href="gupnp-dlna-GUPnP-DLNA-Values.html" title="GUPnP DLNA Values">GUPnP DLNA Values</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAVideoInformation.html#GUPnPDLNAVideoInformationClass" title="GUPnPDLNAVideoInformationClass">GUPnPDLNAVideoInformationClass</a>, struct in <a class="link" href="GUPnPDLNAVideoInformation.html" title="GUPnPDLNAVideoInformation">GUPnPDLNAVideoInformation</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAAudioInformation.html#gupnp-dlna-audio-information-get-bitrate" title="gupnp_dlna_audio_information_get_bitrate ()">gupnp_dlna_audio_information_get_bitrate</a>, function in <a class="link" href="GUPnPDLNAAudioInformation.html" title="GUPnPDLNAAudioInformation">GUPnPDLNAAudioInformation</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAAudioInformation.html#gupnp-dlna-audio-information-get-channels" title="gupnp_dlna_audio_information_get_channels ()">gupnp_dlna_audio_information_get_channels</a>, function in <a class="link" href="GUPnPDLNAAudioInformation.html" title="GUPnPDLNAAudioInformation">GUPnPDLNAAudioInformation</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAAudioInformation.html#gupnp-dlna-audio-information-get-depth" title="gupnp_dlna_audio_information_get_depth ()">gupnp_dlna_audio_information_get_depth</a>, function in <a class="link" href="GUPnPDLNAAudioInformation.html" title="GUPnPDLNAAudioInformation">GUPnPDLNAAudioInformation</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAAudioInformation.html#gupnp-dlna-audio-information-get-layer" title="gupnp_dlna_audio_information_get_layer ()">gupnp_dlna_audio_information_get_layer</a>, function in <a class="link" href="GUPnPDLNAAudioInformation.html" title="GUPnPDLNAAudioInformation">GUPnPDLNAAudioInformation</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAAudioInformation.html#gupnp-dlna-audio-information-get-level" title="gupnp_dlna_audio_information_get_level ()">gupnp_dlna_audio_information_get_level</a>, function in <a class="link" href="GUPnPDLNAAudioInformation.html" title="GUPnPDLNAAudioInformation">GUPnPDLNAAudioInformation</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAAudioInformation.html#gupnp-dlna-audio-information-get-mime" title="gupnp_dlna_audio_information_get_mime ()">gupnp_dlna_audio_information_get_mime</a>, function in <a class="link" href="GUPnPDLNAAudioInformation.html" title="GUPnPDLNAAudioInformation">GUPnPDLNAAudioInformation</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAAudioInformation.html#gupnp-dlna-audio-information-get-mpeg-audio-version" title="gupnp_dlna_audio_information_get_mpeg_audio_version ()">gupnp_dlna_audio_information_get_mpeg_audio_version</a>, function in <a class="link" href="GUPnPDLNAAudioInformation.html" title="GUPnPDLNAAudioInformation">GUPnPDLNAAudioInformation</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAAudioInformation.html#gupnp-dlna-audio-information-get-mpeg-version" title="gupnp_dlna_audio_information_get_mpeg_version ()">gupnp_dlna_audio_information_get_mpeg_version</a>, function in <a class="link" href="GUPnPDLNAAudioInformation.html" title="GUPnPDLNAAudioInformation">GUPnPDLNAAudioInformation</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAAudioInformation.html#gupnp-dlna-audio-information-get-profile" title="gupnp_dlna_audio_information_get_profile ()">gupnp_dlna_audio_information_get_profile</a>, function in <a class="link" href="GUPnPDLNAAudioInformation.html" title="GUPnPDLNAAudioInformation">GUPnPDLNAAudioInformation</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAAudioInformation.html#gupnp-dlna-audio-information-get-rate" title="gupnp_dlna_audio_information_get_rate ()">gupnp_dlna_audio_information_get_rate</a>, function in <a class="link" href="GUPnPDLNAAudioInformation.html" title="GUPnPDLNAAudioInformation">GUPnPDLNAAudioInformation</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAAudioInformation.html#gupnp-dlna-audio-information-get-stream-format" title="gupnp_dlna_audio_information_get_stream_format ()">gupnp_dlna_audio_information_get_stream_format</a>, function in <a class="link" href="GUPnPDLNAAudioInformation.html" title="GUPnPDLNAAudioInformation">GUPnPDLNAAudioInformation</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAAudioInformation.html#gupnp-dlna-audio-information-get-wma-version" title="gupnp_dlna_audio_information_get_wma_version ()">gupnp_dlna_audio_information_get_wma_version</a>, function in <a class="link" href="GUPnPDLNAAudioInformation.html" title="GUPnPDLNAAudioInformation">GUPnPDLNAAudioInformation</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="gupnp-dlna-GUPnP-DLNA-Values.html#GUPNP-DLNA-BOOL-VALUE-UNSET:CAPS" title="GUPNP_DLNA_BOOL_VALUE_UNSET">GUPNP_DLNA_BOOL_VALUE_UNSET</a>, macro in <a class="link" href="gupnp-dlna-GUPnP-DLNA-Values.html" title="GUPnP DLNA Values">GUPnP DLNA Values</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="gupnp-dlna-GUPnP-DLNA-Values.html#GUPNP-DLNA-BOOL-VALUE-UNSUPPORTED:CAPS" title="GUPNP_DLNA_BOOL_VALUE_UNSUPPORTED">GUPNP_DLNA_BOOL_VALUE_UNSUPPORTED</a>, macro in <a class="link" href="gupnp-dlna-GUPnP-DLNA-Values.html" title="GUPnP DLNA Values">GUPnP DLNA Values</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAContainerInformation.html#gupnp-dlna-container-information-get-mime" title="gupnp_dlna_container_information_get_mime ()">gupnp_dlna_container_information_get_mime</a>, function in <a class="link" href="GUPnPDLNAContainerInformation.html" title="GUPnPDLNAContainerInformation">GUPnPDLNAContainerInformation</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAContainerInformation.html#gupnp-dlna-container-information-get-mpeg-version" title="gupnp_dlna_container_information_get_mpeg_version ()">gupnp_dlna_container_information_get_mpeg_version</a>, function in <a class="link" href="GUPnPDLNAContainerInformation.html" title="GUPnPDLNAContainerInformation">GUPnPDLNAContainerInformation</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAContainerInformation.html#gupnp-dlna-container-information-get-packet-size" title="gupnp_dlna_container_information_get_packet_size ()">gupnp_dlna_container_information_get_packet_size</a>, function in <a class="link" href="GUPnPDLNAContainerInformation.html" title="GUPnPDLNAContainerInformation">GUPnPDLNAContainerInformation</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAContainerInformation.html#gupnp-dlna-container-information-get-profile" title="gupnp_dlna_container_information_get_profile ()">gupnp_dlna_container_information_get_profile</a>, function in <a class="link" href="GUPnPDLNAContainerInformation.html" title="GUPnPDLNAContainerInformation">GUPnPDLNAContainerInformation</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAContainerInformation.html#gupnp-dlna-container-information-get-variant" title="gupnp_dlna_container_information_get_variant ()">gupnp_dlna_container_information_get_variant</a>, function in <a class="link" href="GUPnPDLNAContainerInformation.html" title="GUPnPDLNAContainerInformation">GUPnPDLNAContainerInformation</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAContainerInformation.html#gupnp-dlna-container-information-is-system-stream" title="gupnp_dlna_container_information_is_system_stream ()">gupnp_dlna_container_information_is_system_stream</a>, function in <a class="link" href="GUPnPDLNAContainerInformation.html" title="GUPnPDLNAContainerInformation">GUPnPDLNAContainerInformation</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="gupnp-dlna-gupnp-dlna-g-values.html#gupnp-dlna-fraction-copy" title="gupnp_dlna_fraction_copy ()">gupnp_dlna_fraction_copy</a>, function in <a class="link" href="gupnp-dlna-gupnp-dlna-g-values.html" title="gupnp-dlna-g-values">gupnp-dlna-g-values</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="gupnp-dlna-gupnp-dlna-g-values.html#gupnp-dlna-fraction-free" title="gupnp_dlna_fraction_free ()">gupnp_dlna_fraction_free</a>, function in <a class="link" href="gupnp-dlna-gupnp-dlna-g-values.html" title="gupnp-dlna-g-values">gupnp-dlna-g-values</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="gupnp-dlna-gupnp-dlna-g-values.html#gupnp-dlna-fraction-get-denominator" title="gupnp_dlna_fraction_get_denominator ()">gupnp_dlna_fraction_get_denominator</a>, function in <a class="link" href="gupnp-dlna-gupnp-dlna-g-values.html" title="gupnp-dlna-g-values">gupnp-dlna-g-values</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="gupnp-dlna-gupnp-dlna-g-values.html#gupnp-dlna-fraction-get-numerator" title="gupnp_dlna_fraction_get_numerator ()">gupnp_dlna_fraction_get_numerator</a>, function in <a class="link" href="gupnp-dlna-gupnp-dlna-g-values.html" title="gupnp-dlna-g-values">gupnp-dlna-g-values</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="gupnp-dlna-gupnp-dlna-g-values.html#gupnp-dlna-fraction-range-copy" title="gupnp_dlna_fraction_range_copy ()">gupnp_dlna_fraction_range_copy</a>, function in <a class="link" href="gupnp-dlna-gupnp-dlna-g-values.html" title="gupnp-dlna-g-values">gupnp-dlna-g-values</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="gupnp-dlna-gupnp-dlna-g-values.html#gupnp-dlna-fraction-range-free" title="gupnp_dlna_fraction_range_free ()">gupnp_dlna_fraction_range_free</a>, function in <a class="link" href="gupnp-dlna-gupnp-dlna-g-values.html" title="gupnp-dlna-g-values">gupnp-dlna-g-values</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="gupnp-dlna-gupnp-dlna-g-values.html#gupnp-dlna-fraction-range-get-max" title="gupnp_dlna_fraction_range_get_max ()">gupnp_dlna_fraction_range_get_max</a>, function in <a class="link" href="gupnp-dlna-gupnp-dlna-g-values.html" title="gupnp-dlna-g-values">gupnp-dlna-g-values</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="gupnp-dlna-gupnp-dlna-g-values.html#gupnp-dlna-fraction-range-get-min" title="gupnp_dlna_fraction_range_get_min ()">gupnp_dlna_fraction_range_get_min</a>, function in <a class="link" href="gupnp-dlna-gupnp-dlna-g-values.html" title="gupnp-dlna-g-values">gupnp-dlna-g-values</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="gupnp-dlna-GUPnP-DLNA-Values.html#GUPNP-DLNA-FRACTION-VALUE-UNSET:CAPS" title="GUPNP_DLNA_FRACTION_VALUE_UNSET">GUPNP_DLNA_FRACTION_VALUE_UNSET</a>, macro in <a class="link" href="gupnp-dlna-GUPnP-DLNA-Values.html" title="GUPnP DLNA Values">GUPnP DLNA Values</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="gupnp-dlna-GUPnP-DLNA-Values.html#GUPNP-DLNA-FRACTION-VALUE-UNSUPPORTED:CAPS" title="GUPNP_DLNA_FRACTION_VALUE_UNSUPPORTED">GUPNP_DLNA_FRACTION_VALUE_UNSUPPORTED</a>, macro in <a class="link" href="gupnp-dlna-GUPnP-DLNA-Values.html" title="GUPnP DLNA Values">GUPnP DLNA Values</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAImageInformation.html#gupnp-dlna-image-information-get-depth" title="gupnp_dlna_image_information_get_depth ()">gupnp_dlna_image_information_get_depth</a>, function in <a class="link" href="GUPnPDLNAImageInformation.html" title="GUPnPDLNAImageInformation">GUPnPDLNAImageInformation</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAImageInformation.html#gupnp-dlna-image-information-get-height" title="gupnp_dlna_image_information_get_height ()">gupnp_dlna_image_information_get_height</a>, function in <a class="link" href="GUPnPDLNAImageInformation.html" title="GUPnPDLNAImageInformation">GUPnPDLNAImageInformation</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAImageInformation.html#gupnp-dlna-image-information-get-mime" title="gupnp_dlna_image_information_get_mime ()">gupnp_dlna_image_information_get_mime</a>, function in <a class="link" href="GUPnPDLNAImageInformation.html" title="GUPnPDLNAImageInformation">GUPnPDLNAImageInformation</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAImageInformation.html#gupnp-dlna-image-information-get-width" title="gupnp_dlna_image_information_get_width ()">gupnp_dlna_image_information_get_width</a>, function in <a class="link" href="GUPnPDLNAImageInformation.html" title="GUPnPDLNAImageInformation">GUPnPDLNAImageInformation</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAInformation.html#gupnp-dlna-information-get-audio-information" title="gupnp_dlna_information_get_audio_information ()">gupnp_dlna_information_get_audio_information</a>, function in <a class="link" href="GUPnPDLNAInformation.html" title="GUPnPDLNAInformation">GUPnPDLNAInformation</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAInformation.html#gupnp-dlna-information-get-container-information" title="gupnp_dlna_information_get_container_information ()">gupnp_dlna_information_get_container_information</a>, function in <a class="link" href="GUPnPDLNAInformation.html" title="GUPnPDLNAInformation">GUPnPDLNAInformation</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAInformation.html#gupnp-dlna-information-get-image-information" title="gupnp_dlna_information_get_image_information ()">gupnp_dlna_information_get_image_information</a>, function in <a class="link" href="GUPnPDLNAInformation.html" title="GUPnPDLNAInformation">GUPnPDLNAInformation</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAInformation.html#gupnp-dlna-information-get-profile-name" title="gupnp_dlna_information_get_profile_name ()">gupnp_dlna_information_get_profile_name</a>, function in <a class="link" href="GUPnPDLNAInformation.html" title="GUPnPDLNAInformation">GUPnPDLNAInformation</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAInformation.html#gupnp-dlna-information-get-uri" title="gupnp_dlna_information_get_uri ()">gupnp_dlna_information_get_uri</a>, function in <a class="link" href="GUPnPDLNAInformation.html" title="GUPnPDLNAInformation">GUPnPDLNAInformation</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAInformation.html#gupnp-dlna-information-get-video-information" title="gupnp_dlna_information_get_video_information ()">gupnp_dlna_information_get_video_information</a>, function in <a class="link" href="GUPnPDLNAInformation.html" title="GUPnPDLNAInformation">GUPnPDLNAInformation</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="gupnp-dlna-gupnp-dlna-g-values.html#gupnp-dlna-int-range-copy" title="gupnp_dlna_int_range_copy ()">gupnp_dlna_int_range_copy</a>, function in <a class="link" href="gupnp-dlna-gupnp-dlna-g-values.html" title="gupnp-dlna-g-values">gupnp-dlna-g-values</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="gupnp-dlna-gupnp-dlna-g-values.html#gupnp-dlna-int-range-free" title="gupnp_dlna_int_range_free ()">gupnp_dlna_int_range_free</a>, function in <a class="link" href="gupnp-dlna-gupnp-dlna-g-values.html" title="gupnp-dlna-g-values">gupnp-dlna-g-values</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="gupnp-dlna-gupnp-dlna-g-values.html#gupnp-dlna-int-range-get-max" title="gupnp_dlna_int_range_get_max ()">gupnp_dlna_int_range_get_max</a>, function in <a class="link" href="gupnp-dlna-gupnp-dlna-g-values.html" title="gupnp-dlna-g-values">gupnp-dlna-g-values</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="gupnp-dlna-gupnp-dlna-g-values.html#gupnp-dlna-int-range-get-min" title="gupnp_dlna_int_range_get_min ()">gupnp_dlna_int_range_get_min</a>, function in <a class="link" href="gupnp-dlna-gupnp-dlna-g-values.html" title="gupnp-dlna-g-values">gupnp-dlna-g-values</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="gupnp-dlna-GUPnP-DLNA-Values.html#GUPNP-DLNA-INT-VALUE-UNSET:CAPS" title="GUPNP_DLNA_INT_VALUE_UNSET">GUPNP_DLNA_INT_VALUE_UNSET</a>, macro in <a class="link" href="gupnp-dlna-GUPnP-DLNA-Values.html" title="GUPnP DLNA Values">GUPnP DLNA Values</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="gupnp-dlna-GUPnP-DLNA-Values.html#GUPNP-DLNA-INT-VALUE-UNSUPPORTED:CAPS" title="GUPNP_DLNA_INT_VALUE_UNSUPPORTED">GUPNP_DLNA_INT_VALUE_UNSUPPORTED</a>, macro in <a class="link" href="gupnp-dlna-GUPnP-DLNA-Values.html" title="GUPnP DLNA Values">GUPnP DLNA Values</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAProfile.html#gupnp-dlna-profile-get-audio-restrictions" title="gupnp_dlna_profile_get_audio_restrictions ()">gupnp_dlna_profile_get_audio_restrictions</a>, function in <a class="link" href="GUPnPDLNAProfile.html" title="GUPnPDLNAProfile">GUPnPDLNAProfile</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAProfile.html#gupnp-dlna-profile-get-container-restrictions" title="gupnp_dlna_profile_get_container_restrictions ()">gupnp_dlna_profile_get_container_restrictions</a>, function in <a class="link" href="GUPnPDLNAProfile.html" title="GUPnPDLNAProfile">GUPnPDLNAProfile</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAProfile.html#gupnp-dlna-profile-get-extended" title="gupnp_dlna_profile_get_extended ()">gupnp_dlna_profile_get_extended</a>, function in <a class="link" href="GUPnPDLNAProfile.html" title="GUPnPDLNAProfile">GUPnPDLNAProfile</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAProfile.html#gupnp-dlna-profile-get-image-restrictions" title="gupnp_dlna_profile_get_image_restrictions ()">gupnp_dlna_profile_get_image_restrictions</a>, function in <a class="link" href="GUPnPDLNAProfile.html" title="GUPnPDLNAProfile">GUPnPDLNAProfile</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAProfile.html#gupnp-dlna-profile-get-mime" title="gupnp_dlna_profile_get_mime ()">gupnp_dlna_profile_get_mime</a>, function in <a class="link" href="GUPnPDLNAProfile.html" title="GUPnPDLNAProfile">GUPnPDLNAProfile</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAProfile.html#gupnp-dlna-profile-get-name" title="gupnp_dlna_profile_get_name ()">gupnp_dlna_profile_get_name</a>, function in <a class="link" href="GUPnPDLNAProfile.html" title="GUPnPDLNAProfile">GUPnPDLNAProfile</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAProfile.html#gupnp-dlna-profile-get-video-restrictions" title="gupnp_dlna_profile_get_video_restrictions ()">gupnp_dlna_profile_get_video_restrictions</a>, function in <a class="link" href="GUPnPDLNAProfile.html" title="GUPnPDLNAProfile">GUPnPDLNAProfile</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAProfileGuesser.html#gupnp-dlna-profile-guesser-cleanup" title="gupnp_dlna_profile_guesser_cleanup ()">gupnp_dlna_profile_guesser_cleanup</a>, function in <a class="link" href="GUPnPDLNAProfileGuesser.html" title="GUPnPDLNAProfileGuesser">GUPnPDLNAProfileGuesser</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAProfileGuesser.html#gupnp-dlna-profile-guesser-get-extended-mode" title="gupnp_dlna_profile_guesser_get_extended_mode ()">gupnp_dlna_profile_guesser_get_extended_mode</a>, function in <a class="link" href="GUPnPDLNAProfileGuesser.html" title="GUPnPDLNAProfileGuesser">GUPnPDLNAProfileGuesser</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAProfileGuesser.html#gupnp-dlna-profile-guesser-get-profile" title="gupnp_dlna_profile_guesser_get_profile ()">gupnp_dlna_profile_guesser_get_profile</a>, function in <a class="link" href="GUPnPDLNAProfileGuesser.html" title="GUPnPDLNAProfileGuesser">GUPnPDLNAProfileGuesser</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAProfileGuesser.html#gupnp-dlna-profile-guesser-get-relaxed-mode" title="gupnp_dlna_profile_guesser_get_relaxed_mode ()">gupnp_dlna_profile_guesser_get_relaxed_mode</a>, function in <a class="link" href="GUPnPDLNAProfileGuesser.html" title="GUPnPDLNAProfileGuesser">GUPnPDLNAProfileGuesser</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAProfileGuesser.html#gupnp-dlna-profile-guesser-guess-profile-async" title="gupnp_dlna_profile_guesser_guess_profile_async ()">gupnp_dlna_profile_guesser_guess_profile_async</a>, function in <a class="link" href="GUPnPDLNAProfileGuesser.html" title="GUPnPDLNAProfileGuesser">GUPnPDLNAProfileGuesser</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAProfileGuesser.html#gupnp-dlna-profile-guesser-guess-profile-from-info" title="gupnp_dlna_profile_guesser_guess_profile_from_info ()">gupnp_dlna_profile_guesser_guess_profile_from_info</a>, function in <a class="link" href="GUPnPDLNAProfileGuesser.html" title="GUPnPDLNAProfileGuesser">GUPnPDLNAProfileGuesser</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAProfileGuesser.html#gupnp-dlna-profile-guesser-guess-profile-sync" title="gupnp_dlna_profile_guesser_guess_profile_sync ()">gupnp_dlna_profile_guesser_guess_profile_sync</a>, function in <a class="link" href="GUPnPDLNAProfileGuesser.html" title="GUPnPDLNAProfileGuesser">GUPnPDLNAProfileGuesser</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAProfileGuesser.html#gupnp-dlna-profile-guesser-list-profiles" title="gupnp_dlna_profile_guesser_list_profiles ()">gupnp_dlna_profile_guesser_list_profiles</a>, function in <a class="link" href="GUPnPDLNAProfileGuesser.html" title="GUPnPDLNAProfileGuesser">GUPnPDLNAProfileGuesser</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAProfileGuesser.html#gupnp-dlna-profile-guesser-new" title="gupnp_dlna_profile_guesser_new ()">gupnp_dlna_profile_guesser_new</a>, function in <a class="link" href="GUPnPDLNAProfileGuesser.html" title="GUPnPDLNAProfileGuesser">GUPnPDLNAProfileGuesser</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="gupnp-dlna-gupnp-dlna-restriction.html#gupnp-dlna-restriction-copy" title="gupnp_dlna_restriction_copy ()">gupnp_dlna_restriction_copy</a>, function in <a class="link" href="gupnp-dlna-gupnp-dlna-restriction.html" title="gupnp-dlna-restriction">gupnp-dlna-restriction</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="gupnp-dlna-gupnp-dlna-restriction.html#gupnp-dlna-restriction-free" title="gupnp_dlna_restriction_free ()">gupnp_dlna_restriction_free</a>, function in <a class="link" href="gupnp-dlna-gupnp-dlna-restriction.html" title="gupnp-dlna-restriction">gupnp-dlna-restriction</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="gupnp-dlna-gupnp-dlna-restriction.html#gupnp-dlna-restriction-get-entries" title="gupnp_dlna_restriction_get_entries ()">gupnp_dlna_restriction_get_entries</a>, function in <a class="link" href="gupnp-dlna-gupnp-dlna-restriction.html" title="gupnp-dlna-restriction">gupnp-dlna-restriction</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="gupnp-dlna-gupnp-dlna-restriction.html#gupnp-dlna-restriction-get-mime" title="gupnp_dlna_restriction_get_mime ()">gupnp_dlna_restriction_get_mime</a>, function in <a class="link" href="gupnp-dlna-gupnp-dlna-restriction.html" title="gupnp-dlna-restriction">gupnp-dlna-restriction</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="gupnp-dlna-gupnp-dlna-restriction.html#gupnp-dlna-restriction-is-empty" title="gupnp_dlna_restriction_is_empty ()">gupnp_dlna_restriction_is_empty</a>, function in <a class="link" href="gupnp-dlna-gupnp-dlna-restriction.html" title="gupnp-dlna-restriction">gupnp-dlna-restriction</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="gupnp-dlna-gupnp-dlna-restriction.html#gupnp-dlna-restriction-to-string" title="gupnp_dlna_restriction_to_string ()">gupnp_dlna_restriction_to_string</a>, function in <a class="link" href="gupnp-dlna-gupnp-dlna-restriction.html" title="gupnp-dlna-restriction">gupnp-dlna-restriction</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="gupnp-dlna-GUPnP-DLNA-Values.html#GUPNP-DLNA-STRING-VALUE-UNSET:CAPS" title="GUPNP_DLNA_STRING_VALUE_UNSET">GUPNP_DLNA_STRING_VALUE_UNSET</a>, macro in <a class="link" href="gupnp-dlna-GUPnP-DLNA-Values.html" title="GUPnP DLNA Values">GUPnP DLNA Values</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="gupnp-dlna-GUPnP-DLNA-Values.html#GUPNP-DLNA-STRING-VALUE-UNSUPPORTED:CAPS" title="GUPNP_DLNA_STRING_VALUE_UNSUPPORTED">GUPNP_DLNA_STRING_VALUE_UNSUPPORTED</a>, macro in <a class="link" href="gupnp-dlna-GUPnP-DLNA-Values.html" title="GUPnP DLNA Values">GUPnP DLNA Values</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="gupnp-dlna-gupnp-dlna-value-list.html#gupnp-dlna-value-list-copy" title="gupnp_dlna_value_list_copy ()">gupnp_dlna_value_list_copy</a>, function in <a class="link" href="gupnp-dlna-gupnp-dlna-value-list.html" title="gupnp-dlna-value-list">gupnp-dlna-value-list</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="gupnp-dlna-gupnp-dlna-value-list.html#gupnp-dlna-value-list-free" title="gupnp_dlna_value_list_free ()">gupnp_dlna_value_list_free</a>, function in <a class="link" href="gupnp-dlna-gupnp-dlna-value-list.html" title="gupnp-dlna-value-list">gupnp-dlna-value-list</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="gupnp-dlna-gupnp-dlna-value-list.html#gupnp-dlna-value-list-get-g-values" title="gupnp_dlna_value_list_get_g_values ()">gupnp_dlna_value_list_get_g_values</a>, function in <a class="link" href="gupnp-dlna-gupnp-dlna-value-list.html" title="gupnp-dlna-value-list">gupnp-dlna-value-list</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="gupnp-dlna-gupnp-dlna-value-list.html#gupnp-dlna-value-list-is-empty" title="gupnp_dlna_value_list_is_empty ()">gupnp_dlna_value_list_is_empty</a>, function in <a class="link" href="gupnp-dlna-gupnp-dlna-value-list.html" title="gupnp-dlna-value-list">gupnp-dlna-value-list</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="gupnp-dlna-gupnp-dlna-value-list.html#gupnp-dlna-value-list-to-string" title="gupnp_dlna_value_list_to_string ()">gupnp_dlna_value_list_to_string</a>, function in <a class="link" href="gupnp-dlna-gupnp-dlna-value-list.html" title="gupnp-dlna-value-list">gupnp-dlna-value-list</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAVideoInformation.html#gupnp-dlna-video-information-get-bitrate" title="gupnp_dlna_video_information_get_bitrate ()">gupnp_dlna_video_information_get_bitrate</a>, function in <a class="link" href="GUPnPDLNAVideoInformation.html" title="GUPnPDLNAVideoInformation">GUPnPDLNAVideoInformation</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAVideoInformation.html#gupnp-dlna-video-information-get-framerate" title="gupnp_dlna_video_information_get_framerate ()">gupnp_dlna_video_information_get_framerate</a>, function in <a class="link" href="GUPnPDLNAVideoInformation.html" title="GUPnPDLNAVideoInformation">GUPnPDLNAVideoInformation</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAVideoInformation.html#gupnp-dlna-video-information-get-height" title="gupnp_dlna_video_information_get_height ()">gupnp_dlna_video_information_get_height</a>, function in <a class="link" href="GUPnPDLNAVideoInformation.html" title="GUPnPDLNAVideoInformation">GUPnPDLNAVideoInformation</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAVideoInformation.html#gupnp-dlna-video-information-get-level" title="gupnp_dlna_video_information_get_level ()">gupnp_dlna_video_information_get_level</a>, function in <a class="link" href="GUPnPDLNAVideoInformation.html" title="GUPnPDLNAVideoInformation">GUPnPDLNAVideoInformation</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAVideoInformation.html#gupnp-dlna-video-information-get-mime" title="gupnp_dlna_video_information_get_mime ()">gupnp_dlna_video_information_get_mime</a>, function in <a class="link" href="GUPnPDLNAVideoInformation.html" title="GUPnPDLNAVideoInformation">GUPnPDLNAVideoInformation</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAVideoInformation.html#gupnp-dlna-video-information-get-mpeg-version" title="gupnp_dlna_video_information_get_mpeg_version ()">gupnp_dlna_video_information_get_mpeg_version</a>, function in <a class="link" href="GUPnPDLNAVideoInformation.html" title="GUPnPDLNAVideoInformation">GUPnPDLNAVideoInformation</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAVideoInformation.html#gupnp-dlna-video-information-get-pixel-aspect-ratio" title="gupnp_dlna_video_information_get_pixel_aspect_ratio ()">gupnp_dlna_video_information_get_pixel_aspect_ratio</a>, function in <a class="link" href="GUPnPDLNAVideoInformation.html" title="GUPnPDLNAVideoInformation">GUPnPDLNAVideoInformation</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAVideoInformation.html#gupnp-dlna-video-information-get-profile" title="gupnp_dlna_video_information_get_profile ()">gupnp_dlna_video_information_get_profile</a>, function in <a class="link" href="GUPnPDLNAVideoInformation.html" title="GUPnPDLNAVideoInformation">GUPnPDLNAVideoInformation</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAVideoInformation.html#gupnp-dlna-video-information-get-width" title="gupnp_dlna_video_information_get_width ()">gupnp_dlna_video_information_get_width</a>, function in <a class="link" href="GUPnPDLNAVideoInformation.html" title="GUPnPDLNAVideoInformation">GUPnPDLNAVideoInformation</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAVideoInformation.html#gupnp-dlna-video-information-is-interlaced" title="gupnp_dlna_video_information_is_interlaced ()">gupnp_dlna_video_information_is_interlaced</a>, function in <a class="link" href="GUPnPDLNAVideoInformation.html" title="GUPnPDLNAVideoInformation">GUPnPDLNAVideoInformation</a>
+</dt>
+<dd></dd>
+<dt>
+<a class="link" href="GUPnPDLNAVideoInformation.html#gupnp-dlna-video-information-is-system-stream" title="gupnp_dlna_video_information_is_system_stream ()">gupnp_dlna_video_information_is_system_stream</a>, function in <a class="link" href="GUPnPDLNAVideoInformation.html" title="GUPnPDLNAVideoInformation">GUPnPDLNAVideoInformation</a>
+</dt>
+<dd></dd>
+</div>
+<div class="footer">
+<hr>Generated by GTK-Doc V1.25.1</div>
+</body>
+</html>

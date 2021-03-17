@@ -1,0 +1,26 @@
+From: Stefan Agner <stefan.agner@toradex.com>
+
+The udhcpc script calls ip addr flush .. which flushes addresses
+of any address family, including IPv6. However, busybox udhcpc is
+IPv4 only and should not influence IPv6 addressing. Hence use ip
+addr flush with family constrait.
+
+The script particularly broke IPv6 SLAAC: Typically when udhcpc
+calls the script the kernel already assigned the IPv6 link-local
+address. The flush removes the link-local IPv6 address again and
+prohibits proper IPv6 operation such as SLAAC since neighbor
+discovery protocol relies on IPv6 link-local addressing.
+
+Signed-off-by: Stefan Agner <stefan.agner@toradex.com>
+
+--- a/simple.script	2018-03-15 12:31:52.470741942 +0100
++++ b/simple.script	2018-06-12 14:57:22.126552018 +0200
+@@ -28,7 +28,7 @@
+ 		fi
+ 		if ! root_is_nfs ; then
+                         if [ $have_bin_ip -eq 1 ]; then
+-                                /SBIN_DIR/ip addr flush dev $interface
++                                /SBIN_DIR/ip -4 addr flush dev $interface
+                                 /SBIN_DIR/ip link set dev $interface up
+                         else
+                                 /SBIN_DIR/ifconfig $interface 0.0.0.0

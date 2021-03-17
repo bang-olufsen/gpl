@@ -1,0 +1,39 @@
+From 3b00fbdd5b871a5b3c60c5954456adf70864ce5c Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Mon, 13 Nov 2017 11:14:10 +0100
+Subject: [PATCH] Set HCI_AUTO_CONN_DIRECT as default auto connect action for
+ paired LE devices
+
+This will stop kernel from connected to paired devices when it receives
+undirected advertisements from them (it will only connect to directable
+advertisements).
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ src/adapter.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/src/adapter.c b/src/adapter.c
+index 1d7f3a3..f98ef74 100644
+--- a/src/adapter.c
++++ b/src/adapter.c
+@@ -4220,7 +4220,15 @@ void adapter_auto_connect_add(struct btd_adapter *adapter,
+ 	memset(&cp, 0, sizeof(cp));
+ 	bacpy(&cp.addr.bdaddr, bdaddr);
+ 	cp.addr.type = bdaddr_type;
+-	cp.action = 0x02;
++
++	/*
++	 * Set default action from HCI_AUTO_CONN_ALWAYS to
++	 * HCI_AUTO_CONN_DIRECT. This will stop kernel from
++	 * connected to paired devices when it receives
++	 * undirected advertisements from them (it will
++	 * only connect to directable advertisements).
++	 */
++	cp.action = 0x01;
+ 
+ 	id = mgmt_send(adapter->mgmt, MGMT_OP_ADD_DEVICE,
+ 			adapter->dev_id, sizeof(cp), &cp, add_device_complete,
+-- 
+2.7.4
+

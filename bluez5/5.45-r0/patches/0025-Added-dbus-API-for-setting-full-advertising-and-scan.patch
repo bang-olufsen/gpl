@@ -1,0 +1,239 @@
+From 2f140ad4b9a0c7cf1df6d51b3feb2e2c7b2d48d1 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Fri, 8 Jun 2018 10:56:41 +0200
+Subject: [PATCH] Added dbus API for setting full advertising and scan response
+ data
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ doc/advertising-api.txt | 10 ++++++-
+ src/advertising.c       | 76 ++++++++++++++++++++++++++++++++++++++++++++++---
+ src/shared/ad.c         | 21 ++++++++++++++
+ src/shared/ad.h         |  2 ++
+ 4 files changed, 104 insertions(+), 5 deletions(-)
+
+diff --git a/doc/advertising-api.txt b/doc/advertising-api.txt
+index eac9874..3712a6e 100644
+--- a/doc/advertising-api.txt
++++ b/doc/advertising-api.txt
+@@ -38,7 +38,15 @@ Properties	string Type
+ 
+ 			Determines the type of advertising packet requested.
+ 
+-			Possible values: "broadcast" or "peripheral"
++			Possible values: "broadcast" or "peripheral" or "ble"
++
++		array{byte} AdvData
++
++			Full advertising data
++
++		array{byte} ScanRspData
++
++			Full scan response data
+ 
+ 		array{string} ServiceUUIDs
+ 
+diff --git a/src/advertising.c b/src/advertising.c
+index cac1b42..0b39914 100644
+--- a/src/advertising.c
++++ b/src/advertising.c
+@@ -21,6 +21,7 @@
+ 
+ #include <stdint.h>
+ #include <stdbool.h>
++#include <errno.h>
+ 
+ #include <dbus/dbus.h>
+ #include <gdbus/gdbus.h>
+@@ -66,6 +67,7 @@ struct btd_adv_client {
+ 	DBusMessage *reg;
+ 	uint8_t type; /* Advertising type */
+ 	bool include_tx_power;
++	bool connectable;
+ 	struct bt_ad *data;
+ 	struct bt_ad *scan_rsp_data;
+ 	uint8_t instance;
+@@ -205,6 +207,39 @@ static bool parse_type(GDBusProxy *proxy, uint8_t *type)
+ 	return false;
+ }
+ 
++static bool parse_full_data(GDBusProxy *proxy, struct bt_ad *data,
++					const char *property, uint8_t max_lenght)
++{
++	DBusMessageIter iter, ariter;
++	int n_elements, err;
++	uint8_t *adv_data;
++
++	if (!g_dbus_proxy_get_property(proxy, property, &iter))
++		return false;
++
++	if (dbus_message_iter_get_arg_type(&iter) != DBUS_TYPE_ARRAY) {
++		err = EINVAL;
++		goto fail;
++	}
++
++	dbus_message_iter_recurse(&iter, &ariter);
++	dbus_message_iter_get_fixed_array(&ariter, &adv_data, &n_elements);
++	if (n_elements < 0) {
++		err = EINVAL;
++		goto fail;
++	}
++	if (n_elements > max_lenght) {
++		err = E2BIG;
++		goto fail;
++	}
++
++	return bt_ad_set_full_data(data, adv_data, n_elements);
++
++fail:
++	error("Failed to parse full advertising data: %s", strerror(err));
++	return false;
++}
++
+ static bool parse_service_uuids(GDBusProxy *proxy, struct bt_ad *data,
+ 					const char *property)
+ {
+@@ -450,6 +485,24 @@ static bool parse_include_tx_power(GDBusProxy *proxy, bool *included)
+ 	return true;
+ }
+ 
++static bool parse_connectable(GDBusProxy *proxy, bool *included)
++{
++	DBusMessageIter iter;
++	dbus_bool_t b;
++
++	if (!g_dbus_proxy_get_property(proxy, "Connectable", &iter))
++		return true;
++
++	if (dbus_message_iter_get_arg_type(&iter) != DBUS_TYPE_BOOLEAN)
++		return false;
++
++	dbus_message_iter_get_basic(&iter, &b);
++
++	*included = b;
++
++	return true;
++}
++
+ static void add_client_complete(struct btd_adv_client *client, uint8_t status)
+ {
+ 	DBusMessage *reply;
+@@ -530,14 +583,16 @@ static DBusMessage *refresh_advertisement(struct btd_adv_client *client)
+ 	if (client->type == AD_TYPE_PERIPHERAL)
+ 		flags = MGMT_ADV_FLAG_CONNECTABLE | MGMT_ADV_FLAG_DISCOV;
+ 
+-	if (client->type == AD_TYPE_BLE) {
+-		flags = MGMT_ADV_FLAG_CONNECTABLE;
++	if (client->type == AD_TYPE_BLE)
+ 		bt_ad_set_flags(client->data, EIR_GEN_DISC | EIR_BREDR_UNSUP);
+-	}
++
++	if (client->connectable)
++		flags |= MGMT_ADV_FLAG_CONNECTABLE;
+ 
+ 	if (client->include_tx_power)
+ 		flags |= MGMT_ADV_FLAG_TX_POWER;
+ 
++
+ 	adv_data = bt_ad_generate(client->data, &adv_data_len);
+ 
+ 	if (!adv_data || (adv_data_len > calc_max_adv_len(client, flags))) {
+@@ -623,6 +678,19 @@ static DBusMessage *parse_advertisement(struct btd_adv_client *client)
+ 		goto fail;
+ 	}
+ 
++	if (!parse_connectable(client->proxy, &client->connectable)) {
++		error("Property \"Connectable\" failed to parse");
++		goto fail;
++	}
++
++	if (parse_full_data(client->proxy, client->data,
++						"AdvData", client->manager->max_adv_len)) {
++		parse_full_data(client->proxy, client->scan_rsp_data,
++						"ScanRspData", client->manager->max_scan_rsp_len);
++
++		return refresh_advertisement(client);
++	}
++
+ 	if (!parse_service_uuids(client->proxy, client->data,
+ 						"ServiceUUIDs")) {
+ 		error("Property \"ServiceUUIDs\" failed to parse");
+@@ -737,7 +805,7 @@ static struct btd_adv_client *client_create(struct btd_adv_manager *manager,
+ 	if (!client->path)
+ 		goto fail;
+ 
+-	DBG("Adding proxy for %s", path);
++	DBG("Adding proxy for owner=%s path=%s", sender, path);
+ 	client->proxy = g_dbus_proxy_new(client->client, path,
+ 						LE_ADVERTISEMENT_IFACE);
+ 	if (!client->proxy)
+diff --git a/src/shared/ad.c b/src/shared/ad.c
+index c37a0c3..983d5d8 100644
+--- a/src/shared/ad.c
++++ b/src/shared/ad.c
+@@ -37,6 +37,8 @@ struct bt_ad {
+ 	struct queue *service_data;
+ 	char *local_name;
+ 	int flags;
++	uint8_t *full_data;
++	int full_data_size;
+ };
+ 
+ struct bt_ad *bt_ad_new(void)
+@@ -112,6 +114,8 @@ void bt_ad_unref(struct bt_ad *ad)
+ 
+ 	g_free(ad->local_name);
+ 
++	g_free(ad->full_data);
++
+ 	free(ad);
+ }
+ 
+@@ -192,6 +196,9 @@ static size_t calculate_length(struct bt_ad *ad)
+ {
+ 	size_t length = 0;
+ 
++	if (ad->full_data)
++		return (size_t)ad->full_data_size;
++
+ 	length += uuid_list_length(ad->service_uuids);
+ 
+ 	length += uuid_list_length(ad->solicit_uuids);
+@@ -365,6 +372,9 @@ uint8_t *bt_ad_generate(struct bt_ad *ad, size_t *length)
+ 	if (*length > MAX_ADV_DATA_LEN)
+ 		return NULL;
+ 
++	if (ad->full_data)
++		return g_memdup(ad->full_data, ad->full_data_size);
++
+ 	adv_data = malloc0(*length);
+ 	if (!adv_data)
+ 		return NULL;
+@@ -727,3 +737,14 @@ bool bt_ad_set_flags(struct bt_ad *ad, const int flags)
+ 	ad->flags = flags;
+ 	return true;
+ }
++
++bool bt_ad_set_full_data(struct bt_ad *ad, const uint8_t *adv_data, int adv_data_size)
++{
++	if (!ad)
++		return false;
++
++	g_free(ad->full_data);
++	ad->full_data_size = adv_data_size;
++	ad->full_data = g_memdup(adv_data, adv_data_size);
++	return !!ad->full_data;
++}
+diff --git a/src/shared/ad.h b/src/shared/ad.h
+index dc8105c..58ea259 100644
+--- a/src/shared/ad.h
++++ b/src/shared/ad.h
+@@ -94,3 +94,5 @@ bool bt_ad_set_local_name(struct bt_ad *ad, const char *local_name);
+ void bt_ad_clear_local_name(struct bt_ad *ad);
+ 
+ bool bt_ad_set_flags(struct bt_ad *ad, const int flags);
++
++bool bt_ad_set_full_data(struct bt_ad *ad, const uint8_t *adv_data, int adv_data_size);
+-- 
+2.7.4
+

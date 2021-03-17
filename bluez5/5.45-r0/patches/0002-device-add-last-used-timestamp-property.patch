@@ -1,0 +1,80 @@
+From d7b68ca7928f3e14f558e792adde8e0dd133697d Mon Sep 17 00:00:00 2001
+From: Bernhard Miller <bernhard.miller@streamunlimited.com>
+Date: Thu, 19 Jan 2017 10:28:06 +0100
+Subject: [PATCH] device: add last used timestamp property
+
+Signed-off-by: Bernhard Miller <bernhard.miller@streamunlimited.com>
+---
+ src/device.c | 21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
+
+diff --git a/src/device.c b/src/device.c
+index 8693eb8..2db13f5 100644
+--- a/src/device.c
++++ b/src/device.c
+@@ -250,6 +250,8 @@ struct btd_device {
+ 
+ 	GIOChannel	*att_io;
+ 	guint		store_id;
++	
++	time_t		last_used;
+ };
+ 
+ static const uint16_t uuid_list[] = {
+@@ -417,6 +419,8 @@ static gboolean store_device_info_cb(gpointer user_data)
+ 	} else {
+ 		g_key_file_remove_key(key_file, "General", "Services", NULL);
+ 	}
++	
++	g_key_file_set_integer(key_file, "General", "LastUsed", device->last_used);
+ 
+ 	if (device->vendor_src) {
+ 		g_key_file_set_integer(key_file, "DeviceID", "Source",
+@@ -987,6 +991,17 @@ static void set_trust(GDBusPendingPropertySet id, gboolean value, void *data)
+ 	g_dbus_pending_property_success(id);
+ }
+ 
++static gboolean dev_property_get_last_used(const GDBusPropertyTable *property,
++					DBusMessageIter *iter, void *data)
++{
++	struct btd_device *device = data;
++	int val = (int)device->last_used;
++
++	dbus_message_iter_append_basic(iter, DBUS_TYPE_INT32, &val);
++
++	return TRUE;
++}
++
+ static void dev_property_set_trusted(const GDBusPropertyTable *property,
+ 					DBusMessageIter *value,
+ 					GDBusPendingPropertySet id, void *data)
+@@ -2565,6 +2580,7 @@ static const GDBusPropertyTable device_properties[] = {
+ 	{ "AdvertisingFlags", "ay", dev_property_get_flags, NULL,
+ 					dev_property_flags_exist,
+ 					G_DBUS_PROPERTY_FLAG_EXPERIMENTAL},
++	{ "LastUsed", "i", dev_property_get_last_used },
+ 
+ 	{ }
+ };
+@@ -2599,6 +2615,9 @@ void device_add_connection(struct btd_device *dev, uint8_t bdaddr_type)
+ 		device_set_le_support(dev, bdaddr_type);
+ 
+ 	state->connected = true;
++	
++	dev->last_used = time(NULL);
++	store_device_info(dev);
+ 
+ 	if (dev->le_state.connected && dev->bredr_state.connected)
+ 		return;
+@@ -2900,6 +2919,8 @@ next:
+ 		/* Discovered services restored from storage */
+ 		device->bredr_state.svc_resolved = true;
+ 	}
++	
++	device->last_used = g_key_file_get_integer(key_file, "General", "LastUsed", NULL);
+ 
+ 	/* Load device id */
+ 	source = g_key_file_get_integer(key_file, "DeviceID", "Source", NULL);
+-- 
+2.7.4
+

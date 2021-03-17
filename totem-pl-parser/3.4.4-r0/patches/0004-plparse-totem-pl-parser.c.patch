@@ -1,0 +1,32 @@
+From af3d50faddd6a63e403645f7f2953b9054c75464 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Fri, 6 Nov 2020 10:13:13 +0100
+Subject: [PATCH] plparse/totem-pl-parser.c
+
+---
+ plparse/totem-pl-parser.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/plparse/totem-pl-parser.c b/plparse/totem-pl-parser.c
+index 64be427..c8974a4 100644
+--- a/plparse/totem-pl-parser.c
++++ b/plparse/totem-pl-parser.c
+@@ -570,6 +570,18 @@ totem_pl_parser_class_init (TotemPlParserClass *klass)
+ 				     "Whether the track is playing", NULL,
+ 				     G_PARAM_READABLE & G_PARAM_WRITABLE);
+ 	g_param_spec_pool_insert (totem_pl_parser_pspec_pool, pspec, TOTEM_TYPE_PL_PARSER);
++	pspec = g_param_spec_string ("alternative-url1", "alternative-url1",
++				     "Alternative URI1 to be added", NULL,
++				     G_PARAM_READABLE & G_PARAM_WRITABLE);
++	g_param_spec_pool_insert (totem_pl_parser_pspec_pool, pspec, TOTEM_TYPE_PL_PARSER);
++	pspec = g_param_spec_string ("alternative-url2", "alternative-url2",
++				     "Alternative URI2 to be added", NULL,
++				     G_PARAM_READABLE & G_PARAM_WRITABLE);
++	g_param_spec_pool_insert (totem_pl_parser_pspec_pool, pspec, TOTEM_TYPE_PL_PARSER);
++	pspec = g_param_spec_string ("alternative-url3", "alternative-url3",
++				     "Alternative URI3 to be added", NULL,
++				     G_PARAM_READABLE & G_PARAM_WRITABLE);
++	g_param_spec_pool_insert (totem_pl_parser_pspec_pool, pspec, TOTEM_TYPE_PL_PARSER);
+ }
+ 
+ static void

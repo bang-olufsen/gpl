@@ -1,0 +1,11 @@
+--- a/attrib/att.c	2018-06-19 10:29:41.462574422 +0200
++++ b/attrib/att.c	2018-06-19 14:02:56.141556860 +0200
+@@ -115,7 +115,7 @@
+ 	struct att_data_list *list;
+ 	int i;
+ 
+-	if (len > UINT8_MAX)
++	if (len > ATT_MAX_VALUE_LEN)
+ 		return NULL;
+ 
+ 	list = g_new0(struct att_data_list, 1);

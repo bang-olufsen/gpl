@@ -1,0 +1,58 @@
+From 320a89826448b03f1f3848e485cf4829cd70d890 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Mon, 16 Mar 2020 14:01:47 +0100
+Subject: [PATCH] Change switch control from enumerated to boolean
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ src/pcm/pcm_switch.c | 15 +++++----------
+ 1 file changed, 5 insertions(+), 10 deletions(-)
+
+diff --git a/src/pcm/pcm_switch.c b/src/pcm/pcm_switch.c
+index 707c56e..882f779 100644
+--- a/src/pcm/pcm_switch.c
++++ b/src/pcm/pcm_switch.c
+@@ -26,13 +26,8 @@ static unsigned int pcm_rates[] = { 5512, 8000, 11025, 16000, 22050, 32000, 4410
+                                  1536000, 2822400, 3072000 };
+ unsigned pcm_rates_size = 21;
+ 
+-enum {
+-	SWITCH_CTL_OFF = 0,
+-	SWITCH_CTL_ON,
+-
+-	/* Last value */
+-	MAX_SWITCH_CTL,
+-} _switch_ctl_names_enum;
++#define SWITCH_CTL_OFF 0
++#define SWITCH_CTL_ON 1
+ 
+ static void apply_switch_value(snd_pcm_t *pcm);
+ static const char *const _switch_ctl_names[] = { "Off", "On" };
+@@ -1311,13 +1306,13 @@ static void switch_ctl_async_handler(snd_async_handler_t *handler)
+ 
+ static int add_user_ctl(snd_pcm_switch_t *swtch, snd_ctl_elem_info_t *cinfo)
+ {
+-	int err = snd_ctl_elem_add_enumerated(swtch->ctl, &cinfo->id, 1, MAX_SWITCH_CTL, _switch_ctl_names);
++	int err = snd_ctl_elem_add_boolean(swtch->ctl, &cinfo->id, 1);
+ 	if (err < 0) {
+ 		return err;
+ 	}
+ 
+ 	int def_val = SWITCH_CTL_ON;
+-	swtch->elem.value.enumerated.item[0] = def_val;
++	swtch->elem.value.integer.value[0] = def_val;
+ 	swtch->cur_switch = def_val;
+ 
+ 	return snd_ctl_elem_write(swtch->ctl, &swtch->elem);
+@@ -1377,7 +1372,7 @@ static int switch_load_control(snd_pcm_t *pcm, snd_pcm_switch_t *swtch,
+ 			return err;
+ 		}
+ 	}
+-	else if (cinfo->type != SND_CTL_ELEM_TYPE_ENUMERATED ||
++	else if (cinfo->type != SND_CTL_ELEM_TYPE_BOOLEAN ||
+ 	         cinfo->count != 1) {
+ 		err = snd_ctl_elem_remove(swtch->ctl, &cinfo->id);
+ 		if (err < 0) {
+-- 
+2.7.4
+

@@ -1,0 +1,49 @@
+From ba97b67cac3251cc9155628c4669e00e98a13088 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Thu, 8 Jan 2015 14:55:59 +0100
+Subject: [PATCH] watchdog: omap: Add handling for
+ CONFIG_WATCHDOG_TIMEOUT_MSECS
+
+This change add possibility to change watchdog timeout compile time.
+Previous default value is kept when CONFIG_WATCHDOG_TIMEOUT_MSECS is
+not defined in config file.
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ drivers/watchdog/omap_wdt.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/watchdog/omap_wdt.c b/drivers/watchdog/omap_wdt.c
+index 7ea4b60..458d12e 100644
+--- a/drivers/watchdog/omap_wdt.c
++++ b/drivers/watchdog/omap_wdt.c
+@@ -44,9 +44,6 @@
+ #include <asm/processor.h>
+ #include <asm/arch/cpu.h>
+ 
+-/* Hardware timeout in seconds */
+-#define WDT_HW_TIMEOUT 60
+-
+ static unsigned int wdt_trgr_pattern = 0x1234;
+ 
+ void hw_watchdog_reset(void)
+@@ -92,8 +89,15 @@ void hw_watchdog_init(void)
+ 	writel(WDT_WCLR_PRE | (PTV << WDT_WCLR_PTV_OFF), &wdt->wdtwclr);
+ 	while (readl(&wdt->wdtwwps) & WDT_WWPS_PEND_WCLR)
+ 		;
++	/*
++	 * If timeuot is not defined in config file
++	 * use default 60 seconds
++	 */
++#ifndef CONFIG_WATCHDOG_TIMEOUT_MSECS
++#define CONFIG_WATCHDOG_TIMEOUT_MSECS 60000
++#endif
+ 
+-	omap_wdt_set_timeout(WDT_HW_TIMEOUT);
++	omap_wdt_set_timeout(CONFIG_WATCHDOG_TIMEOUT_MSECS / 1000);
+ 
+ 	/* Sequence to enable the watchdog */
+ 	writel(0xBBBB, &wdt->wdtwspr);
+-- 
+2.7.4
+

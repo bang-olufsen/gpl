@@ -1,0 +1,34 @@
+From a53c4332192a370e8b8a0c564583ab2185b67b52 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Thu, 24 Aug 2017 16:35:57 +0200
+Subject: [PATCH] Bluetooth: Don't use connection parameters from connection
+ updates
+
+We always want to use our paramters to speed up connectio process
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ net/bluetooth/hci_conn.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/net/bluetooth/hci_conn.c b/net/bluetooth/hci_conn.c
+index 5c5130b..6322925 100644
+--- a/net/bluetooth/hci_conn.c
++++ b/net/bluetooth/hci_conn.c
+@@ -823,7 +823,12 @@ struct hci_conn *hci_connect_le(struct hci_dev *hdev, bdaddr_t *dst,
+ 		goto create_conn;
+ 	}
+ 
+-	params = hci_conn_params_lookup(hdev, &conn->dst, conn->dst_type);
++	/* Use our parameters that greatly speed up connecting to LE remotes.
++	 * When LE remote connects it will usually send connection parameters
++	 * update with desired intervals and latency.
++	 */
++	params = NULL;
++	//params = hci_conn_params_lookup(hdev, &conn->dst, conn->dst_type);
+ 	if (params) {
+ 		conn->le_conn_min_interval = params->conn_min_interval;
+ 		conn->le_conn_max_interval = params->conn_max_interval;
+-- 
+2.7.4
+

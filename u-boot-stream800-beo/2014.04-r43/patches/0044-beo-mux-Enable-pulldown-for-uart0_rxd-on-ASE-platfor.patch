@@ -1,0 +1,27 @@
+From c99bccd6a80e115223283f3f11ea87d5afefee1d Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Thu, 8 Jan 2015 13:40:50 +0100
+Subject: [PATCH] beo: mux: Enable pulldown for uart0_rxd on ASE platform
+ [ASE-942]
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ board/streamunlimited/stream800/mux.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/board/streamunlimited/stream800/mux.c b/board/streamunlimited/stream800/mux.c
+index 03e456b..2672a9e 100644
+--- a/board/streamunlimited/stream800/mux.c
++++ b/board/streamunlimited/stream800/mux.c
+@@ -23,7 +23,7 @@
+ #include <cpsw.h>
+ 
+ static struct module_pin_mux uart0_pin_mux[] = {
+-	{OFFSET(uart0_rxd), (MODE(0) | PULLUP_EN | RXACTIVE)},	/* UART0_RXD */
++	{OFFSET(uart0_rxd), (MODE(0) | PULLDOWN_EN | RXACTIVE)},	/* UART0_RXD */
+ 	{OFFSET(uart0_txd), (MODE(0) | PULLUDEN)},		/* UART0_TXD */
+ 	{-1},
+ };
+-- 
+2.7.4
+

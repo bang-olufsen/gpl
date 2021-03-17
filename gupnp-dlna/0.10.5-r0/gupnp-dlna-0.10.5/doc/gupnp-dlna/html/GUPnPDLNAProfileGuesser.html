@@ -1,0 +1,609 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GUPnPDLNAProfileGuesser: GUPnP DLNA Reference Manual</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
+<link rel="home" href="index.html" title="GUPnP DLNA Reference Manual">
+<link rel="up" href="ch01.html" title="GUPnP DLNA">
+<link rel="prev" href="ch01.html" title="GUPnP DLNA">
+<link rel="next" href="GUPnPDLNAProfile.html" title="GUPnPDLNAProfile">
+<meta name="generator" content="GTK-Doc V1.25.1 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#GUPnPDLNAProfileGuesser.description" class="shortcut">Description</a></span><span id="nav_hierarchy">  <span class="dim">|</span> 
+                  <a href="#GUPnPDLNAProfileGuesser.object-hierarchy" class="shortcut">Object Hierarchy</a></span><span id="nav_properties">  <span class="dim">|</span> 
+                  <a href="#GUPnPDLNAProfileGuesser.properties" class="shortcut">Properties</a></span><span id="nav_signals">  <span class="dim">|</span> 
+                  <a href="#GUPnPDLNAProfileGuesser.signals" class="shortcut">Signals</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="ch01.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="GUPnPDLNAProfile.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry">
+<a name="GUPnPDLNAProfileGuesser"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="GUPnPDLNAProfileGuesser.top_of_page"></a>GUPnPDLNAProfileGuesser</span></h2>
+<p>GUPnPDLNAProfileGuesser — Utility API for discovering DLNA profile for
+given media.</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1">
+<a name="GUPnPDLNAProfileGuesser.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="functions_return">
+<col class="functions_name">
+</colgroup>
+<tbody>
+<tr>
+<td class="function_type">
+<a class="link" href="GUPnPDLNAProfileGuesser.html" title="GUPnPDLNAProfileGuesser"><span class="returnvalue">GUPnPDLNAProfileGuesser</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="GUPnPDLNAProfileGuesser.html#gupnp-dlna-profile-guesser-new" title="gupnp_dlna_profile_guesser_new ()">gupnp_dlna_profile_guesser_new</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">gboolean</span>
+</td>
+<td class="function_name">
+<a class="link" href="GUPnPDLNAProfileGuesser.html#gupnp-dlna-profile-guesser-guess-profile-async" title="gupnp_dlna_profile_guesser_guess_profile_async ()">gupnp_dlna_profile_guesser_guess_profile_async</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="GUPnPDLNAProfile.html" title="GUPnPDLNAProfile"><span class="returnvalue">GUPnPDLNAProfile</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="GUPnPDLNAProfileGuesser.html#gupnp-dlna-profile-guesser-guess-profile-sync" title="gupnp_dlna_profile_guesser_guess_profile_sync ()">gupnp_dlna_profile_guesser_guess_profile_sync</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="GUPnPDLNAProfile.html" title="GUPnPDLNAProfile"><span class="returnvalue">GUPnPDLNAProfile</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="GUPnPDLNAProfileGuesser.html#gupnp-dlna-profile-guesser-guess-profile-from-info" title="gupnp_dlna_profile_guesser_guess_profile_from_info ()">gupnp_dlna_profile_guesser_guess_profile_from_info</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="GUPnPDLNAProfile.html" title="GUPnPDLNAProfile"><span class="returnvalue">GUPnPDLNAProfile</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="GUPnPDLNAProfileGuesser.html#gupnp-dlna-profile-guesser-get-profile" title="gupnp_dlna_profile_guesser_get_profile ()">gupnp_dlna_profile_guesser_get_profile</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">GList</span> *
+</td>
+<td class="function_name">
+<a class="link" href="GUPnPDLNAProfileGuesser.html#gupnp-dlna-profile-guesser-list-profiles" title="gupnp_dlna_profile_guesser_list_profiles ()">gupnp_dlna_profile_guesser_list_profiles</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">gboolean</span>
+</td>
+<td class="function_name">
+<a class="link" href="GUPnPDLNAProfileGuesser.html#gupnp-dlna-profile-guesser-get-relaxed-mode" title="gupnp_dlna_profile_guesser_get_relaxed_mode ()">gupnp_dlna_profile_guesser_get_relaxed_mode</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">gboolean</span>
+</td>
+<td class="function_name">
+<a class="link" href="GUPnPDLNAProfileGuesser.html#gupnp-dlna-profile-guesser-get-extended-mode" title="gupnp_dlna_profile_guesser_get_extended_mode ()">gupnp_dlna_profile_guesser_get_extended_mode</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="GUPnPDLNAProfileGuesser.html#gupnp-dlna-profile-guesser-cleanup" title="gupnp_dlna_profile_guesser_cleanup ()">gupnp_dlna_profile_guesser_cleanup</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="GUPnPDLNAProfileGuesser.properties"></a><h2>Properties</h2>
+<div class="informaltable"><table class="informaltable" border="0">
+<colgroup>
+<col width="150px" class="properties_type">
+<col width="300px" class="properties_name">
+<col width="200px" class="properties_flags">
+</colgroup>
+<tbody>
+<tr>
+<td class="property_type"><span class="type">gboolean</span></td>
+<td class="property_name"><a class="link" href="GUPnPDLNAProfileGuesser.html#GUPnPDLNAProfileGuesser--extended-mode" title="The “extended-mode” property">extended-mode</a></td>
+<td class="property_flags">Read / Write / Construct Only</td>
+</tr>
+<tr>
+<td class="property_type"><span class="type">gboolean</span></td>
+<td class="property_name"><a class="link" href="GUPnPDLNAProfileGuesser.html#GUPnPDLNAProfileGuesser--relaxed-mode" title="The “relaxed-mode” property">relaxed-mode</a></td>
+<td class="property_flags">Read / Write / Construct Only</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="GUPnPDLNAProfileGuesser.signals"></a><h2>Signals</h2>
+<div class="informaltable"><table class="informaltable" border="0">
+<colgroup>
+<col width="150px" class="signals_return">
+<col width="300px" class="signals_name">
+<col width="200px" class="signals_flags">
+</colgroup>
+<tbody><tr>
+<td class="signal_type"><span class="returnvalue">void</span></td>
+<td class="signal_name"><a class="link" href="GUPnPDLNAProfileGuesser.html#GUPnPDLNAProfileGuesser-done" title="The “done” signal">done</a></td>
+<td class="signal_flags">Run Last</td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="GUPnPDLNAProfileGuesser.other"></a><h2>Types and Values</h2>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="name">
+<col class="description">
+</colgroup>
+<tbody>
+<tr>
+<td class="datatype_keyword"> </td>
+<td class="function_name"><a class="link" href="GUPnPDLNAProfileGuesser.html#GUPnPDLNAProfileGuesser-struct" title="GUPnPDLNAProfileGuesser">GUPnPDLNAProfileGuesser</a></td>
+</tr>
+<tr>
+<td class="datatype_keyword"> </td>
+<td class="function_name"><a class="link" href="GUPnPDLNAProfileGuesser.html#GUPnPDLNAProfileGuesserClass" title="GUPnPDLNAProfileGuesserClass">GUPnPDLNAProfileGuesserClass</a></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="GUPnPDLNAProfileGuesser.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="screen">    GObject
+    <span class="lineart">╰──</span> GUPnPDLNAProfileGuesser
+</pre>
+</div>
+<div class="refsect1">
+<a name="GUPnPDLNAProfileGuesser.description"></a><h2>Description</h2>
+<p>The API provides synchronous and asynchronous guessing of DLNA
+profile. The asynchronous mode requires a running <span class="type">GMainLoop</span> in the
+default <span class="type">GMainContext</span>.</p>
+</div>
+<div class="refsect1">
+<a name="GUPnPDLNAProfileGuesser.functions_details"></a><h2>Functions</h2>
+<div class="refsect2">
+<a name="gupnp-dlna-profile-guesser-new"></a><h3>gupnp_dlna_profile_guesser_new ()</h3>
+<pre class="programlisting"><a class="link" href="GUPnPDLNAProfileGuesser.html" title="GUPnPDLNAProfileGuesser"><span class="returnvalue">GUPnPDLNAProfileGuesser</span></a> *
+gupnp_dlna_profile_guesser_new (<em class="parameter"><code><span class="type">gboolean</span> relaxed_mode</code></em>,
+                                <em class="parameter"><code><span class="type">gboolean</span> extended_mode</code></em>);</pre>
+<p>Creates a new guesser that will use specific DLNA profiles for
+matching - i.e. which profiles will be used depends on
+<em class="parameter"><code>relaxed_mode</code></em>
+ and <em class="parameter"><code>extended_mode</code></em>
+.</p>
+<div class="refsect3">
+<a name="gupnp-dlna-profile-guesser-new.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>relaxed_mode</p></td>
+<td class="parameter_description"><p><code class="literal">TRUE</code> to enable relaxed mode support. <code class="literal">FALSE</code> otherwise.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>extended_mode</p></td>
+<td class="parameter_description"><p><code class="literal">TRUE</code> to enable extended mode support. <code class="literal">FALSE</code> otherwise.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="gupnp-dlna-profile-guesser-new.returns"></a><h4>Returns</h4>
+<p> A new <a class="link" href="GUPnPDLNAProfileGuesser.html" title="GUPnPDLNAProfileGuesser"><span class="type">GUPnPDLNAProfileGuesser</span></a> object.</p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="gupnp-dlna-profile-guesser-guess-profile-async"></a><h3>gupnp_dlna_profile_guesser_guess_profile_async ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>
+gupnp_dlna_profile_guesser_guess_profile_async
+                               (<em class="parameter"><code><a class="link" href="GUPnPDLNAProfileGuesser.html" title="GUPnPDLNAProfileGuesser"><span class="type">GUPnPDLNAProfileGuesser</span></a> *guesser</code></em>,
+                                <em class="parameter"><code>const <span class="type">gchar</span> *uri</code></em>,
+                                <em class="parameter"><code><span class="type">guint</span> timeout_in_ms</code></em>,
+                                <em class="parameter"><code><span class="type">GError</span> **error</code></em>);</pre>
+<p>Asynchronously guesses DLNA profile for given <em class="parameter"><code>uri</code></em>
+. When guessing
+is done, ::done signal is emitted on <em class="parameter"><code>guesser</code></em>
+.</p>
+<div class="refsect3">
+<a name="gupnp-dlna-profile-guesser-guess-profile-async.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>guesser</p></td>
+<td class="parameter_description"><p><a class="link" href="GUPnPDLNAProfileGuesser.html" title="GUPnPDLNAProfileGuesser"><span class="type">GUPnPDLNAProfileGuesser</span></a> object to use for guessing.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>uri</p></td>
+<td class="parameter_description"><p>URI of media.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>timeout_in_ms</p></td>
+<td class="parameter_description"><p>Timeout of guessing in miliseconds.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>error</p></td>
+<td class="parameter_description"><p><span class="type">GError</span> object or <code class="literal">NULL</code>.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="gupnp-dlna-profile-guesser-guess-profile-async.returns"></a><h4>Returns</h4>
+<p> <code class="literal">TRUE</code> if <em class="parameter"><code>uri</code></em>
+was successfully queued, <code class="literal">FALSE</code> otherwise.</p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="gupnp-dlna-profile-guesser-guess-profile-sync"></a><h3>gupnp_dlna_profile_guesser_guess_profile_sync ()</h3>
+<pre class="programlisting"><a class="link" href="GUPnPDLNAProfile.html" title="GUPnPDLNAProfile"><span class="returnvalue">GUPnPDLNAProfile</span></a> *
+gupnp_dlna_profile_guesser_guess_profile_sync
+                               (<em class="parameter"><code><a class="link" href="GUPnPDLNAProfileGuesser.html" title="GUPnPDLNAProfileGuesser"><span class="type">GUPnPDLNAProfileGuesser</span></a> *guesser</code></em>,
+                                <em class="parameter"><code>const <span class="type">gchar</span> *uri</code></em>,
+                                <em class="parameter"><code><span class="type">guint</span> timeout_in_ms</code></em>,
+                                <em class="parameter"><code><a class="link" href="GUPnPDLNAInformation.html" title="GUPnPDLNAInformation"><span class="type">GUPnPDLNAInformation</span></a> **dlna_info</code></em>,
+                                <em class="parameter"><code><span class="type">GError</span> **error</code></em>);</pre>
+<p>Synchronously guesses DLNA profile for given <em class="parameter"><code>uri</code></em>
+.</p>
+<div class="refsect3">
+<a name="gupnp-dlna-profile-guesser-guess-profile-sync.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>guesser</p></td>
+<td class="parameter_description"><p><a class="link" href="GUPnPDLNAProfileGuesser.html" title="GUPnPDLNAProfileGuesser"><span class="type">GUPnPDLNAProfileGuesser</span></a> object to use for guessing.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>uri</p></td>
+<td class="parameter_description"><p>URI of media.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>timeout_in_ms</p></td>
+<td class="parameter_description"><p>Timeout of guessing in miliseconds.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>dlna_info</p></td>
+<td class="parameter_description"><p> A place where to
+store DLNA information or <code class="literal">NULL</code>. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="NULL is OK, both for passing and for returning."><span class="acronym">allow-none</span></acronym>][<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>][<acronym title="Parameter for returning results. Default is transfer full."><span class="acronym">out</span></acronym>]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>error</p></td>
+<td class="parameter_description"><p> <span class="type">GError</span> object or <code class="literal">NULL</code>. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="NULL is OK, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="gupnp-dlna-profile-guesser-guess-profile-sync.returns"></a><h4>Returns</h4>
+<p> DLNA profile if any had matched, <code class="literal">NULL</code> otherwise. </p>
+<p><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="gupnp-dlna-profile-guesser-guess-profile-from-info"></a><h3>gupnp_dlna_profile_guesser_guess_profile_from_info ()</h3>
+<pre class="programlisting"><a class="link" href="GUPnPDLNAProfile.html" title="GUPnPDLNAProfile"><span class="returnvalue">GUPnPDLNAProfile</span></a> *
+gupnp_dlna_profile_guesser_guess_profile_from_info
+                               (<em class="parameter"><code><a class="link" href="GUPnPDLNAProfileGuesser.html" title="GUPnPDLNAProfileGuesser"><span class="type">GUPnPDLNAProfileGuesser</span></a> *guesser</code></em>,
+                                <em class="parameter"><code><a class="link" href="GUPnPDLNAInformation.html" title="GUPnPDLNAInformation"><span class="type">GUPnPDLNAInformation</span></a> *info</code></em>);</pre>
+<p>Guesses the profile which fits to passed <em class="parameter"><code>info</code></em>
+.</p>
+<div class="refsect3">
+<a name="gupnp-dlna-profile-guesser-guess-profile-from-info.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>guesser</p></td>
+<td class="parameter_description"><p>The <a class="link" href="GUPnPDLNAProfileGuesser.html" title="GUPnPDLNAProfileGuesser"><span class="type">GUPnPDLNAProfileGuesser</span></a> object.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>The <a class="link" href="GUPnPDLNAInformation.html" title="GUPnPDLNAInformation"><span class="type">GUPnPDLNAInformation</span></a> object.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="gupnp-dlna-profile-guesser-guess-profile-from-info.returns"></a><h4>Returns</h4>
+<p> A <a class="link" href="GUPnPDLNAProfile.html" title="GUPnPDLNAProfile"><span class="type">GUPnPDLNAProfile</span></a> object on success,
+<code class="literal">NULL</code> otherwise. </p>
+<p><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="gupnp-dlna-profile-guesser-get-profile"></a><h3>gupnp_dlna_profile_guesser_get_profile ()</h3>
+<pre class="programlisting"><a class="link" href="GUPnPDLNAProfile.html" title="GUPnPDLNAProfile"><span class="returnvalue">GUPnPDLNAProfile</span></a> *
+gupnp_dlna_profile_guesser_get_profile
+                               (<em class="parameter"><code><a class="link" href="GUPnPDLNAProfileGuesser.html" title="GUPnPDLNAProfileGuesser"><span class="type">GUPnPDLNAProfileGuesser</span></a> *guesser</code></em>,
+                                <em class="parameter"><code>const <span class="type">gchar</span> *name</code></em>);</pre>
+<p>Lookups for <a class="link" href="GUPnPDLNAProfile.html" title="GUPnPDLNAProfile"><span class="type">GUPnPDLNAProfile</span></a> with given <em class="parameter"><code>name</code></em>
+.</p>
+<div class="refsect3">
+<a name="gupnp-dlna-profile-guesser-get-profile.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>guesser</p></td>
+<td class="parameter_description"><p>The <a class="link" href="GUPnPDLNAProfileGuesser.html" title="GUPnPDLNAProfileGuesser"><span class="type">GUPnPDLNAProfileGuesser</span></a> object.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>name</p></td>
+<td class="parameter_description"><p>The name of the DLNA profile to be retrieved.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="gupnp-dlna-profile-guesser-get-profile.returns"></a><h4>Returns</h4>
+<p> A <a class="link" href="GUPnPDLNAProfile.html" title="GUPnPDLNAProfile"><span class="type">GUPnPDLNAProfile</span></a> object on success,
+<code class="literal">NULL</code> otherwise. </p>
+<p><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="gupnp-dlna-profile-guesser-list-profiles"></a><h3>gupnp_dlna_profile_guesser_list_profiles ()</h3>
+<pre class="programlisting"><span class="returnvalue">GList</span> *
+gupnp_dlna_profile_guesser_list_profiles
+                               (<em class="parameter"><code><a class="link" href="GUPnPDLNAProfileGuesser.html" title="GUPnPDLNAProfileGuesser"><span class="type">GUPnPDLNAProfileGuesser</span></a> *guesser</code></em>);</pre>
+<p>Gets a list of the all DLNA profiles supported by <em class="parameter"><code>guesser</code></em>
+.</p>
+<div class="refsect3">
+<a name="gupnp-dlna-profile-guesser-list-profiles.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>guesser</p></td>
+<td class="parameter_description"><p>The <a class="link" href="GUPnPDLNAProfileGuesser.html" title="GUPnPDLNAProfileGuesser"><span class="type">GUPnPDLNAProfileGuesser</span></a> whose profile list is required.</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="gupnp-dlna-profile-guesser-list-profiles.returns"></a><h4>Returns</h4>
+<p> A <span class="type">GList</span>
+of <a class="link" href="GUPnPDLNAProfile.html" title="GUPnPDLNAProfile"><span class="type">GUPnPDLNAProfile</span></a> on success, <code class="literal">NULL</code> otherwise. </p>
+<p><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Generics and defining elements of containers and arrays."><span class="acronym">element-type</span></acronym> GUPnPDLNAProfile]</span></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="gupnp-dlna-profile-guesser-get-relaxed-mode"></a><h3>gupnp_dlna_profile_guesser_get_relaxed_mode ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>
+gupnp_dlna_profile_guesser_get_relaxed_mode
+                               (<em class="parameter"><code><a class="link" href="GUPnPDLNAProfileGuesser.html" title="GUPnPDLNAProfileGuesser"><span class="type">GUPnPDLNAProfileGuesser</span></a> *guesser</code></em>);</pre>
+<div class="refsect3">
+<a name="gupnp-dlna-profile-guesser-get-relaxed-mode.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>guesser</p></td>
+<td class="parameter_description"><p>The <a class="link" href="GUPnPDLNAProfileGuesser.html" title="GUPnPDLNAProfileGuesser"><span class="type">GUPnPDLNAProfileGuesser</span></a> object.</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="gupnp-dlna-profile-guesser-get-relaxed-mode.returns"></a><h4>Returns</h4>
+<p> <code class="literal">TRUE</code> if <em class="parameter"><code>guesser</code></em>
+is in relaxed mode, <code class="literal">FALSE</code> otherwise.</p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="gupnp-dlna-profile-guesser-get-extended-mode"></a><h3>gupnp_dlna_profile_guesser_get_extended_mode ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>
+gupnp_dlna_profile_guesser_get_extended_mode
+                               (<em class="parameter"><code><a class="link" href="GUPnPDLNAProfileGuesser.html" title="GUPnPDLNAProfileGuesser"><span class="type">GUPnPDLNAProfileGuesser</span></a> *guesser</code></em>);</pre>
+<div class="refsect3">
+<a name="gupnp-dlna-profile-guesser-get-extended-mode.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>guesser</p></td>
+<td class="parameter_description"><p>The <a class="link" href="GUPnPDLNAProfileGuesser.html" title="GUPnPDLNAProfileGuesser"><span class="type">GUPnPDLNAProfileGuesser</span></a> object.</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="gupnp-dlna-profile-guesser-get-extended-mode.returns"></a><h4>Returns</h4>
+<p> <code class="literal">TRUE</code> if <em class="parameter"><code>guesser</code></em>
+is in extended mode, <code class="literal">FALSE</code> otherwise.</p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="gupnp-dlna-profile-guesser-cleanup"></a><h3>gupnp_dlna_profile_guesser_cleanup ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+gupnp_dlna_profile_guesser_cleanup (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>Cleans up the DLNA profiles. Provided to remove Valgrind noise. Not
+thread-safe. Do not call it if there is even a slightest chance
+that profile guessing will be performed during process
+lifetime. The profiles are not reloaded after cleanup.</p>
+</div>
+</div>
+<div class="refsect1">
+<a name="GUPnPDLNAProfileGuesser.other_details"></a><h2>Types and Values</h2>
+<div class="refsect2">
+<a name="GUPnPDLNAProfileGuesser-struct"></a><h3>GUPnPDLNAProfileGuesser</h3>
+<pre class="programlisting">typedef struct _GUPnPDLNAProfileGuesser GUPnPDLNAProfileGuesser;</pre>
+<p>The top-level object used to for DLNA profile guessing.</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GUPnPDLNAProfileGuesserClass"></a><h3>GUPnPDLNAProfileGuesserClass</h3>
+<pre class="programlisting">typedef struct {
+        GObjectClass parent_class;
+} GUPnPDLNAProfileGuesserClass;
+</pre>
+<div class="refsect3">
+<a name="GUPnPDLNAProfileGuesserClass.members"></a><h4>Members</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="300px" class="struct_members_name">
+<col class="struct_members_description">
+<col width="200px" class="struct_members_annotations">
+</colgroup>
+<tbody></tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="refsect1">
+<a name="GUPnPDLNAProfileGuesser.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="GUPnPDLNAProfileGuesser--extended-mode"></a><h3>The <code class="literal">“extended-mode”</code> property</h3>
+<pre class="programlisting">  “extended-mode”            <span class="type">gboolean</span></pre>
+<p>Whether profile matching should be done also against DLNA
+profiles not being a part of DLNA specification.</p>
+<p>Flags: Read / Write / Construct Only</p>
+<p>Default value: FALSE</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GUPnPDLNAProfileGuesser--relaxed-mode"></a><h3>The <code class="literal">“relaxed-mode”</code> property</h3>
+<pre class="programlisting">  “relaxed-mode”             <span class="type">gboolean</span></pre>
+<p>Whether profile matching should not be strictly compliant
+with the DLNA specification.</p>
+<p>Flags: Read / Write / Construct Only</p>
+<p>Default value: FALSE</p>
+</div>
+</div>
+<div class="refsect1">
+<a name="GUPnPDLNAProfileGuesser.signal-details"></a><h2>Signal Details</h2>
+<div class="refsect2">
+<a name="GUPnPDLNAProfileGuesser-done"></a><h3>The <code class="literal">“done”</code> signal</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+user_function (<a class="link" href="GUPnPDLNAProfileGuesser.html" title="GUPnPDLNAProfileGuesser"><span class="type">GUPnPDLNAProfileGuesser</span></a> *profile_guesser,
+               <a class="link" href="GUPnPDLNAInformation.html" title="GUPnPDLNAInformation"><span class="type">GUPnPDLNAInformation</span></a>    *info,
+               <a class="link" href="GUPnPDLNAProfile.html" title="GUPnPDLNAProfile"><span class="type">GUPnPDLNAProfile</span></a>        *dlna,
+               <span class="type">GError</span>                  *error,
+               <span class="type">gpointer</span>                 user_data)</pre>
+<p>Will be emitted when guessing DLNA profile for a URI has finished.</p>
+<div class="refsect3">
+<a name="GUPnPDLNAProfileGuesser-done.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>profile_guesser</p></td>
+<td class="parameter_description"><p>The <a class="link" href="GUPnPDLNAProfileGuesser.html" title="GUPnPDLNAProfileGuesser"><span class="type">GUPnPDLNAProfileGuesser</span></a>.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p> URI metadata as <a class="link" href="GUPnPDLNAInformation.html" title="GUPnPDLNAInformation"><span class="type">GUPnPDLNAInformation</span></a>. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>dlna</p></td>
+<td class="parameter_description"><p> The results as <a class="link" href="GUPnPDLNAProfile.html" title="GUPnPDLNAProfile"><span class="type">GUPnPDLNAProfile</span></a>. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="NULL is OK, both for passing and for returning."><span class="acronym">allow-none</span></acronym>][<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>error</p></td>
+<td class="parameter_description"><p> Contains details of the error if discovery failed,
+else is <code class="literal">NULL</code>. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="NULL is OK, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span></td>
+</tr>
+<tr>
+<td class="parameter_name"><p>user_data</p></td>
+<td class="parameter_description"><p>user data set when the signal handler was connected.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p>Flags: Run Last</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>Generated by GTK-Doc V1.25.1</div>
+</body>
+</html>

@@ -1,0 +1,637 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>librygel-server Reference Manual: RygelAudioItem</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="index.html" title="librygel-server Reference Manual">
+<link rel="up" href="api-main-list.html" title="librygel-server API Reference">
+<link rel="prev" href="api-main-list.html" title="librygel-server API Reference">
+<link rel="next" href="RygelDataSource.html" title="RygelDataSource">
+<meta name="generator" content="GTK-Doc V1.20.1 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#RygelAudioItem.description" class="shortcut">Description</a></span><span id="nav_hierarchy">  <span class="dim">|</span> 
+                  <a href="#RygelAudioItem.object-hierarchy" class="shortcut">Object Hierarchy</a></span><span id="nav_properties">  <span class="dim">|</span> 
+                  <a href="#RygelAudioItem.properties" class="shortcut">Properties</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="api-main-list.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="api-main-list.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="RygelDataSource.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry">
+<a name="RygelAudioItem"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="RygelAudioItem.top_of_page"></a>RygelAudioItem</span></h2>
+<p>RygelAudioItem — Represents an audio item.</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1">
+<a name="RygelAudioItem.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="functions_return">
+<col class="functions_name">
+</colgroup>
+<tbody>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a class="link" href="RygelAudioItem.html#RYGEL-TYPE-AUDIO-ITEM:CAPS" title="RYGEL_TYPE_AUDIO_ITEM">RYGEL_TYPE_AUDIO_ITEM</a></td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="RygelAudioItem.html" title="RygelAudioItem"><span class="returnvalue">RygelAudioItem</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="RygelAudioItem.html#rygel-audio-item-new" title="rygel_audio_item_new ()">rygel_audio_item_new</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a href="../glib/glib-Basic-Types.html#glong"><span class="returnvalue">glong</span></a>
+</td>
+<td class="function_name">
+<a class="link" href="RygelAudioItem.html#rygel-audio-item-get-duration" title="rygel_audio_item_get_duration ()">rygel_audio_item_get_duration</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="RygelAudioItem.html#rygel-audio-item-set-duration" title="rygel_audio_item_set_duration ()">rygel_audio_item_set_duration</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a href="../glib/glib-Basic-Types.html#gint"><span class="returnvalue">gint</span></a>
+</td>
+<td class="function_name">
+<a class="link" href="RygelAudioItem.html#rygel-audio-item-get-bitrate" title="rygel_audio_item_get_bitrate ()">rygel_audio_item_get_bitrate</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="RygelAudioItem.html#rygel-audio-item-set-bitrate" title="rygel_audio_item_set_bitrate ()">rygel_audio_item_set_bitrate</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a href="../glib/glib-Basic-Types.html#gint"><span class="returnvalue">gint</span></a>
+</td>
+<td class="function_name">
+<a class="link" href="RygelAudioItem.html#rygel-audio-item-get-sample-freq" title="rygel_audio_item_get_sample_freq ()">rygel_audio_item_get_sample_freq</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="RygelAudioItem.html#rygel-audio-item-set-sample-freq" title="rygel_audio_item_set_sample_freq ()">rygel_audio_item_set_sample_freq</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a href="../glib/glib-Basic-Types.html#gint"><span class="returnvalue">gint</span></a>
+</td>
+<td class="function_name">
+<a class="link" href="RygelAudioItem.html#rygel-audio-item-get-bits-per-sample" title="rygel_audio_item_get_bits_per_sample ()">rygel_audio_item_get_bits_per_sample</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="RygelAudioItem.html#rygel-audio-item-set-bits-per-sample" title="rygel_audio_item_set_bits_per_sample ()">rygel_audio_item_set_bits_per_sample</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a href="../glib/glib-Basic-Types.html#gint"><span class="returnvalue">gint</span></a>
+</td>
+<td class="function_name">
+<a class="link" href="RygelAudioItem.html#rygel-audio-item-get-channels" title="rygel_audio_item_get_channels ()">rygel_audio_item_get_channels</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="RygelAudioItem.html#rygel-audio-item-set-channels" title="rygel_audio_item_set_channels ()">rygel_audio_item_set_channels</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="RygelAudioItem.properties"></a><h2>Properties</h2>
+<div class="informaltable"><table border="0">
+<colgroup>
+<col width="150px" class="properties_type">
+<col width="300px" class="properties_name">
+<col width="200px" class="properties_flags">
+</colgroup>
+<tbody>
+<tr>
+<td class="property_type"><a href="../glib/glib-Basic-Types.html#gint"><span class="type">gint</span></a></td>
+<td class="property_name"><a class="link" href="RygelAudioItem.html#RygelAudioItem--bitrate" title="The “bitrate” property">bitrate</a></td>
+<td class="property_flags">Read / Write</td>
+</tr>
+<tr>
+<td class="property_type"><a href="../glib/glib-Basic-Types.html#gint"><span class="type">gint</span></a></td>
+<td class="property_name"><a class="link" href="RygelAudioItem.html#RygelAudioItem--bits-per-sample" title="The “bits-per-sample” property">bits-per-sample</a></td>
+<td class="property_flags">Read / Write</td>
+</tr>
+<tr>
+<td class="property_type"><a href="../glib/glib-Basic-Types.html#gint"><span class="type">gint</span></a></td>
+<td class="property_name"><a class="link" href="RygelAudioItem.html#RygelAudioItem--channels" title="The “channels” property">channels</a></td>
+<td class="property_flags">Read / Write</td>
+</tr>
+<tr>
+<td class="property_type"><a href="../glib/glib-Basic-Types.html#glong"><span class="type">glong</span></a></td>
+<td class="property_name"><a class="link" href="RygelAudioItem.html#RygelAudioItem--duration" title="The “duration” property">duration</a></td>
+<td class="property_flags">Read / Write</td>
+</tr>
+<tr>
+<td class="property_type"><a href="../glib/glib-Basic-Types.html#gint"><span class="type">gint</span></a></td>
+<td class="property_name"><a class="link" href="RygelAudioItem.html#RygelAudioItem--sample-freq" title="The “sample-freq” property">sample-freq</a></td>
+<td class="property_flags">Read / Write</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="RygelAudioItem.other"></a><h2>Types and Values</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="name">
+<col class="description">
+</colgroup>
+<tbody>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a class="link" href="RygelAudioItem.html#RYGEL-AUDIO-ITEM-UPNP-CLASS:CAPS" title="RYGEL_AUDIO_ITEM_UPNP_CLASS">RYGEL_AUDIO_ITEM_UPNP_CLASS</a></td>
+</tr>
+<tr>
+<td class="datatype_keyword">struct</td>
+<td class="function_name"><a class="link" href="RygelAudioItem.html#RygelAudioItem-struct" title="struct RygelAudioItem">RygelAudioItem</a></td>
+</tr>
+<tr>
+<td class="datatype_keyword">struct</td>
+<td class="function_name"><a class="link" href="RygelAudioItem.html#RygelAudioItemClass" title="struct RygelAudioItemClass">RygelAudioItemClass</a></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="RygelAudioItem.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="screen">    <a href="../gobject/gobject-The-Base-Object-Type.html#GObject">GObject</a>
+    <span class="lineart">╰──</span> <a class="link" href="RygelMediaObject.html" title="RygelMediaObject">RygelMediaObject</a>
+        <span class="lineart">╰──</span> <a class="link" href="RygelMediaItem.html" title="RygelMediaItem">RygelMediaItem</a>
+            <span class="lineart">╰──</span> RygelAudioItem
+                <span class="lineart">├──</span> <a class="link" href="RygelMusicItem.html" title="RygelMusicItem">RygelMusicItem</a>
+                <span class="lineart">╰──</span> <a class="link" href="RygelVideoItem.html" title="RygelVideoItem">RygelVideoItem</a>
+</pre>
+</div>
+<div class="refsect1">
+<a name="RygelAudioItem.description"></a><h2>Description</h2>
+</div>
+<div class="refsect1">
+<a name="RygelAudioItem.functions_details"></a><h2>Functions</h2>
+<div class="refsect2">
+<a name="RYGEL-TYPE-AUDIO-ITEM:CAPS"></a><h3>RYGEL_TYPE_AUDIO_ITEM</h3>
+<pre class="programlisting">#define RYGEL_TYPE_AUDIO_ITEM (rygel_audio_item_get_type ())
+</pre>
+<p>The type for <a class="link" href="RygelAudioItem.html" title="RygelAudioItem"><span class="type">RygelAudioItem</span></a>.</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-audio-item-new"></a><h3>rygel_audio_item_new ()</h3>
+<pre class="programlisting"><a class="link" href="RygelAudioItem.html" title="RygelAudioItem"><span class="returnvalue">RygelAudioItem</span></a> *
+rygel_audio_item_new (<em class="parameter"><code>const <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *id</code></em>,
+                      <em class="parameter"><code><a class="link" href="RygelMediaContainer.html" title="RygelMediaContainer"><span class="type">RygelMediaContainer</span></a> *parent</code></em>,
+                      <em class="parameter"><code>const <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *title</code></em>,
+                      <em class="parameter"><code>const <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *upnp_class</code></em>);</pre>
+<div class="refsect3">
+<a name="id-1.6.2.8.3.4"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>id</p></td>
+<td class="parameter_description"><p> </p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>parent</p></td>
+<td class="parameter_description"><p> </p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>title</p></td>
+<td class="parameter_description"><p> </p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>upnp_class</p></td>
+<td class="parameter_description"><p> </p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-audio-item-get-duration"></a><h3>rygel_audio_item_get_duration ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#glong"><span class="returnvalue">glong</span></a>
+rygel_audio_item_get_duration (<em class="parameter"><code><a class="link" href="RygelAudioItem.html" title="RygelAudioItem"><span class="type">RygelAudioItem</span></a> *self</code></em>);</pre>
+<p>Get and return the current value of the <a class="link" href="RygelAudioItem.html#RygelAudioItem--duration" title="The “duration” property"><span class="type">"duration"</span></a> property.</p>
+<div class="refsect3">
+<a name="id-1.6.2.8.4.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelAudioItem.html" title="RygelAudioItem"><span class="type">RygelAudioItem</span></a> instance to query</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.6.2.8.4.6"></a><h4>Returns</h4>
+<p> the value of the <a class="link" href="RygelAudioItem.html#RygelAudioItem--duration" title="The “duration” property"><span class="type">"duration"</span></a> property</p>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-audio-item-set-duration"></a><h3>rygel_audio_item_set_duration ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+rygel_audio_item_set_duration (<em class="parameter"><code><a class="link" href="RygelAudioItem.html" title="RygelAudioItem"><span class="type">RygelAudioItem</span></a> *self</code></em>,
+                               <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#glong"><span class="type">glong</span></a> value</code></em>);</pre>
+<p>Set the value of the <a class="link" href="RygelAudioItem.html#RygelAudioItem--duration" title="The “duration” property"><span class="type">"duration"</span></a> property to <em class="parameter"><code>value</code></em>
+.</p>
+<div class="refsect3">
+<a name="id-1.6.2.8.5.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelAudioItem.html" title="RygelAudioItem"><span class="type">RygelAudioItem</span></a> instance to modify</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>value</p></td>
+<td class="parameter_description"><p>the new value of the <a class="link" href="RygelAudioItem.html#RygelAudioItem--duration" title="The “duration” property"><span class="type">"duration"</span></a> property</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-audio-item-get-bitrate"></a><h3>rygel_audio_item_get_bitrate ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gint"><span class="returnvalue">gint</span></a>
+rygel_audio_item_get_bitrate (<em class="parameter"><code><a class="link" href="RygelAudioItem.html" title="RygelAudioItem"><span class="type">RygelAudioItem</span></a> *self</code></em>);</pre>
+<p>Get and return the current value of the <a class="link" href="RygelAudioItem.html#RygelAudioItem--bitrate" title="The “bitrate” property"><span class="type">"bitrate"</span></a> property.</p>
+<div class="refsect3">
+<a name="id-1.6.2.8.6.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelAudioItem.html" title="RygelAudioItem"><span class="type">RygelAudioItem</span></a> instance to query</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.6.2.8.6.6"></a><h4>Returns</h4>
+<p> the value of the <a class="link" href="RygelAudioItem.html#RygelAudioItem--bitrate" title="The “bitrate” property"><span class="type">"bitrate"</span></a> property</p>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-audio-item-set-bitrate"></a><h3>rygel_audio_item_set_bitrate ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+rygel_audio_item_set_bitrate (<em class="parameter"><code><a class="link" href="RygelAudioItem.html" title="RygelAudioItem"><span class="type">RygelAudioItem</span></a> *self</code></em>,
+                              <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gint"><span class="type">gint</span></a> value</code></em>);</pre>
+<p>Set the value of the <a class="link" href="RygelAudioItem.html#RygelAudioItem--bitrate" title="The “bitrate” property"><span class="type">"bitrate"</span></a> property to <em class="parameter"><code>value</code></em>
+.</p>
+<div class="refsect3">
+<a name="id-1.6.2.8.7.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelAudioItem.html" title="RygelAudioItem"><span class="type">RygelAudioItem</span></a> instance to modify</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>value</p></td>
+<td class="parameter_description"><p>the new value of the <a class="link" href="RygelAudioItem.html#RygelAudioItem--bitrate" title="The “bitrate” property"><span class="type">"bitrate"</span></a> property</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-audio-item-get-sample-freq"></a><h3>rygel_audio_item_get_sample_freq ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gint"><span class="returnvalue">gint</span></a>
+rygel_audio_item_get_sample_freq (<em class="parameter"><code><a class="link" href="RygelAudioItem.html" title="RygelAudioItem"><span class="type">RygelAudioItem</span></a> *self</code></em>);</pre>
+<p>Get and return the current value of the <a class="link" href="RygelAudioItem.html#RygelAudioItem--sample-freq" title="The “sample-freq” property"><span class="type">"sample-freq"</span></a> property.</p>
+<div class="refsect3">
+<a name="id-1.6.2.8.8.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelAudioItem.html" title="RygelAudioItem"><span class="type">RygelAudioItem</span></a> instance to query</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.6.2.8.8.6"></a><h4>Returns</h4>
+<p> the value of the <a class="link" href="RygelAudioItem.html#RygelAudioItem--sample-freq" title="The “sample-freq” property"><span class="type">"sample-freq"</span></a> property</p>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-audio-item-set-sample-freq"></a><h3>rygel_audio_item_set_sample_freq ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+rygel_audio_item_set_sample_freq (<em class="parameter"><code><a class="link" href="RygelAudioItem.html" title="RygelAudioItem"><span class="type">RygelAudioItem</span></a> *self</code></em>,
+                                  <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gint"><span class="type">gint</span></a> value</code></em>);</pre>
+<p>Set the value of the <a class="link" href="RygelAudioItem.html#RygelAudioItem--sample-freq" title="The “sample-freq” property"><span class="type">"sample-freq"</span></a> property to <em class="parameter"><code>value</code></em>
+.</p>
+<div class="refsect3">
+<a name="id-1.6.2.8.9.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelAudioItem.html" title="RygelAudioItem"><span class="type">RygelAudioItem</span></a> instance to modify</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>value</p></td>
+<td class="parameter_description"><p>the new value of the <a class="link" href="RygelAudioItem.html#RygelAudioItem--sample-freq" title="The “sample-freq” property"><span class="type">"sample-freq"</span></a> property</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-audio-item-get-bits-per-sample"></a><h3>rygel_audio_item_get_bits_per_sample ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gint"><span class="returnvalue">gint</span></a>
+rygel_audio_item_get_bits_per_sample (<em class="parameter"><code><a class="link" href="RygelAudioItem.html" title="RygelAudioItem"><span class="type">RygelAudioItem</span></a> *self</code></em>);</pre>
+<p>Get and return the current value of the <a class="link" href="RygelAudioItem.html#RygelAudioItem--bits-per-sample" title="The “bits-per-sample” property"><span class="type">"bits-per-sample"</span></a> property.</p>
+<div class="refsect3">
+<a name="id-1.6.2.8.10.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelAudioItem.html" title="RygelAudioItem"><span class="type">RygelAudioItem</span></a> instance to query</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.6.2.8.10.6"></a><h4>Returns</h4>
+<p> the value of the <a class="link" href="RygelAudioItem.html#RygelAudioItem--bits-per-sample" title="The “bits-per-sample” property"><span class="type">"bits-per-sample"</span></a> property</p>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-audio-item-set-bits-per-sample"></a><h3>rygel_audio_item_set_bits_per_sample ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+rygel_audio_item_set_bits_per_sample (<em class="parameter"><code><a class="link" href="RygelAudioItem.html" title="RygelAudioItem"><span class="type">RygelAudioItem</span></a> *self</code></em>,
+                                      <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gint"><span class="type">gint</span></a> value</code></em>);</pre>
+<p>Set the value of the <a class="link" href="RygelAudioItem.html#RygelAudioItem--bits-per-sample" title="The “bits-per-sample” property"><span class="type">"bits-per-sample"</span></a> property to <em class="parameter"><code>value</code></em>
+.</p>
+<div class="refsect3">
+<a name="id-1.6.2.8.11.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelAudioItem.html" title="RygelAudioItem"><span class="type">RygelAudioItem</span></a> instance to modify</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>value</p></td>
+<td class="parameter_description"><p>the new value of the <a class="link" href="RygelAudioItem.html#RygelAudioItem--bits-per-sample" title="The “bits-per-sample” property"><span class="type">"bits-per-sample"</span></a> property</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-audio-item-get-channels"></a><h3>rygel_audio_item_get_channels ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Basic-Types.html#gint"><span class="returnvalue">gint</span></a>
+rygel_audio_item_get_channels (<em class="parameter"><code><a class="link" href="RygelAudioItem.html" title="RygelAudioItem"><span class="type">RygelAudioItem</span></a> *self</code></em>);</pre>
+<p>Get and return the current value of the <a class="link" href="RygelAudioItem.html#RygelAudioItem--channels" title="The “channels” property"><span class="type">"channels"</span></a> property.</p>
+<div class="refsect3">
+<a name="id-1.6.2.8.12.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelAudioItem.html" title="RygelAudioItem"><span class="type">RygelAudioItem</span></a> instance to query</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.6.2.8.12.6"></a><h4>Returns</h4>
+<p> the value of the <a class="link" href="RygelAudioItem.html#RygelAudioItem--channels" title="The “channels” property"><span class="type">"channels"</span></a> property</p>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-audio-item-set-channels"></a><h3>rygel_audio_item_set_channels ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+rygel_audio_item_set_channels (<em class="parameter"><code><a class="link" href="RygelAudioItem.html" title="RygelAudioItem"><span class="type">RygelAudioItem</span></a> *self</code></em>,
+                               <em class="parameter"><code><a href="../glib/glib-Basic-Types.html#gint"><span class="type">gint</span></a> value</code></em>);</pre>
+<p>Set the value of the <a class="link" href="RygelAudioItem.html#RygelAudioItem--channels" title="The “channels” property"><span class="type">"channels"</span></a> property to <em class="parameter"><code>value</code></em>
+.</p>
+<div class="refsect3">
+<a name="id-1.6.2.8.13.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelAudioItem.html" title="RygelAudioItem"><span class="type">RygelAudioItem</span></a> instance to modify</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>value</p></td>
+<td class="parameter_description"><p>the new value of the <a class="link" href="RygelAudioItem.html#RygelAudioItem--channels" title="The “channels” property"><span class="type">"channels"</span></a> property</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="refsect1">
+<a name="RygelAudioItem.other_details"></a><h2>Types and Values</h2>
+<div class="refsect2">
+<a name="RYGEL-AUDIO-ITEM-UPNP-CLASS:CAPS"></a><h3>RYGEL_AUDIO_ITEM_UPNP_CLASS</h3>
+<pre class="programlisting">#define RYGEL_AUDIO_ITEM_UPNP_CLASS "object.item.audioItem"
+</pre>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelAudioItem-struct"></a><h3>struct RygelAudioItem</h3>
+<pre class="programlisting">struct RygelAudioItem;</pre>
+<p>Represents an audio item.</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelAudioItemClass"></a><h3>struct RygelAudioItemClass</h3>
+<pre class="programlisting">struct RygelAudioItemClass {
+	RygelMediaItemClass parent_class;
+};
+</pre>
+<p>The class structure for <a class="link" href="RygelAudioItem.html#RYGEL-TYPE-AUDIO-ITEM:CAPS" title="RYGEL_TYPE_AUDIO_ITEM"><code class="literal">RYGEL_TYPE_AUDIO_ITEM</code></a>. All the fields in this structure are private and should never be accessed directly.</p>
+<div class="refsect3">
+<a name="id-1.6.2.9.4.5"></a><h4>Members</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="300px" class="struct_members_name">
+<col class="struct_members_description">
+<col width="200px" class="struct_members_annotations">
+</colgroup>
+<tbody><tr>
+<td class="struct_member_name"><p><a class="link" href="RygelMediaItem.html#RygelMediaItemClass" title="struct RygelMediaItemClass"><span class="type">RygelMediaItemClass</span></a> <em class="structfield"><code><a name="RygelAudioItemClass.parent-class"></a>parent_class</code></em>;</p></td>
+<td class="struct_member_description"><p>the parent class structure</p></td>
+<td class="struct_member_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="refsect1">
+<a name="RygelAudioItem.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="RygelAudioItem--bitrate"></a><h3>The <code class="literal">“bitrate”</code> property</h3>
+<pre class="programlisting">  “bitrate”                  <a href="../glib/glib-Basic-Types.html#gint"><span class="type">gint</span></a></pre>
+<p>bitrate.</p>
+<p>Flags: Read / Write</p>
+<p>Default value: -1</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelAudioItem--bits-per-sample"></a><h3>The <code class="literal">“bits-per-sample”</code> property</h3>
+<pre class="programlisting">  “bits-per-sample”          <a href="../glib/glib-Basic-Types.html#gint"><span class="type">gint</span></a></pre>
+<p>bits-per-sample.</p>
+<p>Flags: Read / Write</p>
+<p>Default value: -1</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelAudioItem--channels"></a><h3>The <code class="literal">“channels”</code> property</h3>
+<pre class="programlisting">  “channels”                 <a href="../glib/glib-Basic-Types.html#gint"><span class="type">gint</span></a></pre>
+<p>channels.</p>
+<p>Flags: Read / Write</p>
+<p>Default value: -1</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelAudioItem--duration"></a><h3>The <code class="literal">“duration”</code> property</h3>
+<pre class="programlisting">  “duration”                 <a href="../glib/glib-Basic-Types.html#glong"><span class="type">glong</span></a></pre>
+<p>duration.</p>
+<p>Flags: Read / Write</p>
+<p>Default value: -1</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelAudioItem--sample-freq"></a><h3>The <code class="literal">“sample-freq”</code> property</h3>
+<pre class="programlisting">  “sample-freq”              <a href="../glib/glib-Basic-Types.html#gint"><span class="type">gint</span></a></pre>
+<p>sample-freq.</p>
+<p>Flags: Read / Write</p>
+<p>Default value: -1</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.20.1</div>
+</body>
+</html>

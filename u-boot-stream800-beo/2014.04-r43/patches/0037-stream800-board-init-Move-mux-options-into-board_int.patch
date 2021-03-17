@@ -1,0 +1,181 @@
+From 968c13bca8679224c5ffe080a8c9ae8df102d7c1 Mon Sep 17 00:00:00 2001
+From: Vladimir Koutny <vladimir.koutny@streamunlimited.com>
+Date: Wed, 29 May 2013 17:08:58 +0200
+Subject: [PATCH] stream800 board init: Move mux options into board_interface
+
+Signed-off-by: Vladimir Koutny <vladimir.koutny@streamunlimited.com>
+---
+ .../stream800/board-lan_dock_board.c               |  2 ++
+ .../stream800/board-sue_demo_client_board.c        |  2 ++
+ .../stream800/board-sue_factory_test_board.c       |  4 +++
+ .../stream800/board-sue_first_carrier_board.c      |  4 +++
+ board/streamunlimited/stream800/board.c            | 23 ++++++++-------
+ board/streamunlimited/stream800/board.h            |  4 +++
+ board/streamunlimited/stream800/mux.c              | 34 +++++++---------------
+ 7 files changed, 40 insertions(+), 33 deletions(-)
+
+diff --git a/board/streamunlimited/stream800/board-lan_dock_board.c b/board/streamunlimited/stream800/board-lan_dock_board.c
+index 3a557bc..09642dd 100644
+--- a/board/streamunlimited/stream800/board-lan_dock_board.c
++++ b/board/streamunlimited/stream800/board-lan_dock_board.c
+@@ -240,6 +240,8 @@ static struct StreamBoardInterface lan_dock_board_interface = {
+ 	.cpsw_eth_init = lan_dock__cpsw_eth_init,
+ 	.on_board_state_changed = lan_dock__on_board_state_changed,
+ 	.do_usb_update = lan_dock__do_usb_update,
++
++	.has_rmii1 = 1,
+ };
+ 
+ void lan_dock__set_board_interface(void) {
+diff --git a/board/streamunlimited/stream800/board-sue_demo_client_board.c b/board/streamunlimited/stream800/board-sue_demo_client_board.c
+index 427e926..1d3cc85 100644
+--- a/board/streamunlimited/stream800/board-sue_demo_client_board.c
++++ b/board/streamunlimited/stream800/board-sue_demo_client_board.c
+@@ -108,6 +108,8 @@ static struct StreamBoardInterface demo_client_board_interface = {
+ 	.cpsw_eth_init = demo_client__cpsw_eth_init,
+ 	.on_board_state_changed = demo_client__on_board_state_changed,
+ 	.do_usb_update = demo_client__do_usb_update,
++
++	.has_rmii1 = 1,
+ };
+ 
+ void demo_client__set_board_interface(void) {
+diff --git a/board/streamunlimited/stream800/board-sue_factory_test_board.c b/board/streamunlimited/stream800/board-sue_factory_test_board.c
+index ecfa67c..8b85b15 100644
+--- a/board/streamunlimited/stream800/board-sue_factory_test_board.c
++++ b/board/streamunlimited/stream800/board-sue_factory_test_board.c
+@@ -89,6 +89,10 @@ static struct StreamBoardInterface factory_test_board_interface = {
+ 	.late_init = factory_test__late_init,
+ 	.cpsw_eth_init = factory_test__cpsw_eth_init,
+ 	.on_board_state_changed = factory_test__on_board_state_changed,
++
++	.has_rmii1 = 1,
++	.has_rgmii2 = 1,
++	.has_mmc1 = 1,
+ };
+ 
+ void factory_test__set_board_interface(void) {
+diff --git a/board/streamunlimited/stream800/board-sue_first_carrier_board.c b/board/streamunlimited/stream800/board-sue_first_carrier_board.c
+index 76ccece..81aec53 100644
+--- a/board/streamunlimited/stream800/board-sue_first_carrier_board.c
++++ b/board/streamunlimited/stream800/board-sue_first_carrier_board.c
+@@ -95,6 +95,10 @@ static struct StreamBoardInterface carrier_board_interface = {
+ 	.cpsw_eth_init = first_carrier__cpsw_eth_init,
+ 	.on_board_state_changed = first_carrier__on_board_state_changed,
+ 	.do_usb_update = first_carrier__do_usb_update,
++
++	.has_rmii1 = 1,
++	.has_rgmii2 = 1,
++	.has_mmc1 = 1,
+ };
+ 
+ void first_carrier__set_board_interface(void) {
+diff --git a/board/streamunlimited/stream800/board.c b/board/streamunlimited/stream800/board.c
+index e4040fc..722015c 100644
+--- a/board/streamunlimited/stream800/board.c
++++ b/board/streamunlimited/stream800/board.c
+@@ -126,16 +126,6 @@ int board_init(void)
+ 	init_adc();
+ 	board_detect(&board);
+ 	board_printf_info();
+-	enable_board_pin_mux(&board);
+-	i2c_init(CONFIG_SYS_I2C_SPEED, CONFIG_SYS_I2C_SLAVE);
+-	init_si5351x();
+-
+-	/* This is temporarily (after reset during FW update we sometime detect unwanted external warm reset) */
+-	{
+-		uint32_t rstst = readl(PRM_RSTST);
+-		uint32_t rstctrl = readl(PRM_RSTCTRL);
+-		printf("rstst: 0x%X, rstctrl: 0x%X\n", rstst, rstctrl);
+-	}
+ 
+ 	switch (get_carrier_board_type()) {
+ 		case CBT_LanDockBoard:
+@@ -155,6 +145,19 @@ int board_init(void)
+ 			//panic("Not supported board!");
+ 	}
+ 
++	enable_board_pin_mux(&board);
++
++	i2c_init(CONFIG_SYS_I2C_SPEED, CONFIG_SYS_I2C_SLAVE);
++	init_si5351x();
++
++	/* This is temporarily (after reset during FW update we sometime detect unwanted external warm reset) */
++	{
++		uint32_t rstst = readl(PRM_RSTST);
++		uint32_t rstctrl = readl(PRM_RSTCTRL);
++		printf("rstst: 0x%X, rstctrl: 0x%X\n", rstst, rstctrl);
++	}
++
++
+ 	if ((board_interface != NULL) && (board_interface->init != NULL))
+ 		board_interface->init(&board);
+ 
+diff --git a/board/streamunlimited/stream800/board.h b/board/streamunlimited/stream800/board.h
+index 2a84dac..88936f1 100644
+--- a/board/streamunlimited/stream800/board.h
++++ b/board/streamunlimited/stream800/board.h
+@@ -92,6 +92,10 @@ struct StreamBoardInterface {
+ 	/* return 0, usb update should not start, return 1, usb update should start immediately  */
+ 	int (*do_usb_update) (void);
+ 
++	/* flags used during pinmux setup - fill in according to peripherals used */
++	int has_rmii1;
++	int has_rgmii2;
++	int has_mmc1;
+ };
+ 
+ void set_board_interface(struct StreamBoardInterface * interface);
+diff --git a/board/streamunlimited/stream800/mux.c b/board/streamunlimited/stream800/mux.c
+index c034ac9..29cc518 100644
+--- a/board/streamunlimited/stream800/mux.c
++++ b/board/streamunlimited/stream800/mux.c
+@@ -266,34 +266,22 @@ void enable_board_pin_mux(struct Stream800Board *board)
+ 	configure_module_pin_mux(clk2_pll_pin_mux);
+ 	configure_module_pin_mux(nand_pin_mux);
+ 
+-	switch (get_carrier_board_type()) {
+-		case CBT_LanDockBoard:
+-#ifndef CONFIG_NO_ETH
+-			configure_module_pin_mux(rmii1_pin_mux);
+-#endif
+-			break;
+-		case CBT_SueDemoClientBoard:
+-#ifndef CONFIG_NO_ETH
+-			configure_module_pin_mux(rmii1_pin_mux);
+-#endif
+-			break;
+-		case CBT_SueFirstCarrierBoard:
+-#ifndef CONFIG_NO_ETH
+-			configure_module_pin_mux(rmii1_pin_mux);
+-			configure_module_pin_mux(rgmii2_pin_mux);
+-#endif
+-			configure_module_pin_mux(mmc1_pin_mux);
+-			break;
+-		case CBT_SueFactoryTestBoard:
++	if (board_interface != NULL) {
+ #ifndef CONFIG_NO_ETH
++		if (board_interface->has_rmii1) {
++			printf("pinmux: enabling rmii1\n");
+ 			configure_module_pin_mux(rmii1_pin_mux);
++		}
++
++		if (board_interface->has_rgmii2) {
++			printf("pinmux: enabling rgmii2\n");
+ 			configure_module_pin_mux(rgmii2_pin_mux);
++		}
+ #endif
++		if (board_interface->has_mmc1) {
++			printf("pinmux: enabling mmc1\n");
+ 			configure_module_pin_mux(mmc1_pin_mux);
+-			break;
+-		default:
+-			printf("enable_board_pin_mux: Not supported board!\n");
+-			//panic("Not supported board!")
++		}
+ 	}
+ 
+ 	//configure_module_pin_mux(mmc0_pin_mux);
+-- 
+2.7.4
+

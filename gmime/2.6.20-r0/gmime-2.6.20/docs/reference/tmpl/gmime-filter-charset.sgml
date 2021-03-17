@@ -1,0 +1,38 @@
+<!-- ##### SECTION Title ##### -->
+gmime-filter-charset
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GMimeFilterCharset ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION g_mime_filter_charset_new ##### -->
+<para>
+
+</para>
+
+@from_charset: 
+@to_charset: 
+@Returns: 
+
+

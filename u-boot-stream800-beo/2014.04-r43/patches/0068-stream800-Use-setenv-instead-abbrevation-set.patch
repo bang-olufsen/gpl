@@ -1,0 +1,41 @@
+From 20dc950a2da96832ab9e9bae873a67820a2362ec Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Fri, 3 Jan 2014 09:09:25 +0100
+Subject: [PATCH] stream800: Use setenv instead abbrevation set.
+
+We enabled setexpr and when only set is used in env them uboot complains
+because it cannot decide which command should be used (setexp or setenv).
+Use full command name to avoid issues.
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ include/configs/stream800.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/include/configs/stream800.h b/include/configs/stream800.h
+index 786cd0d..6e9d12f 100644
+--- a/include/configs/stream800.h
++++ b/include/configs/stream800.h
+@@ -766,8 +766,8 @@
+ 			"fi;" \
+ 		    "fi; " \
+ 		    "else "\
+-		    "set autoload no; " \
+-		    "set autostart no; " \
++		    "setenv autoload no; " \
++		    "setenv autostart no; " \
+ 		    "echo \"INFO: starting tftp update process.\"; " \
+ 		    "if stftpup data; " \
+ 			"then "\
+@@ -781,7 +781,7 @@
+ 		    "fi; " \
+ 			\
+ 		    "if test -z \\\\'${bootfile}\\\\' || test \\\\'${bootfile}\\\\' -eq \"uImage\"; then " \
+-			"set bootfile sfupdate; " \
++			"setenv bootfile sfupdate; " \
+ 		    "fi; " \
+ 			\
+ 		    "if tftp ${sfu_load_addr} ${rootpath}${bootfile}; " \
+-- 
+2.7.4
+

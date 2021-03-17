@@ -1,0 +1,284 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Compiling the GMime libraries</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="GMime 2.6 Reference Manual">
+<link rel="up" href="gmime.html" title="Part I. GMime Overview">
+<link rel="prev" href="gmime.html" title="Part I. GMime Overview">
+<link rel="next" href="gmime-compiling.html" title="Compiling GMime Applications">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2"><tr valign="middle">
+<td><a accesskey="p" href="gmime.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="gmime.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">GMime 2.6 Reference Manual</th>
+<td><a accesskey="n" href="gmime-compiling.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry">
+<a name="gmime-building"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle">Compiling the GMime libraries</span></h2>
+<p>Compiling the GMime Libraries — How to compile GMime itself</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1">
+<a name="overview"></a><h2>Building GMime on UNIX-like systems</h2>
+<p>
+      This chapter covers building and installing GMime on UNIX and
+      UNIX-like systems such as Linux. Compiling GMime on Microsoft
+      Windows is not a goal of the project, however if you are able
+      build on a Microsoft Windows platform, do send me building and 
+      installing instructions and I will add them to this document.
+    </p>
+<p>
+      Before we get into the details of how to compile GMime, I should
+      mention that binary packages of GMime prebuilt for your operating 
+      system may be available either from your operating system vendor 
+      or from independent sources such as http://rpmfind.net. If you
+      can find them, it may be the easiest way of getting started
+      developing GMime.
+    </p>
+<p>
+      On UNIX-like systems GMime uses the standard GNU build system,
+      using <span class="application">autoconf</span> for package
+      configuration and resolving portability issues,
+      <span class="application">automake</span> for building makefiles that
+      comply with the GNU Coding Standards, and
+      <span class="application">libtool</span> for building shared libraries
+      on multiple platforms.
+    </p>
+<p>
+      If you are building GMime from the distributed source packages,
+      then you won't need these tools installed; the necessary pieces
+      of the tools are already included in the source packages. But
+      it's useful to know a bit about how packages that use these
+      tools work. A source package is distributed as a
+      <code class="literal">tar.gz</code> file which you unpack into a 
+      directory full of the source files as follows:
+    </p>
+<pre class="programlisting">
+      tar -zxvf gmime-2.6.x.tar.gz
+    </pre>
+<p>
+      In the toplevel of the directory that is created, there will be
+      a shell script called <code class="filename">configure</code> which
+      you then run to take the template makefiles called
+      <code class="filename">Makefile.in</code> in the package and create
+      makefiles customized for your operating system. The 
+      <code class="filename">configure</code> script can be passed various 
+      command line arguments to determine how the package is built and 
+      installed. The most commonly useful argument is the 
+      <code class="systemitem">--prefix</code> argument which specifies where 
+      the package is installed. To install a package into 
+      <code class="filename">/opt/gmime</code> you would run configure as:
+    </p>
+<pre class="programlisting">
+      ./configure --prefix=/opt/gmime
+    </pre>
+<p>
+      A full list of options can be found by running
+      <code class="filename">configure</code> with the
+      <code class="systemitem">--help</code> argument. In general, the defaults 
+      are right and should be trusted. After you've run
+      <code class="filename">configure</code>, you then run the
+      <span class="command"><strong>make</strong></span> command to build the package and install
+      it.
+    </p>
+<pre class="programlisting">
+      make
+      make install
+    </pre>
+<p>
+      If you don't have permission to write to the directory you are
+      installing in, you may have to change to root temporarily before
+      running <code class="literal">make install</code>. A quick way to do this is 
+      to use the <span class="command"><strong>su</strong></span> command with the 
+      <code class="systemitem">-c</code> option 
+      (ex. <code class="literal">su -c "make install"</code>). Also, if you are
+      installing in a system directory, on some systems (such as
+      Linux), you will need to run <span class="command"><strong>ldconfig</strong></span> after
+      <code class="literal">make install</code> so that the newly installed
+      libraries will be found.
+    </p>
+<p>
+      Several environment variables are useful to pass to set before
+      running configure. <code class="envar">CPPFLAGS</code> contains options to
+      pass to the C compiler, and is used to tell the compiler where
+      to look for include files. The <code class="envar">LDFLAGS</code> variable
+      is used in a similar fashion for the linker. Finally the
+      <code class="envar">PKG_CONFIG_PATH</code> environment variable contains
+      a search path that <span class="command"><strong>pkg-config</strong></span> (see below)
+      uses when looking for a file describing how to compile
+      programs using different libraries. If you were installing GMime
+      and it's dependencies into <code class="filename">/opt/gmime</code>, you 
+      might want to set these variables as:
+    </p>
+<pre class="programlisting">
+      CPPFLAGS="-I/opt/gmime/include"
+      LDFLAGS="-L/opt/gmime/lib"
+      PKG_CONFIG_PATH="/opt/gmime/lib/pkgconfig"
+      export CPPFLAGS LDFLAGS PKG_CONFIG_PATH
+    </pre>
+<p>
+      You may also need to set the <code class="envar">LD_LIBRARY_PATH</code>
+      environment variable so the systems dynamic linker can find
+      the newly installed libraries, and the <code class="envar">PATH</code>
+      environment program so that utility binaries installed by
+      the various libraries will be found.
+    </p>
+<pre class="programlisting">
+      LD_LIBRARY_PATH="/opt/gmime/lib"
+      PATH="/opt/gmime/bin:$PATH"
+      export LD_LIBRARY_PATH PATH
+    </pre>
+</div>
+<div class="refsect1">
+<a name="dependencies"></a><h2>Dependencies</h2>
+<p>
+      Before you can compile the GMime library, you need to have
+      various other tools and libraries installed on your
+      system. The two tools needed during the build process (as
+      differentiated from the tools used in when creating GMime
+      mentioned above such as <span class="application">autoconf</span>)
+      are <span class="command"><strong>pkg-config</strong></span> and GNU make.
+    </p>
+<div class="itemizedlist"><ul class="itemizedlist" type="disc">
+<li class="listitem"><p><a class="ulink" href="http://www.freedesktop.org/software/pkgconfig/" target="_top">pkg-config</a>
+	  is a tool for tracking the compilation flags needed for
+	  libraries that are used by the GMime libraries. (For each
+	  library, a small <code class="literal">.pc</code> text file is installed in a standard
+	  location that contains the compilation flags needed for that
+	  library along with version number information.)  The version
+	  of <span class="command"><strong>pkg-config</strong></span> needed to build GMime is
+	  mirrored in the <code class="filename">dependencies</code> directory
+	  on the <a class="ulink" href="ftp://ftp.gtk.org/pub/gtk/v2.0/" target="_top">GTK+ FTP
+	  site.</a></p></li>
+<li class="listitem"><p>
+	  The GMime makefiles will mostly work with different versions
+	  of <span class="command"><strong>make</strong></span>, however, there tends to be
+	  a few incompatibilities, so the GMime team recommends
+	  installing <a class="ulink" href="http://www.gnu.org/software/make" target="_top">GNU
+	    make</a> if you don't already have it on your system
+	  and using it. (It may be called <span class="command"><strong>gmake</strong></span>
+	  rather than <span class="command"><strong>make</strong></span>.)
+	</p></li>
+</ul></div>
+<p>
+      GMime depends on the existance of two (2) libraries: GLib and iconv.
+    </p>
+<div class="itemizedlist"><ul class="itemizedlist" type="disc">
+<li class="listitem"><p>
+	  The GLib library provides core non-graphical functionality
+	  such as high level data types, Unicode manipulation, and
+	  a object and type system to C programs. It is available
+	  from the <a class="ulink" href="ftp://ftp.gtk.org/pub/gtk/v2.0/" target="_top">GTK+
+	  FTP site.</a>
+	</p></li>
+<li class="listitem"><p>
+	  The <a class="ulink" href="http://www.gnu.org/software/libiconv/" target="_top">GNU
+	  libiconv library</a> is needed to build GLib and GMime 
+          if your system doesn't already have the 
+          <code class="function">iconv()</code> function for doing conversion 
+          between character encodings. Most modern systems should have
+	  <code class="function">iconv()</code>.
+	</p></li>
+</ul></div>
+</div>
+<div class="refsect1">
+<a name="building"></a><h2>Building and testing GMime</h2>
+<p>
+      First make sure that you have the necessary external
+      dependencies installed: <span class="command"><strong>pkg-config</strong></span>, GNU make,
+      and, if necessary, libiconv. To get detailed information about 
+      building these packages, see the documentation provided with the
+      individual packages. On a newer Linux system, it's quite likely 
+      that you'll have all of these installed already.
+    </p>
+<p>
+      Then build and install the GMime libraries in the order:
+      libiconv, GLib, then GMime. For each library, follow the
+      steps of <code class="literal">configure</code>, <code class="literal">make</code>,
+      <code class="literal">make install</code> mentioned above. If you're
+      lucky, this will all go smoothly, and you'll be ready to
+      <a class="link" href="gmime-compiling.html" title="Compiling GMime Applications">start compiling your own GMime
+	applications</a>. You can test your GMime installation
+      by running <span class="command"><strong>pkg-config --modversion gmime-2.6</strong></span>
+      and making sure that it can both find GMime and reports the 
+      correct version.
+    </p>
+<p>
+      If one of the <code class="filename">configure</code> scripts fails or running
+      <span class="command"><strong>make</strong></span> fails, look closely at the error
+      messages printed; these will often provide useful information
+      as to what went wrong. When <code class="filename">configure</code>
+      fails, extra information, such as errors that a test compilation
+      ran into, is found in the file <code class="filename">config.log</code>.
+      Looking at the last couple of hundred lines in this file will
+      frequently make clear what went wrong. If all else fails, you
+      can ask for help by emailing me, fejj@gnome.org
+    </p>
+</div>
+<div class="refsect1">
+<a name="extra-configuration-options"></a><h2>Extra Configuration Options</h2>
+<p>
+	In addition to the normal options, the
+	<span class="command"><strong>configure</strong></span> script for the GMime library
+	supports a number of additional arguments. (Command line
+	arguments for the other GMime libraries are described in
+	the documentation distributed with those libraries.)
+
+	</p>
+<div class="cmdsynopsis"><p><code class="command">./configure</code>  [[--enable-profiling] |  [--enable-warnings] |  [--enable-mono] |  [--enable-gtk-doc] |  [--enable-largfile]]</p></div>
+<p>
+    </p>
+<p><b>
+        <code class="systemitem">--enable-profiling</code>
+      . </b>
+        Normally GMime will not pass the <code class="literal">-pg</code> flag to 
+        <span class="command"><strong>gcc</strong></span> when building. This option will enable
+        the use of that flag thus building profiling information into 
+        the GMime libraries for use with the GNU Profiler, gprof. Odds
+        are you do not care about this option unless you are either me
+        or desire to profile GMime and/or your program.
+      </p>
+<p><b>
+        <code class="systemitem">--enable-warnings</code>
+      . </b>
+        This option enables parser warnings about invalid MIME to be
+        logged to stderr at runtime. Again, it is unlikely you will
+        care to use this option.
+      </p>
+<p><b>
+        <code class="systemitem">--enable-mono</code>
+      . </b>
+        This option will include the Mono .NET bindings as part of
+        the build.
+      </p>
+<p><b>
+        <code class="systemitem">--enable-gtk-doc</code>
+      . </b>
+        This option will enable the building of the reference
+        documentation for GMime (e.g. the html pages you are
+        reading now).
+      </p>
+<p><b>
+        <code class="systemitem">--enable-largefile</code>
+      . </b>
+        This option will enable large file support (e.g. files larger
+        than 2GB) on 32bit systems. This flag is enabled by default
+        starting with GMime 2.4.5.
+      </p>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

@@ -1,0 +1,35 @@
+From 37bef507e4ffdd252954e468ffe01d855601469f Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Fri, 29 Nov 2013 11:29:06 +0100
+Subject: [PATCH] stream800: Set carrierboard to democlient when unknown is
+ detected.
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ board/streamunlimited/stream800/board.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/board/streamunlimited/stream800/board.c b/board/streamunlimited/stream800/board.c
+index 3cfaec7..caf9d53 100755
+--- a/board/streamunlimited/stream800/board.c
++++ b/board/streamunlimited/stream800/board.c
+@@ -312,6 +312,16 @@ static void board_detect(struct Stream800Board *board)
+ 			printf("MV_MSB: 0x%03X, MV_LSB: 0x%03X, CBT_MSB: 0x%03X, CBT_LSB: 0x%03X\n",
+ 				MV_MSB, MV_LSB, CBT_MSB, CBT_LSB);
+ 		}
++
++		/* When carrier board is unknown set to democlient
++		 * It should work but some peripherials will not work but
++		 * board will boot up. Without that there is issue with
++		 * dtb loading because cramfsdir isn't properly set when unknown.
++		 */
++		if (board->carrierBoardType == CBT_unknown) {
++			printf("Carrierboard unknown. Setting to Democlient.\n");
++			board->carrierBoardType = CBT_SueDemoClientBoard;
++		}
+ 	}
+ }
+ 
+-- 
+2.7.4
+

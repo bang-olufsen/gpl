@@ -1,0 +1,26 @@
+From f3699109b038ca29d53c935b0d0e7e0027eebb36 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Thu, 26 May 2016 15:47:05 +0200
+Subject: [PATCH] reverse drift change for Beo
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ sound/soc/davinci/am33xx-s800.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/sound/soc/davinci/am33xx-s800.c b/sound/soc/davinci/am33xx-s800.c
+index 2520cc7..1e5eb66 100644
+--- a/sound/soc/davinci/am33xx-s800.c
++++ b/sound/soc/davinci/am33xx-s800.c
+@@ -153,7 +153,7 @@ static int am33xx_s800_set_mclk(struct snd_soc_am33xx_s800 *priv, int stream)
+ 
+ 	comp = ((mclk_rate / DATA_WORD_WIDTH) * drift ) / (1000000ULL / DATA_WORD_WIDTH);
+ 	comp *= sgn;
+-	clk = mclk_rate - comp;
++	clk = mclk_rate + comp;
+ 
+ 	ret = clk_set_rate(mclk, clk);
+ 	if (ret < 0)
+-- 
+1.9.1
+

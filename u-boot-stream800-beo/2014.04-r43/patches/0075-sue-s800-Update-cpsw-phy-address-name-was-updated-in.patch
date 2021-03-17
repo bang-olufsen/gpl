@@ -1,0 +1,69 @@
+From 39ba79c5a7db8124720cb44beb3a1ddfb75463b3 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Fri, 11 Apr 2014 07:26:05 +0200
+Subject: [PATCH] sue:s800: Update cpsw phy address (name was updated in latest
+ u-boot)
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ board/streamunlimited/stream800/board-sue_demo_client_board.c   | 2 +-
+ board/streamunlimited/stream800/board-sue_factory_test_board.c  | 4 ++--
+ board/streamunlimited/stream800/board-sue_first_carrier_board.c | 4 ++--
+ 3 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/board/streamunlimited/stream800/board-sue_demo_client_board.c b/board/streamunlimited/stream800/board-sue_demo_client_board.c
+index 3b5c81b..ae8430c 100755
+--- a/board/streamunlimited/stream800/board-sue_demo_client_board.c
++++ b/board/streamunlimited/stream800/board-sue_demo_client_board.c
+@@ -66,7 +66,7 @@ static struct cpsw_slave_data cpsw_slaves[] = {
+ 	{
+ 		.slave_reg_ofs	= 0x208,
+ 		.sliver_reg_ofs	= 0xd80,	// CPSW_SL1
+-		.phy_id			= 4,
++		.phy_addr		= 4,
+ 		.phy_if			= PHY_INTERFACE_MODE_RMII
+ 	},
+ };
+diff --git a/board/streamunlimited/stream800/board-sue_factory_test_board.c b/board/streamunlimited/stream800/board-sue_factory_test_board.c
+index 8b85b15..b7e2b3e 100644
+--- a/board/streamunlimited/stream800/board-sue_factory_test_board.c
++++ b/board/streamunlimited/stream800/board-sue_factory_test_board.c
+@@ -53,13 +53,13 @@ static struct cpsw_slave_data cpsw_slaves[] = {
+ 	{
+ 		.slave_reg_ofs	= 0x208,
+ 		.sliver_reg_ofs	= 0xd80,	// CPSW_SL1
+-		.phy_id			= 4,
++		.phy_addr		= 4,
+ 		.phy_if			= PHY_INTERFACE_MODE_RMII
+ 	},
+ 	{
+ 		.slave_reg_ofs	= 0x308,
+ 		.sliver_reg_ofs	= 0xdc0,	// CPSW_SL2
+-		.phy_id			= 0,
++		.phy_addr		= 0,
+ 		.phy_if			= PHY_INTERFACE_MODE_RGMII
+ 	}
+ };
+diff --git a/board/streamunlimited/stream800/board-sue_first_carrier_board.c b/board/streamunlimited/stream800/board-sue_first_carrier_board.c
+index 81aec53..846bc40 100644
+--- a/board/streamunlimited/stream800/board-sue_first_carrier_board.c
++++ b/board/streamunlimited/stream800/board-sue_first_carrier_board.c
+@@ -53,13 +53,13 @@ static struct cpsw_slave_data cpsw_slaves[] = {
+ 	{
+ 		.slave_reg_ofs	= 0x208,
+ 		.sliver_reg_ofs	= 0xd80,	// CPSW_SL1
+-		.phy_id			= 4,
++		.phy_addr		= 4,
+ 		.phy_if			= PHY_INTERFACE_MODE_RMII
+ 	},
+ 	{
+ 		.slave_reg_ofs	= 0x308,
+ 		.sliver_reg_ofs	= 0xdc0,	// CPSW_SL2
+-		.phy_id			= 0,
++		.phy_addr		= 0,
+ 		.phy_if			= PHY_INTERFACE_MODE_RGMII
+ 	}
+ };
+-- 
+2.7.4
+

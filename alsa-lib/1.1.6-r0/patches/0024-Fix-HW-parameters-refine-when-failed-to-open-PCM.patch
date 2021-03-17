@@ -1,0 +1,28 @@
+From 2c7dcb1e19b17a394824a7038006eb9915226229 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Tue, 8 Sep 2020 12:16:26 +0200
+Subject: [PATCH] Fix HW parameters refine when failed to open PCM
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ src/pcm/pcm_switch.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/src/pcm/pcm_switch.c b/src/pcm/pcm_switch.c
+index e2177de..a74b464 100644
+--- a/src/pcm/pcm_switch.c
++++ b/src/pcm/pcm_switch.c
+@@ -1838,8 +1838,9 @@ int _snd_pcm_switch_open(snd_pcm_t **pcmp, const char *name,
+ 		} else {
+ 			DEBUG("Have hw params");
+ 		}
++	}
+ 
+-	} else {
++	if (!swtch->has_hw_params_any) {
+ 		/* read hw_params from file */
+ 		FILE * pFile;
+ 		pFile = fopen (hw_params_path, "r");
+-- 
+2.7.4
+

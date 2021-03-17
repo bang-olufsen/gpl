@@ -1,0 +1,25 @@
+From 7d685dfe87161834dcf3a1d72f6176b85c3f5760 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Thu, 24 Apr 2014 09:46:12 +0200
+Subject: [PATCH] ase: Enable FIT support
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ include/configs/stream800.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/include/configs/stream800.h b/include/configs/stream800.h
+index 0684e5c..fdca6c8 100644
+--- a/include/configs/stream800.h
++++ b/include/configs/stream800.h
+@@ -58,6 +58,7 @@
+ /* enable devicetree */
+ #define CONFIG_OF_CONTROL
+ #define CONFIG_OF_SEPARATE
++#define CONFIG_FIT
+ #define CONFIG_DEFAULT_DEVICE_TREE am33xx-beo-ase-0
+ #endif
+ 
+-- 
+2.7.4
+

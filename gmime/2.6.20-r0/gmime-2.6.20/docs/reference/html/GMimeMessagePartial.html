@@ -1,0 +1,256 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GMimeMessagePartial</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="GMime 2.6 Reference Manual">
+<link rel="up" href="MimeParts.html" title="MIME Messages and Parts">
+<link rel="prev" href="GMimeMessagePart.html" title="GMimeMessagePart">
+<link rel="next" href="gmime-GMimePartIter.html" title="GMimePartIter">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="GMimeMessagePart.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="MimeParts.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">GMime 2.6 Reference Manual</th>
+<td><a accesskey="n" href="gmime-GMimePartIter.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#GMimeMessagePartial.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#GMimeMessagePartial.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#GMimeMessagePartial.object-hierarchy" class="shortcut">Object Hierarchy</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="GMimeMessagePartial"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="GMimeMessagePartial.top_of_page"></a>GMimeMessagePartial</span></h2>
+<p>GMimeMessagePartial — Partial MIME parts</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="GMimeMessagePartial.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">struct              <a class="link" href="GMimeMessagePartial.html#GMimeMessagePartial-struct" title="struct GMimeMessagePartial">GMimeMessagePartial</a>;
+<a class="link" href="GMimeMessagePartial.html" title="GMimeMessagePartial"><span class="returnvalue">GMimeMessagePartial</span></a> * <a class="link" href="GMimeMessagePartial.html#g-mime-message-partial-new" title="g_mime_message_partial_new ()">g_mime_message_partial_new</a>        (<em class="parameter"><code>const <span class="type">char</span> *id</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> number</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> total</code></em>);
+const <span class="returnvalue">char</span> *        <a class="link" href="GMimeMessagePartial.html#g-mime-message-partial-get-id" title="g_mime_message_partial_get_id ()">g_mime_message_partial_get_id</a>       (<em class="parameter"><code><a class="link" href="GMimeMessagePartial.html" title="GMimeMessagePartial"><span class="type">GMimeMessagePartial</span></a> *partial</code></em>);
+<span class="returnvalue">int</span>                 <a class="link" href="GMimeMessagePartial.html#g-mime-message-partial-get-number" title="g_mime_message_partial_get_number ()">g_mime_message_partial_get_number</a>   (<em class="parameter"><code><a class="link" href="GMimeMessagePartial.html" title="GMimeMessagePartial"><span class="type">GMimeMessagePartial</span></a> *partial</code></em>);
+<span class="returnvalue">int</span>                 <a class="link" href="GMimeMessagePartial.html#g-mime-message-partial-get-total" title="g_mime_message_partial_get_total ()">g_mime_message_partial_get_total</a>    (<em class="parameter"><code><a class="link" href="GMimeMessagePartial.html" title="GMimeMessagePartial"><span class="type">GMimeMessagePartial</span></a> *partial</code></em>);
+<a class="link" href="GMimeMessage.html" title="GMimeMessage"><span class="returnvalue">GMimeMessage</span></a> *      <a class="link" href="GMimeMessagePartial.html#g-mime-message-partial-reconstruct-message" title="g_mime_message_partial_reconstruct_message ()">g_mime_message_partial_reconstruct_message</a>
+                                                        (<em class="parameter"><code><a class="link" href="GMimeMessagePartial.html" title="GMimeMessagePartial"><span class="type">GMimeMessagePartial</span></a> **partials</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> num</code></em>);
+<a class="link" href="GMimeMessage.html" title="GMimeMessage"><span class="returnvalue">GMimeMessage</span></a> **     <a class="link" href="GMimeMessagePartial.html#g-mime-message-partial-split-message" title="g_mime_message_partial_split_message ()">g_mime_message_partial_split_message</a>
+                                                        (<em class="parameter"><code><a class="link" href="GMimeMessage.html" title="GMimeMessage"><span class="type">GMimeMessage</span></a> *message</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> max_size</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> *nparts</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="GMimeMessagePartial.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  GObject
+   +----<a class="link" href="GMimeObject.html" title="GMimeObject">GMimeObject</a>
+         +----<a class="link" href="GMimePart.html" title="GMimePart">GMimePart</a>
+               +----GMimeMessagePartial
+</pre>
+</div>
+<div class="refsect1">
+<a name="GMimeMessagePartial.description"></a><h2>Description</h2>
+<p>
+A <a class="link" href="GMimeMessagePartial.html" title="GMimeMessagePartial"><span class="type">GMimeMessagePartial</span></a> represents the message/partial MIME part.
+</p>
+</div>
+<div class="refsect1">
+<a name="GMimeMessagePartial.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="GMimeMessagePartial-struct"></a><h3>struct GMimeMessagePartial</h3>
+<pre class="programlisting">struct GMimeMessagePartial;</pre>
+<p>
+A message/partial MIME part.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-message-partial-new"></a><h3>g_mime_message_partial_new ()</h3>
+<pre class="programlisting"><a class="link" href="GMimeMessagePartial.html" title="GMimeMessagePartial"><span class="returnvalue">GMimeMessagePartial</span></a> * g_mime_message_partial_new        (<em class="parameter"><code>const <span class="type">char</span> *id</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> number</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> total</code></em>);</pre>
+<p>
+Creates a new MIME message/partial object.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>id</code></em> :</span></p></td>
+<td>message/partial part id</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>number</code></em> :</span></p></td>
+<td>message/partial part number</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>total</code></em> :</span></p></td>
+<td>total number of message/partial parts</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>an empty MIME message/partial object.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-message-partial-get-id"></a><h3>g_mime_message_partial_get_id ()</h3>
+<pre class="programlisting">const <span class="returnvalue">char</span> *        g_mime_message_partial_get_id       (<em class="parameter"><code><a class="link" href="GMimeMessagePartial.html" title="GMimeMessagePartial"><span class="type">GMimeMessagePartial</span></a> *partial</code></em>);</pre>
+<p>
+Gets the message/partial id parameter value.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>partial</code></em> :</span></p></td>
+<td>message/partial object</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the message/partial id or <code class="literal">NULL</code> on fail.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-message-partial-get-number"></a><h3>g_mime_message_partial_get_number ()</h3>
+<pre class="programlisting"><span class="returnvalue">int</span>                 g_mime_message_partial_get_number   (<em class="parameter"><code><a class="link" href="GMimeMessagePartial.html" title="GMimeMessagePartial"><span class="type">GMimeMessagePartial</span></a> *partial</code></em>);</pre>
+<p>
+Gets the message/partial part number.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>partial</code></em> :</span></p></td>
+<td>message/partial object</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the message/partial part number or <code class="literal">-1</code> on fail.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-message-partial-get-total"></a><h3>g_mime_message_partial_get_total ()</h3>
+<pre class="programlisting"><span class="returnvalue">int</span>                 g_mime_message_partial_get_total    (<em class="parameter"><code><a class="link" href="GMimeMessagePartial.html" title="GMimeMessagePartial"><span class="type">GMimeMessagePartial</span></a> *partial</code></em>);</pre>
+<p>
+Gets the total number of message/partial parts needed to
+reconstruct the original message.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>partial</code></em> :</span></p></td>
+<td>message/partial object</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the total number of message/partial parts needed to
+reconstruct the original message or -1 on fail.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-message-partial-reconstruct-message"></a><h3>g_mime_message_partial_reconstruct_message ()</h3>
+<pre class="programlisting"><a class="link" href="GMimeMessage.html" title="GMimeMessage"><span class="returnvalue">GMimeMessage</span></a> *      g_mime_message_partial_reconstruct_message
+                                                        (<em class="parameter"><code><a class="link" href="GMimeMessagePartial.html" title="GMimeMessagePartial"><span class="type">GMimeMessagePartial</span></a> **partials</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> num</code></em>);</pre>
+<p>
+Reconstructs the GMimeMessage from the given message/partial parts
+in <em class="parameter"><code>partials</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>partials</code></em> :</span></p></td>
+<td>an array of message/partial mime parts</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>num</code></em> :</span></p></td>
+<td>the number of elements in <em class="parameter"><code>partials</code></em>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a GMimeMessage object on success or <code class="literal">NULL</code>
+on fail. <span class="annotation">[<a href="http://foldoc.org/transfer%20full"><span class="acronym">transfer full</span></a>]</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-message-partial-split-message"></a><h3>g_mime_message_partial_split_message ()</h3>
+<pre class="programlisting"><a class="link" href="GMimeMessage.html" title="GMimeMessage"><span class="returnvalue">GMimeMessage</span></a> **     g_mime_message_partial_split_message
+                                                        (<em class="parameter"><code><a class="link" href="GMimeMessage.html" title="GMimeMessage"><span class="type">GMimeMessage</span></a> *message</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> max_size</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> *nparts</code></em>);</pre>
+<p>
+Splits <em class="parameter"><code>message</code></em> into an array of <a class="link" href="GMimeMessage.html" title="GMimeMessage"><span class="type">GMimeMessage</span></a> objects each
+containing a single <a class="link" href="GMimeMessagePartial.html" title="GMimeMessagePartial"><span class="type">GMimeMessagePartial</span></a> object containing
+<em class="parameter"><code>max_size</code></em> bytes or fewer. <em class="parameter"><code>nparts</code></em> is set to the number of
+<a class="link" href="GMimeMessagePartial.html" title="GMimeMessagePartial"><span class="type">GMimeMessagePartial</span></a> objects created.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>message</code></em> :</span></p></td>
+<td>message object</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>max_size</code></em> :</span></p></td>
+<td>max size</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>nparts</code></em> :</span></p></td>
+<td>number of parts</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>an array of <a class="link" href="GMimeMessage.html" title="GMimeMessage"><span class="type">GMimeMessage</span></a> objects and
+sets <em class="parameter"><code>nparts</code></em> to the number of messages returned or <code class="literal">NULL</code> on fail. <span class="annotation">[<a href="http://foldoc.org/transfer%20full"><span class="acronym">transfer full</span></a>]</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

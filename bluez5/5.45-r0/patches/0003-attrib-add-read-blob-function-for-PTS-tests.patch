@@ -1,0 +1,75 @@
+From 80baab93f0887d763e1b393ffe547e8b2b964dd3 Mon Sep 17 00:00:00 2001
+From: Bernhard Miller <bernhard.miller@streamunlimited.com>
+Date: Fri, 27 Jan 2017 10:57:40 +0100
+Subject: [PATCH] attrib: add read blob function for PTS tests
+
+Signed-off-by: Bernhard Miller <bernhard.miller@streamunlimited.com>
+---
+ attrib/gatt.c | 35 +++++++++++++++++++++++++++++++++++
+ attrib/gatt.h |  4 ++++
+ 2 files changed, 39 insertions(+)
+
+diff --git a/attrib/gatt.c b/attrib/gatt.c
+index 480f874..3dd7df3 100644
+--- a/attrib/gatt.c
++++ b/attrib/gatt.c
+@@ -875,6 +875,41 @@ guint gatt_read_char(GAttrib *attrib, uint16_t handle, GAttribResultFunc func,
+ 	return id;
+ }
+ 
++guint gatt_read_blob(GAttrib *attrib, uint16_t handle, uint16_t offset,
++							GAttribResultFunc func,	gpointer user_data)
++{
++	uint8_t *buf;
++	size_t buflen;
++	guint16 plen;
++	guint id;
++	struct read_long_data *long_read;
++
++	long_read = g_try_new0(struct read_long_data, 1);
++
++	if (long_read == NULL)
++		return 0;
++
++	long_read->attrib = attrib;
++	long_read->func = func;
++	long_read->user_data = user_data;
++	long_read->handle = handle;
++	
++	buf = g_attrib_get_buffer(attrib, &buflen);
++	
++	plen = enc_read_blob_req(handle, offset, buf, buflen);
++	id = g_attrib_send(attrib, 0, buf, plen, 
++			read_blob_helper, long_read, read_long_destroy);
++
++	if (id == 0)
++		g_free(long_read);
++	else {
++		g_atomic_int_inc(&long_read->ref);
++		long_read->id = id;
++	}
++
++	return id;
++}
++
+ struct write_long_data {
+ 	GAttrib *attrib;
+ 	GAttribResultFunc func;
+diff --git a/attrib/gatt.h b/attrib/gatt.h
+index 63b2940..54cf9e8 100644
+--- a/attrib/gatt.h
++++ b/attrib/gatt.h
+@@ -84,6 +84,10 @@ guint gatt_discover_char(GAttrib *attrib, uint16_t start, uint16_t end,
+ guint gatt_read_char(GAttrib *attrib, uint16_t handle, GAttribResultFunc func,
+ 							gpointer user_data);
+ 
++// gatt_read_blob is only used for PTS testing
++guint gatt_read_blob(GAttrib *attrib, uint16_t handle, uint16_t offset, 
++							GAttribResultFunc func, gpointer user_data);
++
+ guint gatt_write_char(GAttrib *attrib, uint16_t handle, const uint8_t *value,
+ 					size_t vlen, GAttribResultFunc func,
+ 					gpointer user_data);
+-- 
+2.7.4
+

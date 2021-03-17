@@ -1,0 +1,63 @@
+From 310829392efd67f2f5a039a0b7a902b1ae058e8a Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Thu, 18 May 2017 17:00:19 +0200
+Subject: [PATCH] adapter: Add converted primary UUIDs to config
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ src/adapter.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
+
+diff --git a/src/adapter.c b/src/adapter.c
+index 3935460..01fad35 100644
+--- a/src/adapter.c
++++ b/src/adapter.c
+@@ -4870,7 +4870,7 @@ static void convert_primaries_entry(char *key, char *value, void *user_data)
+ 	char *address = user_data;
+ 	int device_type = -1;
+ 	uuid_t uuid;
+-	char **services, **service, *prim_uuid;
++	char **services, **service, *prim_uuid, **uuids;
+ 	char filename[PATH_MAX];
+ 	GKeyFile *key_file;
+ 	int ret;
+@@ -4891,6 +4891,8 @@ static void convert_primaries_entry(char *key, char *value, void *user_data)
+ 	if (services == NULL)
+ 		return;
+ 
++	uuids = g_new0(char *, g_strv_length(services) + 1);
++
+ 	sdp_uuid16_create(&uuid, GATT_PRIM_SVC_UUID);
+ 	prim_uuid = bt_uuid2string(&uuid);
+ 
+@@ -4909,6 +4911,9 @@ static void convert_primaries_entry(char *key, char *value, void *user_data)
+ 		sdp_uuid128_to_uuid(&uuid);
+ 
+ 		store_attribute_uuid(key_file, start, end, prim_uuid, uuid);
++
++		if (uuids)
++			uuids[g_strv_length(uuids)] = bt_uuid2string(&uuid);
+ 	}
+ 
+ 	g_strfreev(services);
+@@ -4932,6 +4937,9 @@ static void convert_primaries_entry(char *key, char *value, void *user_data)
+ 	g_key_file_load_from_file(key_file, filename, 0, NULL);
+ 	set_device_type(key_file, device_type);
+ 
++	if (uuids && *uuids)
++		g_key_file_set_string_list(key_file, "General", "Services", (const char **)uuids, g_strv_length(uuids));
++
+ 	data = g_key_file_to_data(key_file, &length, NULL);
+ 	if (length > 0) {
+ 		create_file(filename, S_IRUSR | S_IWUSR);
+@@ -4942,6 +4950,7 @@ end:
+ 	g_free(data);
+ 	free(prim_uuid);
+ 	g_key_file_free(key_file);
++	g_strfreev(uuids);
+ }
+ 
+ static void convert_ccc_entry(char *key, char *value, void *user_data)
+-- 
+2.7.4
+

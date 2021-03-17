@@ -1,0 +1,75 @@
+@node ax_cond_with_level
+@unnumberedsec ax_cond_with_level
+
+@majorheading Synopsis
+
+@smallexample
+AX_COND_WITH_LEVEL(PACKAGE [,DEFAULT [,YESLEVEL]])
+@end smallexample
+
+@majorheading Description
+
+Actually used after an AC_ARG_WITH(PKG,...) option-directive, where
+AC_ARG_WITH is a part of the standard autoconf to define a `configure`
+--with-PKG option.
+
+This macros works almost like AC_COND_WITH(PACKAGE [,DEFAULT]), but the
+definition is set to a numeric value. The level of a simple "yes" is
+given (or assumed "2" if absent), otherwise the level can be given in
+mnemonic names, being:
+
+@smallexample
+ 1 = some
+ 2 = many
+ 3 = all
+ 4 = extra
+ 5 = extrasome more
+ 6 = extramany muchmore much
+ 7 = super everything
+ 8 = ultra experimental
+ 9 = insane
+@end smallexample
+
+this macro is most handily it making Makefile.in/Makefile.am that have a
+set of with-level declarations, especially optimization-levels
+
+the $withval shell-variable is set for further examination (it carries
+the numeric value of the various mnemonics above)
+
+@majorheading Source Code
+
+Download the
+@uref{http://git.savannah.gnu.org/gitweb/?p=autoconf-archive.git;a=blob_plain;f=m4/ax_cond_with_level.m4,latest
+version of @file{ax_cond_with_level.m4}} or browse
+@uref{http://git.savannah.gnu.org/gitweb/?p=autoconf-archive.git;a=history;f=m4/ax_cond_with_level.m4,the
+macro's revision history}.
+
+@majorheading License
+
+@w{Copyright @copyright{} 2008 Guido U. Draheim @email{guidod@@gmx.de}}
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the
+Free Software Foundation; either version 3 of the License, or (at your
+option) any later version.
+
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+Public License for more details.
+
+You should have received a copy of the GNU General Public License along
+with this program. If not, see <https://www.gnu.org/licenses/>.
+
+As a special exception, the respective Autoconf Macro's copyright owner
+gives unlimited permission to copy, distribute and modify the configure
+scripts that are the output of Autoconf when processing the Macro. You
+need not follow the terms of the GNU General Public License when using
+or distributing such scripts, even though portions of the text of the
+Macro appear in them. The GNU General Public License (GPL) does govern
+all other use of the material that constitutes the Autoconf Macro.
+
+This special exception to the GPL applies to versions of the Autoconf
+Macro released by the Autoconf Archive. When you make and distribute a
+modified version of the Autoconf Macro, you may extend this special
+exception to the GPL to apply to your modified version as well.

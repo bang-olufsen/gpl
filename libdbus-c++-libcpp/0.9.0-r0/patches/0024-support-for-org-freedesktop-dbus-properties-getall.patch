@@ -1,0 +1,474 @@
+From 89e63ae13f510e369410a7f74080cb322a009038 Mon Sep 17 00:00:00 2001
+From: Bjarne Juul Pasgaard <bjarne.juul.pasgaard@philips.com>
+Date: Thu, 29 Dec 2016 17:04:12 +0100
+Subject: [PATCH] Added ability to emit PropertiesChanged signal on
+ PropertiesAdaptor as well as support for
+ org.freedesktop.DBus.Properties.GetAll
+
+---
+ examples/properties/propsgs-client.cpp       |  25 ++++++-
+ examples/properties/propsgs-client.h         |   4 ++
+ include/dbus-c++/interface.h                 |   3 +
+ include/dbus-c++/property.h                  |  28 +++++++-
+ src/interface.cpp                            |  22 ++++++
+ src/property.cpp                             | 100 +++++++++++++++++++++++++--
+ test/functional/Test1/TestApp.cpp            |   7 +-
+ test/functional/Test1/TestAppIntro.h         |  18 +++++
+ test/functional/Test1/TestAppIntro.xml       |   8 ++-
+ test/functional/Test1/TestAppIntroProvider.h |  22 ++++--
+ 10 files changed, 221 insertions(+), 16 deletions(-)
+
+diff --git a/examples/properties/propsgs-client.cpp b/examples/properties/propsgs-client.cpp
+index 01eb403..9d4a8be 100644
+--- a/examples/properties/propsgs-client.cpp
++++ b/examples/properties/propsgs-client.cpp
+@@ -16,12 +16,33 @@ PropsClient::PropsClient(DBus::Connection &connection, const char *path, const c
+ void PropsClient::MessageChanged(const std::string &message)
+ {
+   std::cout << "MessageChanged signal, new value: " << message << "\n";
+-};
++}
+ 
+ void PropsClient::DataChanged(const double &data)
+ {
+   std::cout << "DataChanged signal, new value:" << data << "\n";
+-};
++}
++
++void PropsClient::PropertiesChanged(const std::string& interface,
++                                    const std::map<std::string, DBus::Variant>& changed_properties,
++                                    const std::vector<std::string>& invalidated_properties)
++{
++  std::cout << "PropertiesChanged signal from interface " << interface
++            << "\nChanged properties:\n";
++  std::map<std::string, DBus::Variant>::const_iterator it = changed_properties.begin();
++  while (it != changed_properties.end())
++  {
++    std::cout << "  " << it->first << "\n";
++    ++it;
++  }
++  std::cout << "Invalidated properties:\n";
++  std::vector<std::string>::const_iterator it2 = invalidated_properties.begin();
++  while (it2 != invalidated_properties.end())
++  {
++    std::cout << "  " << *it2 << "\n";
++    ++it2;
++  }
++}
+ 
+ void *test_property_proxy(void *input)
+ {
+diff --git a/examples/properties/propsgs-client.h b/examples/properties/propsgs-client.h
+index a09b21d..8b71430 100644
+--- a/examples/properties/propsgs-client.h
++++ b/examples/properties/propsgs-client.h
+@@ -17,6 +17,10 @@ class PropsClient
+   void MessageChanged(const std::string &message);
+ 
+   void DataChanged(const double &data);
++
++  void PropertiesChanged(const std::string& interface,
++                         const std::map<std::string, DBus::Variant>& changed_properties,
++                         const std::vector<std::string>& invalidated_properties);
+ };
+ 
+ #endif//__DEMO_PROPS_SERVER_H
+diff --git a/include/dbus-c++/interface.h b/include/dbus-c++/interface.h
+index 9e3106f..2ffbb92 100644
+--- a/include/dbus-c++/interface.h
++++ b/include/dbus-c++/interface.h
+@@ -129,6 +129,7 @@ const std::string &Interface::name() const
+ */
+ 
+ typedef std::map< std::string, Slot<Message, const CallMessage &> > MethodTable;
++typedef std::map< std::string, Variant > PropertyDict;
+ 
+ class DXXAPI InterfaceAdaptor : public Interface, public virtual AdaptorBase
+ {
+@@ -144,6 +145,8 @@ class DXXAPI InterfaceAdaptor : public Interface, public virtual AdaptorBase
+ 
+   void set_property(const std::string &name, Variant &value);
+ 
++  PropertyDict *get_all_properties();
++
+   virtual IntrospectedInterface *introspect() const
+   {
+     return NULL;
+diff --git a/include/dbus-c++/property.h b/include/dbus-c++/property.h
+index 00095c9..212df77 100644
+--- a/include/dbus-c++/property.h
++++ b/include/dbus-c++/property.h
+@@ -50,6 +50,11 @@ class PropertyAdaptor
+     return _data->value.operator T();
+   }
+ 
++  Variant value() const
++  {
++    return _data->value;
++  }
++
+   PropertyAdaptor &operator = (const T &t)
+   {
+     _data->value.clear();
+@@ -75,6 +80,14 @@ class DXXAPI PropertiesAdaptor : public InterfaceAdaptor
+ 
+   Message Set(const CallMessage &);
+ 
++  Message GetAll(const CallMessage &);
++
++  /* signal emitter
++   */
++  void PropertiesChanged(const std::string& interface,
++                         const std::map<std::string, ::DBus::Variant>& changed_properties,
++                         const std::vector<std::string>& invalidated_properties);
++
+ protected:
+ 
+   virtual void on_get_property(InterfaceAdaptor &/*interface*/, const std::string &/*property*/, Variant &/*value*/)
+@@ -95,9 +108,22 @@ class DXXAPI PropertiesProxy : public InterfaceProxy
+   Variant Get(const std::string &interface, const std::string &property);
+ 
+   void Set(const std::string &interface, const std::string &property, const Variant &value);
++
++  std::map< std::string, ::DBus::Variant > GetAll(const std::string &interface);
++
++  /* signal handlers for this interface
++   */
++  virtual void PropertiesChanged(const std::string& interface,
++                                 const std::map<std::string, ::DBus::Variant>& changed_properties,
++                                 const std::vector<std::string>& invalidated_properties) = 0;
++
++private:
++
++  /* unmarshalers (to unpack the DBus message before calling the actual signal handler)
++   */
++  void _PropertiesChanged_stub(const ::DBus::SignalMessage &sig);
+ };
+ 
+ } /* namespace DBus */
+ 
+ #endif//__DBUSXX_PROPERTY_H
+-
+diff --git a/src/interface.cpp b/src/interface.cpp
+index 15d8596..0f5b98f 100644
+--- a/src/interface.cpp
++++ b/src/interface.cpp
+@@ -113,6 +113,28 @@ void InterfaceAdaptor::set_property(const std::string &name, Variant &value)
+   throw ErrorFailed("requested property not found");
+ }
+ 
++PropertyDict *InterfaceAdaptor::get_all_properties()
++{
++  PropertyTable::iterator pti;
++  PropertyDict *dict = new PropertyDict();
++
++  for (pti = _properties.begin(); pti != _properties.end(); ++pti)
++  {
++    // Skip unreadable properties
++    if (!pti->second.read)
++      continue;
++
++    Variant v = pti->second.value;
++    // Skip uninitialized properties
++    if (v.signature().empty())
++      continue;
++
++    std::string key = pti->first;
++    (*dict)[key] = v;
++  }
++  return dict;
++}
++
+ InterfaceProxy *ProxyBase::find_interface(const std::string &name)
+ {
+   InterfaceProxyTable::const_iterator ii = _interfaces.find(name);
+diff --git a/src/property.cpp b/src/property.cpp
+index 763a12e..157b493 100644
+--- a/src/property.cpp
++++ b/src/property.cpp
+@@ -39,6 +39,7 @@ PropertiesAdaptor::PropertiesAdaptor()
+ {
+   register_method(PropertiesAdaptor, Get, Get);
+   register_method(PropertiesAdaptor, Set, Set);
++  register_method(PropertiesAdaptor, GetAll, GetAll);
+ }
+ 
+ Message PropertiesAdaptor::Get(const CallMessage &call)
+@@ -62,6 +63,9 @@ Message PropertiesAdaptor::Get(const CallMessage &call)
+   if (!value)
+     throw ErrorFailed("requested property not found");
+ 
++  if (value->signature().empty())
++    throw ErrorFailed("requested property has not been initialized");
++
+   on_get_property(*interface, property_name, *value);
+ 
+   ReturnMessage reply(call);
+@@ -96,6 +100,45 @@ Message PropertiesAdaptor::Set(const CallMessage &call)
+   return reply;
+ }
+ 
++Message PropertiesAdaptor::GetAll(const CallMessage &call)
++{
++  MessageIter ri = call.reader();
++
++  std::string iface_name;
++  std::string property_name;
++  Variant value;
++
++  ri >> iface_name;
++
++  InterfaceAdaptor *interface = (InterfaceAdaptor *) find_interface(iface_name);
++
++  if (!interface)
++    throw ErrorFailed("requested interface not found");
++
++  PropertyDict *properties;
++  properties = interface->get_all_properties();
++
++  ReturnMessage reply(call);
++
++  MessageIter wi = reply.writer();
++
++  wi << *properties;
++  delete properties;
++  return reply;
++}
++
++void PropertiesAdaptor::PropertiesChanged(const std::string& interface,
++                                          const std::map<std::string, ::DBus::Variant>& changed_properties,
++                                          const std::vector<std::string>& invalidated_properties)
++{
++  ::DBus::SignalMessage sig("PropertiesChanged");
++  ::DBus::MessageIter wi = sig.writer();
++  wi << interface;
++  wi << changed_properties;
++  wi << invalidated_properties;
++  emit_signal(sig);
++}
++
+ IntrospectedInterface *PropertiesAdaptor::introspect() const
+ {
+   static IntrospectedArgument Get_args[] =
+@@ -112,10 +155,17 @@ IntrospectedInterface *PropertiesAdaptor::introspect() const
+     { "value", "v", true },
+     { 0, 0, 0 }
+   };
++  static IntrospectedArgument GetAll_args[] =
++  {
++    { "interface_name", "s", true },
++    { "properties", "a{sv}", false },
++    { 0, 0, 0 }
++  };
+   static IntrospectedMethod Properties_methods[] =
+   {
+     { "Get", Get_args },
+     { "Set", Set_args },
++    { "GetAll", GetAll_args },
+     { 0, 0 }
+   };
+   static IntrospectedMethod Properties_signals[] =
+@@ -139,17 +189,59 @@ IntrospectedInterface *PropertiesAdaptor::introspect() const
+ PropertiesProxy::PropertiesProxy()
+   : InterfaceProxy(properties_name)
+ {
++  connect_signal(PropertiesProxy, PropertiesChanged, _PropertiesChanged_stub);
+ }
+ 
+ Variant PropertiesProxy::Get(const std::string &iface, const std::string &property)
+ {
+-//todo
+-  Variant v;
+-  return v;
++  CallMessage call;
++  call.member("Get");
++  call.interface("org.freedesktop.DBus.Properties");
++  MessageIter wi = call.writer();
++  wi << iface;
++  wi << property;
++  Message ret = this->invoke_method (call);
++  MessageIter ri = ret.reader ();
++  Variant argout;
++  ri >> argout;
++  return argout;
+ }
+ 
+ void PropertiesProxy::Set(const std::string &iface, const std::string &property, const Variant &value)
+ {
+-//todo
++  CallMessage call;
++  call.member("Set");
++  call.interface("org.freedesktop.DBus.Properties");
++  MessageIter wi = call.writer();
++  wi << iface;
++  wi << property;
++  wi << value;
++  Message ret = this->invoke_method (call);
++}
++
++std::map< std::string, ::DBus::Variant > PropertiesProxy::GetAll(const std::string &iface)
++{
++  CallMessage call;
++  call.member("GetAll");
++  call.interface("org.freedesktop.DBus.Properties");
++  MessageIter wi = call.writer();
++  wi << iface;
++  Message ret = this->invoke_method (call);
++  MessageIter ri = ret.reader ();
++  std::map< std::string, ::DBus::Variant > argout;
++  ri >> argout;
++  return argout;
+ }
+ 
++void PropertiesProxy::_PropertiesChanged_stub(const ::DBus::SignalMessage &sig)
++{
++  ::DBus::MessageIter ri = sig.reader();
++
++  std::string iface;
++  ri >> iface;
++  std::map< std::string, ::DBus::Variant > changed_properties;
++  ri >> changed_properties;
++  std::vector< std::string > invalidated_properties;
++  ri >> invalidated_properties;
++  PropertiesChanged(iface, changed_properties, invalidated_properties);
++}
+diff --git a/test/functional/Test1/TestApp.cpp b/test/functional/Test1/TestApp.cpp
+index 0dcaac5..023e99d 100644
+--- a/test/functional/Test1/TestApp.cpp
++++ b/test/functional/Test1/TestApp.cpp
+@@ -24,6 +24,7 @@ TestApp::TestApp()
+ {
+   testList.push_back("test1");
+   testList.push_back("testByte");
++  testList.push_back("testPropChanged");
+ 
+   cout << "initialize DBus..." << endl;
+   initDBus();
+@@ -43,7 +44,7 @@ void TestApp::initDBus()
+   g_testComIntro = &testComIntro;
+ 
+   cout << "Start server..." << endl;
+-  TestAppIntroProvider testComProviderIntro(conn, &testComIntro);
++  TestAppIntroProvider testComProviderIntro(conn);
+   conn.request_name("DBusCpp.Test.Com.Intro");
+ 
+   mTestToDBusPipe = dispatcher.add_pipe(TestApp::testHandler, NULL);
+@@ -103,4 +104,8 @@ void TestApp::testHandler(const void *data, void *buffer, unsigned int nbyte)
+   {
+     g_testComIntro->testByte(4);
+   }
++  else if (string(str) == "testPropChanged")
++  {
++    g_testComIntro->testPropChanged("secondValue");
++  }
+ }
+diff --git a/test/functional/Test1/TestAppIntro.h b/test/functional/Test1/TestAppIntro.h
+index 3a7feed..75570a3 100644
+--- a/test/functional/Test1/TestAppIntro.h
++++ b/test/functional/Test1/TestAppIntro.h
+@@ -12,6 +12,7 @@ using namespace std;
+ class TestAppIntro :
+   public DBusCpp::Test::Com::Intro_proxy,
+   public DBus::IntrospectableProxy,
++  public DBus::PropertiesProxy,
+   public DBus::ObjectProxy
+ {
+ public:
+@@ -35,6 +36,23 @@ class TestAppIntro :
+     pthread_cond_signal(&mCondition);
+   }
+ 
++  void PropertiesChanged(const std::string& interface,
++                         const std::map<std::string, DBus::Variant>& changed_properties,
++                         const std::vector<std::string>& invalidated_properties)
++  {
++    cout << "PropertiesChanged on interface " << interface;
++    std::map<std::string, DBus::Variant>::const_iterator it = changed_properties.find("testProperty");
++    if (changed_properties.end() != it &&
++        changed_properties.size() == 1 &&
++        invalidated_properties.empty())
++    {
++      cout << " with value " << it->second.operator std::string();
++      mTestResult = true;
++    }
++    cout << endl;
++    pthread_cond_signal(&mCondition);
++  }
++
+ private:
+   pthread_cond_t &mCondition;
+   bool &mTestResult;
+diff --git a/test/functional/Test1/TestAppIntro.xml b/test/functional/Test1/TestAppIntro.xml
+index 506f021..d12ac85 100644
+--- a/test/functional/Test1/TestAppIntro.xml
++++ b/test/functional/Test1/TestAppIntro.xml
+@@ -8,7 +8,7 @@
+ 
+     <signal name="test1Result">
+     </signal>
+-    
++
+     <method name="testByte">
+       <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+       <arg type="y" name="Byte" direction="in"/>
+@@ -18,6 +18,12 @@
+       <arg type="y" name="Byte" direction="in"/>
+     </signal>
+ 
++    <method name="testPropChanged">
++      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
++      <arg type="s" name="val" direction="in"/>
++    </method>
++
++    <property name="testProperty" type="s" access="readwrite"/>
+ 
+   </interface>
+ </node>
+diff --git a/test/functional/Test1/TestAppIntroProvider.h b/test/functional/Test1/TestAppIntroProvider.h
+index 0816138..728aa0a 100644
+--- a/test/functional/Test1/TestAppIntroProvider.h
++++ b/test/functional/Test1/TestAppIntroProvider.h
+@@ -12,28 +12,36 @@ using namespace std;
+ class TestAppIntroProvider :
+   public DBusCpp::Test::Com::Intro_adaptor,
+   public DBus::IntrospectableAdaptor,
++  public DBus::PropertiesAdaptor,
+   public DBus::ObjectAdaptor
+ {
+ public:
+-  TestAppIntroProvider(DBus::Connection &connection, TestAppIntro *testComIntro) :
+-    DBus::ObjectAdaptor(connection, "/DBusCpp/Test/Com/Intro"),
+-    mTestAppIntro(testComIntro)
++  TestAppIntroProvider(DBus::Connection &connection) :
++    DBus::ObjectAdaptor(connection, "/DBusCpp/Test/Com/Intro")
+   {}
+ 
+   void test1()
+   {
+     cout << "Test1" << endl;
+-    mTestAppIntro->test1Result();
++    this->test1Result();
+   }
+ 
+   void testByte(const uint8_t &Byte)
+   {
+     printf("TestByte: %d\n", Byte);
+-    mTestAppIntro->testByteResult(Byte);
++    this->testByteResult(Byte);
+   }
+ 
+-private:
+-  TestAppIntro *mTestAppIntro;
++  void testPropChanged(const std::string& val)
++  {
++    cout << "testPropChanged" << endl;
++    testProperty = val;
++    std::map<std::string, DBus::Variant> changed_props;
++    changed_props["testProperty"] = testProperty.value();
++    this->PropertiesChanged(this->DBusCpp::Test::Com::Intro_adaptor::name(),
++                            changed_props,
++                            std::vector<std::string>());
++  }
+ };
+ 
+ #endif // TEST_COM_INTRO_PROVIDER_H

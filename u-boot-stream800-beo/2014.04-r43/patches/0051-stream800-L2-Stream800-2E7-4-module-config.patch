@@ -1,0 +1,26 @@
+From 1697a94b8f32112dce8f66254501590034160b9f Mon Sep 17 00:00:00 2001
+From: Florin Hillebrand <florin.hillebrand@streamunlimited.com>
+Date: Tue, 12 Nov 2013 16:07:56 +0100
+Subject: [PATCH] stream800: L2 - Stream800/2E7-4 module config.
+
+Signed-off-by: Florin Hillebrand <florin.hillebrand@streamunlimited.com>
+---
+ board/streamunlimited/stream800/board.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/board/streamunlimited/stream800/board.c b/board/streamunlimited/stream800/board.c
+index c185a2c..941e7ab 100755
+--- a/board/streamunlimited/stream800/board.c
++++ b/board/streamunlimited/stream800/board.c
+@@ -199,6 +199,8 @@ static struct SupportedModules {
+ 	{MV_L2,		0xCCC,	0xD54,	0x2aa,	0x333},
+ 	// L2 - Stream800/1E7 (no wifi/bt module)
+ 	{MV_L2,		0xCCC,  0xD54,  0x5dd,  0x666},
++	// L2 - Stream800/2E7-4 (no wifi/bt module, 4G flash)
++	{MV_L2,		0xCCC,  0xD54,  0x6ee,  0x777},
+ 	// TODO: add another stream800 module revisions here
+ };
+ 
+-- 
+2.7.4
+

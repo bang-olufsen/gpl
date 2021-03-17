@@ -1,0 +1,31 @@
+From b1258aec5449d2a1926fdfa6d2dcdcaf09a907c7 Mon Sep 17 00:00:00 2001
+From: Carlos Rafael Giani <carlos.giani@streamunlimited.com>
+Date: Mon, 6 May 2019 15:43:09 +0200
+Subject: [PATCH] soup-message-headers: Handle identity Transfer-Encoding
+
+Not 100% sure this is correct. However, it does make libsoup play nice
+with web radio streams that use this transfer encoding.
+
+Upstream-Status: Pending
+
+Signed-off-by: Carlos Rafael Giani <carlos.giani@streamunlimited.com>
+---
+ libsoup/soup-message-headers.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/libsoup/soup-message-headers.c b/libsoup/soup-message-headers.c
+index 23738a1..1128426 100644
+--- a/libsoup/soup-message-headers.c
++++ b/libsoup/soup-message-headers.c
+@@ -661,6 +661,8 @@ transfer_encoding_setter (SoupMessageHeaders *hdrs, const char *value)
+ 	if (value) {
+ 		if (g_ascii_strcasecmp (value, "chunked") == 0)
+ 			hdrs->encoding = SOUP_ENCODING_CHUNKED;
++		else if (g_ascii_strcasecmp (value, "identity") == 0)
++			hdrs->encoding = SOUP_ENCODING_EOF;
+ 		else
+ 			hdrs->encoding = SOUP_ENCODING_UNRECOGNIZED;
+ 	} else
+-- 
+2.17.1
+

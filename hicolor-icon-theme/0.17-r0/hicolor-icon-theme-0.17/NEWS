@@ -1,0 +1,13 @@
+New in 0.17:
+
+ * Fix 256x256@2/animations name in index.theme
+
+New in 0.16:
+
+ * Add hidpi icon directories (e.g. 48x48@2) with scale=2
+
+New in 0.15:
+
+ * A new icon subdirectory symbolic/apps is available for symbolic
+   application icons. It similar to scalable, except it has a target
+   design size of 16, which is what symbolic icons use.

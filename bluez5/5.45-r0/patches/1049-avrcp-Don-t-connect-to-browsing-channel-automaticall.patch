@@ -1,0 +1,113 @@
+From 75970c55149e597b0b5b904dfe0442acfcba2551 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Thu, 7 Mar 2019 14:50:12 +0100
+Subject: [PATCH] avrcp: Don't connect to browsing channel automatically
+
+We don't use this feature and also this can cause sometimes hang of whole
+bluez when closing browsing channel.
+
+We can still connect to this channel (for PTS use cases) with D-Bus command
+ConnectAvrcpBrowsing on specific device.
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ doc/device-api.txt     | 10 ++++++++++
+ profiles/audio/avrcp.c | 10 ----------
+ src/device.c           | 18 ++++++++++++++++++
+ 3 files changed, 28 insertions(+), 10 deletions(-)
+
+diff --git a/doc/device-api.txt b/doc/device-api.txt
+index 5f44664..e357553 100644
+--- a/doc/device-api.txt
++++ b/doc/device-api.txt
+@@ -116,6 +116,16 @@ Methods		void Connect()
+ 			Possible errors: org.bluez.Error.DoesNotExist
+ 					 org.bluez.Error.Failed
+ 
++		void ConnectAvrcpBrowsing()
++
++			This method can be used to connect to AVRCP
++			browsing channel.
++
++			Possible errors: org.bluez.Error.NotReady
++					 org.bluez.Error.Failed
++					 org.bluez.Error.InProgress
++					 org.bluez.Error.AlreadyConnected
++
+ Properties	string Address [readonly]
+ 
+ 			The Bluetooth device address of the remote device.
+diff --git a/profiles/audio/avrcp.c b/profiles/audio/avrcp.c
+index 9619682..74f9f90 100644
+--- a/profiles/audio/avrcp.c
++++ b/profiles/audio/avrcp.c
+@@ -4166,11 +4166,6 @@ static void target_init(struct avrcp *session)
+ 	/* Only check capabilities if controller is not supported */
+ 	if (session->controller == NULL)
+ 		avrcp_get_capabilities(session);
+-
+-	if (!(target->features & AVRCP_FEATURE_BROWSING))
+-		return;
+-
+-	avrcp_connect_browsing(session);
+ }
+ 
+ static void controller_init(struct avrcp *session)
+@@ -4204,11 +4199,6 @@ static void controller_init(struct avrcp *session)
+ 
+ 	if (controller->version < 0x0104)
+ 		return;
+-
+-	if (!(controller->features & AVRCP_FEATURE_BROWSING))
+-		return;
+-
+-	avrcp_connect_browsing(session);
+ }
+ 
+ static void session_init_control(struct avrcp *session)
+diff --git a/src/device.c b/src/device.c
+index 837742d..12af139 100644
+--- a/src/device.c
++++ b/src/device.c
+@@ -75,6 +75,7 @@
+ #include "attrib-server.h"
+ #include "eir.h"
+ 
++#include "profiles/audio/avctp.h"
+ #include "profiles/audio/avrcp.h"
+ 
+ #define IO_CAPABILITY_NOINPUTNOOUTPUT	0x03
+@@ -2681,6 +2682,22 @@ static DBusMessage *send_volume_pts(DBusConnection *conn, DBusMessage *msg,
+ 
+ 	return dbus_message_new_method_return(msg);
+ }
++static DBusMessage *connect_avrcp_browsing(DBusConnection *conn, DBusMessage *msg, void *data)
++{
++	struct btd_device *device = data;
++	struct avctp *session = avctp_get(device);
++	int err = 0;
++
++	if (!session)
++		return btd_error_not_ready(msg);
++	else
++		err = avctp_connect_browsing(session);
++
++	if (err)
++		return btd_error_failed(msg, strerror(-err));
++
++	return dbus_message_new_method_return(msg);
++}
+ 
+ static const GDBusMethodTable device_methods[] = {
+ 	{ GDBUS_ASYNC_METHOD("Disconnect", NULL, NULL, dev_disconnect) },
+@@ -2696,6 +2713,7 @@ static const GDBusMethodTable device_methods[] = {
+ 						{ "timeout", "q" }), NULL, set_conn_params) },
+ 	{ GDBUS_METHOD("SendVolumePTS", GDBUS_ARGS({ "volume", "y" }),
+ 						NULL, send_volume_pts) },
++	{ GDBUS_METHOD("ConnectAvrcpBrowsing", NULL, NULL, connect_avrcp_browsing) },
+ 	{ }
+ };
+ 
+-- 
+2.7.4
+

@@ -1,0 +1,86 @@
+From e84c5ecdaa4c112c50febf66952e7a8cd0dc390f Mon Sep 17 00:00:00 2001
+From: Stanislav Ruzani <stanislav.ruzani@streamunlimited.com>
+Date: Thu, 22 Jun 2017 08:18:24 +0200
+Subject: [PATCH 11/11] googlecast: added introspectProperties() api to
+ dbus-c++ IntrospectableAdaptor
+
+Signed-off-by: Stanislav Ruzani <stanislav.ruzani@streamunlimited.com>
+---
+ include/dbus-c++/introspection.h   |  1 +
+ src/introspection.cpp     | 48 ++++++++++++++++++++++
+ 2 files changed, 49 insertions(+)
+
+diff --git a/include/dbus-c++/introspection.h b/include/dbus-c++/introspection.h
+index 9447359..391c839 100644
+--- a/include/dbus-c++/introspection.h
++++ b/include/dbus-c++/introspection.h
+@@ -67,6 +67,7 @@ public:
+   IntrospectableAdaptor();
+ 
+   Message Introspect(const CallMessage &);
++  std::map< std::string, std::map< std::string, ::DBus::Variant > > introspectProperties();
+ 
+ protected:
+ 
+diff --git a/src/introspection.cpp b/src/introspection.cpp
+index 0b19ba9..31bbe65 100644
+--- a/src/introspection.cpp
++++ b/src/introspection.cpp
+@@ -144,6 +144,54 @@ Message IntrospectableAdaptor::Introspect(const CallMessage &call)
+   return reply;
+ }
+ 
++std::map< std::string, std::map< std::string, ::DBus::Variant > > IntrospectableAdaptor::introspectProperties()
++{
++	std::map< std::string, std::map< std::string, ::DBus::Variant > > ret;
++
++	// go through all interfaces
++	InterfaceAdaptorTable::const_iterator iti;
++
++	for (iti = _interfaces.begin(); iti != _interfaces.end(); ++iti)
++	{
++		debug_log("introspecting interface %s", iti->first.c_str());
++		std::map< std::string, ::DBus::Variant > interfaceProperties;
++		IntrospectedInterface *const intro = iti->second->introspect();
++
++		if (intro)
++		{
++			// find an interface adaptor that matches given interface name
++			InterfaceAdaptor *itfAdaptor = (InterfaceAdaptor *)find_interface(iti->first);
++
++			if (itfAdaptor) {
++
++				// go through all properties
++				for (const IntrospectedProperty *p = intro->properties; p->name; ++p)
++				{
++					// skip all non-readable properties
++					if (!p->read)
++						continue;
++
++					// retrieve property value
++					Variant *propertyValue = itfAdaptor->get_property(p->name);
++
++					// if (std::string(p->name)  != std::string("Device"))
++					{
++						if (propertyValue && propertyValue->isValid())
++							interfaceProperties[p->name] = *propertyValue;
++					}
++				}
++			}
++
++			// add interface properties to the output map, the key is the interface name.
++			// we will NOT add empty interfaces with no properties!
++			if (interfaceProperties.size())
++				ret[Path(iti->first)]	= interfaceProperties;
++		}
++	}
++
++	return ret;
++}
++
+ IntrospectedInterface *IntrospectableAdaptor::introspect() const
+ {
+   static IntrospectedArgument Introspect_args[] =
+-- 
+2.7.4
+

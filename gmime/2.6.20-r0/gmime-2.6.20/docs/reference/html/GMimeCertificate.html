@@ -1,0 +1,1161 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GMimeCertificate</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="GMime 2.6 Reference Manual">
+<link rel="up" href="CryptoContexts.html" title="Cryptography Contexts">
+<link rel="prev" href="CryptoContexts.html" title="Cryptography Contexts">
+<link rel="next" href="GMimeSignature.html" title="GMimeSignature">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="CryptoContexts.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="CryptoContexts.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">GMime 2.6 Reference Manual</th>
+<td><a accesskey="n" href="GMimeSignature.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#GMimeCertificate.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#GMimeCertificate.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#GMimeCertificate.object-hierarchy" class="shortcut">Object Hierarchy</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="GMimeCertificate"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="GMimeCertificate.top_of_page"></a>GMimeCertificate</span></h2>
+<p>GMimeCertificate — Digital certificates</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="GMimeCertificate.synopsis"></a><h2>Synopsis</h2>
+<a name="GMimeCertificateList"></a><pre class="synopsis">enum                <a class="link" href="GMimeCertificate.html#GMimePubKeyAlgo" title="enum GMimePubKeyAlgo">GMimePubKeyAlgo</a>;
+enum                <a class="link" href="GMimeCertificate.html#GMimeDigestAlgo" title="enum GMimeDigestAlgo">GMimeDigestAlgo</a>;
+enum                <a class="link" href="GMimeCertificate.html#GMimeCertificateTrust" title="enum GMimeCertificateTrust">GMimeCertificateTrust</a>;
+struct              <a class="link" href="GMimeCertificate.html#GMimeCertificate-struct" title="struct GMimeCertificate">GMimeCertificate</a>;
+<a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="returnvalue">GMimeCertificate</span></a> *  <a class="link" href="GMimeCertificate.html#g-mime-certificate-new" title="g_mime_certificate_new ()">g_mime_certificate_new</a>              (<em class="parameter"><code><span class="type">void</span></code></em>);
+<a class="link" href="GMimeCertificate.html#GMimePubKeyAlgo" title="enum GMimePubKeyAlgo"><span class="returnvalue">GMimePubKeyAlgo</span></a>     <a class="link" href="GMimeCertificate.html#g-mime-certificate-get-pubkey-algo" title="g_mime_certificate_get_pubkey_algo ()">g_mime_certificate_get_pubkey_algo</a>  (<em class="parameter"><code><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> *cert</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimeCertificate.html#g-mime-certificate-set-pubkey-algo" title="g_mime_certificate_set_pubkey_algo ()">g_mime_certificate_set_pubkey_algo</a>  (<em class="parameter"><code><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> *cert</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeCertificate.html#GMimePubKeyAlgo" title="enum GMimePubKeyAlgo"><span class="type">GMimePubKeyAlgo</span></a> algo</code></em>);
+<a class="link" href="GMimeCertificate.html#GMimeDigestAlgo" title="enum GMimeDigestAlgo"><span class="returnvalue">GMimeDigestAlgo</span></a>     <a class="link" href="GMimeCertificate.html#g-mime-certificate-get-digest-algo" title="g_mime_certificate_get_digest_algo ()">g_mime_certificate_get_digest_algo</a>  (<em class="parameter"><code><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> *cert</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimeCertificate.html#g-mime-certificate-set-digest-algo" title="g_mime_certificate_set_digest_algo ()">g_mime_certificate_set_digest_algo</a>  (<em class="parameter"><code><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> *cert</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeCertificate.html#GMimeDigestAlgo" title="enum GMimeDigestAlgo"><span class="type">GMimeDigestAlgo</span></a> algo</code></em>);
+const <span class="returnvalue">char</span> *        <a class="link" href="GMimeCertificate.html#g-mime-certificate-get-issuer-serial" title="g_mime_certificate_get_issuer_serial ()">g_mime_certificate_get_issuer_serial</a>
+                                                        (<em class="parameter"><code><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> *cert</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimeCertificate.html#g-mime-certificate-set-issuer-serial" title="g_mime_certificate_set_issuer_serial ()">g_mime_certificate_set_issuer_serial</a>
+                                                        (<em class="parameter"><code><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> *cert</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *issuer_serial</code></em>);
+const <span class="returnvalue">char</span> *        <a class="link" href="GMimeCertificate.html#g-mime-certificate-get-issuer-name" title="g_mime_certificate_get_issuer_name ()">g_mime_certificate_get_issuer_name</a>  (<em class="parameter"><code><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> *cert</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimeCertificate.html#g-mime-certificate-set-issuer-name" title="g_mime_certificate_set_issuer_name ()">g_mime_certificate_set_issuer_name</a>  (<em class="parameter"><code><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> *cert</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *issuer_name</code></em>);
+const <span class="returnvalue">char</span> *        <a class="link" href="GMimeCertificate.html#g-mime-certificate-get-fingerprint" title="g_mime_certificate_get_fingerprint ()">g_mime_certificate_get_fingerprint</a>  (<em class="parameter"><code><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> *cert</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimeCertificate.html#g-mime-certificate-set-fingerprint" title="g_mime_certificate_set_fingerprint ()">g_mime_certificate_set_fingerprint</a>  (<em class="parameter"><code><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> *cert</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *fingerprint</code></em>);
+<span class="returnvalue">time_t</span>              <a class="link" href="GMimeCertificate.html#g-mime-certificate-get-created" title="g_mime_certificate_get_created ()">g_mime_certificate_get_created</a>      (<em class="parameter"><code><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> *cert</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimeCertificate.html#g-mime-certificate-set-created" title="g_mime_certificate_set_created ()">g_mime_certificate_set_created</a>      (<em class="parameter"><code><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> *cert</code></em>,
+                                                         <em class="parameter"><code><span class="type">time_t</span> created</code></em>);
+<span class="returnvalue">time_t</span>              <a class="link" href="GMimeCertificate.html#g-mime-certificate-get-expires" title="g_mime_certificate_get_expires ()">g_mime_certificate_get_expires</a>      (<em class="parameter"><code><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> *cert</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimeCertificate.html#g-mime-certificate-set-expires" title="g_mime_certificate_set_expires ()">g_mime_certificate_set_expires</a>      (<em class="parameter"><code><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> *cert</code></em>,
+                                                         <em class="parameter"><code><span class="type">time_t</span> expires</code></em>);
+const <span class="returnvalue">char</span> *        <a class="link" href="GMimeCertificate.html#g-mime-certificate-get-key-id" title="g_mime_certificate_get_key_id ()">g_mime_certificate_get_key_id</a>       (<em class="parameter"><code><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> *cert</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimeCertificate.html#g-mime-certificate-set-key-id" title="g_mime_certificate_set_key_id ()">g_mime_certificate_set_key_id</a>       (<em class="parameter"><code><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> *cert</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *key_id</code></em>);
+<a class="link" href="GMimeCertificate.html#GMimeCertificateTrust" title="enum GMimeCertificateTrust"><span class="returnvalue">GMimeCertificateTrust</span></a> <a class="link" href="GMimeCertificate.html#g-mime-certificate-get-trust" title="g_mime_certificate_get_trust ()">g_mime_certificate_get_trust</a>      (<em class="parameter"><code><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> *cert</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimeCertificate.html#g-mime-certificate-set-trust" title="g_mime_certificate_set_trust ()">g_mime_certificate_set_trust</a>        (<em class="parameter"><code><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> *cert</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeCertificate.html#GMimeCertificateTrust" title="enum GMimeCertificateTrust"><span class="type">GMimeCertificateTrust</span></a> trust</code></em>);
+const <span class="returnvalue">char</span> *        <a class="link" href="GMimeCertificate.html#g-mime-certificate-get-email" title="g_mime_certificate_get_email ()">g_mime_certificate_get_email</a>        (<em class="parameter"><code><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> *cert</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimeCertificate.html#g-mime-certificate-set-email" title="g_mime_certificate_set_email ()">g_mime_certificate_set_email</a>        (<em class="parameter"><code><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> *cert</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *email</code></em>);
+const <span class="returnvalue">char</span> *        <a class="link" href="GMimeCertificate.html#g-mime-certificate-get-name" title="g_mime_certificate_get_name ()">g_mime_certificate_get_name</a>         (<em class="parameter"><code><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> *cert</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimeCertificate.html#g-mime-certificate-set-name" title="g_mime_certificate_set_name ()">g_mime_certificate_set_name</a>         (<em class="parameter"><code><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> *cert</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *name</code></em>);
+
+struct              <a class="link" href="GMimeCertificate.html#GMimeCertificateList-struct" title="struct GMimeCertificateList">GMimeCertificateList</a>;
+<a class="link" href="GMimeCertificate.html#GMimeCertificateList"><span class="returnvalue">GMimeCertificateList</span></a> * <a class="link" href="GMimeCertificate.html#g-mime-certificate-list-new" title="g_mime_certificate_list_new ()">g_mime_certificate_list_new</a>      (<em class="parameter"><code><span class="type">void</span></code></em>);
+<span class="returnvalue">int</span>                 <a class="link" href="GMimeCertificate.html#g-mime-certificate-list-length" title="g_mime_certificate_list_length ()">g_mime_certificate_list_length</a>      (<em class="parameter"><code><a class="link" href="GMimeCertificate.html#GMimeCertificateList"><span class="type">GMimeCertificateList</span></a> *list</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimeCertificate.html#g-mime-certificate-list-clear" title="g_mime_certificate_list_clear ()">g_mime_certificate_list_clear</a>       (<em class="parameter"><code><a class="link" href="GMimeCertificate.html#GMimeCertificateList"><span class="type">GMimeCertificateList</span></a> *list</code></em>);
+<span class="returnvalue">int</span>                 <a class="link" href="GMimeCertificate.html#g-mime-certificate-list-add" title="g_mime_certificate_list_add ()">g_mime_certificate_list_add</a>         (<em class="parameter"><code><a class="link" href="GMimeCertificate.html#GMimeCertificateList"><span class="type">GMimeCertificateList</span></a> *list</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> *cert</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimeCertificate.html#g-mime-certificate-list-insert" title="g_mime_certificate_list_insert ()">g_mime_certificate_list_insert</a>      (<em class="parameter"><code><a class="link" href="GMimeCertificate.html#GMimeCertificateList"><span class="type">GMimeCertificateList</span></a> *list</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> index</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> *cert</code></em>);
+<span class="returnvalue">gboolean</span>            <a class="link" href="GMimeCertificate.html#g-mime-certificate-list-remove" title="g_mime_certificate_list_remove ()">g_mime_certificate_list_remove</a>      (<em class="parameter"><code><a class="link" href="GMimeCertificate.html#GMimeCertificateList"><span class="type">GMimeCertificateList</span></a> *list</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> *cert</code></em>);
+<span class="returnvalue">gboolean</span>            <a class="link" href="GMimeCertificate.html#g-mime-certificate-list-remove-at" title="g_mime_certificate_list_remove_at ()">g_mime_certificate_list_remove_at</a>   (<em class="parameter"><code><a class="link" href="GMimeCertificate.html#GMimeCertificateList"><span class="type">GMimeCertificateList</span></a> *list</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> index</code></em>);
+<span class="returnvalue">gboolean</span>            <a class="link" href="GMimeCertificate.html#g-mime-certificate-list-contains" title="g_mime_certificate_list_contains ()">g_mime_certificate_list_contains</a>    (<em class="parameter"><code><a class="link" href="GMimeCertificate.html#GMimeCertificateList"><span class="type">GMimeCertificateList</span></a> *list</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> *cert</code></em>);
+<span class="returnvalue">int</span>                 <a class="link" href="GMimeCertificate.html#g-mime-certificate-list-index-of" title="g_mime_certificate_list_index_of ()">g_mime_certificate_list_index_of</a>    (<em class="parameter"><code><a class="link" href="GMimeCertificate.html#GMimeCertificateList"><span class="type">GMimeCertificateList</span></a> *list</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> *cert</code></em>);
+<a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="returnvalue">GMimeCertificate</span></a> *  <a class="link" href="GMimeCertificate.html#g-mime-certificate-list-get-certificate" title="g_mime_certificate_list_get_certificate ()">g_mime_certificate_list_get_certificate</a>
+                                                        (<em class="parameter"><code><a class="link" href="GMimeCertificate.html#GMimeCertificateList"><span class="type">GMimeCertificateList</span></a> *list</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> index</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimeCertificate.html#g-mime-certificate-list-set-certificate" title="g_mime_certificate_list_set_certificate ()">g_mime_certificate_list_set_certificate</a>
+                                                        (<em class="parameter"><code><a class="link" href="GMimeCertificate.html#GMimeCertificateList"><span class="type">GMimeCertificateList</span></a> *list</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> index</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> *cert</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="GMimeCertificate.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  GObject
+   +----GMimeCertificate
+</pre>
+<pre class="synopsis">
+  GObject
+   +----GMimeCertificateList
+</pre>
+</div>
+<div class="refsect1">
+<a name="GMimeCertificate.description"></a><h2>Description</h2>
+<p>
+A <a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> is an object containing useful information about a
+digital certificate as used in signing and encrypting data.
+</p>
+</div>
+<div class="refsect1">
+<a name="GMimeCertificate.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="GMimePubKeyAlgo"></a><h3>enum GMimePubKeyAlgo</h3>
+<pre class="programlisting">typedef enum {
+	GMIME_PUBKEY_ALGO_DEFAULT  = 0,
+	GMIME_PUBKEY_ALGO_RSA      = 1,
+	GMIME_PUBKEY_ALGO_RSA_E    = 2,
+	GMIME_PUBKEY_ALGO_RSA_S    = 3,
+	GMIME_PUBKEY_ALGO_ELG_E    = 16,
+	GMIME_PUBKEY_ALGO_DSA      = 17,
+	GMIME_PUBKEY_ALGO_ELG      = 20
+} GMimePubKeyAlgo;
+</pre>
+<p>
+A public-key algorithm.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><a name="GMIME-PUBKEY-ALGO-DEFAULT:CAPS"></a><span class="term"><code class="literal">GMIME_PUBKEY_ALGO_DEFAULT</code></span></p></td>
+<td>The default public-key algorithm.
+</td>
+</tr>
+<tr>
+<td><p><a name="GMIME-PUBKEY-ALGO-RSA:CAPS"></a><span class="term"><code class="literal">GMIME_PUBKEY_ALGO_RSA</code></span></p></td>
+<td>The RSA algorithm.
+</td>
+</tr>
+<tr>
+<td><p><a name="GMIME-PUBKEY-ALGO-RSA-E:CAPS"></a><span class="term"><code class="literal">GMIME_PUBKEY_ALGO_RSA_E</code></span></p></td>
+<td>An encryption-only RSA algorithm.
+</td>
+</tr>
+<tr>
+<td><p><a name="GMIME-PUBKEY-ALGO-RSA-S:CAPS"></a><span class="term"><code class="literal">GMIME_PUBKEY_ALGO_RSA_S</code></span></p></td>
+<td>A signature-only RSA algorithm.
+</td>
+</tr>
+<tr>
+<td><p><a name="GMIME-PUBKEY-ALGO-ELG-E:CAPS"></a><span class="term"><code class="literal">GMIME_PUBKEY_ALGO_ELG_E</code></span></p></td>
+<td>An encryption-only ElGamal algorithm.
+</td>
+</tr>
+<tr>
+<td><p><a name="GMIME-PUBKEY-ALGO-DSA:CAPS"></a><span class="term"><code class="literal">GMIME_PUBKEY_ALGO_DSA</code></span></p></td>
+<td>The DSA algorithm.
+</td>
+</tr>
+<tr>
+<td><p><a name="GMIME-PUBKEY-ALGO-ELG:CAPS"></a><span class="term"><code class="literal">GMIME_PUBKEY_ALGO_ELG</code></span></p></td>
+<td>The ElGamal algorithm.
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GMimeDigestAlgo"></a><h3>enum GMimeDigestAlgo</h3>
+<pre class="programlisting">typedef enum {
+	GMIME_DIGEST_ALGO_DEFAULT     = 0,
+	GMIME_DIGEST_ALGO_MD5         = 1,
+	GMIME_DIGEST_ALGO_SHA1        = 2,
+	GMIME_DIGEST_ALGO_RIPEMD160   = 3,
+	GMIME_DIGEST_ALGO_MD2         = 5,
+	GMIME_DIGEST_ALGO_TIGER192    = 6,
+	GMIME_DIGEST_ALGO_HAVAL5160   = 7,
+	GMIME_DIGEST_ALGO_SHA256      = 8,
+	GMIME_DIGEST_ALGO_SHA384      = 9,
+	GMIME_DIGEST_ALGO_SHA512      = 10,
+	GMIME_DIGEST_ALGO_SHA224      = 11,
+	GMIME_DIGEST_ALGO_MD4         = 301
+} GMimeDigestAlgo;
+</pre>
+<p>
+A hash algorithm.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><a name="GMIME-DIGEST-ALGO-DEFAULT:CAPS"></a><span class="term"><code class="literal">GMIME_DIGEST_ALGO_DEFAULT</code></span></p></td>
+<td>The default hash algorithm.
+</td>
+</tr>
+<tr>
+<td><p><a name="GMIME-DIGEST-ALGO-MD5:CAPS"></a><span class="term"><code class="literal">GMIME_DIGEST_ALGO_MD5</code></span></p></td>
+<td>The MD5 hash algorithm.
+</td>
+</tr>
+<tr>
+<td><p><a name="GMIME-DIGEST-ALGO-SHA1:CAPS"></a><span class="term"><code class="literal">GMIME_DIGEST_ALGO_SHA1</code></span></p></td>
+<td>The SHA-1 hash algorithm.
+</td>
+</tr>
+<tr>
+<td><p><a name="GMIME-DIGEST-ALGO-RIPEMD160:CAPS"></a><span class="term"><code class="literal">GMIME_DIGEST_ALGO_RIPEMD160</code></span></p></td>
+<td>The RIPEMD-160 hash algorithm.
+</td>
+</tr>
+<tr>
+<td><p><a name="GMIME-DIGEST-ALGO-MD2:CAPS"></a><span class="term"><code class="literal">GMIME_DIGEST_ALGO_MD2</code></span></p></td>
+<td>The MD2 hash algorithm.
+</td>
+</tr>
+<tr>
+<td><p><a name="GMIME-DIGEST-ALGO-TIGER192:CAPS"></a><span class="term"><code class="literal">GMIME_DIGEST_ALGO_TIGER192</code></span></p></td>
+<td>The TIGER-192 hash algorithm.
+</td>
+</tr>
+<tr>
+<td><p><a name="GMIME-DIGEST-ALGO-HAVAL5160:CAPS"></a><span class="term"><code class="literal">GMIME_DIGEST_ALGO_HAVAL5160</code></span></p></td>
+<td>The HAVAL-5-160 hash algorithm.
+</td>
+</tr>
+<tr>
+<td><p><a name="GMIME-DIGEST-ALGO-SHA256:CAPS"></a><span class="term"><code class="literal">GMIME_DIGEST_ALGO_SHA256</code></span></p></td>
+<td>The SHA-256 hash algorithm.
+</td>
+</tr>
+<tr>
+<td><p><a name="GMIME-DIGEST-ALGO-SHA384:CAPS"></a><span class="term"><code class="literal">GMIME_DIGEST_ALGO_SHA384</code></span></p></td>
+<td>The SHA-384 hash algorithm.
+</td>
+</tr>
+<tr>
+<td><p><a name="GMIME-DIGEST-ALGO-SHA512:CAPS"></a><span class="term"><code class="literal">GMIME_DIGEST_ALGO_SHA512</code></span></p></td>
+<td>The SHA-512 hash algorithm.
+</td>
+</tr>
+<tr>
+<td><p><a name="GMIME-DIGEST-ALGO-SHA224:CAPS"></a><span class="term"><code class="literal">GMIME_DIGEST_ALGO_SHA224</code></span></p></td>
+<td>The SHA-224 hash algorithm.
+</td>
+</tr>
+<tr>
+<td><p><a name="GMIME-DIGEST-ALGO-MD4:CAPS"></a><span class="term"><code class="literal">GMIME_DIGEST_ALGO_MD4</code></span></p></td>
+<td>The MD4 hash algorithm.
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GMimeCertificateTrust"></a><h3>enum GMimeCertificateTrust</h3>
+<pre class="programlisting">typedef enum {
+	GMIME_CERTIFICATE_TRUST_NONE,
+	GMIME_CERTIFICATE_TRUST_NEVER,
+	GMIME_CERTIFICATE_TRUST_UNDEFINED,
+	GMIME_CERTIFICATE_TRUST_MARGINAL,
+	GMIME_CERTIFICATE_TRUST_FULLY,
+	GMIME_CERTIFICATE_TRUST_ULTIMATE
+} GMimeCertificateTrust;
+</pre>
+<p>
+The trust value of a certificate.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><a name="GMIME-CERTIFICATE-TRUST-NONE:CAPS"></a><span class="term"><code class="literal">GMIME_CERTIFICATE_TRUST_NONE</code></span></p></td>
+<td>No trust assigned.
+</td>
+</tr>
+<tr>
+<td><p><a name="GMIME-CERTIFICATE-TRUST-NEVER:CAPS"></a><span class="term"><code class="literal">GMIME_CERTIFICATE_TRUST_NEVER</code></span></p></td>
+<td>Never trust this certificate.
+</td>
+</tr>
+<tr>
+<td><p><a name="GMIME-CERTIFICATE-TRUST-UNDEFINED:CAPS"></a><span class="term"><code class="literal">GMIME_CERTIFICATE_TRUST_UNDEFINED</code></span></p></td>
+<td>Undefined trust for this certificate.
+</td>
+</tr>
+<tr>
+<td><p><a name="GMIME-CERTIFICATE-TRUST-MARGINAL:CAPS"></a><span class="term"><code class="literal">GMIME_CERTIFICATE_TRUST_MARGINAL</code></span></p></td>
+<td>Trust this certificate maginally.
+</td>
+</tr>
+<tr>
+<td><p><a name="GMIME-CERTIFICATE-TRUST-FULLY:CAPS"></a><span class="term"><code class="literal">GMIME_CERTIFICATE_TRUST_FULLY</code></span></p></td>
+<td>Trust this certificate fully.
+</td>
+</tr>
+<tr>
+<td><p><a name="GMIME-CERTIFICATE-TRUST-ULTIMATE:CAPS"></a><span class="term"><code class="literal">GMIME_CERTIFICATE_TRUST_ULTIMATE</code></span></p></td>
+<td>Trust this certificate ultimately.
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GMimeCertificate-struct"></a><h3>struct GMimeCertificate</h3>
+<pre class="programlisting">struct GMimeCertificate;</pre>
+<p>
+An object containing useful information about a certificate.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-certificate-new"></a><h3>g_mime_certificate_new ()</h3>
+<pre class="programlisting"><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="returnvalue">GMimeCertificate</span></a> *  g_mime_certificate_new              (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>
+Creates a new <a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> object.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new <a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> object.</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-certificate-get-pubkey-algo"></a><h3>g_mime_certificate_get_pubkey_algo ()</h3>
+<pre class="programlisting"><a class="link" href="GMimeCertificate.html#GMimePubKeyAlgo" title="enum GMimePubKeyAlgo"><span class="returnvalue">GMimePubKeyAlgo</span></a>     g_mime_certificate_get_pubkey_algo  (<em class="parameter"><code><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> *cert</code></em>);</pre>
+<p>
+Get the public-key algorithm used by the certificate.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>cert</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the public-key algorithm used by the certificate or
+<a class="link" href="GMimeCertificate.html#GMIME-PUBKEY-ALGO-DEFAULT:CAPS"><span class="type">GMIME_PUBKEY_ALGO_DEFAULT</span></a> if unspecified.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-certificate-set-pubkey-algo"></a><h3>g_mime_certificate_set_pubkey_algo ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_certificate_set_pubkey_algo  (<em class="parameter"><code><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> *cert</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeCertificate.html#GMimePubKeyAlgo" title="enum GMimePubKeyAlgo"><span class="type">GMimePubKeyAlgo</span></a> algo</code></em>);</pre>
+<p>
+Set the public-key algorithm used by the certificate.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>cert</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>algo</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeCertificate.html#GMimePubKeyAlgo" title="enum GMimePubKeyAlgo"><span class="type">GMimePubKeyAlgo</span></a>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-certificate-get-digest-algo"></a><h3>g_mime_certificate_get_digest_algo ()</h3>
+<pre class="programlisting"><a class="link" href="GMimeCertificate.html#GMimeDigestAlgo" title="enum GMimeDigestAlgo"><span class="returnvalue">GMimeDigestAlgo</span></a>     g_mime_certificate_get_digest_algo  (<em class="parameter"><code><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> *cert</code></em>);</pre>
+<p>
+Get the digest algorithm used by the certificate.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>cert</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the digest algorithm used by the certificate or
+<a class="link" href="GMimeCertificate.html#GMIME-DIGEST-ALGO-DEFAULT:CAPS"><span class="type">GMIME_DIGEST_ALGO_DEFAULT</span></a> if unspecified.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-certificate-set-digest-algo"></a><h3>g_mime_certificate_set_digest_algo ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_certificate_set_digest_algo  (<em class="parameter"><code><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> *cert</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeCertificate.html#GMimeDigestAlgo" title="enum GMimeDigestAlgo"><span class="type">GMimeDigestAlgo</span></a> algo</code></em>);</pre>
+<p>
+Set the digest algorithm used by the certificate.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>cert</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>algo</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeCertificate.html#GMimeDigestAlgo" title="enum GMimeDigestAlgo"><span class="type">GMimeDigestAlgo</span></a>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-certificate-get-issuer-serial"></a><h3>g_mime_certificate_get_issuer_serial ()</h3>
+<pre class="programlisting">const <span class="returnvalue">char</span> *        g_mime_certificate_get_issuer_serial
+                                                        (<em class="parameter"><code><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> *cert</code></em>);</pre>
+<p>
+Get the certificate's issuer serial.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>cert</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the certificate's issuer serial or <code class="literal">NULL</code> if unspecified.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-certificate-set-issuer-serial"></a><h3>g_mime_certificate_set_issuer_serial ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_certificate_set_issuer_serial
+                                                        (<em class="parameter"><code><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> *cert</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *issuer_serial</code></em>);</pre>
+<p>
+Set the certificate's issuer serial.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>cert</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>issuer_serial</code></em> :</span></p></td>
+<td>certificate's issuer serial</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-certificate-get-issuer-name"></a><h3>g_mime_certificate_get_issuer_name ()</h3>
+<pre class="programlisting">const <span class="returnvalue">char</span> *        g_mime_certificate_get_issuer_name  (<em class="parameter"><code><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> *cert</code></em>);</pre>
+<p>
+Get the certificate's issuer name.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>cert</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the certificate's issuer name or <code class="literal">NULL</code> if unspecified.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-certificate-set-issuer-name"></a><h3>g_mime_certificate_set_issuer_name ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_certificate_set_issuer_name  (<em class="parameter"><code><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> *cert</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *issuer_name</code></em>);</pre>
+<p>
+Set the certificate's issuer name.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>cert</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>issuer_name</code></em> :</span></p></td>
+<td>certificate's issuer name</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-certificate-get-fingerprint"></a><h3>g_mime_certificate_get_fingerprint ()</h3>
+<pre class="programlisting">const <span class="returnvalue">char</span> *        g_mime_certificate_get_fingerprint  (<em class="parameter"><code><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> *cert</code></em>);</pre>
+<p>
+Get the certificate's key fingerprint.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>cert</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the certificate's key fingerprint or <code class="literal">NULL</code> if unspecified.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-certificate-set-fingerprint"></a><h3>g_mime_certificate_set_fingerprint ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_certificate_set_fingerprint  (<em class="parameter"><code><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> *cert</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *fingerprint</code></em>);</pre>
+<p>
+Set the certificate's key fingerprint.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>cert</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>fingerprint</code></em> :</span></p></td>
+<td>fingerprint string</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-certificate-get-created"></a><h3>g_mime_certificate_get_created ()</h3>
+<pre class="programlisting"><span class="returnvalue">time_t</span>              g_mime_certificate_get_created      (<em class="parameter"><code><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> *cert</code></em>);</pre>
+<p>
+Get the creation date of the certificate's key.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>cert</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the creation date of the certificate's key or <code class="literal">-1</code> if unknown.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-certificate-set-created"></a><h3>g_mime_certificate_set_created ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_certificate_set_created      (<em class="parameter"><code><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> *cert</code></em>,
+                                                         <em class="parameter"><code><span class="type">time_t</span> created</code></em>);</pre>
+<p>
+Set the creation date of the certificate's key.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>cert</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>created</code></em> :</span></p></td>
+<td>creation date</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-certificate-get-expires"></a><h3>g_mime_certificate_get_expires ()</h3>
+<pre class="programlisting"><span class="returnvalue">time_t</span>              g_mime_certificate_get_expires      (<em class="parameter"><code><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> *cert</code></em>);</pre>
+<p>
+Get the expiration date of the certificate's key.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>cert</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the expiration date of the certificate's key or <code class="literal">-1</code> if unknown.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-certificate-set-expires"></a><h3>g_mime_certificate_set_expires ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_certificate_set_expires      (<em class="parameter"><code><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> *cert</code></em>,
+                                                         <em class="parameter"><code><span class="type">time_t</span> expires</code></em>);</pre>
+<p>
+Set the expiration date of the certificate's key.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>cert</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>expires</code></em> :</span></p></td>
+<td>expiration date</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-certificate-get-key-id"></a><h3>g_mime_certificate_get_key_id ()</h3>
+<pre class="programlisting">const <span class="returnvalue">char</span> *        g_mime_certificate_get_key_id       (<em class="parameter"><code><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> *cert</code></em>);</pre>
+<p>
+Get the certificate's key id.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>cert</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the certificate's key id or <code class="literal">NULL</code> if unspecified.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-certificate-set-key-id"></a><h3>g_mime_certificate_set_key_id ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_certificate_set_key_id       (<em class="parameter"><code><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> *cert</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *key_id</code></em>);</pre>
+<p>
+Set the certificate's key id.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>cert</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>key_id</code></em> :</span></p></td>
+<td>key id</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-certificate-get-trust"></a><h3>g_mime_certificate_get_trust ()</h3>
+<pre class="programlisting"><a class="link" href="GMimeCertificate.html#GMimeCertificateTrust" title="enum GMimeCertificateTrust"><span class="returnvalue">GMimeCertificateTrust</span></a> g_mime_certificate_get_trust      (<em class="parameter"><code><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> *cert</code></em>);</pre>
+<p>
+Get the certificate trust.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>cert</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the certificate trust.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-certificate-set-trust"></a><h3>g_mime_certificate_set_trust ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_certificate_set_trust        (<em class="parameter"><code><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> *cert</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeCertificate.html#GMimeCertificateTrust" title="enum GMimeCertificateTrust"><span class="type">GMimeCertificateTrust</span></a> trust</code></em>);</pre>
+<p>
+Set the certificate trust.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>cert</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>trust</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeCertificate.html#GMimeCertificateTrust" title="enum GMimeCertificateTrust"><span class="type">GMimeCertificateTrust</span></a> value</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-certificate-get-email"></a><h3>g_mime_certificate_get_email ()</h3>
+<pre class="programlisting">const <span class="returnvalue">char</span> *        g_mime_certificate_get_email        (<em class="parameter"><code><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> *cert</code></em>);</pre>
+<p>
+Get the certificate's email.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>cert</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the certificate's email or <code class="literal">NULL</code> if unspecified.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-certificate-set-email"></a><h3>g_mime_certificate_set_email ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_certificate_set_email        (<em class="parameter"><code><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> *cert</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *email</code></em>);</pre>
+<p>
+Set the certificate's email.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>cert</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>email</code></em> :</span></p></td>
+<td>certificate's email</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-certificate-get-name"></a><h3>g_mime_certificate_get_name ()</h3>
+<pre class="programlisting">const <span class="returnvalue">char</span> *        g_mime_certificate_get_name         (<em class="parameter"><code><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> *cert</code></em>);</pre>
+<p>
+Get the certificate's name.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>cert</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the certificate's name or <code class="literal">NULL</code> if unspecified.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-certificate-set-name"></a><h3>g_mime_certificate_set_name ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_certificate_set_name         (<em class="parameter"><code><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> *cert</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *name</code></em>);</pre>
+<p>
+Set the certificate's name.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>cert</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>name</code></em> :</span></p></td>
+<td>certificate's name</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GMimeCertificateList-struct"></a><h3>struct GMimeCertificateList</h3>
+<pre class="programlisting">struct GMimeCertificateList;</pre>
+<p>
+A collection of <a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> objects.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-certificate-list-new"></a><h3>g_mime_certificate_list_new ()</h3>
+<pre class="programlisting"><a class="link" href="GMimeCertificate.html#GMimeCertificateList"><span class="returnvalue">GMimeCertificateList</span></a> * g_mime_certificate_list_new      (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>
+Creates a new <a class="link" href="GMimeCertificate.html#GMimeCertificateList"><span class="type">GMimeCertificateList</span></a>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new <a class="link" href="GMimeCertificate.html#GMimeCertificateList"><span class="type">GMimeCertificateList</span></a>.</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-certificate-list-length"></a><h3>g_mime_certificate_list_length ()</h3>
+<pre class="programlisting"><span class="returnvalue">int</span>                 g_mime_certificate_list_length      (<em class="parameter"><code><a class="link" href="GMimeCertificate.html#GMimeCertificateList"><span class="type">GMimeCertificateList</span></a> *list</code></em>);</pre>
+<p>
+Gets the length of the list.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>list</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeCertificate.html#GMimeCertificateList"><span class="type">GMimeCertificateList</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the number of <a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> objects in the list.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-certificate-list-clear"></a><h3>g_mime_certificate_list_clear ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_certificate_list_clear       (<em class="parameter"><code><a class="link" href="GMimeCertificate.html#GMimeCertificateList"><span class="type">GMimeCertificateList</span></a> *list</code></em>);</pre>
+<p>
+Clears the list of addresses.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><em class="parameter"><code>list</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeCertificate.html#GMimeCertificateList"><span class="type">GMimeCertificateList</span></a>
+</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-certificate-list-add"></a><h3>g_mime_certificate_list_add ()</h3>
+<pre class="programlisting"><span class="returnvalue">int</span>                 g_mime_certificate_list_add         (<em class="parameter"><code><a class="link" href="GMimeCertificate.html#GMimeCertificateList"><span class="type">GMimeCertificateList</span></a> *list</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> *cert</code></em>);</pre>
+<p>
+Adds a <a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> to the <a class="link" href="GMimeCertificate.html#GMimeCertificateList"><span class="type">GMimeCertificateList</span></a>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>list</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeCertificate.html#GMimeCertificateList"><span class="type">GMimeCertificateList</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>cert</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the index of the added <a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a>.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-certificate-list-insert"></a><h3>g_mime_certificate_list_insert ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_certificate_list_insert      (<em class="parameter"><code><a class="link" href="GMimeCertificate.html#GMimeCertificateList"><span class="type">GMimeCertificateList</span></a> *list</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> index</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> *cert</code></em>);</pre>
+<p>
+Inserts a <a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> into the <a class="link" href="GMimeCertificate.html#GMimeCertificateList"><span class="type">GMimeCertificateList</span></a> at the specified
+index.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>list</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeCertificate.html#GMimeCertificateList"><span class="type">GMimeCertificateList</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>index</code></em> :</span></p></td>
+<td>index to insert at</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>cert</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-certificate-list-remove"></a><h3>g_mime_certificate_list_remove ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>            g_mime_certificate_list_remove      (<em class="parameter"><code><a class="link" href="GMimeCertificate.html#GMimeCertificateList"><span class="type">GMimeCertificateList</span></a> *list</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> *cert</code></em>);</pre>
+<p>
+Removes a <a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> from the <a class="link" href="GMimeCertificate.html#GMimeCertificateList"><span class="type">GMimeCertificateList</span></a>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>list</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeCertificate.html#GMimeCertificateList"><span class="type">GMimeCertificateList</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>cert</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>
+<code class="literal">TRUE</code> if the specified <a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> was removed or <code class="literal">FALSE</code>
+otherwise.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-certificate-list-remove-at"></a><h3>g_mime_certificate_list_remove_at ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>            g_mime_certificate_list_remove_at   (<em class="parameter"><code><a class="link" href="GMimeCertificate.html#GMimeCertificateList"><span class="type">GMimeCertificateList</span></a> *list</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> index</code></em>);</pre>
+<p>
+Removes a <a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> from the <a class="link" href="GMimeCertificate.html#GMimeCertificateList"><span class="type">GMimeCertificateList</span></a> at the specified
+index.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>list</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeCertificate.html#GMimeCertificateList"><span class="type">GMimeCertificateList</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>index</code></em> :</span></p></td>
+<td>index to remove</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>
+<code class="literal">TRUE</code> if an <a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> was removed or <code class="literal">FALSE</code> otherwise.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-certificate-list-contains"></a><h3>g_mime_certificate_list_contains ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>            g_mime_certificate_list_contains    (<em class="parameter"><code><a class="link" href="GMimeCertificate.html#GMimeCertificateList"><span class="type">GMimeCertificateList</span></a> *list</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> *cert</code></em>);</pre>
+<p>
+Checks whether or not the specified <a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> is contained within
+the <a class="link" href="GMimeCertificate.html#GMimeCertificateList"><span class="type">GMimeCertificateList</span></a>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>list</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeCertificate.html#GMimeCertificateList"><span class="type">GMimeCertificateList</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>cert</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>
+<code class="literal">TRUE</code> if the specified <a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> is contained within the
+specified <a class="link" href="GMimeCertificate.html#GMimeCertificateList"><span class="type">GMimeCertificateList</span></a> or <code class="literal">FALSE</code> otherwise.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-certificate-list-index-of"></a><h3>g_mime_certificate_list_index_of ()</h3>
+<pre class="programlisting"><span class="returnvalue">int</span>                 g_mime_certificate_list_index_of    (<em class="parameter"><code><a class="link" href="GMimeCertificate.html#GMimeCertificateList"><span class="type">GMimeCertificateList</span></a> *list</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> *cert</code></em>);</pre>
+<p>
+Gets the index of the specified <a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> inside the
+<a class="link" href="GMimeCertificate.html#GMimeCertificateList"><span class="type">GMimeCertificateList</span></a>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>list</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeCertificate.html#GMimeCertificateList"><span class="type">GMimeCertificateList</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>cert</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the index of the requested <a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> within the
+<a class="link" href="GMimeCertificate.html#GMimeCertificateList"><span class="type">GMimeCertificateList</span></a> or <code class="literal">-1</code> if it is not contained within the
+<a class="link" href="GMimeCertificate.html#GMimeCertificateList"><span class="type">GMimeCertificateList</span></a>.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-certificate-list-get-certificate"></a><h3>g_mime_certificate_list_get_certificate ()</h3>
+<pre class="programlisting"><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="returnvalue">GMimeCertificate</span></a> *  g_mime_certificate_list_get_certificate
+                                                        (<em class="parameter"><code><a class="link" href="GMimeCertificate.html#GMimeCertificateList"><span class="type">GMimeCertificateList</span></a> *list</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> index</code></em>);</pre>
+<p>
+Gets the <a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> at the specified index.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>list</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeCertificate.html#GMimeCertificateList"><span class="type">GMimeCertificateList</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>index</code></em> :</span></p></td>
+<td>index of <a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> to get</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the <a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> at the specified
+index or <code class="literal">NULL</code> if the index is out of range. <span class="annotation">[<a href="http://foldoc.org/transfer%20full"><span class="acronym">transfer full</span></a>]</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-certificate-list-set-certificate"></a><h3>g_mime_certificate_list_set_certificate ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_certificate_list_set_certificate
+                                                        (<em class="parameter"><code><a class="link" href="GMimeCertificate.html#GMimeCertificateList"><span class="type">GMimeCertificateList</span></a> *list</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> index</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> *cert</code></em>);</pre>
+<p>
+Sets the <a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> at the specified index to <em class="parameter"><code>cert</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>list</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeCertificate.html#GMimeCertificateList"><span class="type">GMimeCertificateList</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>index</code></em> :</span></p></td>
+<td>index of <a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a> to set</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>cert</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeCertificate.html" title="GMimeCertificate"><span class="type">GMimeCertificate</span></a>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

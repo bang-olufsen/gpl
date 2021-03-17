@@ -1,0 +1,5 @@
+0001-Disable-yasm-for-libav-when-disable-yasm.patch -p1
+workaround-to-build-gst-libav-for-i586-with-gcc.patch -p1
+mips64_cpu_detection.patch -p1
+0001-configure-check-for-armv7ve-variant.patch -p1
+0001-fix-host-contamination.patch -p1

@@ -1,0 +1,428 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE book PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "">
+<book xmlns="http://www.devhelp.net/book" title="librygel-server Reference Manual" link="index.html" author="" name="librygel-server" version="2" language="c">
+  <chapters>
+    <sub name="Overview" link="overview.html">
+      <sub name="" link="overview.html#overview">
+        <sub name="Basic Usage" link="overview.html#id-1.2.2.4"/>
+      </sub>
+    </sub>
+    <sub name="Implementing Servers" link="implementing-servers.html">
+      <sub name="Implementing Servers: Overview" link="implementing-servers.html#implementing-servers-overview"/>
+      <sub name="Implementing Servers: Simple Example" link="implementing-servers-simple-example.html"/>
+    </sub>
+    <sub name="Implementing Rygel Server Plugins" link="implementing-server-plugins.html">
+      <sub name="Implementing Server Plugins: Overview" link="implementing-server-plugins.html#implementing-server-plugins-overview"/>
+      <sub name="Implementing Server Plugins: Simple Example" link="implementing-server-plugins-simple-example.html"/>
+      <sub name="Implementing Server Plugins: Full Example" link="implementing-server-plugins-full-example.html"/>
+    </sub>
+    <sub name="Implementing Rygel Media Engines" link="implementing-media-engines.html">
+      <sub name="Implementing Media Engines: Overview" link="implementing-media-engines.html#implementing-media-engines-overview"/>
+      <sub name="Implementing Media Engines: Full Example" link="implementing-media-engines-full-example.html"/>
+    </sub>
+    <sub name="librygel-server API Reference" link="api-main-list.html">
+      <sub name="RygelAudioItem" link="RygelAudioItem.html"/>
+      <sub name="RygelDataSource" link="RygelDataSource.html"/>
+      <sub name="RygelHTTPSeek" link="RygelHTTPSeek.html"/>
+      <sub name="RygelImageItem" link="RygelImageItem.html"/>
+      <sub name="RygelLogicalExpression" link="RygelLogicalExpression.html"/>
+      <sub name="RygelMediaArtStore" link="RygelMediaArtStore.html"/>
+      <sub name="RygelMediaContainer" link="RygelMediaContainer.html"/>
+      <sub name="RygelMediaEngine" link="RygelMediaEngine.html"/>
+      <sub name="RygelMediaItem" link="RygelMediaItem.html"/>
+      <sub name="RygelMediaObject" link="RygelMediaObject.html"/>
+      <sub name="RygelMediaObjects" link="RygelMediaObjects.html"/>
+      <sub name="RygelMediaServer" link="RygelMediaServer.html"/>
+      <sub name="RygelMediaServerPlugin" link="RygelMediaServerPlugin.html"/>
+      <sub name="RygelMusicItem" link="RygelMusicItem.html"/>
+      <sub name="RygelPhotoItem" link="RygelPhotoItem.html"/>
+      <sub name="RygelRelationalExpression" link="RygelRelationalExpression.html"/>
+      <sub name="RygelSearchExpression" link="RygelSearchExpression.html"/>
+      <sub name="RygelSearchableContainer" link="RygelSearchableContainer.html"/>
+      <sub name="RygelSimpleContainer" link="RygelSimpleContainer.html"/>
+      <sub name="RygelSubtitle" link="RygelSubtitle.html"/>
+      <sub name="RygelThumbnail" link="RygelThumbnail.html"/>
+      <sub name="RygelTrackableContainer" link="RygelTrackableContainer.html"/>
+      <sub name="RygelTranscodeManager" link="RygelTranscodeManager.html"/>
+      <sub name="RygelTranscoder" link="RygelTranscoder.html"/>
+      <sub name="RygelVideoItem" link="RygelVideoItem.html"/>
+      <sub name="RygelVisualItem" link="RygelVisualItem.html"/>
+      <sub name="RygelWritableContainer" link="RygelWritableContainer.html"/>
+    </sub>
+    <sub name="Object Hierarchy" link="object-tree.html"/>
+    <sub name="API Index" link="api-index-full.html"/>
+    <sub name="Index of deprecated API" link="deprecated-api-index.html"/>
+    <sub name="Annotation Glossary" link="annotation-glossary.html"/>
+  </chapters>
+  <functions>
+    <keyword type="macro" name="RYGEL_TYPE_AUDIO_ITEM" link="RygelAudioItem.html#RYGEL-TYPE-AUDIO-ITEM:CAPS"/>
+    <keyword type="function" name="rygel_audio_item_new ()" link="RygelAudioItem.html#rygel-audio-item-new"/>
+    <keyword type="function" name="rygel_audio_item_get_duration ()" link="RygelAudioItem.html#rygel-audio-item-get-duration"/>
+    <keyword type="function" name="rygel_audio_item_set_duration ()" link="RygelAudioItem.html#rygel-audio-item-set-duration"/>
+    <keyword type="function" name="rygel_audio_item_get_bitrate ()" link="RygelAudioItem.html#rygel-audio-item-get-bitrate"/>
+    <keyword type="function" name="rygel_audio_item_set_bitrate ()" link="RygelAudioItem.html#rygel-audio-item-set-bitrate"/>
+    <keyword type="function" name="rygel_audio_item_get_sample_freq ()" link="RygelAudioItem.html#rygel-audio-item-get-sample-freq"/>
+    <keyword type="function" name="rygel_audio_item_set_sample_freq ()" link="RygelAudioItem.html#rygel-audio-item-set-sample-freq"/>
+    <keyword type="function" name="rygel_audio_item_get_bits_per_sample ()" link="RygelAudioItem.html#rygel-audio-item-get-bits-per-sample"/>
+    <keyword type="function" name="rygel_audio_item_set_bits_per_sample ()" link="RygelAudioItem.html#rygel-audio-item-set-bits-per-sample"/>
+    <keyword type="function" name="rygel_audio_item_get_channels ()" link="RygelAudioItem.html#rygel-audio-item-get-channels"/>
+    <keyword type="function" name="rygel_audio_item_set_channels ()" link="RygelAudioItem.html#rygel-audio-item-set-channels"/>
+    <keyword type="macro" name="RYGEL_AUDIO_ITEM_UPNP_CLASS" link="RygelAudioItem.html#RYGEL-AUDIO-ITEM-UPNP-CLASS:CAPS"/>
+    <keyword type="struct" name="struct RygelAudioItem" link="RygelAudioItem.html#RygelAudioItem-struct"/>
+    <keyword type="struct" name="struct RygelAudioItemClass" link="RygelAudioItem.html#RygelAudioItemClass"/>
+    <keyword type="property" name="The “bitrate” property" link="RygelAudioItem.html#RygelAudioItem--bitrate"/>
+    <keyword type="property" name="The “bits-per-sample” property" link="RygelAudioItem.html#RygelAudioItem--bits-per-sample"/>
+    <keyword type="property" name="The “channels” property" link="RygelAudioItem.html#RygelAudioItem--channels"/>
+    <keyword type="property" name="The “duration” property" link="RygelAudioItem.html#RygelAudioItem--duration"/>
+    <keyword type="property" name="The “sample-freq” property" link="RygelAudioItem.html#RygelAudioItem--sample-freq"/>
+    <keyword type="function" name="rygel_data_source_start ()" link="RygelDataSource.html#rygel-data-source-start"/>
+    <keyword type="function" name="rygel_data_source_freeze ()" link="RygelDataSource.html#rygel-data-source-freeze"/>
+    <keyword type="function" name="rygel_data_source_thaw ()" link="RygelDataSource.html#rygel-data-source-thaw"/>
+    <keyword type="function" name="rygel_data_source_stop ()" link="RygelDataSource.html#rygel-data-source-stop"/>
+    <keyword type="enum" name="enum RygelDataSourceError" link="RygelDataSource.html#RygelDataSourceError"/>
+    <keyword type="struct" name="RygelDataSource" link="RygelDataSource.html#RygelDataSource-struct"/>
+    <keyword type="struct" name="struct RygelDataSourceIface" link="RygelDataSource.html#RygelDataSourceIface"/>
+    <keyword type="signal" name="The “data-available” signal" link="RygelDataSource.html#RygelDataSource-data-available"/>
+    <keyword type="signal" name="The “done” signal" link="RygelDataSource.html#RygelDataSource-done"/>
+    <keyword type="signal" name="The “error” signal" link="RygelDataSource.html#RygelDataSource-error"/>
+    <keyword type="macro" name="RYGEL_TYPE_HTTP_SEEK" link="RygelHTTPSeek.html#RYGEL-TYPE-HTTP-SEEK:CAPS"/>
+    <keyword type="function" name="rygel_http_seek_add_response_headers ()" link="RygelHTTPSeek.html#rygel-http-seek-add-response-headers"/>
+    <keyword type="function" name="rygel_http_seek_get_seek_type ()" link="RygelHTTPSeek.html#rygel-http-seek-get-seek-type"/>
+    <keyword type="function" name="rygel_http_seek_set_seek_type ()" link="RygelHTTPSeek.html#rygel-http-seek-set-seek-type"/>
+    <keyword type="function" name="rygel_http_seek_get_msg ()" link="RygelHTTPSeek.html#rygel-http-seek-get-msg"/>
+    <keyword type="function" name="rygel_http_seek_get_start ()" link="RygelHTTPSeek.html#rygel-http-seek-get-start"/>
+    <keyword type="function" name="rygel_http_seek_get_stop ()" link="RygelHTTPSeek.html#rygel-http-seek-get-stop"/>
+    <keyword type="function" name="rygel_http_seek_get_step ()" link="RygelHTTPSeek.html#rygel-http-seek-get-step"/>
+    <keyword type="function" name="rygel_http_seek_get_length ()" link="RygelHTTPSeek.html#rygel-http-seek-get-length"/>
+    <keyword type="function" name="rygel_http_seek_get_total_length ()" link="RygelHTTPSeek.html#rygel-http-seek-get-total-length"/>
+    <keyword type="struct" name="struct RygelHTTPSeek" link="RygelHTTPSeek.html#RygelHTTPSeek-struct"/>
+    <keyword type="struct" name="struct RygelHTTPSeekClass" link="RygelHTTPSeek.html#RygelHTTPSeekClass"/>
+    <keyword type="enum" name="enum RygelHTTPSeekType" link="RygelHTTPSeek.html#RygelHTTPSeekType"/>
+    <keyword type="enum" name="enum RygelHTTPSeekError" link="RygelHTTPSeek.html#RygelHTTPSeekError"/>
+    <keyword type="property" name="The “length” property" link="RygelHTTPSeek.html#RygelHTTPSeek--length"/>
+    <keyword type="property" name="The “msg” property" link="RygelHTTPSeek.html#RygelHTTPSeek--msg"/>
+    <keyword type="property" name="The “seek-type” property" link="RygelHTTPSeek.html#RygelHTTPSeek--seek-type"/>
+    <keyword type="property" name="The “start” property" link="RygelHTTPSeek.html#RygelHTTPSeek--start"/>
+    <keyword type="property" name="The “step” property" link="RygelHTTPSeek.html#RygelHTTPSeek--step"/>
+    <keyword type="property" name="The “stop” property" link="RygelHTTPSeek.html#RygelHTTPSeek--stop"/>
+    <keyword type="property" name="The “total-length” property" link="RygelHTTPSeek.html#RygelHTTPSeek--total-length"/>
+    <keyword type="macro" name="RYGEL_TYPE_IMAGE_ITEM" link="RygelImageItem.html#RYGEL-TYPE-IMAGE-ITEM:CAPS"/>
+    <keyword type="function" name="rygel_image_item_new ()" link="RygelImageItem.html#rygel-image-item-new"/>
+    <keyword type="macro" name="RYGEL_IMAGE_ITEM_UPNP_CLASS" link="RygelImageItem.html#RYGEL-IMAGE-ITEM-UPNP-CLASS:CAPS"/>
+    <keyword type="struct" name="struct RygelImageItem" link="RygelImageItem.html#RygelImageItem-struct"/>
+    <keyword type="struct" name="struct RygelImageItemClass" link="RygelImageItem.html#RygelImageItemClass"/>
+    <keyword type="property" name="The “color-depth” property" link="RygelImageItem.html#RygelImageItem--color-depth"/>
+    <keyword type="property" name="The “height” property" link="RygelImageItem.html#RygelImageItem--height"/>
+    <keyword type="property" name="The “thumbnails” property" link="RygelImageItem.html#RygelImageItem--thumbnails"/>
+    <keyword type="property" name="The “width” property" link="RygelImageItem.html#RygelImageItem--width"/>
+    <keyword type="macro" name="RYGEL_TYPE_LOGICAL_EXPRESSION" link="RygelLogicalExpression.html#RYGEL-TYPE-LOGICAL-EXPRESSION:CAPS"/>
+    <keyword type="function" name="rygel_logical_expression_new ()" link="RygelLogicalExpression.html#rygel-logical-expression-new"/>
+    <keyword type="struct" name="struct RygelLogicalExpression" link="RygelLogicalExpression.html#RygelLogicalExpression-struct"/>
+    <keyword type="struct" name="struct RygelLogicalExpressionClass" link="RygelLogicalExpression.html#RygelLogicalExpressionClass"/>
+    <keyword type="enum" name="enum RygelLogicalOperator" link="RygelLogicalExpression.html#RygelLogicalOperator"/>
+    <keyword type="macro" name="RYGEL_TYPE_MEDIA_ART_STORE" link="RygelMediaArtStore.html#RYGEL-TYPE-MEDIA-ART-STORE:CAPS"/>
+    <keyword type="function" name="rygel_media_art_store_find_media_art ()" link="RygelMediaArtStore.html#rygel-media-art-store-find-media-art"/>
+    <keyword type="function" name="rygel_media_art_store_find_media_art_any ()" link="RygelMediaArtStore.html#rygel-media-art-store-find-media-art-any"/>
+    <keyword type="function" name="rygel_media_art_store_get_media_art_file ()" link="RygelMediaArtStore.html#rygel-media-art-store-get-media-art-file"/>
+    <keyword type="function" name="rygel_media_art_store_get_default ()" link="RygelMediaArtStore.html#rygel-media-art-store-get-default"/>
+    <keyword type="struct" name="struct RygelMediaArtStore" link="RygelMediaArtStore.html#RygelMediaArtStore-struct"/>
+    <keyword type="struct" name="struct RygelMediaArtStoreClass" link="RygelMediaArtStore.html#RygelMediaArtStoreClass"/>
+    <keyword type="macro" name="RYGEL_TYPE_MEDIA_CONTAINER" link="RygelMediaContainer.html#RYGEL-TYPE-MEDIA-CONTAINER:CAPS"/>
+    <keyword type="function" name="rygel_media_container_get_children ()" link="RygelMediaContainer.html#rygel-media-container-get-children"/>
+    <keyword type="function" name="rygel_media_container_get_children_finish ()" link="RygelMediaContainer.html#rygel-media-container-get-children-finish"/>
+    <keyword type="function" name="rygel_media_container_find_object ()" link="RygelMediaContainer.html#rygel-media-container-find-object"/>
+    <keyword type="function" name="rygel_media_container_find_object_finish ()" link="RygelMediaContainer.html#rygel-media-container-find-object-finish"/>
+    <keyword type="function" name="rygel_media_container_updated ()" link="RygelMediaContainer.html#rygel-media-container-updated"/>
+    <keyword type="function" name="rygel_media_container_get_child_count ()" link="RygelMediaContainer.html#rygel-media-container-get-child-count"/>
+    <keyword type="function" name="rygel_media_container_set_child_count ()" link="RygelMediaContainer.html#rygel-media-container-set-child-count"/>
+    <keyword type="function" name="rygel_media_container_get_empty_child_count ()" link="RygelMediaContainer.html#rygel-media-container-get-empty-child-count"/>
+    <keyword type="function" name="rygel_media_container_set_empty_child_count ()" link="RygelMediaContainer.html#rygel-media-container-set-empty-child-count"/>
+    <keyword type="function" name="rygel_media_container_get_all_child_count ()" link="RygelMediaContainer.html#rygel-media-container-get-all-child-count"/>
+    <keyword type="function" name="rygel_media_container_get_create_mode_enabled ()" link="RygelMediaContainer.html#rygel-media-container-get-create-mode-enabled"/>
+    <keyword type="function" name="rygel_media_container_set_create_mode_enabled ()" link="RygelMediaContainer.html#rygel-media-container-set-create-mode-enabled"/>
+    <keyword type="function" name="rygel_media_container_get_sort_criteria ()" link="RygelMediaContainer.html#rygel-media-container-get-sort-criteria"/>
+    <keyword type="function" name="rygel_media_container_set_sort_criteria ()" link="RygelMediaContainer.html#rygel-media-container-set-sort-criteria"/>
+    <keyword type="macro" name="RYGEL_MEDIA_CONTAINER_ANY" link="RygelMediaContainer.html#RYGEL-MEDIA-CONTAINER-ANY:CAPS"/>
+    <keyword type="macro" name="RYGEL_MEDIA_CONTAINER_UPNP_CLASS" link="RygelMediaContainer.html#RYGEL-MEDIA-CONTAINER-UPNP-CLASS:CAPS"/>
+    <keyword type="macro" name="RYGEL_MEDIA_CONTAINER_STORAGE_FOLDER" link="RygelMediaContainer.html#RYGEL-MEDIA-CONTAINER-STORAGE-FOLDER:CAPS"/>
+    <keyword type="macro" name="RYGEL_MEDIA_CONTAINER_MUSIC_ALBUM" link="RygelMediaContainer.html#RYGEL-MEDIA-CONTAINER-MUSIC-ALBUM:CAPS"/>
+    <keyword type="macro" name="RYGEL_MEDIA_CONTAINER_MUSIC_ARTIST" link="RygelMediaContainer.html#RYGEL-MEDIA-CONTAINER-MUSIC-ARTIST:CAPS"/>
+    <keyword type="macro" name="RYGEL_MEDIA_CONTAINER_MUSIC_GENRE" link="RygelMediaContainer.html#RYGEL-MEDIA-CONTAINER-MUSIC-GENRE:CAPS"/>
+    <keyword type="macro" name="RYGEL_MEDIA_CONTAINER_PLAYLIST" link="RygelMediaContainer.html#RYGEL-MEDIA-CONTAINER-PLAYLIST:CAPS"/>
+    <keyword type="macro" name="RYGEL_MEDIA_CONTAINER_ALBUM_SORT_CRITERIA" link="RygelMediaContainer.html#RYGEL-MEDIA-CONTAINER-ALBUM-SORT-CRITERIA:CAPS"/>
+    <keyword type="struct" name="struct RygelMediaContainer" link="RygelMediaContainer.html#RygelMediaContainer-struct"/>
+    <keyword type="struct" name="struct RygelMediaContainerClass" link="RygelMediaContainer.html#RygelMediaContainerClass"/>
+    <keyword type="enum" name="enum RygelObjectEventType" link="RygelMediaContainer.html#RygelObjectEventType"/>
+    <keyword type="property" name="The “all-child-count” property" link="RygelMediaContainer.html#RygelMediaContainer--all-child-count"/>
+    <keyword type="property" name="The “child-count” property" link="RygelMediaContainer.html#RygelMediaContainer--child-count"/>
+    <keyword type="property" name="The “create-mode-enabled” property" link="RygelMediaContainer.html#RygelMediaContainer--create-mode-enabled"/>
+    <keyword type="property" name="The “empty-child-count” property" link="RygelMediaContainer.html#RygelMediaContainer--empty-child-count"/>
+    <keyword type="property" name="The “ocm-flags” property" link="RygelMediaContainer.html#RygelMediaContainer--ocm-flags"/>
+    <keyword type="property" name="The “sort-criteria” property" link="RygelMediaContainer.html#RygelMediaContainer--sort-criteria"/>
+    <keyword type="signal" name="The “container-updated” signal" link="RygelMediaContainer.html#RygelMediaContainer-container-updated"/>
+    <keyword type="signal" name="The “sub-tree-updates-finished” signal" link="RygelMediaContainer.html#RygelMediaContainer-sub-tree-updates-finished"/>
+    <keyword type="macro" name="RYGEL_TYPE_MEDIA_ENGINE" link="RygelMediaEngine.html#RYGEL-TYPE-MEDIA-ENGINE:CAPS"/>
+    <keyword type="function" name="rygel_media_engine_get_dlna_profiles ()" link="RygelMediaEngine.html#rygel-media-engine-get-dlna-profiles"/>
+    <keyword type="function" name="rygel_media_engine_get_transcoders ()" link="RygelMediaEngine.html#rygel-media-engine-get-transcoders"/>
+    <keyword type="function" name="rygel_media_engine_create_data_source ()" link="RygelMediaEngine.html#rygel-media-engine-create-data-source"/>
+    <keyword type="function" name="rygel_media_engine_init ()" link="RygelMediaEngine.html#rygel-media-engine-init"/>
+    <keyword type="function" name="rygel_media_engine_get_default ()" link="RygelMediaEngine.html#rygel-media-engine-get-default"/>
+    <keyword type="struct" name="struct RygelMediaEngine" link="RygelMediaEngine.html#RygelMediaEngine-struct"/>
+    <keyword type="struct" name="struct RygelMediaEngineClass" link="RygelMediaEngine.html#RygelMediaEngineClass"/>
+    <keyword type="enum" name="enum RygelMediaEngineError" link="RygelMediaEngine.html#RygelMediaEngineError"/>
+    <keyword type="macro" name="RYGEL_TYPE_MEDIA_ITEM" link="RygelMediaItem.html#RYGEL-TYPE-MEDIA-ITEM:CAPS"/>
+    <keyword type="function" name="rygel_media_item_create_stream_source ()" link="RygelMediaItem.html#rygel-media-item-create-stream-source"/>
+    <keyword type="function" name="rygel_media_item_is_live_stream ()" link="RygelMediaItem.html#rygel-media-item-is-live-stream"/>
+    <keyword type="function" name="rygel_media_item_streamable ()" link="RygelMediaItem.html#rygel-media-item-streamable"/>
+    <keyword type="function" name="rygel_media_item_add_uri ()" link="RygelMediaItem.html#rygel-media-item-add-uri"/>
+    <keyword type="function" name="rygel_media_item_get_protocol_info ()" link="RygelMediaItem.html#rygel-media-item-get-protocol-info"/>
+    <keyword type="function" name="rygel_media_item_add_resources ()" link="RygelMediaItem.html#rygel-media-item-add-resources"/>
+    <keyword type="function" name="rygel_media_item_get_date ()" link="RygelMediaItem.html#rygel-media-item-get-date"/>
+    <keyword type="function" name="rygel_media_item_set_date ()" link="RygelMediaItem.html#rygel-media-item-set-date"/>
+    <keyword type="function" name="rygel_media_item_get_creator ()" link="RygelMediaItem.html#rygel-media-item-get-creator"/>
+    <keyword type="function" name="rygel_media_item_set_creator ()" link="RygelMediaItem.html#rygel-media-item-set-creator"/>
+    <keyword type="function" name="rygel_media_item_get_mime_type ()" link="RygelMediaItem.html#rygel-media-item-get-mime-type"/>
+    <keyword type="function" name="rygel_media_item_set_mime_type ()" link="RygelMediaItem.html#rygel-media-item-set-mime-type"/>
+    <keyword type="function" name="rygel_media_item_get_dlna_profile ()" link="RygelMediaItem.html#rygel-media-item-get-dlna-profile"/>
+    <keyword type="function" name="rygel_media_item_set_dlna_profile ()" link="RygelMediaItem.html#rygel-media-item-set-dlna-profile"/>
+    <keyword type="function" name="rygel_media_item_get_size ()" link="RygelMediaItem.html#rygel-media-item-get-size"/>
+    <keyword type="function" name="rygel_media_item_set_size ()" link="RygelMediaItem.html#rygel-media-item-set-size"/>
+    <keyword type="function" name="rygel_media_item_get_place_holder ()" link="RygelMediaItem.html#rygel-media-item-get-place-holder"/>
+    <keyword type="function" name="rygel_media_item_set_place_holder ()" link="RygelMediaItem.html#rygel-media-item-set-place-holder"/>
+    <keyword type="function" name="rygel_media_item_get_description ()" link="RygelMediaItem.html#rygel-media-item-get-description"/>
+    <keyword type="function" name="rygel_media_item_set_description ()" link="RygelMediaItem.html#rygel-media-item-set-description"/>
+    <keyword type="struct" name="struct RygelMediaItem" link="RygelMediaItem.html#RygelMediaItem-struct"/>
+    <keyword type="struct" name="struct RygelMediaItemClass" link="RygelMediaItem.html#RygelMediaItemClass"/>
+    <keyword type="property" name="The “creator” property" link="RygelMediaItem.html#RygelMediaItem--creator"/>
+    <keyword type="property" name="The “date” property" link="RygelMediaItem.html#RygelMediaItem--date"/>
+    <keyword type="property" name="The “description” property" link="RygelMediaItem.html#RygelMediaItem--description"/>
+    <keyword type="property" name="The “dlna-profile” property" link="RygelMediaItem.html#RygelMediaItem--dlna-profile"/>
+    <keyword type="property" name="The “mime-type” property" link="RygelMediaItem.html#RygelMediaItem--mime-type"/>
+    <keyword type="property" name="The “ocm-flags” property" link="RygelMediaItem.html#RygelMediaItem--ocm-flags"/>
+    <keyword type="property" name="The “place-holder” property" link="RygelMediaItem.html#RygelMediaItem--place-holder"/>
+    <keyword type="property" name="The “size” property" link="RygelMediaItem.html#RygelMediaItem--size"/>
+    <keyword type="macro" name="RYGEL_TYPE_MEDIA_OBJECT" link="RygelMediaObject.html#RYGEL-TYPE-MEDIA-OBJECT:CAPS"/>
+    <keyword type="function" name="rygel_media_object_get_writable ()" link="RygelMediaObject.html#rygel-media-object-get-writable"/>
+    <keyword type="function" name="rygel_media_object_get_writable_finish ()" link="RygelMediaObject.html#rygel-media-object-get-writable-finish"/>
+    <keyword type="function" name="rygel_media_object_get_writables ()" link="RygelMediaObject.html#rygel-media-object-get-writables"/>
+    <keyword type="function" name="rygel_media_object_get_writables_finish ()" link="RygelMediaObject.html#rygel-media-object-get-writables-finish"/>
+    <keyword type="function" name="rygel_media_object_serialize ()" link="RygelMediaObject.html#rygel-media-object-serialize"/>
+    <keyword type="function" name="rygel_media_object_compare_string_props ()" link="RygelMediaObject.html#rygel-media-object-compare-string-props"/>
+    <keyword type="function" name="rygel_media_object_compare_int_props ()" link="RygelMediaObject.html#rygel-media-object-compare-int-props"/>
+    <keyword type="function" name="rygel_media_object_get_id ()" link="RygelMediaObject.html#rygel-media-object-get-id"/>
+    <keyword type="function" name="rygel_media_object_set_id ()" link="RygelMediaObject.html#rygel-media-object-set-id"/>
+    <keyword type="function" name="rygel_media_object_get_ref_id ()" link="RygelMediaObject.html#rygel-media-object-get-ref-id"/>
+    <keyword type="function" name="rygel_media_object_set_ref_id ()" link="RygelMediaObject.html#rygel-media-object-set-ref-id"/>
+    <keyword type="function" name="rygel_media_object_get_upnp_class ()" link="RygelMediaObject.html#rygel-media-object-get-upnp-class"/>
+    <keyword type="function" name="rygel_media_object_set_upnp_class ()" link="RygelMediaObject.html#rygel-media-object-set-upnp-class"/>
+    <keyword type="function" name="rygel_media_object_get_modified ()" link="RygelMediaObject.html#rygel-media-object-get-modified"/>
+    <keyword type="function" name="rygel_media_object_set_modified ()" link="RygelMediaObject.html#rygel-media-object-set-modified"/>
+    <keyword type="function" name="rygel_media_object_get_object_update_id ()" link="RygelMediaObject.html#rygel-media-object-get-object-update-id"/>
+    <keyword type="function" name="rygel_media_object_set_object_update_id ()" link="RygelMediaObject.html#rygel-media-object-set-object-update-id"/>
+    <keyword type="function" name="rygel_media_object_get_parent ()" link="RygelMediaObject.html#rygel-media-object-get-parent"/>
+    <keyword type="function" name="rygel_media_object_set_parent ()" link="RygelMediaObject.html#rygel-media-object-set-parent"/>
+    <keyword type="function" name="rygel_media_object_get_parent_ref ()" link="RygelMediaObject.html#rygel-media-object-get-parent-ref"/>
+    <keyword type="function" name="rygel_media_object_set_parent_ref ()" link="RygelMediaObject.html#rygel-media-object-set-parent-ref"/>
+    <keyword type="function" name="rygel_media_object_get_title ()" link="RygelMediaObject.html#rygel-media-object-get-title"/>
+    <keyword type="function" name="rygel_media_object_set_title ()" link="RygelMediaObject.html#rygel-media-object-set-title"/>
+    <keyword type="function" name="rygel_media_object_get_ocm_flags ()" link="RygelMediaObject.html#rygel-media-object-get-ocm-flags"/>
+    <keyword type="struct" name="struct RygelMediaObject" link="RygelMediaObject.html#RygelMediaObject-struct"/>
+    <keyword type="struct" name="struct RygelMediaObjectClass" link="RygelMediaObject.html#RygelMediaObjectClass"/>
+    <keyword type="property" name="The “id” property" link="RygelMediaObject.html#RygelMediaObject--id"/>
+    <keyword type="property" name="The “modified” property" link="RygelMediaObject.html#RygelMediaObject--modified"/>
+    <keyword type="property" name="The “object-update-id” property" link="RygelMediaObject.html#RygelMediaObject--object-update-id"/>
+    <keyword type="property" name="The “ocm-flags” property" link="RygelMediaObject.html#RygelMediaObject--ocm-flags"/>
+    <keyword type="property" name="The “parent” property" link="RygelMediaObject.html#RygelMediaObject--parent"/>
+    <keyword type="property" name="The “parent-ref” property" link="RygelMediaObject.html#RygelMediaObject--parent-ref"/>
+    <keyword type="property" name="The “ref-id” property" link="RygelMediaObject.html#RygelMediaObject--ref-id"/>
+    <keyword type="property" name="The “restricted” property" link="RygelMediaObject.html#RygelMediaObject--restricted"/>
+    <keyword type="property" name="The “title” property" link="RygelMediaObject.html#RygelMediaObject--title"/>
+    <keyword type="property" name="The “upnp-class” property" link="RygelMediaObject.html#RygelMediaObject--upnp-class"/>
+    <keyword type="macro" name="RYGEL_TYPE_MEDIA_OBJECTS" link="RygelMediaObjects.html#RYGEL-TYPE-MEDIA-OBJECTS:CAPS"/>
+    <keyword type="function" name="rygel_media_objects_sort_by_criteria ()" link="RygelMediaObjects.html#rygel-media-objects-sort-by-criteria"/>
+    <keyword type="function" name="rygel_media_objects_new ()" link="RygelMediaObjects.html#rygel-media-objects-new"/>
+    <keyword type="macro" name="RYGEL_MEDIA_OBJECTS_SORT_CAPS" link="RygelMediaObjects.html#RYGEL-MEDIA-OBJECTS-SORT-CAPS"/>
+    <keyword type="struct" name="struct RygelMediaObjects" link="RygelMediaObjects.html#RygelMediaObjects-struct"/>
+    <keyword type="struct" name="struct RygelMediaObjectsClass" link="RygelMediaObjects.html#RygelMediaObjectsClass"/>
+    <keyword type="macro" name="RYGEL_TYPE_MEDIA_SERVER" link="RygelMediaServer.html#RYGEL-TYPE-MEDIA-SERVER:CAPS"/>
+    <keyword type="function" name="rygel_media_server_new ()" link="RygelMediaServer.html#rygel-media-server-new"/>
+    <keyword type="struct" name="struct RygelMediaServer" link="RygelMediaServer.html#RygelMediaServer-struct"/>
+    <keyword type="struct" name="struct RygelMediaServerClass" link="RygelMediaServer.html#RygelMediaServerClass"/>
+    <keyword type="property" name="The “root-container” property" link="RygelMediaServer.html#RygelMediaServer--root-container"/>
+    <keyword type="macro" name="RYGEL_TYPE_MEDIA_SERVER_PLUGIN" link="RygelMediaServerPlugin.html#RYGEL-TYPE-MEDIA-SERVER-PLUGIN:CAPS"/>
+    <keyword type="function" name="rygel_media_server_plugin_get_root_container ()" link="RygelMediaServerPlugin.html#rygel-media-server-plugin-get-root-container"/>
+    <keyword type="function" name="rygel_media_server_plugin_get_search_caps ()" link="RygelMediaServerPlugin.html#rygel-media-server-plugin-get-search-caps"/>
+    <keyword type="function" name="rygel_media_server_plugin_get_upload_profiles ()" link="RygelMediaServerPlugin.html#rygel-media-server-plugin-get-upload-profiles"/>
+    <keyword type="function" name="rygel_media_server_plugin_set_upload_profiles ()" link="RygelMediaServerPlugin.html#rygel-media-server-plugin-set-upload-profiles"/>
+    <keyword type="function" name="rygel_media_server_plugin_get_supported_profiles ()" link="RygelMediaServerPlugin.html#rygel-media-server-plugin-get-supported-profiles"/>
+    <keyword type="function" name="rygel_media_server_plugin_set_supported_profiles ()" link="RygelMediaServerPlugin.html#rygel-media-server-plugin-set-supported-profiles"/>
+    <keyword type="struct" name="struct RygelMediaServerPlugin" link="RygelMediaServerPlugin.html#RygelMediaServerPlugin-struct"/>
+    <keyword type="struct" name="struct RygelMediaServerPluginClass" link="RygelMediaServerPlugin.html#RygelMediaServerPluginClass"/>
+    <keyword type="property" name="The “root-container” property" link="RygelMediaServerPlugin.html#RygelMediaServerPlugin--root-container"/>
+    <keyword type="property" name="The “search-caps” property" link="RygelMediaServerPlugin.html#RygelMediaServerPlugin--search-caps"/>
+    <keyword type="property" name="The “supported-profiles” property" link="RygelMediaServerPlugin.html#RygelMediaServerPlugin--supported-profiles"/>
+    <keyword type="property" name="The “upload-profiles” property" link="RygelMediaServerPlugin.html#RygelMediaServerPlugin--upload-profiles"/>
+    <keyword type="macro" name="RYGEL_TYPE_MUSIC_ITEM" link="RygelMusicItem.html#RYGEL-TYPE-MUSIC-ITEM:CAPS"/>
+    <keyword type="function" name="rygel_music_item_lookup_album_art ()" link="RygelMusicItem.html#rygel-music-item-lookup-album-art"/>
+    <keyword type="function" name="rygel_music_item_new ()" link="RygelMusicItem.html#rygel-music-item-new"/>
+    <keyword type="function" name="rygel_music_item_get_artist ()" link="RygelMusicItem.html#rygel-music-item-get-artist"/>
+    <keyword type="function" name="rygel_music_item_set_artist ()" link="RygelMusicItem.html#rygel-music-item-set-artist"/>
+    <keyword type="function" name="rygel_music_item_get_album ()" link="RygelMusicItem.html#rygel-music-item-get-album"/>
+    <keyword type="function" name="rygel_music_item_set_album ()" link="RygelMusicItem.html#rygel-music-item-set-album"/>
+    <keyword type="function" name="rygel_music_item_get_genre ()" link="RygelMusicItem.html#rygel-music-item-get-genre"/>
+    <keyword type="function" name="rygel_music_item_set_genre ()" link="RygelMusicItem.html#rygel-music-item-set-genre"/>
+    <keyword type="function" name="rygel_music_item_get_track_number ()" link="RygelMusicItem.html#rygel-music-item-get-track-number"/>
+    <keyword type="function" name="rygel_music_item_set_track_number ()" link="RygelMusicItem.html#rygel-music-item-set-track-number"/>
+    <keyword type="function" name="rygel_music_item_get_album_art ()" link="RygelMusicItem.html#rygel-music-item-get-album-art"/>
+    <keyword type="function" name="rygel_music_item_set_album_art ()" link="RygelMusicItem.html#rygel-music-item-set-album-art"/>
+    <keyword type="macro" name="RYGEL_MUSIC_ITEM_UPNP_CLASS" link="RygelMusicItem.html#RYGEL-MUSIC-ITEM-UPNP-CLASS:CAPS"/>
+    <keyword type="struct" name="struct RygelMusicItem" link="RygelMusicItem.html#RygelMusicItem-struct"/>
+    <keyword type="struct" name="struct RygelMusicItemClass" link="RygelMusicItem.html#RygelMusicItemClass"/>
+    <keyword type="property" name="The “album” property" link="RygelMusicItem.html#RygelMusicItem--album"/>
+    <keyword type="property" name="The “album-art” property" link="RygelMusicItem.html#RygelMusicItem--album-art"/>
+    <keyword type="property" name="The “artist” property" link="RygelMusicItem.html#RygelMusicItem--artist"/>
+    <keyword type="property" name="The “genre” property" link="RygelMusicItem.html#RygelMusicItem--genre"/>
+    <keyword type="property" name="The “track-number” property" link="RygelMusicItem.html#RygelMusicItem--track-number"/>
+    <keyword type="macro" name="RYGEL_TYPE_PHOTO_ITEM" link="RygelPhotoItem.html#RYGEL-TYPE-PHOTO-ITEM:CAPS"/>
+    <keyword type="function" name="rygel_photo_item_new ()" link="RygelPhotoItem.html#rygel-photo-item-new"/>
+    <keyword type="macro" name="RYGEL_PHOTO_ITEM_UPNP_CLASS" link="RygelPhotoItem.html#RYGEL-PHOTO-ITEM-UPNP-CLASS:CAPS"/>
+    <keyword type="struct" name="struct RygelPhotoItem" link="RygelPhotoItem.html#RygelPhotoItem-struct"/>
+    <keyword type="struct" name="struct RygelPhotoItemClass" link="RygelPhotoItem.html#RygelPhotoItemClass"/>
+    <keyword type="macro" name="RYGEL_TYPE_RELATIONAL_EXPRESSION" link="RygelRelationalExpression.html#RYGEL-TYPE-RELATIONAL-EXPRESSION:CAPS"/>
+    <keyword type="function" name="rygel_relational_expression_compare_string ()" link="RygelRelationalExpression.html#rygel-relational-expression-compare-string"/>
+    <keyword type="function" name="rygel_relational_expression_compare_int ()" link="RygelRelationalExpression.html#rygel-relational-expression-compare-int"/>
+    <keyword type="function" name="rygel_relational_expression_compare_uint ()" link="RygelRelationalExpression.html#rygel-relational-expression-compare-uint"/>
+    <keyword type="function" name="rygel_relational_expression_new ()" link="RygelRelationalExpression.html#rygel-relational-expression-new"/>
+    <keyword type="struct" name="struct RygelRelationalExpression" link="RygelRelationalExpression.html#RygelRelationalExpression-struct"/>
+    <keyword type="struct" name="struct RygelRelationalExpressionClass" link="RygelRelationalExpression.html#RygelRelationalExpressionClass"/>
+    <keyword type="macro" name="RYGEL_TYPE_SEARCH_EXPRESSION" link="RygelSearchExpression.html#RYGEL-TYPE-SEARCH-EXPRESSION:CAPS"/>
+    <keyword type="function" name="rygel_search_expression_satisfied_by ()" link="RygelSearchExpression.html#rygel-search-expression-satisfied-by"/>
+    <keyword type="function" name="rygel_search_expression_to_string ()" link="RygelSearchExpression.html#rygel-search-expression-to-string"/>
+    <keyword type="function" name="rygel_search_expression_ref ()" link="RygelSearchExpression.html#rygel-search-expression-ref"/>
+    <keyword type="function" name="rygel_search_expression_unref ()" link="RygelSearchExpression.html#rygel-search-expression-unref"/>
+    <keyword type="function" name="rygel_param_spec_search_expression ()" link="RygelSearchExpression.html#rygel-param-spec-search-expression"/>
+    <keyword type="function" name="rygel_value_set_search_expression ()" link="RygelSearchExpression.html#rygel-value-set-search-expression"/>
+    <keyword type="function" name="rygel_value_get_search_expression ()" link="RygelSearchExpression.html#rygel-value-get-search-expression"/>
+    <keyword type="function" name="rygel_value_take_search_expression ()" link="RygelSearchExpression.html#rygel-value-take-search-expression"/>
+    <keyword type="struct" name="struct RygelSearchExpression" link="RygelSearchExpression.html#RygelSearchExpression-struct"/>
+    <keyword type="struct" name="struct RygelSearchExpressionClass" link="RygelSearchExpression.html#RygelSearchExpressionClass"/>
+    <keyword type="function" name="rygel_searchable_container_search ()" link="RygelSearchableContainer.html#rygel-searchable-container-search"/>
+    <keyword type="function" name="rygel_searchable_container_search_finish ()" link="RygelSearchableContainer.html#rygel-searchable-container-search-finish"/>
+    <keyword type="function" name="rygel_searchable_container_simple_search ()" link="RygelSearchableContainer.html#rygel-searchable-container-simple-search"/>
+    <keyword type="function" name="rygel_searchable_container_simple_search_finish ()" link="RygelSearchableContainer.html#rygel-searchable-container-simple-search-finish"/>
+    <keyword type="function" name="rygel_searchable_container_find_object ()" link="RygelSearchableContainer.html#rygel-searchable-container-find-object"/>
+    <keyword type="function" name="rygel_searchable_container_find_object_finish ()" link="RygelSearchableContainer.html#rygel-searchable-container-find-object-finish"/>
+    <keyword type="function" name="rygel_searchable_container_get_search_classes ()" link="RygelSearchableContainer.html#rygel-searchable-container-get-search-classes"/>
+    <keyword type="function" name="rygel_searchable_container_set_search_classes ()" link="RygelSearchableContainer.html#rygel-searchable-container-set-search-classes"/>
+    <keyword type="struct" name="RygelSearchableContainer" link="RygelSearchableContainer.html#RygelSearchableContainer-struct"/>
+    <keyword type="struct" name="struct RygelSearchableContainerIface" link="RygelSearchableContainer.html#RygelSearchableContainerIface"/>
+    <keyword type="property" name="The “search-classes” property" link="RygelSearchableContainer.html#RygelSearchableContainer--search-classes"/>
+    <keyword type="macro" name="RYGEL_TYPE_SIMPLE_CONTAINER" link="RygelSimpleContainer.html#RYGEL-TYPE-SIMPLE-CONTAINER:CAPS"/>
+    <keyword type="function" name="rygel_simple_container_add_child_item ()" link="RygelSimpleContainer.html#rygel-simple-container-add-child-item"/>
+    <keyword type="function" name="rygel_simple_container_get_all_children ()" link="RygelSimpleContainer.html#rygel-simple-container-get-all-children"/>
+    <keyword type="function" name="rygel_simple_container_add_child_container ()" link="RygelSimpleContainer.html#rygel-simple-container-add-child-container"/>
+    <keyword type="function" name="rygel_simple_container_remove_child ()" link="RygelSimpleContainer.html#rygel-simple-container-remove-child"/>
+    <keyword type="function" name="rygel_simple_container_clear ()" link="RygelSimpleContainer.html#rygel-simple-container-clear"/>
+    <keyword type="function" name="rygel_simple_container_is_child_id_unique ()" link="RygelSimpleContainer.html#rygel-simple-container-is-child-id-unique"/>
+    <keyword type="function" name="rygel_simple_container_new ()" link="RygelSimpleContainer.html#rygel-simple-container-new"/>
+    <keyword type="function" name="rygel_simple_container_new_root ()" link="RygelSimpleContainer.html#rygel-simple-container-new-root"/>
+    <keyword type="struct" name="struct RygelSimpleContainer" link="RygelSimpleContainer.html#RygelSimpleContainer-struct"/>
+    <keyword type="struct" name="struct RygelSimpleContainerClass" link="RygelSimpleContainer.html#RygelSimpleContainerClass"/>
+    <keyword type="property" name="The “search-classes” property" link="RygelSimpleContainer.html#RygelSimpleContainer--search-classes"/>
+    <keyword type="macro" name="RYGEL_TYPE_SUBTITLE" link="RygelSubtitle.html#RYGEL-TYPE-SUBTITLE:CAPS"/>
+    <keyword type="function" name="rygel_subtitle_new ()" link="RygelSubtitle.html#rygel-subtitle-new"/>
+    <keyword type="function" name="rygel_subtitle_ref ()" link="RygelSubtitle.html#rygel-subtitle-ref"/>
+    <keyword type="function" name="rygel_subtitle_unref ()" link="RygelSubtitle.html#rygel-subtitle-unref"/>
+    <keyword type="function" name="rygel_param_spec_subtitle ()" link="RygelSubtitle.html#rygel-param-spec-subtitle"/>
+    <keyword type="function" name="rygel_value_set_subtitle ()" link="RygelSubtitle.html#rygel-value-set-subtitle"/>
+    <keyword type="function" name="rygel_value_get_subtitle ()" link="RygelSubtitle.html#rygel-value-get-subtitle"/>
+    <keyword type="function" name="rygel_value_take_subtitle ()" link="RygelSubtitle.html#rygel-value-take-subtitle"/>
+    <keyword type="struct" name="struct RygelSubtitle" link="RygelSubtitle.html#RygelSubtitle-struct"/>
+    <keyword type="struct" name="struct RygelSubtitleClass" link="RygelSubtitle.html#RygelSubtitleClass"/>
+    <keyword type="macro" name="RYGEL_TYPE_THUMBNAIL" link="RygelThumbnail.html#RYGEL-TYPE-THUMBNAIL:CAPS"/>
+    <keyword type="function" name="rygel_thumbnail_new ()" link="RygelThumbnail.html#rygel-thumbnail-new"/>
+    <keyword type="struct" name="struct RygelThumbnail" link="RygelThumbnail.html#RygelThumbnail-struct"/>
+    <keyword type="struct" name="struct RygelThumbnailClass" link="RygelThumbnail.html#RygelThumbnailClass"/>
+    <keyword type="function" name="rygel_trackable_container_clear ()" link="RygelTrackableContainer.html#rygel-trackable-container-clear"/>
+    <keyword type="function" name="rygel_trackable_container_clear_finish ()" link="RygelTrackableContainer.html#rygel-trackable-container-clear-finish"/>
+    <keyword type="function" name="rygel_trackable_container_add_child ()" link="RygelTrackableContainer.html#rygel-trackable-container-add-child"/>
+    <keyword type="function" name="rygel_trackable_container_add_child_finish ()" link="RygelTrackableContainer.html#rygel-trackable-container-add-child-finish"/>
+    <keyword type="function" name="rygel_trackable_container_add_child_tracked ()" link="RygelTrackableContainer.html#rygel-trackable-container-add-child-tracked"/>
+    <keyword type="function" name="rygel_trackable_container_add_child_tracked_finish ()" link="RygelTrackableContainer.html#rygel-trackable-container-add-child-tracked-finish"/>
+    <keyword type="function" name="rygel_trackable_container_remove_child ()" link="RygelTrackableContainer.html#rygel-trackable-container-remove-child"/>
+    <keyword type="function" name="rygel_trackable_container_remove_child_finish ()" link="RygelTrackableContainer.html#rygel-trackable-container-remove-child-finish"/>
+    <keyword type="function" name="rygel_trackable_container_remove_child_tracked ()" link="RygelTrackableContainer.html#rygel-trackable-container-remove-child-tracked"/>
+    <keyword type="function" name="rygel_trackable_container_remove_child_tracked_finish ()" link="RygelTrackableContainer.html#rygel-trackable-container-remove-child-tracked-finish"/>
+    <keyword type="function" name="rygel_trackable_container_get_service_reset_token ()" link="RygelTrackableContainer.html#rygel-trackable-container-get-service-reset-token"/>
+    <keyword type="function" name="rygel_trackable_container_set_service_reset_token ()" link="RygelTrackableContainer.html#rygel-trackable-container-set-service-reset-token"/>
+    <keyword type="function" name="rygel_trackable_container_get_system_update_id ()" link="RygelTrackableContainer.html#rygel-trackable-container-get-system-update-id"/>
+    <keyword type="struct" name="RygelTrackableContainer" link="RygelTrackableContainer.html#RygelTrackableContainer-struct"/>
+    <keyword type="struct" name="struct RygelTrackableContainerIface" link="RygelTrackableContainer.html#RygelTrackableContainerIface"/>
+    <keyword type="signal" name="The “child-added” signal" link="RygelTrackableContainer.html#RygelTrackableContainer-child-added"/>
+    <keyword type="signal" name="The “child-removed” signal" link="RygelTrackableContainer.html#RygelTrackableContainer-child-removed"/>
+    <keyword type="macro" name="RYGEL_TYPE_TRANSCODE_MANAGER" link="RygelTranscodeManager.html#RYGEL-TYPE-TRANSCODE-MANAGER:CAPS"/>
+    <keyword type="function" name="rygel_transcode_manager_create_uri_for_item ()" link="RygelTranscodeManager.html#rygel-transcode-manager-create-uri-for-item"/>
+    <keyword type="function" name="rygel_transcode_manager_add_resources ()" link="RygelTranscodeManager.html#rygel-transcode-manager-add-resources"/>
+    <keyword type="function" name="rygel_transcode_manager_get_transcoder ()" link="RygelTranscodeManager.html#rygel-transcode-manager-get-transcoder"/>
+    <keyword type="struct" name="struct RygelTranscodeManager" link="RygelTranscodeManager.html#RygelTranscodeManager-struct"/>
+    <keyword type="struct" name="struct RygelTranscodeManagerClass" link="RygelTranscodeManager.html#RygelTranscodeManagerClass"/>
+    <keyword type="macro" name="RYGEL_TYPE_TRANSCODER" link="RygelTranscoder.html#RYGEL-TYPE-TRANSCODER:CAPS"/>
+    <keyword type="function" name="rygel_transcoder_create_source ()" link="RygelTranscoder.html#rygel-transcoder-create-source"/>
+    <keyword type="function" name="rygel_transcoder_add_resource ()" link="RygelTranscoder.html#rygel-transcoder-add-resource"/>
+    <keyword type="function" name="rygel_transcoder_can_handle ()" link="RygelTranscoder.html#rygel-transcoder-can-handle"/>
+    <keyword type="function" name="rygel_transcoder_get_distance ()" link="RygelTranscoder.html#rygel-transcoder-get-distance"/>
+    <keyword type="function" name="rygel_transcoder_mime_type_is_a ()" link="RygelTranscoder.html#rygel-transcoder-mime-type-is-a"/>
+    <keyword type="function" name="rygel_transcoder_get_mime_type ()" link="RygelTranscoder.html#rygel-transcoder-get-mime-type"/>
+    <keyword type="function" name="rygel_transcoder_get_dlna_profile ()" link="RygelTranscoder.html#rygel-transcoder-get-dlna-profile"/>
+    <keyword type="function" name="rygel_transcoder_get_extension ()" link="RygelTranscoder.html#rygel-transcoder-get-extension"/>
+    <keyword type="struct" name="struct RygelTranscoder" link="RygelTranscoder.html#RygelTranscoder-struct"/>
+    <keyword type="struct" name="struct RygelTranscoderClass" link="RygelTranscoder.html#RygelTranscoderClass"/>
+    <keyword type="property" name="The “dlna-profile” property" link="RygelTranscoder.html#RygelTranscoder--dlna-profile"/>
+    <keyword type="property" name="The “extension” property" link="RygelTranscoder.html#RygelTranscoder--extension"/>
+    <keyword type="property" name="The “mime-type” property" link="RygelTranscoder.html#RygelTranscoder--mime-type"/>
+    <keyword type="macro" name="RYGEL_TYPE_VIDEO_ITEM" link="RygelVideoItem.html#RYGEL-TYPE-VIDEO-ITEM:CAPS"/>
+    <keyword type="function" name="rygel_video_item_new ()" link="RygelVideoItem.html#rygel-video-item-new"/>
+    <keyword type="function" name="rygel_video_item_get_author ()" link="RygelVideoItem.html#rygel-video-item-get-author"/>
+    <keyword type="function" name="rygel_video_item_set_author ()" link="RygelVideoItem.html#rygel-video-item-set-author"/>
+    <keyword type="macro" name="RYGEL_VIDEO_ITEM_UPNP_CLASS" link="RygelVideoItem.html#RYGEL-VIDEO-ITEM-UPNP-CLASS:CAPS"/>
+    <keyword type="struct" name="struct RygelVideoItem" link="RygelVideoItem.html#RygelVideoItem-struct"/>
+    <keyword type="struct" name="struct RygelVideoItemClass" link="RygelVideoItem.html#RygelVideoItemClass"/>
+    <keyword type="property" name="The “author” property" link="RygelVideoItem.html#RygelVideoItem--author"/>
+    <keyword type="property" name="The “color-depth” property" link="RygelVideoItem.html#RygelVideoItem--color-depth"/>
+    <keyword type="property" name="The “height” property" link="RygelVideoItem.html#RygelVideoItem--height"/>
+    <keyword type="property" name="The “thumbnails” property" link="RygelVideoItem.html#RygelVideoItem--thumbnails"/>
+    <keyword type="property" name="The “width” property" link="RygelVideoItem.html#RygelVideoItem--width"/>
+    <keyword type="function" name="rygel_visual_item_get_width ()" link="RygelVisualItem.html#rygel-visual-item-get-width"/>
+    <keyword type="function" name="rygel_visual_item_set_width ()" link="RygelVisualItem.html#rygel-visual-item-set-width"/>
+    <keyword type="function" name="rygel_visual_item_get_height ()" link="RygelVisualItem.html#rygel-visual-item-get-height"/>
+    <keyword type="function" name="rygel_visual_item_set_height ()" link="RygelVisualItem.html#rygel-visual-item-set-height"/>
+    <keyword type="function" name="rygel_visual_item_get_color_depth ()" link="RygelVisualItem.html#rygel-visual-item-get-color-depth"/>
+    <keyword type="function" name="rygel_visual_item_set_color_depth ()" link="RygelVisualItem.html#rygel-visual-item-set-color-depth"/>
+    <keyword type="function" name="rygel_visual_item_get_thumbnails ()" link="RygelVisualItem.html#rygel-visual-item-get-thumbnails"/>
+    <keyword type="function" name="rygel_visual_item_set_thumbnails ()" link="RygelVisualItem.html#rygel-visual-item-set-thumbnails"/>
+    <keyword type="struct" name="RygelVisualItem" link="RygelVisualItem.html#RygelVisualItem-struct"/>
+    <keyword type="struct" name="struct RygelVisualItemIface" link="RygelVisualItem.html#RygelVisualItemIface"/>
+    <keyword type="property" name="The “color-depth” property" link="RygelVisualItem.html#RygelVisualItem--color-depth"/>
+    <keyword type="property" name="The “height” property" link="RygelVisualItem.html#RygelVisualItem--height"/>
+    <keyword type="property" name="The “thumbnails” property" link="RygelVisualItem.html#RygelVisualItem--thumbnails"/>
+    <keyword type="property" name="The “width” property" link="RygelVisualItem.html#RygelVisualItem--width"/>
+    <keyword type="function" name="rygel_writable_container_can_create ()" link="RygelWritableContainer.html#rygel-writable-container-can-create"/>
+    <keyword type="function" name="rygel_writable_container_add_item ()" link="RygelWritableContainer.html#rygel-writable-container-add-item"/>
+    <keyword type="function" name="rygel_writable_container_add_item_finish ()" link="RygelWritableContainer.html#rygel-writable-container-add-item-finish"/>
+    <keyword type="function" name="rygel_writable_container_add_container ()" link="RygelWritableContainer.html#rygel-writable-container-add-container"/>
+    <keyword type="function" name="rygel_writable_container_add_container_finish ()" link="RygelWritableContainer.html#rygel-writable-container-add-container-finish"/>
+    <keyword type="function" name="rygel_writable_container_add_reference ()" link="RygelWritableContainer.html#rygel-writable-container-add-reference"/>
+    <keyword type="function" name="rygel_writable_container_add_reference_finish ()" link="RygelWritableContainer.html#rygel-writable-container-add-reference-finish"/>
+    <keyword type="function" name="rygel_writable_container_remove_item ()" link="RygelWritableContainer.html#rygel-writable-container-remove-item"/>
+    <keyword type="function" name="rygel_writable_container_remove_item_finish ()" link="RygelWritableContainer.html#rygel-writable-container-remove-item-finish"/>
+    <keyword type="function" name="rygel_writable_container_remove_container ()" link="RygelWritableContainer.html#rygel-writable-container-remove-container"/>
+    <keyword type="function" name="rygel_writable_container_remove_container_finish ()" link="RygelWritableContainer.html#rygel-writable-container-remove-container-finish"/>
+    <keyword type="function" name="rygel_writable_container_get_create_classes ()" link="RygelWritableContainer.html#rygel-writable-container-get-create-classes"/>
+    <keyword type="function" name="rygel_writable_container_set_create_classes ()" link="RygelWritableContainer.html#rygel-writable-container-set-create-classes"/>
+    <keyword type="enum" name="enum RygelWritableContainerError" link="RygelWritableContainer.html#RygelWritableContainerError"/>
+    <keyword type="macro" name="RYGEL_WRITABLE_CONTAINER_WRITABLE_SCHEME" link="RygelWritableContainer.html#RYGEL-WRITABLE-CONTAINER-WRITABLE-SCHEME:CAPS"/>
+    <keyword type="struct" name="RygelWritableContainer" link="RygelWritableContainer.html#RygelWritableContainer-struct"/>
+    <keyword type="struct" name="struct RygelWritableContainerIface" link="RygelWritableContainer.html#RygelWritableContainerIface"/>
+    <keyword type="property" name="The “create-classes” property" link="RygelWritableContainer.html#RygelWritableContainer--create-classes"/>
+  </functions>
+</book>

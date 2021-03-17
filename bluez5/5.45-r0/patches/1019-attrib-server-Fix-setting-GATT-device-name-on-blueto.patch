@@ -1,0 +1,30 @@
+From 13fa77343957920a0a211aa8b8fe04fe398bdfdc Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Wed, 5 Jul 2017 14:06:41 +0200
+Subject: [PATCH] attrib-server: Fix setting GATT device name on bluetoothd
+ restart
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ src/adapter.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/src/adapter.c b/src/adapter.c
+index d6d0e5e..c3acb8c 100644
+--- a/src/adapter.c
++++ b/src/adapter.c
+@@ -7680,6 +7680,11 @@ static int adapter_register(struct btd_adapter *adapter)
+ 				main_opts.did_version, main_opts.did_source);
+ 	}
+ 
++	if (adapter->stored_alias)
++		attrib_gap_set(adapter, GATT_CHARAC_DEVICE_NAME,
++					(const uint8_t *) adapter->stored_alias,
++						strlen(adapter->stored_alias));
++
+ 	DBG("Adapter %s registered", adapter->path);
+ 
+ 	return 0;
+-- 
+2.7.4
+

@@ -1,0 +1,29 @@
+From 391bd2ed39e3e4290f94178c566ea24338fb723f Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@gmail.com>
+Date: Tue, 10 Jun 2014 15:43:23 +0200
+Subject: [PATCH] common:image-fit: Return error when hash cannot be verified
+
+Signed-off-by: Marek Belisko <marek.belisko@gmail.com>
+---
+ common/image-fit.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/common/image-fit.c b/common/image-fit.c
+index 8ba73a6..3378a5c 100644
+--- a/common/image-fit.c
++++ b/common/image-fit.c
+@@ -998,8 +998,10 @@ int fit_image_verify(const void *fit, int image_noffset)
+ 					strlen(FIT_SIG_NODENAME))) {
+ 			ret = fit_image_check_sig(fit, noffset, data,
+ 							size, -1, &err_msg);
+-			if (ret)
++			if (ret) {
+ 				puts("- ");
++				goto error;
++			}
+ 			else
+ 				puts("+ ");
+ 		}
+-- 
+2.7.4
+

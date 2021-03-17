@@ -1,0 +1,45 @@
+From: Andriy Danylovskyy <andriy.danylovskyy@streamunlimited.com>
+Date: Mon, 08 Apr 2019 13:55:20 +0200
+Subject: [PATCH] format security: always call printf with a format
+
+Print strings with %s format. This follows up the GCC8 format-security warning.
+
+Signed-off-by: Andriy Danylovskyy <andriy.danylovskyy@streamunlimited.com>
+--- a/src/filterkit.c	2019-04-08 13:30:35.325242179 +0200
++++ b/src/filterkit.c	2019-04-08 13:48:07.697343845 +0200
+@@ -559,7 +559,7 @@ BOOL Query(char *prompt, BOOL deflt, cha
+       sprintf(s,"\n%s%s", prompt, (*help) ? " (Type ? for help)" : "");
+       getstr(s,(deflt)?"yes":"no",s);
+       if (*s=='?' && *help)
+-         printf(help);
++         printf("%s", help);
+       if (*s=='Y' || *s=='y')
+          return(TRUE);
+       if (*s=='N' || *s=='n')
+@@ -577,7 +577,7 @@ char *GetString(char *prompt, char *defl
+       sprintf(s,"\n%s%s",prompt, (*help) ? " (Type ? for Help)" : "");
+       getstr(s,deflt,s);
+       if (*s=='?' && *help)
+-         printf(help);
++         printf("%s", help);
+       else
+          return(s);
+       }
+@@ -595,7 +595,7 @@ double GetDouble(char *title, double def
+       sprintf(sdeflt,"%g",deflt);
+       getstr(s,sdeflt,s);
+       if (*s=='?' && *help)
+-         printf(help);
++         printf("%s", help);
+       else
+          {
+          if (!sscanf(s,"%lf",&newval))
+@@ -617,7 +617,7 @@ unsigned short GetUShort(char *title, un
+       sprintf(sdeflt,"%d",deflt);
+       getstr(s,sdeflt,s);
+       if (*s=='?' && *help)
+-         printf(help);
++         printf("%s", help);
+       else
+          {
+          if (!sscanf(s,"%d",&newval))

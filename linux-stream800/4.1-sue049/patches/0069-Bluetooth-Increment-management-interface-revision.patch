@@ -1,0 +1,30 @@
+From d40a993bb7688ad8d6702ebe1482635f0c902dbe Mon Sep 17 00:00:00 2001
+From: Marcel Holtmann <marcel@holtmann.org>
+Date: Thu, 18 Jun 2015 18:58:03 +0200
+Subject: [PATCH] Bluetooth: Increment management interface revision
+
+This patch increments the management interface revision due to
+introduction of new multi-advertising feature and various bug fixes.
+
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Signed-off-by: Johan Hedberg <johan.hedberg@intel.com>
+---
+ net/bluetooth/mgmt.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
+index 2b46931..33baf05 100644
+--- a/net/bluetooth/mgmt.c
++++ b/net/bluetooth/mgmt.c
+@@ -38,7 +38,7 @@
+ #include "mgmt_util.h"
+ 
+ #define MGMT_VERSION	1
+-#define MGMT_REVISION	9
++#define MGMT_REVISION	10
+ 
+ static const u16 mgmt_commands[] = {
+ 	MGMT_OP_READ_INDEX_LIST,
+-- 
+2.7.4
+

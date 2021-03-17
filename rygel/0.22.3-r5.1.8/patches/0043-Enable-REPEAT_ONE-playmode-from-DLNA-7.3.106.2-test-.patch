@@ -1,0 +1,63 @@
+From 3a9dcd3e00db040fd491827a2ece755b300e7a3c Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Wed, 25 Mar 2015 10:23:43 +0100
+Subject: [PATCH] Enable REPEAT_ONE playmode from DLNA 7.3.106.2 test case
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ data/xml/AVTransport2.xml.in                  | 1 +
+ src/librygel-renderer/rygel-av-transport.c    | 3 ++-
+ src/librygel-renderer/rygel-av-transport.vala | 3 ++-
+ 3 files changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/data/xml/AVTransport2.xml.in b/data/xml/AVTransport2.xml.in
+index 53eee05..efc4b4b 100644
+--- a/data/xml/AVTransport2.xml.in
++++ b/data/xml/AVTransport2.xml.in
+@@ -584,6 +584,7 @@
+          <allowedValueList>
+             <allowedValue>NORMAL</allowedValue>
+             <allowedValue>REPEAT_TRACK</allowedValue>
++            <allowedValue>REPEAT_ONE</allowedValue>
+             <allowedValue>REPEAT_ALL</allowedValue>
+          </allowedValueList>
+          <defaultValue>NORMAL</defaultValue>
+diff --git a/src/librygel-renderer/rygel-av-transport.c b/src/librygel-renderer/rygel-av-transport.c
+index 5f7b615..82d655d 100644
+--- a/src/librygel-renderer/rygel-av-transport.c
++++ b/src/librygel-renderer/rygel-av-transport.c
+@@ -3165,6 +3165,7 @@ static void rygel_av_transport_set_play_mode_cb (RygelAVTransport* self, GUPnPSe
+ 	static GQuark _tmp10_label0 = 0;
+ 	static GQuark _tmp10_label1 = 0;
+ 	static GQuark _tmp10_label2 = 0;
++	static GQuark _tmp10_label3 = 0;
+ 	GUPnPServiceAction* _tmp16_ = NULL;
+ 	g_return_if_fail (self != NULL);
+ 	g_return_if_fail (registrar != NULL);
+@@ -3196,7 +3197,7 @@ static void rygel_av_transport_set_play_mode_cb (RygelAVTransport* self, GUPnPSe
+ 	_tmp8_ = _play_mode;
+ 	_tmp9_ = _tmp8_;
+ 	_tmp11_ = (NULL == _tmp9_) ? 0 : g_quark_from_string (_tmp9_);
+-	if (((_tmp11_ == ((0 != _tmp10_label0) ? _tmp10_label0 : (_tmp10_label0 = g_quark_from_static_string ("NORMAL")))) || (_tmp11_ == ((0 != _tmp10_label1) ? _tmp10_label1 : (_tmp10_label1 = g_quark_from_static_string ("REPEAT_TRACK"))))) || (_tmp11_ == ((0 != _tmp10_label2) ? _tmp10_label2 : (_tmp10_label2 = g_quark_from_static_string ("REPEAT_ALL"))))) {
++	if ((((_tmp11_ == ((0 != _tmp10_label0) ? _tmp10_label0 : (_tmp10_label0 = g_quark_from_static_string ("NORMAL")))) || (_tmp11_ == ((0 != _tmp10_label1) ? _tmp10_label1 : (_tmp10_label1 = g_quark_from_static_string ("REPEAT_TRACK"))))) || (_tmp11_ == ((0 != _tmp10_label2) ? _tmp10_label2 : (_tmp10_label2 = g_quark_from_static_string ("REPEAT_ONE"))))) || (_tmp11_ == ((0 != _tmp10_label3) ? _tmp10_label3 : (_tmp10_label3 = g_quark_from_static_string ("REPEAT_ALL"))))) {
+ 		switch (0) {
+ 			default:
+ 			{
+diff --git a/src/librygel-renderer/rygel-av-transport.vala b/src/librygel-renderer/rygel-av-transport.vala
+index 091f2de..1be52e6 100644
+--- a/src/librygel-renderer/rygel-av-transport.vala
++++ b/src/librygel-renderer/rygel-av-transport.vala
+@@ -904,8 +904,9 @@ internal class Rygel.AVTransport : Service {
+             return;
+         }
+         switch (_play_mode) {
+-        case "NORMAL" :
++        case "NORMAL"       :
+         case "REPEAT_TRACK" :
++        case "REPEAT_ONE"   :
+         case "REPEAT_ALL"   :
+             this.controller.play_mode = _play_mode;
+             break;
+-- 
+1.9.1
+

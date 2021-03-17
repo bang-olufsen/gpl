@@ -1,0 +1,56 @@
+<!-- ##### SECTION Title ##### -->
+internet-address
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT InternetAddress ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION internet_address_get_name ##### -->
+<para>
+
+</para>
+
+@ia: 
+@Returns: 
+
+
+<!-- ##### FUNCTION internet_address_set_name ##### -->
+<para>
+
+</para>
+
+@ia: 
+@name: 
+
+
+<!-- ##### FUNCTION internet_address_to_string ##### -->
+<para>
+
+</para>
+
+@ia: 
+@encode: 
+@Returns: 
+
+

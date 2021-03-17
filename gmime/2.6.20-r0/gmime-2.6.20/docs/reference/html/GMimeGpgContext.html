@@ -1,0 +1,265 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GMimeGpgContext</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="GMime 2.6 Reference Manual">
+<link rel="up" href="CryptoContexts.html" title="Cryptography Contexts">
+<link rel="prev" href="GMimeCryptoContext.html" title="GMimeCryptoContext">
+<link rel="next" href="GMimePkcs7Context.html" title="GMimePkcs7Context">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="GMimeCryptoContext.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="CryptoContexts.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">GMime 2.6 Reference Manual</th>
+<td><a accesskey="n" href="GMimePkcs7Context.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#GMimeGpgContext.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#GMimeGpgContext.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#GMimeGpgContext.object-hierarchy" class="shortcut">Object Hierarchy</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="GMimeGpgContext"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="GMimeGpgContext.top_of_page"></a>GMimeGpgContext</span></h2>
+<p>GMimeGpgContext — GnuPG crypto contexts</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="GMimeGpgContext.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">struct              <a class="link" href="GMimeGpgContext.html#GMimeGpgContext-struct" title="struct GMimeGpgContext">GMimeGpgContext</a>;
+<a class="link" href="GMimeCryptoContext.html" title="GMimeCryptoContext"><span class="returnvalue">GMimeCryptoContext</span></a> * <a class="link" href="GMimeGpgContext.html#g-mime-gpg-context-new" title="g_mime_gpg_context_new ()">g_mime_gpg_context_new</a>             (<em class="parameter"><code><a class="link" href="GMimeCryptoContext.html#GMimePasswordRequestFunc" title="GMimePasswordRequestFunc ()"><span class="type">GMimePasswordRequestFunc</span></a> request_passwd</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *path</code></em>);
+<span class="returnvalue">gboolean</span>            <a class="link" href="GMimeGpgContext.html#g-mime-gpg-context-get-always-trust" title="g_mime_gpg_context_get_always_trust ()">g_mime_gpg_context_get_always_trust</a> (<em class="parameter"><code><a class="link" href="GMimeGpgContext.html" title="GMimeGpgContext"><span class="type">GMimeGpgContext</span></a> *ctx</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimeGpgContext.html#g-mime-gpg-context-set-always-trust" title="g_mime_gpg_context_set_always_trust ()">g_mime_gpg_context_set_always_trust</a> (<em class="parameter"><code><a class="link" href="GMimeGpgContext.html" title="GMimeGpgContext"><span class="type">GMimeGpgContext</span></a> *ctx</code></em>,
+                                                         <em class="parameter"><code><span class="type">gboolean</span> always_trust</code></em>);
+<span class="returnvalue">gboolean</span>            <a class="link" href="GMimeGpgContext.html#g-mime-gpg-context-get-auto-key-retrieve" title="g_mime_gpg_context_get_auto_key_retrieve ()">g_mime_gpg_context_get_auto_key_retrieve</a>
+                                                        (<em class="parameter"><code><a class="link" href="GMimeGpgContext.html" title="GMimeGpgContext"><span class="type">GMimeGpgContext</span></a> *ctx</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimeGpgContext.html#g-mime-gpg-context-set-auto-key-retrieve" title="g_mime_gpg_context_set_auto_key_retrieve ()">g_mime_gpg_context_set_auto_key_retrieve</a>
+                                                        (<em class="parameter"><code><a class="link" href="GMimeGpgContext.html" title="GMimeGpgContext"><span class="type">GMimeGpgContext</span></a> *ctx</code></em>,
+                                                         <em class="parameter"><code><span class="type">gboolean</span> auto_key_retrieve</code></em>);
+<span class="returnvalue">gboolean</span>            <a class="link" href="GMimeGpgContext.html#g-mime-gpg-context-get-use-agent" title="g_mime_gpg_context_get_use_agent ()">g_mime_gpg_context_get_use_agent</a>    (<em class="parameter"><code><a class="link" href="GMimeGpgContext.html" title="GMimeGpgContext"><span class="type">GMimeGpgContext</span></a> *ctx</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimeGpgContext.html#g-mime-gpg-context-set-use-agent" title="g_mime_gpg_context_set_use_agent ()">g_mime_gpg_context_set_use_agent</a>    (<em class="parameter"><code><a class="link" href="GMimeGpgContext.html" title="GMimeGpgContext"><span class="type">GMimeGpgContext</span></a> *ctx</code></em>,
+                                                         <em class="parameter"><code><span class="type">gboolean</span> use_agent</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="GMimeGpgContext.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  GObject
+   +----<a class="link" href="GMimeCryptoContext.html" title="GMimeCryptoContext">GMimeCryptoContext</a>
+         +----GMimeGpgContext
+</pre>
+</div>
+<div class="refsect1">
+<a name="GMimeGpgContext.description"></a><h2>Description</h2>
+<p>
+A <a class="link" href="GMimeGpgContext.html" title="GMimeGpgContext"><span class="type">GMimeGpgContext</span></a> is a <a class="link" href="GMimeCryptoContext.html" title="GMimeCryptoContext"><span class="type">GMimeCryptoContext</span></a> that uses GnuPG to do
+all of the encryption and digital signatures.
+</p>
+</div>
+<div class="refsect1">
+<a name="GMimeGpgContext.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="GMimeGpgContext-struct"></a><h3>struct GMimeGpgContext</h3>
+<pre class="programlisting">struct GMimeGpgContext;</pre>
+<p>
+A GnuPG crypto context.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-gpg-context-new"></a><h3>g_mime_gpg_context_new ()</h3>
+<pre class="programlisting"><a class="link" href="GMimeCryptoContext.html" title="GMimeCryptoContext"><span class="returnvalue">GMimeCryptoContext</span></a> * g_mime_gpg_context_new             (<em class="parameter"><code><a class="link" href="GMimeCryptoContext.html#GMimePasswordRequestFunc" title="GMimePasswordRequestFunc ()"><span class="type">GMimePasswordRequestFunc</span></a> request_passwd</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *path</code></em>);</pre>
+<p>
+Creates a new gpg crypto context object.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>request_passwd</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeCryptoContext.html#GMimePasswordRequestFunc" title="GMimePasswordRequestFunc ()"><span class="type">GMimePasswordRequestFunc</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>path</code></em> :</span></p></td>
+<td>path to gpg binary</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new gpg crypto context object. <span class="annotation">[<a href="http://foldoc.org/transfer%20full"><span class="acronym">transfer full</span></a>]</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-gpg-context-get-always-trust"></a><h3>g_mime_gpg_context_get_always_trust ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>            g_mime_gpg_context_get_always_trust (<em class="parameter"><code><a class="link" href="GMimeGpgContext.html" title="GMimeGpgContext"><span class="type">GMimeGpgContext</span></a> *ctx</code></em>);</pre>
+<p>
+Gets the always_trust flag on the gpg context.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>ctx</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeGpgContext.html" title="GMimeGpgContext"><span class="type">GMimeGpgContext</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the always_trust flag on the gpg context.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-gpg-context-set-always-trust"></a><h3>g_mime_gpg_context_set_always_trust ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_gpg_context_set_always_trust (<em class="parameter"><code><a class="link" href="GMimeGpgContext.html" title="GMimeGpgContext"><span class="type">GMimeGpgContext</span></a> *ctx</code></em>,
+                                                         <em class="parameter"><code><span class="type">gboolean</span> always_trust</code></em>);</pre>
+<p>
+Sets the <em class="parameter"><code>always_trust</code></em> flag on the gpg context which is used for
+encryption.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>ctx</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeGpgContext.html" title="GMimeGpgContext"><span class="type">GMimeGpgContext</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>always_trust</code></em> :</span></p></td>
+<td>always trust flag</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-gpg-context-get-auto-key-retrieve"></a><h3>g_mime_gpg_context_get_auto_key_retrieve ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>            g_mime_gpg_context_get_auto_key_retrieve
+                                                        (<em class="parameter"><code><a class="link" href="GMimeGpgContext.html" title="GMimeGpgContext"><span class="type">GMimeGpgContext</span></a> *ctx</code></em>);</pre>
+<p>
+Gets the <em class="parameter"><code>auto_key_retrieve</code></em> flag on the gpg context.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>ctx</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeGpgContext.html" title="GMimeGpgContext"><span class="type">GMimeGpgContext</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the <em class="parameter"><code>auto_key_retrieve</code></em> flag on the gpg context.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-gpg-context-set-auto-key-retrieve"></a><h3>g_mime_gpg_context_set_auto_key_retrieve ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_gpg_context_set_auto_key_retrieve
+                                                        (<em class="parameter"><code><a class="link" href="GMimeGpgContext.html" title="GMimeGpgContext"><span class="type">GMimeGpgContext</span></a> *ctx</code></em>,
+                                                         <em class="parameter"><code><span class="type">gboolean</span> auto_key_retrieve</code></em>);</pre>
+<p>
+Sets the <em class="parameter"><code>auto_key_retrieve</code></em> flag on the gpg context which is used
+for signature verification.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>ctx</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeGpgContext.html" title="GMimeGpgContext"><span class="type">GMimeGpgContext</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>auto_key_retrieve</code></em> :</span></p></td>
+<td>auto-retrieve keys from a keys server</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-gpg-context-get-use-agent"></a><h3>g_mime_gpg_context_get_use_agent ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>            g_mime_gpg_context_get_use_agent    (<em class="parameter"><code><a class="link" href="GMimeGpgContext.html" title="GMimeGpgContext"><span class="type">GMimeGpgContext</span></a> *ctx</code></em>);</pre>
+<p>
+Gets the use_agent flag on the gpg context.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>ctx</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeGpgContext.html" title="GMimeGpgContext"><span class="type">GMimeGpgContext</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the use_agent flag on the gpg context, which indicates
+that GnuPG should attempt to use gpg-agent for credentials.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-gpg-context-set-use-agent"></a><h3>g_mime_gpg_context_set_use_agent ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_gpg_context_set_use_agent    (<em class="parameter"><code><a class="link" href="GMimeGpgContext.html" title="GMimeGpgContext"><span class="type">GMimeGpgContext</span></a> *ctx</code></em>,
+                                                         <em class="parameter"><code><span class="type">gboolean</span> use_agent</code></em>);</pre>
+<p>
+Sets the <em class="parameter"><code>use_agent</code></em> flag on the gpg context, which indicates that
+GnuPG should attempt to use gpg-agent for credentials.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>ctx</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeGpgContext.html" title="GMimeGpgContext"><span class="type">GMimeGpgContext</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>use_agent</code></em> :</span></p></td>
+<td>always trust flag</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<div class="refsect1">
+<a name="GMimeGpgContext.see-also"></a><h2>See Also</h2>
+<a class="link" href="GMimeCryptoContext.html" title="GMimeCryptoContext"><span class="type">GMimeCryptoContext</span></a>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

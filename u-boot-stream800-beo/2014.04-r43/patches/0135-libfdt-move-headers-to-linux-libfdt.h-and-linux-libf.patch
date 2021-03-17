@@ -1,0 +1,5471 @@
+From 76388608dde59f52a93fd1804e243cf51629f993 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Fri, 7 Feb 2020 13:52:15 +0100
+Subject: [PATCH] libfdt: move headers to <linux/libfdt.h> and
+ <linux/libfdt_env.h> [STREAMEIGHT-3041](thud)
+
+commit b08c8c4870831c9315dcae237772238e80035bd5 upstream.
+
+Thomas reported U-Boot failed to build host tools if libfdt-devel
+package is installed because tools include libfdt headers from
+/usr/include/ instead of using internal ones.
+
+This commit moves the header code:
+  include/libfdt.h         -> include/linux/libfdt.h
+  include/libfdt_env.h     -> include/linux/libfdt_env.h
+
+and replaces include directives:
+  #include <libfdt.h>      -> #include <linux/libfdt.h>
+  #include <libfdt_env.h>  -> #include <linux/libfdt_env.h>
+
+Reported-by: Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
+[backport to v2015.04]
+Signed-off-by: Andriy Danylovskyy <andriy.danylovskyy@streamunlimited.com>
+[polished commit message]
+Signed-off-by: Radek Dostal <radek.dostal@streamunlimited.com>
+---
+ arch/arm/lib/board.c                         |    2 +-
+ arch/arm/lib/bootm.c                         |    2 +-
+ arch/nios2/cpu/fdt.c                         |    2 +-
+ arch/powerpc/cpu/74xx_7xx/cpu.c              |    2 +-
+ arch/powerpc/cpu/mpc512x/pci.c               |    2 +-
+ arch/powerpc/cpu/mpc5xxx/cpu.c               |    2 +-
+ arch/powerpc/cpu/mpc8260/cpu.c               |    2 +-
+ arch/powerpc/cpu/mpc8260/pci.c               |    2 +-
+ arch/powerpc/cpu/mpc83xx/cpu.c               |    2 +-
+ arch/powerpc/cpu/mpc83xx/fdt.c               |    2 +-
+ arch/powerpc/cpu/mpc83xx/pci.c               |    2 +-
+ arch/powerpc/cpu/mpc85xx/fdt.c               |    2 +-
+ arch/powerpc/cpu/mpc85xx/liodn.c             |    2 +-
+ arch/powerpc/cpu/mpc85xx/portals.c           |    2 +-
+ arch/powerpc/cpu/mpc86xx/fdt.c               |    2 +-
+ arch/powerpc/cpu/mpc8xx/cpu.c                |    2 +-
+ arch/powerpc/cpu/mpc8xx/fdt.c                |    2 +-
+ arch/powerpc/cpu/mpc8xxx/fdt.c               |    2 +-
+ arch/powerpc/cpu/ppc4xx/fdt.c                |    2 +-
+ arch/powerpc/lib/bootm.c                     |    2 +-
+ arch/x86/include/asm/arch-coreboot/sysinfo.h |    2 +-
+ arch/x86/lib/relocate.c                      |    2 +-
+ board/a4m072/a4m072.c                        |    2 +-
+ board/adder/adder.c                          |    2 +-
+ board/amcc/bluestone/bluestone.c             |    2 +-
+ board/amcc/canyonlands/canyonlands.c         |    2 +-
+ board/amcc/katmai/katmai.c                   |    2 +-
+ board/amcc/kilauea/kilauea.c                 |    2 +-
+ board/amcc/makalu/makalu.c                   |    2 +-
+ board/amcc/sequoia/sequoia.c                 |    2 +-
+ board/amcc/yosemite/yosemite.c               |    2 +-
+ board/cm5200/cm5200.c                        |    2 +-
+ board/esd/cpci405/cpci405.c                  |    2 +-
+ board/esd/pmc405de/pmc405de.c                |    2 +-
+ board/esd/pmc440/pmc440.c                    |    2 +-
+ board/esd/vme8349/vme8349.c                  |    2 +-
+ board/exmeritus/hww1u1a/hww1u1a.c            |    2 +-
+ board/freescale/b4860qds/pci.c               |    2 +-
+ board/freescale/bsc9131rdb/bsc9131rdb.c      |    2 +-
+ board/freescale/bsc9132qds/bsc9132qds.c      |    2 +-
+ board/freescale/c29xpcie/c29xpcie.c          |    2 +-
+ board/freescale/common/cds_pci_ft.c          |    2 +-
+ board/freescale/common/fman.c                |    4 +-
+ board/freescale/common/p_corenet/pci.c       |    2 +-
+ board/freescale/common/sgmii_riser.c         |    2 +-
+ board/freescale/mpc8260ads/mpc8260ads.c      |    2 +-
+ board/freescale/mpc8308rdb/mpc8308rdb.c      |    2 +-
+ board/freescale/mpc8313erdb/mpc8313erdb.c    |    2 +-
+ board/freescale/mpc8315erdb/mpc8315erdb.c    |    2 +-
+ board/freescale/mpc8323erdb/mpc8323erdb.c    |    2 +-
+ board/freescale/mpc832xemds/mpc832xemds.c    |    2 +-
+ board/freescale/mpc8349emds/mpc8349emds.c    |    2 +-
+ board/freescale/mpc8349itx/mpc8349itx.c      |    2 +-
+ board/freescale/mpc8360emds/mpc8360emds.c    |    2 +-
+ board/freescale/mpc8360erdk/mpc8360erdk.c    |    2 +-
+ board/freescale/mpc837xemds/mpc837xemds.c    |    2 +-
+ board/freescale/mpc8536ds/mpc8536ds.c        |    2 +-
+ board/freescale/mpc8540ads/mpc8540ads.c      |    2 +-
+ board/freescale/mpc8541cds/mpc8541cds.c      |    2 +-
+ board/freescale/mpc8544ds/mpc8544ds.c        |    2 +-
+ board/freescale/mpc8548cds/mpc8548cds.c      |    2 +-
+ board/freescale/mpc8555cds/mpc8555cds.c      |    2 +-
+ board/freescale/mpc8560ads/mpc8560ads.c      |    2 +-
+ board/freescale/mpc8568mds/mpc8568mds.c      |    2 +-
+ board/freescale/mpc8569mds/mpc8569mds.c      |    2 +-
+ board/freescale/mpc8572ds/mpc8572ds.c        |    2 +-
+ board/freescale/mpc8610hpcd/mpc8610hpcd.c    |    2 +-
+ board/freescale/mpc8641hpcn/mpc8641hpcn.c    |    2 +-
+ board/freescale/p1010rdb/p1010rdb.c          |    2 +-
+ board/freescale/p1022ds/p1022ds.c            |    2 +-
+ board/freescale/p1023rdb/p1023rdb.c          |    2 +-
+ board/freescale/p1023rds/p1023rds.c          |    2 +-
+ board/freescale/p1_p2_rdb/p1_p2_rdb.c        |    2 +-
+ board/freescale/p1_p2_rdb/pci.c              |    2 +-
+ board/freescale/p1_p2_rdb_pc/p1_p2_rdb_pc.c  |    2 +-
+ board/freescale/p1_twr/p1_twr.c              |    2 +-
+ board/freescale/p2020come/p2020come.c        |    2 +-
+ board/freescale/p2020ds/p2020ds.c            |    2 +-
+ board/freescale/t1040qds/pci.c               |    2 +-
+ board/freescale/t104xrdb/pci.c               |    2 +-
+ board/freescale/t208xqds/pci.c               |    2 +-
+ board/freescale/t208xrdb/pci.c               |    2 +-
+ board/freescale/t4qds/pci.c                  |    2 +-
+ board/gdsys/405ex/io64.c                     |    2 +-
+ board/gdsys/intip/intip.c                    |    2 +-
+ board/gdsys/p1022/controlcenterd.c           |    2 +-
+ board/icecube/icecube.c                      |    2 +-
+ board/ids8247/ids8247.c                      |    4 +-
+ board/ifm/o2dnt2/o2dnt2.c                    |    2 +-
+ board/intercontrol/digsy_mtc/digsy_mtc.c     |    2 +-
+ board/ipek01/ipek01.c                        |    2 +-
+ board/jupiter/jupiter.c                      |    2 +-
+ board/keymile/km82xx/km82xx.c                |    2 +-
+ board/keymile/km83xx/km83xx.c                |    2 +-
+ board/keymile/kmp204x/pci.c                  |    2 +-
+ board/korat/korat.c                          |    2 +-
+ board/kup/kup4k/kup4k.c                      |    2 +-
+ board/matrix_vision/mvblm7/mvblm7.c          |    2 +-
+ board/matrix_vision/mvblm7/pci.c             |    2 +-
+ board/mosaixtech/icon/icon.c                 |    2 +-
+ board/motionpro/motionpro.c                  |    2 +-
+ board/mpc8308_p1m/mpc8308_p1m.c              |    2 +-
+ board/muas3001/muas3001.c                    |    2 +-
+ board/prodrive/alpr/alpr.c                   |    2 +-
+ board/sbc8349/sbc8349.c                      |    2 +-
+ board/sbc8548/sbc8548.c                      |    2 +-
+ board/sbc8641d/sbc8641d.c                    |    2 +-
+ board/sheldon/simpc8313/simpc8313.c          |    2 +-
+ board/socrates/socrates.c                    |    2 +-
+ board/t3corp/t3corp.c                        |    2 +-
+ board/tqc/tqm5200/tqm5200.c                  |    2 +-
+ board/tqc/tqm8xx/tqm8xx.c                    |    2 +-
+ board/ve8313/ve8313.c                        |    2 +-
+ board/xes/common/fsl_8xxx_pci.c              |    2 +-
+ board/xes/xpedite520x/xpedite520x.c          |    2 +-
+ board/xes/xpedite537x/xpedite537x.c          |    2 +-
+ board/xes/xpedite550x/xpedite550x.c          |    2 +-
+ common/bootstage.c                           |    2 +-
+ common/cmd_bootm.c                           |    2 +-
+ common/cmd_fdt.c                             |    2 +-
+ common/fdt_support.c                         |    2 +-
+ common/image-fdt.c                           |    2 +-
+ common/image.c                               |    2 +-
+ common/lcd.c                                 |    2 +-
+ drivers/mmc/exynos_dw_mmc.c                  |    2 +-
+ drivers/mmc/s5p_sdhci.c                      |    2 +-
+ drivers/mmc/zynq_sdhci.c                     |    2 +-
+ drivers/net/zynq_gem.c                       |    2 +-
+ drivers/pci/fsl_pci_init.c                   |    2 +-
+ drivers/pci/tsi108_pci.c                     |    2 +-
+ drivers/qe/fdt.c                             |    2 +-
+ drivers/sound/sound-i2s.c                    |    2 +-
+ drivers/usb/host/ehci-exynos.c               |    2 +-
+ drivers/usb/host/ehci-tegra.c                |    2 +-
+ drivers/usb/host/xhci-exynos5.c              |    2 +-
+ drivers/video/exynos_dp.c                    |    2 +-
+ drivers/video/exynos_dp_lowlevel.c           |    2 +-
+ drivers/video/exynos_fb.c                    |    2 +-
+ drivers/video/exynos_fimd.c                  |    2 +-
+ drivers/video/exynos_mipi_dsi.c              |    2 +-
+ include/fdt_support.h                        |    2 +-
+ include/fdtdec.h                             |    2 +-
+ include/image.h                              |    2 +-
+ include/libfdt.h                             | 1578 --------------------------
+ include/libfdt_env.h                         |   29 -
+ include/linux/libfdt.h                       | 1578 ++++++++++++++++++++++++++
+ include/linux/libfdt_env.h                   |   29 +
+ lib/fdtdec.c                                 |    2 +-
+ lib/fdtdec_test.c                            |    2 +-
+ lib/libfdt/fdt.c                             |    4 +-
+ lib/libfdt/fdt_empty_tree.c                  |    4 +-
+ lib/libfdt/fdt_ro.c                          |    4 +-
+ lib/libfdt/fdt_rw.c                          |    4 +-
+ lib/libfdt/fdt_strerror.c                    |    4 +-
+ lib/libfdt/fdt_sw.c                          |    4 +-
+ lib/libfdt/fdt_wip.c                         |    4 +-
+ tools/Makefile                               |    2 +-
+ tools/fdt_host.h                             |    2 +-
+ 158 files changed, 1770 insertions(+), 1770 deletions(-)
+ delete mode 100644 include/libfdt.h
+ delete mode 100644 include/libfdt_env.h
+ create mode 100644 include/linux/libfdt.h
+ create mode 100644 include/linux/libfdt_env.h
+
+diff --git a/arch/arm/lib/board.c b/arch/arm/lib/board.c
+index 20cd796..f0dfca7 100644
+--- a/arch/arm/lib/board.c
++++ b/arch/arm/lib/board.c
+@@ -34,7 +34,7 @@
+ #include <onenand_uboot.h>
+ #include <mmc.h>
+ #include <scsi.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdtdec.h>
+ #include <post.h>
+ #include <logbuff.h>
+diff --git a/arch/arm/lib/bootm.c b/arch/arm/lib/bootm.c
+index 47ee070..9f9a6e1 100644
+--- a/arch/arm/lib/bootm.c
++++ b/arch/arm/lib/bootm.c
+@@ -17,7 +17,7 @@
+ #include <image.h>
+ #include <u-boot/zlib.h>
+ #include <asm/byteorder.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <asm/bootm.h>
+ #include <linux/compiler.h>
+diff --git a/arch/nios2/cpu/fdt.c b/arch/nios2/cpu/fdt.c
+index 4d88f16..44bc3e3 100644
+--- a/arch/nios2/cpu/fdt.c
++++ b/arch/nios2/cpu/fdt.c
+@@ -13,7 +13,7 @@
+ #include <common.h>
+ 
+ #if defined(CONFIG_OF_LIBFDT) && defined(CONFIG_OF_BOARD_SETUP)
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ 
+ DECLARE_GLOBAL_DATA_PTR;
+diff --git a/arch/powerpc/cpu/74xx_7xx/cpu.c b/arch/powerpc/cpu/74xx_7xx/cpu.c
+index 6cd54bf..2f47be3 100644
+--- a/arch/powerpc/cpu/74xx_7xx/cpu.c
++++ b/arch/powerpc/cpu/74xx_7xx/cpu.c
+@@ -29,7 +29,7 @@
+ #include <asm/cache.h>
+ 
+ #if defined(CONFIG_OF_LIBFDT)
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #endif
+ 
+diff --git a/arch/powerpc/cpu/mpc512x/pci.c b/arch/powerpc/cpu/mpc512x/pci.c
+index 7ea5df2..e823c1b 100644
+--- a/arch/powerpc/cpu/mpc512x/pci.c
++++ b/arch/powerpc/cpu/mpc512x/pci.c
+@@ -12,7 +12,7 @@
+ #include <asm/global_data.h>
+ #include <pci.h>
+ #if defined(CONFIG_OF_LIBFDT)
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #endif
+ 
+diff --git a/arch/powerpc/cpu/mpc5xxx/cpu.c b/arch/powerpc/cpu/mpc5xxx/cpu.c
+index 7a463b5..b6bc44a 100644
+--- a/arch/powerpc/cpu/mpc5xxx/cpu.c
++++ b/arch/powerpc/cpu/mpc5xxx/cpu.c
+@@ -19,7 +19,7 @@
+ #include <asm/processor.h>
+ 
+ #if defined(CONFIG_OF_LIBFDT)
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #endif
+ 
+diff --git a/arch/powerpc/cpu/mpc8260/cpu.c b/arch/powerpc/cpu/mpc8260/cpu.c
+index 6eed6f5..9f2d476 100644
+--- a/arch/powerpc/cpu/mpc8260/cpu.c
++++ b/arch/powerpc/cpu/mpc8260/cpu.c
+@@ -33,7 +33,7 @@
+ #include <asm/cpm_8260.h>
+ 
+ #if defined(CONFIG_OF_LIBFDT)
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #endif
+ 
+diff --git a/arch/powerpc/cpu/mpc8260/pci.c b/arch/powerpc/cpu/mpc8260/pci.c
+index 2c013bb..1545b56 100644
+--- a/arch/powerpc/cpu/mpc8260/pci.c
++++ b/arch/powerpc/cpu/mpc8260/pci.c
+@@ -18,7 +18,7 @@
+ #include <asm/m8260_pci.h>
+ #include <asm/io.h>
+ #ifdef CONFIG_OF_LIBFDT
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #endif
+ 
+diff --git a/arch/powerpc/cpu/mpc83xx/cpu.c b/arch/powerpc/cpu/mpc83xx/cpu.c
+index e275fce..c1267b6 100644
+--- a/arch/powerpc/cpu/mpc83xx/cpu.c
++++ b/arch/powerpc/cpu/mpc83xx/cpu.c
+@@ -15,7 +15,7 @@
+ #include <command.h>
+ #include <mpc83xx.h>
+ #include <asm/processor.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <tsec.h>
+ #include <netdev.h>
+ #include <fsl_esdhc.h>
+diff --git a/arch/powerpc/cpu/mpc83xx/fdt.c b/arch/powerpc/cpu/mpc83xx/fdt.c
+index cce7d6b..fd74b2b 100644
+--- a/arch/powerpc/cpu/mpc83xx/fdt.c
++++ b/arch/powerpc/cpu/mpc83xx/fdt.c
+@@ -8,7 +8,7 @@
+  */
+ 
+ #include <common.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <asm/processor.h>
+ 
+diff --git a/arch/powerpc/cpu/mpc83xx/pci.c b/arch/powerpc/cpu/mpc83xx/pci.c
+index 30606fb..0e65846 100644
+--- a/arch/powerpc/cpu/mpc83xx/pci.c
++++ b/arch/powerpc/cpu/mpc83xx/pci.c
+@@ -11,7 +11,7 @@
+ #include <pci.h>
+ 
+ #if defined(CONFIG_OF_LIBFDT)
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #endif
+ 
+diff --git a/arch/powerpc/cpu/mpc85xx/fdt.c b/arch/powerpc/cpu/mpc85xx/fdt.c
+index 33bc900..79eea40 100644
+--- a/arch/powerpc/cpu/mpc85xx/fdt.c
++++ b/arch/powerpc/cpu/mpc85xx/fdt.c
+@@ -8,7 +8,7 @@
+  */
+ 
+ #include <common.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <asm/processor.h>
+ #include <linux/ctype.h>
+diff --git a/arch/powerpc/cpu/mpc85xx/liodn.c b/arch/powerpc/cpu/mpc85xx/liodn.c
+index 19e130e..1bc7c0e 100644
+--- a/arch/powerpc/cpu/mpc85xx/liodn.c
++++ b/arch/powerpc/cpu/mpc85xx/liodn.c
+@@ -5,7 +5,7 @@
+  */
+ 
+ #include <common.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ 
+ #include <asm/immap_85xx.h>
+diff --git a/arch/powerpc/cpu/mpc85xx/portals.c b/arch/powerpc/cpu/mpc85xx/portals.c
+index 98815f8..a140ab7 100644
+--- a/arch/powerpc/cpu/mpc85xx/portals.c
++++ b/arch/powerpc/cpu/mpc85xx/portals.c
+@@ -5,7 +5,7 @@
+  */
+ 
+ #include <common.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ 
+ #include <asm/processor.h>
+diff --git a/arch/powerpc/cpu/mpc86xx/fdt.c b/arch/powerpc/cpu/mpc86xx/fdt.c
+index 26a65c5..e575640 100644
+--- a/arch/powerpc/cpu/mpc86xx/fdt.c
++++ b/arch/powerpc/cpu/mpc86xx/fdt.c
+@@ -7,7 +7,7 @@
+  */
+ 
+ #include <common.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <asm/mp.h>
+ 
+diff --git a/arch/powerpc/cpu/mpc8xx/cpu.c b/arch/powerpc/cpu/mpc8xx/cpu.c
+index 5c96b5f..713d1dd 100644
+--- a/arch/powerpc/cpu/mpc8xx/cpu.c
++++ b/arch/powerpc/cpu/mpc8xx/cpu.c
+@@ -28,7 +28,7 @@
+ #include <asm/io.h>
+ 
+ #if defined(CONFIG_OF_LIBFDT)
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #endif
+ 
+diff --git a/arch/powerpc/cpu/mpc8xx/fdt.c b/arch/powerpc/cpu/mpc8xx/fdt.c
+index 97830e3..3f612c9 100644
+--- a/arch/powerpc/cpu/mpc8xx/fdt.c
++++ b/arch/powerpc/cpu/mpc8xx/fdt.c
+@@ -7,7 +7,7 @@
+  */
+ 
+ #include <common.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ 
+ DECLARE_GLOBAL_DATA_PTR;
+diff --git a/arch/powerpc/cpu/mpc8xxx/fdt.c b/arch/powerpc/cpu/mpc8xxx/fdt.c
+index 9273745..852768e 100644
+--- a/arch/powerpc/cpu/mpc8xxx/fdt.c
++++ b/arch/powerpc/cpu/mpc8xxx/fdt.c
+@@ -8,7 +8,7 @@
+  */
+ 
+ #include <common.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <asm/mp.h>
+ #include <asm/fsl_serdes.h>
+diff --git a/arch/powerpc/cpu/ppc4xx/fdt.c b/arch/powerpc/cpu/ppc4xx/fdt.c
+index bd905d1..0b61620 100644
+--- a/arch/powerpc/cpu/ppc4xx/fdt.c
++++ b/arch/powerpc/cpu/ppc4xx/fdt.c
+@@ -12,7 +12,7 @@
+ #include <asm/ppc4xx.h>
+ 
+ #if defined(CONFIG_OF_LIBFDT) && defined(CONFIG_OF_BOARD_SETUP)
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <asm/4xx_pcie.h>
+ 
+diff --git a/arch/powerpc/lib/bootm.c b/arch/powerpc/lib/bootm.c
+index 33099a4..7cc9010 100644
+--- a/arch/powerpc/lib/bootm.c
++++ b/arch/powerpc/lib/bootm.c
+@@ -20,7 +20,7 @@
+ #include <asm/mp.h>
+ 
+ #if defined(CONFIG_OF_LIBFDT)
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #endif
+ 
+diff --git a/arch/x86/include/asm/arch-coreboot/sysinfo.h b/arch/x86/include/asm/arch-coreboot/sysinfo.h
+index 8e4a61d..26e1c08 100644
+--- a/arch/x86/include/asm/arch-coreboot/sysinfo.h
++++ b/arch/x86/include/asm/arch-coreboot/sysinfo.h
+@@ -11,7 +11,7 @@
+ 
+ #include <common.h>
+ #include <compiler.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <asm/arch/tables.h>
+ 
+ /* Allow a maximum of 16 memory range definitions. */
+diff --git a/arch/x86/lib/relocate.c b/arch/x86/lib/relocate.c
+index 526daaf..d19a0f8 100644
+--- a/arch/x86/lib/relocate.c
++++ b/arch/x86/lib/relocate.c
+@@ -16,7 +16,7 @@
+  */
+ 
+ #include <common.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <malloc.h>
+ #include <asm/u-boot-x86.h>
+ #include <asm/relocate.h>
+diff --git a/board/a4m072/a4m072.c b/board/a4m072/a4m072.c
+index d3d4c18..855a988 100644
+--- a/board/a4m072/a4m072.c
++++ b/board/a4m072/a4m072.c
+@@ -16,7 +16,7 @@
+ #include <pci.h>
+ #include <asm/processor.h>
+ #include <asm/io.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <netdev.h>
+ #include <led-display.h>
+ #include <linux/err.h>
+diff --git a/board/adder/adder.c b/board/adder/adder.c
+index 2ee7096..593c9de 100644
+--- a/board/adder/adder.c
++++ b/board/adder/adder.c
+@@ -11,7 +11,7 @@
+ #include <common.h>
+ #include <mpc8xx.h>
+ #if defined(CONFIG_OF_LIBFDT)
+-	#include <libfdt.h>
++	#include <linux/libfdt.h>
+ #endif
+ 
+ /*
+diff --git a/board/amcc/bluestone/bluestone.c b/board/amcc/bluestone/bluestone.c
+index 6520f75..1ce0b8f 100644
+--- a/board/amcc/bluestone/bluestone.c
++++ b/board/amcc/bluestone/bluestone.c
+@@ -9,7 +9,7 @@
+ 
+ #include <common.h>
+ #include <asm/apm821xx.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <i2c.h>
+ #include <asm/processor.h>
+diff --git a/board/amcc/canyonlands/canyonlands.c b/board/amcc/canyonlands/canyonlands.c
+index 79d4bab..0d05dc8 100644
+--- a/board/amcc/canyonlands/canyonlands.c
++++ b/board/amcc/canyonlands/canyonlands.c
+@@ -7,7 +7,7 @@
+ 
+ #include <common.h>
+ #include <asm/ppc440.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <i2c.h>
+ #include <asm/processor.h>
+diff --git a/board/amcc/katmai/katmai.c b/board/amcc/katmai/katmai.c
+index 6ae340b..04edfa3 100644
+--- a/board/amcc/katmai/katmai.c
++++ b/board/amcc/katmai/katmai.c
+@@ -8,7 +8,7 @@
+ #include <common.h>
+ #include <asm/ppc4xx.h>
+ #include <i2c.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <netdev.h>
+ #include <asm/processor.h>
+diff --git a/board/amcc/kilauea/kilauea.c b/board/amcc/kilauea/kilauea.c
+index abfaa1e..b7b5911 100644
+--- a/board/amcc/kilauea/kilauea.c
++++ b/board/amcc/kilauea/kilauea.c
+@@ -8,7 +8,7 @@
+ #include <common.h>
+ #include <asm/ppc4xx.h>
+ #include <asm/ppc405.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <asm/processor.h>
+ #include <asm/io.h>
+diff --git a/board/amcc/makalu/makalu.c b/board/amcc/makalu/makalu.c
+index a6ad2a1..fd8ee12 100644
+--- a/board/amcc/makalu/makalu.c
++++ b/board/amcc/makalu/makalu.c
+@@ -8,7 +8,7 @@
+ #include <common.h>
+ #include <asm/ppc4xx.h>
+ #include <asm/ppc405.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <asm/processor.h>
+ #include <asm/ppc4xx-gpio.h>
+ #include <asm/io.h>
+diff --git a/board/amcc/sequoia/sequoia.c b/board/amcc/sequoia/sequoia.c
+index 53f9b34..165c257 100644
+--- a/board/amcc/sequoia/sequoia.c
++++ b/board/amcc/sequoia/sequoia.c
+@@ -10,7 +10,7 @@
+  */
+ 
+ #include <common.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <asm/ppc4xx.h>
+ #include <asm/ppc4xx-gpio.h>
+diff --git a/board/amcc/yosemite/yosemite.c b/board/amcc/yosemite/yosemite.c
+index 56b5191..11cd0c4 100644
+--- a/board/amcc/yosemite/yosemite.c
++++ b/board/amcc/yosemite/yosemite.c
+@@ -10,7 +10,7 @@
+ #include <asm/processor.h>
+ #include <asm/io.h>
+ #include <spd_sdram.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ 
+ DECLARE_GLOBAL_DATA_PTR;
+diff --git a/board/cm5200/cm5200.c b/board/cm5200/cm5200.c
+index 048aa6c..5e72351 100644
+--- a/board/cm5200/cm5200.c
++++ b/board/cm5200/cm5200.c
+@@ -27,7 +27,7 @@
+ #include <linux/ctype.h>
+ 
+ #ifdef CONFIG_OF_LIBFDT
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #endif /* CONFIG_OF_LIBFDT */
+ 
+diff --git a/board/esd/cpci405/cpci405.c b/board/esd/cpci405/cpci405.c
+index 63cd862..3ee44d7 100644
+--- a/board/esd/cpci405/cpci405.c
++++ b/board/esd/cpci405/cpci405.c
+@@ -5,7 +5,7 @@
+  * SPDX-License-Identifier:	GPL-2.0+
+  */
+ #include <common.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <asm/processor.h>
+ #include <asm/io.h>
+diff --git a/board/esd/pmc405de/pmc405de.c b/board/esd/pmc405de/pmc405de.c
+index 4409ea6..2a41d34 100644
+--- a/board/esd/pmc405de/pmc405de.c
++++ b/board/esd/pmc405de/pmc405de.c
+@@ -6,7 +6,7 @@
+  */
+ 
+ #include <common.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <asm/processor.h>
+ #include <asm/io.h>
+diff --git a/board/esd/pmc440/pmc440.c b/board/esd/pmc440/pmc440.c
+index e86996c..d985b7d 100644
+--- a/board/esd/pmc440/pmc440.c
++++ b/board/esd/pmc440/pmc440.c
+@@ -14,7 +14,7 @@
+  */
+ 
+ #include <common.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <asm/ppc440.h>
+ #include <asm/processor.h>
+diff --git a/board/esd/vme8349/vme8349.c b/board/esd/vme8349/vme8349.c
+index 01365dc..69d7f0d 100644
+--- a/board/esd/vme8349/vme8349.c
++++ b/board/esd/vme8349/vme8349.c
+@@ -17,7 +17,7 @@
+ #include <mpc83xx.h>
+ #include <asm/mpc8349_pci.h>
+ #if defined(CONFIG_OF_LIBFDT)
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #endif
+ #include <asm/io.h>
+ #include <asm/mmu.h>
+diff --git a/board/exmeritus/hww1u1a/hww1u1a.c b/board/exmeritus/hww1u1a/hww1u1a.c
+index 97b84b3..f715c4f 100644
+--- a/board/exmeritus/hww1u1a/hww1u1a.c
++++ b/board/exmeritus/hww1u1a/hww1u1a.c
+@@ -16,7 +16,7 @@
+ #include <fsl_ddr_sdram.h>
+ #include <asm/io.h>
+ #include <miiphy.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <linux/ctype.h>
+ #include <fdt_support.h>
+ #include <fsl_mdio.h>
+diff --git a/board/freescale/b4860qds/pci.c b/board/freescale/b4860qds/pci.c
+index d9ccac7..1216d63 100644
+--- a/board/freescale/b4860qds/pci.c
++++ b/board/freescale/b4860qds/pci.c
+@@ -8,7 +8,7 @@
+ #include <command.h>
+ #include <pci.h>
+ #include <asm/fsl_pci.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <asm/fsl_serdes.h>
+ 
+diff --git a/board/freescale/bsc9131rdb/bsc9131rdb.c b/board/freescale/bsc9131rdb/bsc9131rdb.c
+index 7fe4ae7..742ab55 100644
+--- a/board/freescale/bsc9131rdb/bsc9131rdb.c
++++ b/board/freescale/bsc9131rdb/bsc9131rdb.c
+@@ -11,7 +11,7 @@
+ #include <asm/immap_85xx.h>
+ #include <asm/io.h>
+ #include <miiphy.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <fsl_mdio.h>
+ #include <tsec.h>
+diff --git a/board/freescale/bsc9132qds/bsc9132qds.c b/board/freescale/bsc9132qds/bsc9132qds.c
+index 9377280..f0f3df6 100644
+--- a/board/freescale/bsc9132qds/bsc9132qds.c
++++ b/board/freescale/bsc9132qds/bsc9132qds.c
+@@ -11,7 +11,7 @@
+ #include <asm/immap_85xx.h>
+ #include <asm/io.h>
+ #include <miiphy.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <fsl_mdio.h>
+ #include <tsec.h>
+diff --git a/board/freescale/c29xpcie/c29xpcie.c b/board/freescale/c29xpcie/c29xpcie.c
+index f964d61..92b3d00 100644
+--- a/board/freescale/c29xpcie/c29xpcie.c
++++ b/board/freescale/c29xpcie/c29xpcie.c
+@@ -11,7 +11,7 @@
+ #include <asm/immap_85xx.h>
+ #include <asm/io.h>
+ #include <miiphy.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <fsl_mdio.h>
+ #include <tsec.h>
+diff --git a/board/freescale/common/cds_pci_ft.c b/board/freescale/common/cds_pci_ft.c
+index 2e5dcdf..9a6f739 100644
+--- a/board/freescale/common/cds_pci_ft.c
++++ b/board/freescale/common/cds_pci_ft.c
+@@ -5,7 +5,7 @@
+  */
+ 
+ #include <common.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include "cadmus.h"
+ 
+diff --git a/board/freescale/common/fman.c b/board/freescale/common/fman.c
+index 9dc5402..e7ff9ed 100644
+--- a/board/freescale/common/fman.c
++++ b/board/freescale/common/fman.c
+@@ -5,8 +5,8 @@
+  */
+ 
+ #include <common.h>
+-#include <libfdt.h>
+-#include <libfdt_env.h>
++#include <linux/libfdt.h>
++#include <linux/libfdt_env.h>
+ #include <fdt_support.h>
+ 
+ #include <fm_eth.h>
+diff --git a/board/freescale/common/p_corenet/pci.c b/board/freescale/common/p_corenet/pci.c
+index 9f4f808..ccea8b1 100644
+--- a/board/freescale/common/p_corenet/pci.c
++++ b/board/freescale/common/p_corenet/pci.c
+@@ -8,7 +8,7 @@
+ #include <command.h>
+ #include <pci.h>
+ #include <asm/fsl_pci.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <asm/fsl_serdes.h>
+ 
+diff --git a/board/freescale/common/sgmii_riser.c b/board/freescale/common/sgmii_riser.c
+index 5c3c593..f3e0fb2 100644
+--- a/board/freescale/common/sgmii_riser.c
++++ b/board/freescale/common/sgmii_riser.c
+@@ -15,7 +15,7 @@
+ #include <config.h>
+ #include <common.h>
+ #include <net.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <tsec.h>
+ #include <fdt_support.h>
+ 
+diff --git a/board/freescale/mpc8260ads/mpc8260ads.c b/board/freescale/mpc8260ads/mpc8260ads.c
+index b8c8ce9..5f34b4b 100644
+--- a/board/freescale/mpc8260ads/mpc8260ads.c
++++ b/board/freescale/mpc8260ads/mpc8260ads.c
+@@ -31,7 +31,7 @@
+ #include <pci.h>
+ #endif
+ #ifdef CONFIG_OF_LIBFDT
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #endif
+ 
+diff --git a/board/freescale/mpc8308rdb/mpc8308rdb.c b/board/freescale/mpc8308rdb/mpc8308rdb.c
+index fba41fe..5cf18d2 100644
+--- a/board/freescale/mpc8308rdb/mpc8308rdb.c
++++ b/board/freescale/mpc8308rdb/mpc8308rdb.c
+@@ -9,7 +9,7 @@
+ #include <hwconfig.h>
+ #include <i2c.h>
+ #include <spi.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <pci.h>
+ #include <mpc83xx.h>
+diff --git a/board/freescale/mpc8313erdb/mpc8313erdb.c b/board/freescale/mpc8313erdb/mpc8313erdb.c
+index 69e98a5..7325422 100644
+--- a/board/freescale/mpc8313erdb/mpc8313erdb.c
++++ b/board/freescale/mpc8313erdb/mpc8313erdb.c
+@@ -8,7 +8,7 @@
+ 
+ #include <common.h>
+ #if defined(CONFIG_OF_LIBFDT)
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #endif
+ #include <pci.h>
+ #include <mpc83xx.h>
+diff --git a/board/freescale/mpc8315erdb/mpc8315erdb.c b/board/freescale/mpc8315erdb/mpc8315erdb.c
+index e6f091f..68c3d93 100644
+--- a/board/freescale/mpc8315erdb/mpc8315erdb.c
++++ b/board/freescale/mpc8315erdb/mpc8315erdb.c
+@@ -10,7 +10,7 @@
+ #include <common.h>
+ #include <hwconfig.h>
+ #include <i2c.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <pci.h>
+ #include <mpc83xx.h>
+diff --git a/board/freescale/mpc8323erdb/mpc8323erdb.c b/board/freescale/mpc8323erdb/mpc8323erdb.c
+index 3dce362..fe4b41f 100644
+--- a/board/freescale/mpc8323erdb/mpc8323erdb.c
++++ b/board/freescale/mpc8323erdb/mpc8323erdb.c
+@@ -15,7 +15,7 @@
+ #include <i2c.h>
+ #include <miiphy.h>
+ #include <command.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #if defined(CONFIG_PCI)
+ #include <pci.h>
+ #endif
+diff --git a/board/freescale/mpc832xemds/mpc832xemds.c b/board/freescale/mpc832xemds/mpc832xemds.c
+index b7ea0e4..f533a11 100644
+--- a/board/freescale/mpc832xemds/mpc832xemds.c
++++ b/board/freescale/mpc832xemds/mpc832xemds.c
+@@ -17,7 +17,7 @@
+ #endif
+ #include <asm/mmu.h>
+ #if defined(CONFIG_OF_LIBFDT)
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #endif
+ #if defined(CONFIG_PQ_MDS_PIB)
+ #include "../common/pq-mds-pib.h"
+diff --git a/board/freescale/mpc8349emds/mpc8349emds.c b/board/freescale/mpc8349emds/mpc8349emds.c
+index d909220..8ac9c09 100644
+--- a/board/freescale/mpc8349emds/mpc8349emds.c
++++ b/board/freescale/mpc8349emds/mpc8349emds.c
+@@ -19,7 +19,7 @@
+ #endif
+ 
+ #if defined(CONFIG_OF_LIBFDT)
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #endif
+ 
+ int fixed_sdram(void);
+diff --git a/board/freescale/mpc8349itx/mpc8349itx.c b/board/freescale/mpc8349itx/mpc8349itx.c
+index 803d722..af5cb5f 100644
+--- a/board/freescale/mpc8349itx/mpc8349itx.c
++++ b/board/freescale/mpc8349itx/mpc8349itx.c
+@@ -17,7 +17,7 @@
+ #include <spd_sdram.h>
+ #include <asm/mmu.h>
+ #if defined(CONFIG_OF_LIBFDT)
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #endif
+ 
+ #ifndef CONFIG_SPD_EEPROM
+diff --git a/board/freescale/mpc8360emds/mpc8360emds.c b/board/freescale/mpc8360emds/mpc8360emds.c
+index ac96163..a7f8fc2 100644
+--- a/board/freescale/mpc8360emds/mpc8360emds.c
++++ b/board/freescale/mpc8360emds/mpc8360emds.c
+@@ -20,7 +20,7 @@
+ #include <asm/fsl_enet.h>
+ #include <asm/mmu.h>
+ #if defined(CONFIG_OF_LIBFDT)
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #endif
+ #include <hwconfig.h>
+ #include <fdt_support.h>
+diff --git a/board/freescale/mpc8360erdk/mpc8360erdk.c b/board/freescale/mpc8360erdk/mpc8360erdk.c
+index fef230b..54eba60 100644
+--- a/board/freescale/mpc8360erdk/mpc8360erdk.c
++++ b/board/freescale/mpc8360erdk/mpc8360erdk.c
+@@ -19,7 +19,7 @@
+ #include <asm/io.h>
+ #include <asm/mmu.h>
+ #include <pci.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ 
+ const qe_iop_conf_t qe_iop_conf_tab[] = {
+ 	/* MDIO */
+diff --git a/board/freescale/mpc837xemds/mpc837xemds.c b/board/freescale/mpc837xemds/mpc837xemds.c
+index 0a3c972..832948b 100644
+--- a/board/freescale/mpc837xemds/mpc837xemds.c
++++ b/board/freescale/mpc837xemds/mpc837xemds.c
+@@ -13,7 +13,7 @@
+ #include <asm/fsl_enet.h>
+ #include <spd_sdram.h>
+ #include <tsec.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <fsl_esdhc.h>
+ #include <fsl_mdio.h>
+diff --git a/board/freescale/mpc8536ds/mpc8536ds.c b/board/freescale/mpc8536ds/mpc8536ds.c
+index 467f4f2..ba38193 100644
+--- a/board/freescale/mpc8536ds/mpc8536ds.c
++++ b/board/freescale/mpc8536ds/mpc8536ds.c
+@@ -17,7 +17,7 @@
+ #include <asm/fsl_serdes.h>
+ #include <spd.h>
+ #include <miiphy.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <spd_sdram.h>
+ #include <fdt_support.h>
+ #include <fsl_mdio.h>
+diff --git a/board/freescale/mpc8540ads/mpc8540ads.c b/board/freescale/mpc8540ads/mpc8540ads.c
+index 93288c7..a9ae7a3 100644
+--- a/board/freescale/mpc8540ads/mpc8540ads.c
++++ b/board/freescale/mpc8540ads/mpc8540ads.c
+@@ -15,7 +15,7 @@
+ #include <asm/mmu.h>
+ #include <asm/immap_85xx.h>
+ #include <fsl_ddr_sdram.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ 
+ #if defined(CONFIG_DDR_ECC) && !defined(CONFIG_ECC_INIT_VIA_DDRCONTROLLER)
+diff --git a/board/freescale/mpc8541cds/mpc8541cds.c b/board/freescale/mpc8541cds/mpc8541cds.c
+index 7b264dd..33ced17 100644
+--- a/board/freescale/mpc8541cds/mpc8541cds.c
++++ b/board/freescale/mpc8541cds/mpc8541cds.c
+@@ -14,7 +14,7 @@
+ #include <fsl_ddr_sdram.h>
+ #include <ioports.h>
+ #include <spd_sdram.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ 
+ #include "../common/cadmus.h"
+diff --git a/board/freescale/mpc8544ds/mpc8544ds.c b/board/freescale/mpc8544ds/mpc8544ds.c
+index 1b33db6..03b1db7 100644
+--- a/board/freescale/mpc8544ds/mpc8544ds.c
++++ b/board/freescale/mpc8544ds/mpc8544ds.c
+@@ -15,7 +15,7 @@
+ #include <asm/fsl_serdes.h>
+ #include <asm/io.h>
+ #include <miiphy.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <fsl_mdio.h>
+ #include <tsec.h>
+diff --git a/board/freescale/mpc8548cds/mpc8548cds.c b/board/freescale/mpc8548cds/mpc8548cds.c
+index ca9b43c..063c282 100644
+--- a/board/freescale/mpc8548cds/mpc8548cds.c
++++ b/board/freescale/mpc8548cds/mpc8548cds.c
+@@ -15,7 +15,7 @@
+ #include <fsl_ddr_sdram.h>
+ #include <asm/fsl_serdes.h>
+ #include <miiphy.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <tsec.h>
+ #include <fsl_mdio.h>
+diff --git a/board/freescale/mpc8555cds/mpc8555cds.c b/board/freescale/mpc8555cds/mpc8555cds.c
+index de5f566..9c74bfd 100644
+--- a/board/freescale/mpc8555cds/mpc8555cds.c
++++ b/board/freescale/mpc8555cds/mpc8555cds.c
+@@ -12,7 +12,7 @@
+ #include <fsl_ddr_sdram.h>
+ #include <ioports.h>
+ #include <spd_sdram.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ 
+ #include "../common/cadmus.h"
+diff --git a/board/freescale/mpc8560ads/mpc8560ads.c b/board/freescale/mpc8560ads/mpc8560ads.c
+index 7104e33..30d577c 100644
+--- a/board/freescale/mpc8560ads/mpc8560ads.c
++++ b/board/freescale/mpc8560ads/mpc8560ads.c
+@@ -18,7 +18,7 @@
+ #include <ioports.h>
+ #include <spd_sdram.h>
+ #include <miiphy.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <asm/fsl_lbc.h>
+ 
+diff --git a/board/freescale/mpc8568mds/mpc8568mds.c b/board/freescale/mpc8568mds/mpc8568mds.c
+index a8fdcb5..9a76608 100644
+--- a/board/freescale/mpc8568mds/mpc8568mds.c
++++ b/board/freescale/mpc8568mds/mpc8568mds.c
+@@ -17,7 +17,7 @@
+ #include <spd_sdram.h>
+ #include <i2c.h>
+ #include <ioports.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ 
+ #include "bcsr.h"
+diff --git a/board/freescale/mpc8569mds/mpc8569mds.c b/board/freescale/mpc8569mds/mpc8569mds.c
+index cb55e1c..afe0750 100644
+--- a/board/freescale/mpc8569mds/mpc8569mds.c
++++ b/board/freescale/mpc8569mds/mpc8569mds.c
+@@ -20,7 +20,7 @@
+ #include <spd_sdram.h>
+ #include <i2c.h>
+ #include <ioports.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <fsl_esdhc.h>
+ #include <phy.h>
+diff --git a/board/freescale/mpc8572ds/mpc8572ds.c b/board/freescale/mpc8572ds/mpc8572ds.c
+index 5686322..85a718d 100644
+--- a/board/freescale/mpc8572ds/mpc8572ds.c
++++ b/board/freescale/mpc8572ds/mpc8572ds.c
+@@ -16,7 +16,7 @@
+ #include <asm/io.h>
+ #include <asm/fsl_serdes.h>
+ #include <miiphy.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <tsec.h>
+ #include <fsl_mdio.h>
+diff --git a/board/freescale/mpc8610hpcd/mpc8610hpcd.c b/board/freescale/mpc8610hpcd/mpc8610hpcd.c
+index d8740dd..adf2699 100644
+--- a/board/freescale/mpc8610hpcd/mpc8610hpcd.c
++++ b/board/freescale/mpc8610hpcd/mpc8610hpcd.c
+@@ -14,7 +14,7 @@
+ #include <asm/fsl_serdes.h>
+ #include <i2c.h>
+ #include <asm/io.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <spd_sdram.h>
+ #include <netdev.h>
+diff --git a/board/freescale/mpc8641hpcn/mpc8641hpcn.c b/board/freescale/mpc8641hpcn/mpc8641hpcn.c
+index a58b5f9..e0837ca 100644
+--- a/board/freescale/mpc8641hpcn/mpc8641hpcn.c
++++ b/board/freescale/mpc8641hpcn/mpc8641hpcn.c
+@@ -12,7 +12,7 @@
+ #include <fsl_ddr_sdram.h>
+ #include <asm/fsl_serdes.h>
+ #include <asm/io.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <netdev.h>
+ 
+diff --git a/board/freescale/p1010rdb/p1010rdb.c b/board/freescale/p1010rdb/p1010rdb.c
+index 62caf67..45c8b23 100644
+--- a/board/freescale/p1010rdb/p1010rdb.c
++++ b/board/freescale/p1010rdb/p1010rdb.c
+@@ -11,7 +11,7 @@
+ #include <asm/immap_85xx.h>
+ #include <asm/io.h>
+ #include <miiphy.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <fsl_mdio.h>
+ #include <tsec.h>
+diff --git a/board/freescale/p1022ds/p1022ds.c b/board/freescale/p1022ds/p1022ds.c
+index ba789a4..b813c00 100644
+--- a/board/freescale/p1022ds/p1022ds.c
++++ b/board/freescale/p1022ds/p1022ds.c
+@@ -17,7 +17,7 @@
+ #include <fsl_ddr_sdram.h>
+ #include <asm/fsl_serdes.h>
+ #include <asm/io.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <fsl_mdio.h>
+ #include <tsec.h>
+diff --git a/board/freescale/p1023rdb/p1023rdb.c b/board/freescale/p1023rdb/p1023rdb.c
+index d2d4f83..11283b9 100644
+--- a/board/freescale/p1023rdb/p1023rdb.c
++++ b/board/freescale/p1023rdb/p1023rdb.c
+@@ -18,7 +18,7 @@
+ #include <asm/fsl_pci.h>
+ #include <fsl_ddr_sdram.h>
+ #include <asm/fsl_portals.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <netdev.h>
+ #include <malloc.h>
+diff --git a/board/freescale/p1023rds/p1023rds.c b/board/freescale/p1023rds/p1023rds.c
+index d8c8745..ecba711 100644
+--- a/board/freescale/p1023rds/p1023rds.c
++++ b/board/freescale/p1023rds/p1023rds.c
+@@ -18,7 +18,7 @@
+ #include <asm/fsl_pci.h>
+ #include <fsl_ddr_sdram.h>
+ #include <asm/fsl_portals.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <netdev.h>
+ #include <malloc.h>
+diff --git a/board/freescale/p1_p2_rdb/p1_p2_rdb.c b/board/freescale/p1_p2_rdb/p1_p2_rdb.c
+index 3df557d..442b81a 100644
+--- a/board/freescale/p1_p2_rdb/p1_p2_rdb.c
++++ b/board/freescale/p1_p2_rdb/p1_p2_rdb.c
+@@ -13,7 +13,7 @@
+ #include <asm/fsl_serdes.h>
+ #include <asm/io.h>
+ #include <miiphy.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <fsl_mdio.h>
+ #include <tsec.h>
+diff --git a/board/freescale/p1_p2_rdb/pci.c b/board/freescale/p1_p2_rdb/pci.c
+index 745ebb1..bb1ae5b 100644
+--- a/board/freescale/p1_p2_rdb/pci.c
++++ b/board/freescale/p1_p2_rdb/pci.c
+@@ -11,7 +11,7 @@
+ #include <asm/fsl_serdes.h>
+ #include <asm/io.h>
+ #include <asm/fsl_pci.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ 
+ DECLARE_GLOBAL_DATA_PTR;
+diff --git a/board/freescale/p1_p2_rdb_pc/p1_p2_rdb_pc.c b/board/freescale/p1_p2_rdb_pc/p1_p2_rdb_pc.c
+index 5f3d6fd..198f957 100644
+--- a/board/freescale/p1_p2_rdb_pc/p1_p2_rdb_pc.c
++++ b/board/freescale/p1_p2_rdb_pc/p1_p2_rdb_pc.c
+@@ -20,7 +20,7 @@
+ #include <asm/fsl_lbc.h>
+ #include <asm/mp.h>
+ #include <miiphy.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <fsl_mdio.h>
+ #include <tsec.h>
+diff --git a/board/freescale/p1_twr/p1_twr.c b/board/freescale/p1_twr/p1_twr.c
+index 0e0d058..1be932e 100644
+--- a/board/freescale/p1_twr/p1_twr.c
++++ b/board/freescale/p1_twr/p1_twr.c
+@@ -20,7 +20,7 @@
+ #include <asm/fsl_lbc.h>
+ #include <asm/mp.h>
+ #include <miiphy.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <fsl_mdio.h>
+ #include <tsec.h>
+diff --git a/board/freescale/p2020come/p2020come.c b/board/freescale/p2020come/p2020come.c
+index f777bb9..de55d2c 100644
+--- a/board/freescale/p2020come/p2020come.c
++++ b/board/freescale/p2020come/p2020come.c
+@@ -15,7 +15,7 @@
+ #include <asm/fsl_serdes.h>
+ #include <asm/io.h>
+ #include <miiphy.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <fsl_mdio.h>
+ #include <tsec.h>
+diff --git a/board/freescale/p2020ds/p2020ds.c b/board/freescale/p2020ds/p2020ds.c
+index a0cf927..812046c 100644
+--- a/board/freescale/p2020ds/p2020ds.c
++++ b/board/freescale/p2020ds/p2020ds.c
+@@ -16,7 +16,7 @@
+ #include <asm/io.h>
+ #include <asm/fsl_serdes.h>
+ #include <miiphy.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <fsl_mdio.h>
+ #include <tsec.h>
+diff --git a/board/freescale/t1040qds/pci.c b/board/freescale/t1040qds/pci.c
+index c53e3b7..68ee74b 100644
+--- a/board/freescale/t1040qds/pci.c
++++ b/board/freescale/t1040qds/pci.c
+@@ -8,7 +8,7 @@
+ #include <command.h>
+ #include <pci.h>
+ #include <asm/fsl_pci.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <asm/fsl_serdes.h>
+ 
+diff --git a/board/freescale/t104xrdb/pci.c b/board/freescale/t104xrdb/pci.c
+index c53e3b7..68ee74b 100644
+--- a/board/freescale/t104xrdb/pci.c
++++ b/board/freescale/t104xrdb/pci.c
+@@ -8,7 +8,7 @@
+ #include <command.h>
+ #include <pci.h>
+ #include <asm/fsl_pci.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <asm/fsl_serdes.h>
+ 
+diff --git a/board/freescale/t208xqds/pci.c b/board/freescale/t208xqds/pci.c
+index 84a89da..5a6731c 100644
+--- a/board/freescale/t208xqds/pci.c
++++ b/board/freescale/t208xqds/pci.c
+@@ -8,7 +8,7 @@
+ #include <command.h>
+ #include <pci.h>
+ #include <asm/fsl_pci.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <asm/fsl_serdes.h>
+ 
+diff --git a/board/freescale/t208xrdb/pci.c b/board/freescale/t208xrdb/pci.c
+index ba7041a..f13d41c 100644
+--- a/board/freescale/t208xrdb/pci.c
++++ b/board/freescale/t208xrdb/pci.c
+@@ -8,7 +8,7 @@
+ #include <command.h>
+ #include <pci.h>
+ #include <asm/fsl_pci.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <asm/fsl_serdes.h>
+ 
+diff --git a/board/freescale/t4qds/pci.c b/board/freescale/t4qds/pci.c
+index 08d74b4..398c62b 100644
+--- a/board/freescale/t4qds/pci.c
++++ b/board/freescale/t4qds/pci.c
+@@ -8,7 +8,7 @@
+ #include <command.h>
+ #include <pci.h>
+ #include <asm/fsl_pci.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <asm/fsl_serdes.h>
+ 
+diff --git a/board/gdsys/405ex/io64.c b/board/gdsys/405ex/io64.c
+index 2f8e306..559a5ac 100644
+--- a/board/gdsys/405ex/io64.c
++++ b/board/gdsys/405ex/io64.c
+@@ -11,7 +11,7 @@
+ #include <common.h>
+ #include <asm/ppc4xx.h>
+ #include <asm/ppc405.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <asm/processor.h>
+ #include <asm/io.h>
+diff --git a/board/gdsys/intip/intip.c b/board/gdsys/intip/intip.c
+index ee6f9e0..b0293f8 100644
+--- a/board/gdsys/intip/intip.c
++++ b/board/gdsys/intip/intip.c
+@@ -11,7 +11,7 @@
+ 
+ #include <common.h>
+ #include <asm/ppc440.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <i2c.h>
+ #include <asm/processor.h>
+diff --git a/board/gdsys/p1022/controlcenterd.c b/board/gdsys/p1022/controlcenterd.c
+index 8ccd9ce..c3541de 100644
+--- a/board/gdsys/p1022/controlcenterd.c
++++ b/board/gdsys/p1022/controlcenterd.c
+@@ -32,7 +32,7 @@
+ #include <fsl_ddr_sdram.h>
+ #include <asm/fsl_serdes.h>
+ #include <asm/io.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <fsl_mdio.h>
+ #include <tsec.h>
+diff --git a/board/icecube/icecube.c b/board/icecube/icecube.c
+index a99416b..69727e4 100644
+--- a/board/icecube/icecube.c
++++ b/board/icecube/icecube.c
+@@ -12,7 +12,7 @@
+ #include <mpc5xxx.h>
+ #include <pci.h>
+ #include <asm/processor.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <netdev.h>
+ 
+ #if defined(CONFIG_LITE5200B)
+diff --git a/board/ids8247/ids8247.c b/board/ids8247/ids8247.c
+index 1b2d0e0..2d7d725 100644
+--- a/board/ids8247/ids8247.c
++++ b/board/ids8247/ids8247.c
+@@ -10,8 +10,8 @@
+ #include <mpc8260.h>
+ 
+ #if defined(CONFIG_OF_LIBFDT)
+-#include <libfdt.h>
+-#include <libfdt_env.h>
++#include <linux/libfdt.h>
++#include <linux/libfdt_env.h>
+ #include <fdt_support.h>
+ #endif
+ 
+diff --git a/board/ifm/o2dnt2/o2dnt2.c b/board/ifm/o2dnt2/o2dnt2.c
+index 6716ffc..166c3f8 100644
+--- a/board/ifm/o2dnt2/o2dnt2.c
++++ b/board/ifm/o2dnt2/o2dnt2.c
+@@ -13,7 +13,7 @@
+ #include <mpc5xxx.h>
+ #include <asm/processor.h>
+ #include <asm/io.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <i2c.h>
+ #include <miiphy.h>
+diff --git a/board/intercontrol/digsy_mtc/digsy_mtc.c b/board/intercontrol/digsy_mtc/digsy_mtc.c
+index 5843725..bd368fd 100644
+--- a/board/intercontrol/digsy_mtc/digsy_mtc.c
++++ b/board/intercontrol/digsy_mtc/digsy_mtc.c
+@@ -30,7 +30,7 @@
+ #else
+ #include "is42s16800a-7t.h"
+ #endif
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <i2c.h>
+ #include <mb862xx.h>
+diff --git a/board/ipek01/ipek01.c b/board/ipek01/ipek01.c
+index d44c4bf..3ce8ee5 100644
+--- a/board/ipek01/ipek01.c
++++ b/board/ipek01/ipek01.c
+@@ -19,7 +19,7 @@
+ #include <pci.h>
+ #include <netdev.h>
+ #include <miiphy.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <mb862xx.h>
+ #include <video_fb.h>
+ #include <asm/processor.h>
+diff --git a/board/jupiter/jupiter.c b/board/jupiter/jupiter.c
+index 78e4b5d..4037cda 100644
+--- a/board/jupiter/jupiter.c
++++ b/board/jupiter/jupiter.c
+@@ -12,7 +12,7 @@
+ #include <mpc5xxx.h>
+ #include <pci.h>
+ #include <asm/processor.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ 
+ #define SDRAM_DDR	0
+ #if 1
+diff --git a/board/keymile/km82xx/km82xx.c b/board/keymile/km82xx/km82xx.c
+index dfbfab8..1c53d55 100644
+--- a/board/keymile/km82xx/km82xx.c
++++ b/board/keymile/km82xx/km82xx.c
+@@ -12,7 +12,7 @@
+ #include <asm/io.h>
+ 
+ #if defined(CONFIG_OF_BOARD_SETUP) && defined(CONFIG_OF_LIBFDT)
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #endif
+ 
+ #include <i2c.h>
+diff --git a/board/keymile/km83xx/km83xx.c b/board/keymile/km83xx/km83xx.c
+index 0543483..c771bac 100644
+--- a/board/keymile/km83xx/km83xx.c
++++ b/board/keymile/km83xx/km83xx.c
+@@ -23,7 +23,7 @@
+ #include <asm/mmu.h>
+ #include <asm/processor.h>
+ #include <pci.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <post.h>
+ 
+ #include "../common/common.h"
+diff --git a/board/keymile/kmp204x/pci.c b/board/keymile/kmp204x/pci.c
+index a484eb5..32b680f 100644
+--- a/board/keymile/kmp204x/pci.c
++++ b/board/keymile/kmp204x/pci.c
+@@ -11,7 +11,7 @@
+ #include <command.h>
+ #include <pci.h>
+ #include <asm/fsl_pci.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <asm/fsl_serdes.h>
+ #include <asm/errno.h>
+diff --git a/board/korat/korat.c b/board/korat/korat.c
+index 8b83000..ab9de3b 100644
+--- a/board/korat/korat.c
++++ b/board/korat/korat.c
+@@ -15,7 +15,7 @@
+ #include <common.h>
+ #include <fdt_support.h>
+ #include <i2c.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <asm/ppc440.h>
+ #include <asm/bitops.h>
+ #include <asm/ppc4xx-gpio.h>
+diff --git a/board/kup/kup4k/kup4k.c b/board/kup/kup4k/kup4k.c
+index a4c1998..2491235 100644
+--- a/board/kup/kup4k/kup4k.c
++++ b/board/kup/kup4k/kup4k.c
+@@ -8,7 +8,7 @@
+ 
+ #include <common.h>
+ #include <command.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <mpc8xx.h>
+ #include <hwconfig.h>
+ #include <i2c.h>
+diff --git a/board/matrix_vision/mvblm7/mvblm7.c b/board/matrix_vision/mvblm7/mvblm7.c
+index f3c16a3..fda546f 100644
+--- a/board/matrix_vision/mvblm7/mvblm7.c
++++ b/board/matrix_vision/mvblm7/mvblm7.c
+@@ -15,7 +15,7 @@
+ #include <spi.h>
+ #include <asm/mmu.h>
+ #if defined(CONFIG_OF_LIBFDT)
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #endif
+ 
+ #include "../common/mv_common.h"
+diff --git a/board/matrix_vision/mvblm7/pci.c b/board/matrix_vision/mvblm7/pci.c
+index f14837a..12b160e 100644
+--- a/board/matrix_vision/mvblm7/pci.c
++++ b/board/matrix_vision/mvblm7/pci.c
+@@ -9,7 +9,7 @@
+ 
+ #include <common.h>
+ #if defined(CONFIG_OF_LIBFDT)
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #endif
+ #include <pci.h>
+ #include <mpc83xx.h>
+diff --git a/board/mosaixtech/icon/icon.c b/board/mosaixtech/icon/icon.c
+index e3fb1e6..34a5154 100644
+--- a/board/mosaixtech/icon/icon.c
++++ b/board/mosaixtech/icon/icon.c
+@@ -8,7 +8,7 @@
+ #include <common.h>
+ #include <asm/ppc4xx.h>
+ #include <i2c.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <netdev.h>
+ #include <asm/processor.h>
+diff --git a/board/motionpro/motionpro.c b/board/motionpro/motionpro.c
+index a6235e5..af22d36 100644
+--- a/board/motionpro/motionpro.c
++++ b/board/motionpro/motionpro.c
+@@ -13,7 +13,7 @@
+ #include <common.h>
+ #include <mpc5xxx.h>
+ #include <miiphy.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ 
+ #if defined(CONFIG_STATUS_LED)
+ #include <status_led.h>
+diff --git a/board/mpc8308_p1m/mpc8308_p1m.c b/board/mpc8308_p1m/mpc8308_p1m.c
+index 2009e62..b8b239a 100644
+--- a/board/mpc8308_p1m/mpc8308_p1m.c
++++ b/board/mpc8308_p1m/mpc8308_p1m.c
+@@ -7,7 +7,7 @@
+ 
+ #include <common.h>
+ #include <i2c.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <pci.h>
+ #include <mpc83xx.h>
+diff --git a/board/muas3001/muas3001.c b/board/muas3001/muas3001.c
+index 42b0a03..2cfa041 100644
+--- a/board/muas3001/muas3001.c
++++ b/board/muas3001/muas3001.c
+@@ -10,7 +10,7 @@
+ #include <ioports.h>
+ 
+ #if defined(CONFIG_OF_BOARD_SETUP) && defined(CONFIG_OF_LIBFDT)
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #endif
+ 
+ /*
+diff --git a/board/prodrive/alpr/alpr.c b/board/prodrive/alpr/alpr.c
+index 31c1ab5..4301370 100644
+--- a/board/prodrive/alpr/alpr.c
++++ b/board/prodrive/alpr/alpr.c
+@@ -7,7 +7,7 @@
+ 
+ 
+ #include <common.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <spd_sdram.h>
+ #include <asm/ppc4xx-emac.h>
+diff --git a/board/sbc8349/sbc8349.c b/board/sbc8349/sbc8349.c
+index 89da47e..5a80b21 100644
+--- a/board/sbc8349/sbc8349.c
++++ b/board/sbc8349/sbc8349.c
+@@ -16,7 +16,7 @@
+ #include <spd_sdram.h>
+ #include <miiphy.h>
+ #if defined(CONFIG_OF_LIBFDT)
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #endif
+ 
+ int fixed_sdram(void);
+diff --git a/board/sbc8548/sbc8548.c b/board/sbc8548/sbc8548.c
+index d584276..0628371 100644
+--- a/board/sbc8548/sbc8548.c
++++ b/board/sbc8548/sbc8548.c
+@@ -21,7 +21,7 @@
+ #include <netdev.h>
+ #include <tsec.h>
+ #include <miiphy.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ 
+ DECLARE_GLOBAL_DATA_PTR;
+diff --git a/board/sbc8641d/sbc8641d.c b/board/sbc8641d/sbc8641d.c
+index 4906be4..5b427d2 100644
+--- a/board/sbc8641d/sbc8641d.c
++++ b/board/sbc8641d/sbc8641d.c
+@@ -20,7 +20,7 @@
+ #include <asm/fsl_pci.h>
+ #include <fsl_ddr_sdram.h>
+ #include <asm/fsl_serdes.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ 
+ long int fixed_sdram (void);
+diff --git a/board/sheldon/simpc8313/simpc8313.c b/board/sheldon/simpc8313/simpc8313.c
+index 31406fa..4550a91 100644
+--- a/board/sheldon/simpc8313/simpc8313.c
++++ b/board/sheldon/simpc8313/simpc8313.c
+@@ -8,7 +8,7 @@
+  */
+ 
+ #include <common.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <pci.h>
+ #include <mpc83xx.h>
+ #include <ns16550.h>
+diff --git a/board/socrates/socrates.c b/board/socrates/socrates.c
+index 2caefbb..0198719 100644
+--- a/board/socrates/socrates.c
++++ b/board/socrates/socrates.c
+@@ -17,7 +17,7 @@
+ #include <asm/immap_85xx.h>
+ #include <ioports.h>
+ #include <flash.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <asm/io.h>
+ #include <i2c.h>
+diff --git a/board/t3corp/t3corp.c b/board/t3corp/t3corp.c
+index 586c6f9..bf596ca 100644
+--- a/board/t3corp/t3corp.c
++++ b/board/t3corp/t3corp.c
+@@ -7,7 +7,7 @@
+ 
+ #include <common.h>
+ #include <asm/ppc440.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <i2c.h>
+ #include <mtd/cfi_flash.h>
+diff --git a/board/tqc/tqm5200/tqm5200.c b/board/tqc/tqm5200/tqm5200.c
+index a1f56cd..82a0f28 100644
+--- a/board/tqc/tqm5200/tqm5200.c
++++ b/board/tqc/tqm5200/tqm5200.c
+@@ -15,7 +15,7 @@
+ #include <mpc5xxx.h>
+ #include <pci.h>
+ #include <asm/processor.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <netdev.h>
+ 
+ #ifdef CONFIG_VIDEO_SM501
+diff --git a/board/tqc/tqm8xx/tqm8xx.c b/board/tqc/tqm8xx/tqm8xx.c
+index 9ce2a57..78f8f3f 100644
+--- a/board/tqc/tqm8xx/tqm8xx.c
++++ b/board/tqc/tqm8xx/tqm8xx.c
+@@ -13,7 +13,7 @@
+ #endif
+ 
+ #if defined(CONFIG_OF_BOARD_SETUP) && defined(CONFIG_OF_LIBFDT)
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #endif
+ 
+ extern flash_info_t flash_info[];	/* FLASH chips info */
+diff --git a/board/ve8313/ve8313.c b/board/ve8313/ve8313.c
+index c4feef8..e826263 100644
+--- a/board/ve8313/ve8313.c
++++ b/board/ve8313/ve8313.c
+@@ -10,7 +10,7 @@
+  */
+ 
+ #include <common.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <pci.h>
+ #include <mpc83xx.h>
+ #include <ns16550.h>
+diff --git a/board/xes/common/fsl_8xxx_pci.c b/board/xes/common/fsl_8xxx_pci.c
+index 510f638..d1658c9 100644
+--- a/board/xes/common/fsl_8xxx_pci.c
++++ b/board/xes/common/fsl_8xxx_pci.c
+@@ -11,7 +11,7 @@
+ #include <asm/fsl_serdes.h>
+ #include <asm/io.h>
+ #include <linux/compiler.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ 
+ 
+diff --git a/board/xes/xpedite520x/xpedite520x.c b/board/xes/xpedite520x/xpedite520x.c
+index aa9e99d..e81f3d1 100644
+--- a/board/xes/xpedite520x/xpedite520x.c
++++ b/board/xes/xpedite520x/xpedite520x.c
+@@ -14,7 +14,7 @@
+ #include <asm/io.h>
+ #include <asm/cache.h>
+ #include <asm/mmu.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <pca953x.h>
+ 
+diff --git a/board/xes/xpedite537x/xpedite537x.c b/board/xes/xpedite537x/xpedite537x.c
+index efd563b..31c21b5 100644
+--- a/board/xes/xpedite537x/xpedite537x.c
++++ b/board/xes/xpedite537x/xpedite537x.c
+@@ -12,7 +12,7 @@
+ #include <asm/fsl_pci.h>
+ #include <asm/io.h>
+ #include <asm/cache.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <pca953x.h>
+ 
+diff --git a/board/xes/xpedite550x/xpedite550x.c b/board/xes/xpedite550x/xpedite550x.c
+index e64d682..d9ffe84 100644
+--- a/board/xes/xpedite550x/xpedite550x.c
++++ b/board/xes/xpedite550x/xpedite550x.c
+@@ -12,7 +12,7 @@
+ #include <asm/fsl_pci.h>
+ #include <asm/io.h>
+ #include <asm/cache.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <pca953x.h>
+ 
+diff --git a/common/bootstage.c b/common/bootstage.c
+index 35bce3d..800645e 100644
+--- a/common/bootstage.c
++++ b/common/bootstage.c
+@@ -13,7 +13,7 @@
+  */
+ 
+ #include <common.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <malloc.h>
+ #include <linux/compiler.h>
+ 
+diff --git a/common/cmd_bootm.c b/common/cmd_bootm.c
+index 9751edc..f4a418e 100644
+--- a/common/cmd_bootm.c
++++ b/common/cmd_bootm.c
+@@ -37,7 +37,7 @@
+ #endif
+ 
+ #if defined(CONFIG_OF_LIBFDT)
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #endif
+ 
+diff --git a/common/cmd_fdt.c b/common/cmd_fdt.c
+index 3a9edd6..d9e31a8 100644
+--- a/common/cmd_fdt.c
++++ b/common/cmd_fdt.c
+@@ -13,7 +13,7 @@
+ #include <linux/ctype.h>
+ #include <linux/types.h>
+ #include <asm/global_data.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <asm/io.h>
+ 
+diff --git a/common/fdt_support.c b/common/fdt_support.c
+index f9f358e..23bd8b6 100644
+--- a/common/fdt_support.c
++++ b/common/fdt_support.c
+@@ -12,7 +12,7 @@
+ #include <linux/ctype.h>
+ #include <linux/types.h>
+ #include <asm/global_data.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include <exports.h>
+ 
+diff --git a/common/image-fdt.c b/common/image-fdt.c
+index a54a919..00a38df 100644
+--- a/common/image-fdt.c
++++ b/common/image-fdt.c
+@@ -13,7 +13,7 @@
+ #include <fdt_support.h>
+ #include <errno.h>
+ #include <image.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <asm/io.h>
+ 
+ #ifndef CONFIG_SYS_FDT_PAD
+diff --git a/common/image.c b/common/image.c
+index 9c6bec5..98befc2 100644
+--- a/common/image.c
++++ b/common/image.c
+@@ -29,7 +29,7 @@
+ #include <image.h>
+ 
+ #if defined(CONFIG_FIT) || defined(CONFIG_OF_LIBFDT)
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #endif
+ 
+diff --git a/common/lcd.c b/common/lcd.c
+index 19b86b7..bea5d36 100644
+--- a/common/lcd.c
++++ b/common/lcd.c
+@@ -46,7 +46,7 @@
+ #endif
+ 
+ #if defined(CONFIG_LCD_DT_SIMPLEFB)
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #endif
+ 
+ /************************************************************************/
+diff --git a/drivers/mmc/exynos_dw_mmc.c b/drivers/mmc/exynos_dw_mmc.c
+index de8cdcc..877ae7c 100644
+--- a/drivers/mmc/exynos_dw_mmc.c
++++ b/drivers/mmc/exynos_dw_mmc.c
+@@ -8,7 +8,7 @@
+ #include <common.h>
+ #include <dwmmc.h>
+ #include <fdtdec.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <malloc.h>
+ #include <asm/arch/dwmmc.h>
+ #include <asm/arch/clk.h>
+diff --git a/drivers/mmc/s5p_sdhci.c b/drivers/mmc/s5p_sdhci.c
+index ccae4cc..3c68443 100644
+--- a/drivers/mmc/s5p_sdhci.c
++++ b/drivers/mmc/s5p_sdhci.c
+@@ -9,7 +9,7 @@
+ #include <malloc.h>
+ #include <sdhci.h>
+ #include <fdtdec.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <asm/gpio.h>
+ #include <asm/arch/mmc.h>
+ #include <asm/arch/clk.h>
+diff --git a/drivers/mmc/zynq_sdhci.c b/drivers/mmc/zynq_sdhci.c
+index fdce2c2..92d3dfe 100644
+--- a/drivers/mmc/zynq_sdhci.c
++++ b/drivers/mmc/zynq_sdhci.c
+@@ -8,7 +8,7 @@
+ 
+ #include <common.h>
+ #include <fdtdec.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <malloc.h>
+ #include <sdhci.h>
+ #include <asm/arch/sys_proto.h>
+diff --git a/drivers/net/zynq_gem.c b/drivers/net/zynq_gem.c
+index 101489c..ec8f8f1 100644
+--- a/drivers/net/zynq_gem.c
++++ b/drivers/net/zynq_gem.c
+@@ -13,7 +13,7 @@
+ #include <net.h>
+ #include <config.h>
+ #include <fdtdec.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <malloc.h>
+ #include <asm/io.h>
+ #include <phy.h>
+diff --git a/drivers/pci/fsl_pci_init.c b/drivers/pci/fsl_pci_init.c
+index 6317fb1..1818236 100644
+--- a/drivers/pci/fsl_pci_init.c
++++ b/drivers/pci/fsl_pci_init.c
+@@ -847,7 +847,7 @@ int fsl_pcie_init_board(int busno)
+ #endif
+ 
+ #ifdef CONFIG_OF_BOARD_SETUP
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ 
+ void ft_fsl_pci_setup(void *blob, const char *pci_compat,
+diff --git a/drivers/pci/tsi108_pci.c b/drivers/pci/tsi108_pci.c
+index d48e1e6..bce8b79 100644
+--- a/drivers/pci/tsi108_pci.c
++++ b/drivers/pci/tsi108_pci.c
+@@ -16,7 +16,7 @@
+ #include <asm/io.h>
+ #include <tsi108.h>
+ #if defined(CONFIG_OF_LIBFDT)
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #endif
+ 
+diff --git a/drivers/qe/fdt.c b/drivers/qe/fdt.c
+index d9a7d82..01950cd 100644
+--- a/drivers/qe/fdt.c
++++ b/drivers/qe/fdt.c
+@@ -8,7 +8,7 @@
+  */
+ 
+ #include <common.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ #include "qe.h"
+ 
+diff --git a/drivers/sound/sound-i2s.c b/drivers/sound/sound-i2s.c
+index 749bbbd..be69fb0 100644
+--- a/drivers/sound/sound-i2s.c
++++ b/drivers/sound/sound-i2s.c
+@@ -8,7 +8,7 @@
+ #include <malloc.h>
+ #include <common.h>
+ #include <asm/io.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdtdec.h>
+ #include <i2c.h>
+ #include <i2s.h>
+diff --git a/drivers/usb/host/ehci-exynos.c b/drivers/usb/host/ehci-exynos.c
+index 9356878..c3d939b 100644
+--- a/drivers/usb/host/ehci-exynos.c
++++ b/drivers/usb/host/ehci-exynos.c
+@@ -9,7 +9,7 @@
+ 
+ #include <common.h>
+ #include <fdtdec.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <malloc.h>
+ #include <usb.h>
+ #include <asm/arch/cpu.h>
+diff --git a/drivers/usb/host/ehci-tegra.c b/drivers/usb/host/ehci-tegra.c
+index 0b42aa5..a8b52c7 100644
+--- a/drivers/usb/host/ehci-tegra.c
++++ b/drivers/usb/host/ehci-tegra.c
+@@ -16,7 +16,7 @@
+ #include <asm/arch/usb.h>
+ #include <usb.h>
+ #include <usb/ulpi.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdtdec.h>
+ 
+ #include "ehci.h"
+diff --git a/drivers/usb/host/xhci-exynos5.c b/drivers/usb/host/xhci-exynos5.c
+index 1146d10..9803129 100644
+--- a/drivers/usb/host/xhci-exynos5.c
++++ b/drivers/usb/host/xhci-exynos5.c
+@@ -15,7 +15,7 @@
+ 
+ #include <common.h>
+ #include <fdtdec.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <malloc.h>
+ #include <usb.h>
+ #include <watchdog.h>
+diff --git a/drivers/video/exynos_dp.c b/drivers/video/exynos_dp.c
+index 682483f..d4d8ec3 100644
+--- a/drivers/video/exynos_dp.c
++++ b/drivers/video/exynos_dp.c
+@@ -15,7 +15,7 @@
+ #include <asm/arch/dp_info.h>
+ #include <asm/arch/dp.h>
+ #include <fdtdec.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ 
+ #include "exynos_dp_lowlevel.h"
+ 
+diff --git a/drivers/video/exynos_dp_lowlevel.c b/drivers/video/exynos_dp_lowlevel.c
+index bf0ea10..a4e7bb6 100644
+--- a/drivers/video/exynos_dp_lowlevel.c
++++ b/drivers/video/exynos_dp_lowlevel.c
+@@ -13,7 +13,7 @@
+ #include <asm/arch/dp_info.h>
+ #include <asm/arch/dp.h>
+ #include <fdtdec.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ 
+ /* Declare global data pointer */
+ DECLARE_GLOBAL_DATA_PTR;
+diff --git a/drivers/video/exynos_fb.c b/drivers/video/exynos_fb.c
+index e1e0d80..00aaede 100644
+--- a/drivers/video/exynos_fb.c
++++ b/drivers/video/exynos_fb.c
+@@ -11,7 +11,7 @@
+ #include <common.h>
+ #include <lcd.h>
+ #include <fdtdec.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <asm/io.h>
+ #include <asm/arch/cpu.h>
+ #include <asm/arch/clock.h>
+diff --git a/drivers/video/exynos_fimd.c b/drivers/video/exynos_fimd.c
+index cebbba7..9b9be46 100644
+--- a/drivers/video/exynos_fimd.c
++++ b/drivers/video/exynos_fimd.c
+@@ -13,7 +13,7 @@
+ #include <lcd.h>
+ #include <div64.h>
+ #include <fdtdec.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <asm/arch/clk.h>
+ #include <asm/arch/clock.h>
+ #include <asm/arch/cpu.h>
+diff --git a/drivers/video/exynos_mipi_dsi.c b/drivers/video/exynos_mipi_dsi.c
+index 7dd4652..6606119 100644
+--- a/drivers/video/exynos_mipi_dsi.c
++++ b/drivers/video/exynos_mipi_dsi.c
+@@ -10,7 +10,7 @@
+ #include <common.h>
+ #include <malloc.h>
+ #include <fdtdec.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <linux/err.h>
+ #include <asm/arch/dsim.h>
+ #include <asm/arch/mipi_dsim.h>
+diff --git a/include/fdt_support.h b/include/fdt_support.h
+index 9871e2f..00b0197 100644
+--- a/include/fdt_support.h
++++ b/include/fdt_support.h
+@@ -10,7 +10,7 @@
+ 
+ #ifdef CONFIG_OF_LIBFDT
+ 
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ 
+ u32 fdt_getprop_u32_default(const void *fdt, const char *path,
+ 				const char *prop, const u32 dflt);
+diff --git a/include/fdtdec.h b/include/fdtdec.h
+index 3196cf6..487bf3c 100644
+--- a/include/fdtdec.h
++++ b/include/fdtdec.h
+@@ -14,7 +14,7 @@
+  * changes to support FDT are minimized.
+  */
+ 
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ 
+ /*
+  * A typedef for a physical address. Note that fdt data is always big
+diff --git a/include/image.h b/include/image.h
+index 6afd57b..85f36eb 100644
+--- a/include/image.h
++++ b/include/image.h
+@@ -45,7 +45,7 @@ struct lmb;
+ #endif /* USE_HOSTCC */
+ 
+ #if defined(CONFIG_FIT)
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdt_support.h>
+ # ifdef CONFIG_SPL_BUILD
+ #  ifdef CONFIG_SPL_CRC32_SUPPORT
+diff --git a/include/libfdt.h b/include/libfdt.h
+deleted file mode 100644
+index 9eefaaf..0000000
+--- a/include/libfdt.h
++++ /dev/null
+@@ -1,1578 +0,0 @@
+-#ifndef _LIBFDT_H
+-#define _LIBFDT_H
+-/*
+- * libfdt - Flat Device Tree manipulation
+- * Copyright (C) 2006 David Gibson, IBM Corporation.
+- *
+- * libfdt is dual licensed: you can use it either under the terms of
+- * the GPL, or the BSD license, at your option.
+- *
+- *  a) This library is free software; you can redistribute it and/or
+- *     modify it under the terms of the GNU General Public License as
+- *     published by the Free Software Foundation; either version 2 of the
+- *     License, or (at your option) any later version.
+- *
+- *     This library is distributed in the hope that it will be useful,
+- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- *     GNU General Public License for more details.
+- *
+- *     You should have received a copy of the GNU General Public
+- *     License along with this library; if not, write to the Free
+- *     Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+- *     MA 02110-1301 USA
+- *
+- * Alternatively,
+- *
+- *  b) Redistribution and use in source and binary forms, with or
+- *     without modification, are permitted provided that the following
+- *     conditions are met:
+- *
+- *     1. Redistributions of source code must retain the above
+- *        copyright notice, this list of conditions and the following
+- *        disclaimer.
+- *     2. Redistributions in binary form must reproduce the above
+- *        copyright notice, this list of conditions and the following
+- *        disclaimer in the documentation and/or other materials
+- *        provided with the distribution.
+- *
+- *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
+- *     CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+- *     INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+- *     MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+- *     DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+- *     CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+- *     SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+- *     NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+- *     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+- *     HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+- *     CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+- *     OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+- *     EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+- */
+-
+-#include <libfdt_env.h>
+-#include <fdt.h>
+-
+-#define FDT_FIRST_SUPPORTED_VERSION	0x10
+-#define FDT_LAST_SUPPORTED_VERSION	0x11
+-
+-/* Error codes: informative error codes */
+-#define FDT_ERR_NOTFOUND	1
+-	/* FDT_ERR_NOTFOUND: The requested node or property does not exist */
+-#define FDT_ERR_EXISTS		2
+-	/* FDT_ERR_EXISTS: Attemped to create a node or property which
+-	 * already exists */
+-#define FDT_ERR_NOSPACE		3
+-	/* FDT_ERR_NOSPACE: Operation needed to expand the device
+-	 * tree, but its buffer did not have sufficient space to
+-	 * contain the expanded tree. Use fdt_open_into() to move the
+-	 * device tree to a buffer with more space. */
+-
+-/* Error codes: codes for bad parameters */
+-#define FDT_ERR_BADOFFSET	4
+-	/* FDT_ERR_BADOFFSET: Function was passed a structure block
+-	 * offset which is out-of-bounds, or which points to an
+-	 * unsuitable part of the structure for the operation. */
+-#define FDT_ERR_BADPATH		5
+-	/* FDT_ERR_BADPATH: Function was passed a badly formatted path
+-	 * (e.g. missing a leading / for a function which requires an
+-	 * absolute path) */
+-#define FDT_ERR_BADPHANDLE	6
+-	/* FDT_ERR_BADPHANDLE: Function was passed an invalid phandle
+-	 * value.  phandle values of 0 and -1 are not permitted. */
+-#define FDT_ERR_BADSTATE	7
+-	/* FDT_ERR_BADSTATE: Function was passed an incomplete device
+-	 * tree created by the sequential-write functions, which is
+-	 * not sufficiently complete for the requested operation. */
+-
+-/* Error codes: codes for bad device tree blobs */
+-#define FDT_ERR_TRUNCATED	8
+-	/* FDT_ERR_TRUNCATED: Structure block of the given device tree
+-	 * ends without an FDT_END tag. */
+-#define FDT_ERR_BADMAGIC	9
+-	/* FDT_ERR_BADMAGIC: Given "device tree" appears not to be a
+-	 * device tree at all - it is missing the flattened device
+-	 * tree magic number. */
+-#define FDT_ERR_BADVERSION	10
+-	/* FDT_ERR_BADVERSION: Given device tree has a version which
+-	 * can't be handled by the requested operation.  For
+-	 * read-write functions, this may mean that fdt_open_into() is
+-	 * required to convert the tree to the expected version. */
+-#define FDT_ERR_BADSTRUCTURE	11
+-	/* FDT_ERR_BADSTRUCTURE: Given device tree has a corrupt
+-	 * structure block or other serious error (e.g. misnested
+-	 * nodes, or subnodes preceding properties). */
+-#define FDT_ERR_BADLAYOUT	12
+-	/* FDT_ERR_BADLAYOUT: For read-write functions, the given
+-	 * device tree has it's sub-blocks in an order that the
+-	 * function can't handle (memory reserve map, then structure,
+-	 * then strings).  Use fdt_open_into() to reorganize the tree
+-	 * into a form suitable for the read-write operations. */
+-
+-/* "Can't happen" error indicating a bug in libfdt */
+-#define FDT_ERR_INTERNAL	13
+-	/* FDT_ERR_INTERNAL: libfdt has failed an internal assertion.
+-	 * Should never be returned, if it is, it indicates a bug in
+-	 * libfdt itself. */
+-
+-#define FDT_ERR_MAX		13
+-
+-/**********************************************************************/
+-/* Low-level functions (you probably don't need these)                */
+-/**********************************************************************/
+-
+-const void *fdt_offset_ptr(const void *fdt, int offset, unsigned int checklen);
+-static inline void *fdt_offset_ptr_w(void *fdt, int offset, int checklen)
+-{
+-	return (void *)(uintptr_t)fdt_offset_ptr(fdt, offset, checklen);
+-}
+-
+-uint32_t fdt_next_tag(const void *fdt, int offset, int *nextoffset);
+-
+-/**********************************************************************/
+-/* Traversal functions                                                */
+-/**********************************************************************/
+-
+-int fdt_next_node(const void *fdt, int offset, int *depth);
+-
+-/**
+- * fdt_first_subnode() - get offset of first direct subnode
+- *
+- * @fdt:	FDT blob
+- * @offset:	Offset of node to check
+- * @return offset of first subnode, or -FDT_ERR_NOTFOUND if there is none
+- */
+-int fdt_first_subnode(const void *fdt, int offset);
+-
+-/**
+- * fdt_next_subnode() - get offset of next direct subnode
+- *
+- * After first calling fdt_first_subnode(), call this function repeatedly to
+- * get direct subnodes of a parent node.
+- *
+- * @fdt:	FDT blob
+- * @offset:	Offset of previous subnode
+- * @return offset of next subnode, or -FDT_ERR_NOTFOUND if there are no more
+- * subnodes
+- */
+-int fdt_next_subnode(const void *fdt, int offset);
+-
+-/**********************************************************************/
+-/* General functions                                                  */
+-/**********************************************************************/
+-
+-#define fdt_get_header(fdt, field) \
+-	(fdt32_to_cpu(((const struct fdt_header *)(fdt))->field))
+-#define fdt_magic(fdt)			(fdt_get_header(fdt, magic))
+-#define fdt_totalsize(fdt)		(fdt_get_header(fdt, totalsize))
+-#define fdt_off_dt_struct(fdt)		(fdt_get_header(fdt, off_dt_struct))
+-#define fdt_off_dt_strings(fdt)		(fdt_get_header(fdt, off_dt_strings))
+-#define fdt_off_mem_rsvmap(fdt)		(fdt_get_header(fdt, off_mem_rsvmap))
+-#define fdt_version(fdt)		(fdt_get_header(fdt, version))
+-#define fdt_last_comp_version(fdt)	(fdt_get_header(fdt, last_comp_version))
+-#define fdt_boot_cpuid_phys(fdt)	(fdt_get_header(fdt, boot_cpuid_phys))
+-#define fdt_size_dt_strings(fdt)	(fdt_get_header(fdt, size_dt_strings))
+-#define fdt_size_dt_struct(fdt)		(fdt_get_header(fdt, size_dt_struct))
+-
+-#define __fdt_set_hdr(name) \
+-	static inline void fdt_set_##name(void *fdt, uint32_t val) \
+-	{ \
+-		struct fdt_header *fdth = (struct fdt_header*)fdt; \
+-		fdth->name = cpu_to_fdt32(val); \
+-	}
+-__fdt_set_hdr(magic);
+-__fdt_set_hdr(totalsize);
+-__fdt_set_hdr(off_dt_struct);
+-__fdt_set_hdr(off_dt_strings);
+-__fdt_set_hdr(off_mem_rsvmap);
+-__fdt_set_hdr(version);
+-__fdt_set_hdr(last_comp_version);
+-__fdt_set_hdr(boot_cpuid_phys);
+-__fdt_set_hdr(size_dt_strings);
+-__fdt_set_hdr(size_dt_struct);
+-#undef __fdt_set_hdr
+-
+-/**
+- * fdt_check_header - sanity check a device tree or possible device tree
+- * @fdt: pointer to data which might be a flattened device tree
+- *
+- * fdt_check_header() checks that the given buffer contains what
+- * appears to be a flattened device tree with sane information in its
+- * header.
+- *
+- * returns:
+- *     0, if the buffer appears to contain a valid device tree
+- *     -FDT_ERR_BADMAGIC,
+- *     -FDT_ERR_BADVERSION,
+- *     -FDT_ERR_BADSTATE, standard meanings, as above
+- */
+-int fdt_check_header(const void *fdt);
+-
+-/**
+- * fdt_move - move a device tree around in memory
+- * @fdt: pointer to the device tree to move
+- * @buf: pointer to memory where the device is to be moved
+- * @bufsize: size of the memory space at buf
+- *
+- * fdt_move() relocates, if possible, the device tree blob located at
+- * fdt to the buffer at buf of size bufsize.  The buffer may overlap
+- * with the existing device tree blob at fdt.  Therefore,
+- *     fdt_move(fdt, fdt, fdt_totalsize(fdt))
+- * should always succeed.
+- *
+- * returns:
+- *     0, on success
+- *     -FDT_ERR_NOSPACE, bufsize is insufficient to contain the device tree
+- *     -FDT_ERR_BADMAGIC,
+- *     -FDT_ERR_BADVERSION,
+- *     -FDT_ERR_BADSTATE, standard meanings
+- */
+-int fdt_move(const void *fdt, void *buf, int bufsize);
+-
+-/**********************************************************************/
+-/* Read-only functions                                                */
+-/**********************************************************************/
+-
+-/**
+- * fdt_string - retrieve a string from the strings block of a device tree
+- * @fdt: pointer to the device tree blob
+- * @stroffset: offset of the string within the strings block (native endian)
+- *
+- * fdt_string() retrieves a pointer to a single string from the
+- * strings block of the device tree blob at fdt.
+- *
+- * returns:
+- *     a pointer to the string, on success
+- *     NULL, if stroffset is out of bounds
+- */
+-const char *fdt_string(const void *fdt, int stroffset);
+-
+-/**
+- * fdt_num_mem_rsv - retrieve the number of memory reserve map entries
+- * @fdt: pointer to the device tree blob
+- *
+- * Returns the number of entries in the device tree blob's memory
+- * reservation map.  This does not include the terminating 0,0 entry
+- * or any other (0,0) entries reserved for expansion.
+- *
+- * returns:
+- *     the number of entries
+- */
+-int fdt_num_mem_rsv(const void *fdt);
+-
+-/**
+- * fdt_get_mem_rsv - retrieve one memory reserve map entry
+- * @fdt: pointer to the device tree blob
+- * @address, @size: pointers to 64-bit variables
+- *
+- * On success, *address and *size will contain the address and size of
+- * the n-th reserve map entry from the device tree blob, in
+- * native-endian format.
+- *
+- * returns:
+- *     0, on success
+- *     -FDT_ERR_BADMAGIC,
+- *     -FDT_ERR_BADVERSION,
+- *     -FDT_ERR_BADSTATE, standard meanings
+- */
+-int fdt_get_mem_rsv(const void *fdt, int n, uint64_t *address, uint64_t *size);
+-
+-/**
+- * fdt_subnode_offset_namelen - find a subnode based on substring
+- * @fdt: pointer to the device tree blob
+- * @parentoffset: structure block offset of a node
+- * @name: name of the subnode to locate
+- * @namelen: number of characters of name to consider
+- *
+- * Identical to fdt_subnode_offset(), but only examine the first
+- * namelen characters of name for matching the subnode name.  This is
+- * useful for finding subnodes based on a portion of a larger string,
+- * such as a full path.
+- */
+-int fdt_subnode_offset_namelen(const void *fdt, int parentoffset,
+-			       const char *name, int namelen);
+-/**
+- * fdt_subnode_offset - find a subnode of a given node
+- * @fdt: pointer to the device tree blob
+- * @parentoffset: structure block offset of a node
+- * @name: name of the subnode to locate
+- *
+- * fdt_subnode_offset() finds a subnode of the node at structure block
+- * offset parentoffset with the given name.  name may include a unit
+- * address, in which case fdt_subnode_offset() will find the subnode
+- * with that unit address, or the unit address may be omitted, in
+- * which case fdt_subnode_offset() will find an arbitrary subnode
+- * whose name excluding unit address matches the given name.
+- *
+- * returns:
+- *	structure block offset of the requested subnode (>=0), on success
+- *	-FDT_ERR_NOTFOUND, if the requested subnode does not exist
+- *	-FDT_ERR_BADOFFSET, if parentoffset did not point to an FDT_BEGIN_NODE tag
+- *      -FDT_ERR_BADMAGIC,
+- *	-FDT_ERR_BADVERSION,
+- *	-FDT_ERR_BADSTATE,
+- *	-FDT_ERR_BADSTRUCTURE,
+- *	-FDT_ERR_TRUNCATED, standard meanings.
+- */
+-int fdt_subnode_offset(const void *fdt, int parentoffset, const char *name);
+-
+-/**
+- * fdt_path_offset - find a tree node by its full path
+- * @fdt: pointer to the device tree blob
+- * @path: full path of the node to locate
+- *
+- * fdt_path_offset() finds a node of a given path in the device tree.
+- * Each path component may omit the unit address portion, but the
+- * results of this are undefined if any such path component is
+- * ambiguous (that is if there are multiple nodes at the relevant
+- * level matching the given component, differentiated only by unit
+- * address).
+- *
+- * returns:
+- *	structure block offset of the node with the requested path (>=0), on success
+- *	-FDT_ERR_BADPATH, given path does not begin with '/' or is invalid
+- *	-FDT_ERR_NOTFOUND, if the requested node does not exist
+- *      -FDT_ERR_BADMAGIC,
+- *	-FDT_ERR_BADVERSION,
+- *	-FDT_ERR_BADSTATE,
+- *	-FDT_ERR_BADSTRUCTURE,
+- *	-FDT_ERR_TRUNCATED, standard meanings.
+- */
+-int fdt_path_offset(const void *fdt, const char *path);
+-
+-/**
+- * fdt_get_name - retrieve the name of a given node
+- * @fdt: pointer to the device tree blob
+- * @nodeoffset: structure block offset of the starting node
+- * @lenp: pointer to an integer variable (will be overwritten) or NULL
+- *
+- * fdt_get_name() retrieves the name (including unit address) of the
+- * device tree node at structure block offset nodeoffset.  If lenp is
+- * non-NULL, the length of this name is also returned, in the integer
+- * pointed to by lenp.
+- *
+- * returns:
+- *	pointer to the node's name, on success
+- *		If lenp is non-NULL, *lenp contains the length of that name (>=0)
+- *	NULL, on error
+- *		if lenp is non-NULL *lenp contains an error code (<0):
+- *		-FDT_ERR_BADOFFSET, nodeoffset did not point to FDT_BEGIN_NODE tag
+- *		-FDT_ERR_BADMAGIC,
+- *		-FDT_ERR_BADVERSION,
+- *		-FDT_ERR_BADSTATE, standard meanings
+- */
+-const char *fdt_get_name(const void *fdt, int nodeoffset, int *lenp);
+-
+-/**
+- * fdt_first_property_offset - find the offset of a node's first property
+- * @fdt: pointer to the device tree blob
+- * @nodeoffset: structure block offset of a node
+- *
+- * fdt_first_property_offset() finds the first property of the node at
+- * the given structure block offset.
+- *
+- * returns:
+- *	structure block offset of the property (>=0), on success
+- *	-FDT_ERR_NOTFOUND, if the requested node has no properties
+- *	-FDT_ERR_BADOFFSET, if nodeoffset did not point to an FDT_BEGIN_NODE tag
+- *      -FDT_ERR_BADMAGIC,
+- *	-FDT_ERR_BADVERSION,
+- *	-FDT_ERR_BADSTATE,
+- *	-FDT_ERR_BADSTRUCTURE,
+- *	-FDT_ERR_TRUNCATED, standard meanings.
+- */
+-int fdt_first_property_offset(const void *fdt, int nodeoffset);
+-
+-/**
+- * fdt_next_property_offset - step through a node's properties
+- * @fdt: pointer to the device tree blob
+- * @offset: structure block offset of a property
+- *
+- * fdt_next_property_offset() finds the property immediately after the
+- * one at the given structure block offset.  This will be a property
+- * of the same node as the given property.
+- *
+- * returns:
+- *	structure block offset of the next property (>=0), on success
+- *	-FDT_ERR_NOTFOUND, if the given property is the last in its node
+- *	-FDT_ERR_BADOFFSET, if nodeoffset did not point to an FDT_PROP tag
+- *      -FDT_ERR_BADMAGIC,
+- *	-FDT_ERR_BADVERSION,
+- *	-FDT_ERR_BADSTATE,
+- *	-FDT_ERR_BADSTRUCTURE,
+- *	-FDT_ERR_TRUNCATED, standard meanings.
+- */
+-int fdt_next_property_offset(const void *fdt, int offset);
+-
+-/**
+- * fdt_get_property_by_offset - retrieve the property at a given offset
+- * @fdt: pointer to the device tree blob
+- * @offset: offset of the property to retrieve
+- * @lenp: pointer to an integer variable (will be overwritten) or NULL
+- *
+- * fdt_get_property_by_offset() retrieves a pointer to the
+- * fdt_property structure within the device tree blob at the given
+- * offset.  If lenp is non-NULL, the length of the property value is
+- * also returned, in the integer pointed to by lenp.
+- *
+- * returns:
+- *	pointer to the structure representing the property
+- *		if lenp is non-NULL, *lenp contains the length of the property
+- *		value (>=0)
+- *	NULL, on error
+- *		if lenp is non-NULL, *lenp contains an error code (<0):
+- *		-FDT_ERR_BADOFFSET, nodeoffset did not point to FDT_PROP tag
+- *		-FDT_ERR_BADMAGIC,
+- *		-FDT_ERR_BADVERSION,
+- *		-FDT_ERR_BADSTATE,
+- *		-FDT_ERR_BADSTRUCTURE,
+- *		-FDT_ERR_TRUNCATED, standard meanings
+- */
+-const struct fdt_property *fdt_get_property_by_offset(const void *fdt,
+-						      int offset,
+-						      int *lenp);
+-
+-/**
+- * fdt_get_property_namelen - find a property based on substring
+- * @fdt: pointer to the device tree blob
+- * @nodeoffset: offset of the node whose property to find
+- * @name: name of the property to find
+- * @namelen: number of characters of name to consider
+- * @lenp: pointer to an integer variable (will be overwritten) or NULL
+- *
+- * Identical to fdt_get_property_namelen(), but only examine the first
+- * namelen characters of name for matching the property name.
+- */
+-const struct fdt_property *fdt_get_property_namelen(const void *fdt,
+-						    int nodeoffset,
+-						    const char *name,
+-						    int namelen, int *lenp);
+-
+-/**
+- * fdt_get_property - find a given property in a given node
+- * @fdt: pointer to the device tree blob
+- * @nodeoffset: offset of the node whose property to find
+- * @name: name of the property to find
+- * @lenp: pointer to an integer variable (will be overwritten) or NULL
+- *
+- * fdt_get_property() retrieves a pointer to the fdt_property
+- * structure within the device tree blob corresponding to the property
+- * named 'name' of the node at offset nodeoffset.  If lenp is
+- * non-NULL, the length of the property value is also returned, in the
+- * integer pointed to by lenp.
+- *
+- * returns:
+- *	pointer to the structure representing the property
+- *		if lenp is non-NULL, *lenp contains the length of the property
+- *		value (>=0)
+- *	NULL, on error
+- *		if lenp is non-NULL, *lenp contains an error code (<0):
+- *		-FDT_ERR_NOTFOUND, node does not have named property
+- *		-FDT_ERR_BADOFFSET, nodeoffset did not point to FDT_BEGIN_NODE tag
+- *		-FDT_ERR_BADMAGIC,
+- *		-FDT_ERR_BADVERSION,
+- *		-FDT_ERR_BADSTATE,
+- *		-FDT_ERR_BADSTRUCTURE,
+- *		-FDT_ERR_TRUNCATED, standard meanings
+- */
+-const struct fdt_property *fdt_get_property(const void *fdt, int nodeoffset,
+-					    const char *name, int *lenp);
+-static inline struct fdt_property *fdt_get_property_w(void *fdt, int nodeoffset,
+-						      const char *name,
+-						      int *lenp)
+-{
+-	return (struct fdt_property *)(uintptr_t)
+-		fdt_get_property(fdt, nodeoffset, name, lenp);
+-}
+-
+-/**
+- * fdt_getprop_by_offset - retrieve the value of a property at a given offset
+- * @fdt: pointer to the device tree blob
+- * @ffset: offset of the property to read
+- * @namep: pointer to a string variable (will be overwritten) or NULL
+- * @lenp: pointer to an integer variable (will be overwritten) or NULL
+- *
+- * fdt_getprop_by_offset() retrieves a pointer to the value of the
+- * property at structure block offset 'offset' (this will be a pointer
+- * to within the device blob itself, not a copy of the value).  If
+- * lenp is non-NULL, the length of the property value is also
+- * returned, in the integer pointed to by lenp.  If namep is non-NULL,
+- * the property's namne will also be returned in the char * pointed to
+- * by namep (this will be a pointer to within the device tree's string
+- * block, not a new copy of the name).
+- *
+- * returns:
+- *	pointer to the property's value
+- *		if lenp is non-NULL, *lenp contains the length of the property
+- *		value (>=0)
+- *		if namep is non-NULL *namep contiains a pointer to the property
+- *		name.
+- *	NULL, on error
+- *		if lenp is non-NULL, *lenp contains an error code (<0):
+- *		-FDT_ERR_BADOFFSET, nodeoffset did not point to FDT_PROP tag
+- *		-FDT_ERR_BADMAGIC,
+- *		-FDT_ERR_BADVERSION,
+- *		-FDT_ERR_BADSTATE,
+- *		-FDT_ERR_BADSTRUCTURE,
+- *		-FDT_ERR_TRUNCATED, standard meanings
+- */
+-const void *fdt_getprop_by_offset(const void *fdt, int offset,
+-				  const char **namep, int *lenp);
+-
+-/**
+- * fdt_getprop_namelen - get property value based on substring
+- * @fdt: pointer to the device tree blob
+- * @nodeoffset: offset of the node whose property to find
+- * @name: name of the property to find
+- * @namelen: number of characters of name to consider
+- * @lenp: pointer to an integer variable (will be overwritten) or NULL
+- *
+- * Identical to fdt_getprop(), but only examine the first namelen
+- * characters of name for matching the property name.
+- */
+-const void *fdt_getprop_namelen(const void *fdt, int nodeoffset,
+-				const char *name, int namelen, int *lenp);
+-
+-/**
+- * fdt_getprop - retrieve the value of a given property
+- * @fdt: pointer to the device tree blob
+- * @nodeoffset: offset of the node whose property to find
+- * @name: name of the property to find
+- * @lenp: pointer to an integer variable (will be overwritten) or NULL
+- *
+- * fdt_getprop() retrieves a pointer to the value of the property
+- * named 'name' of the node at offset nodeoffset (this will be a
+- * pointer to within the device blob itself, not a copy of the value).
+- * If lenp is non-NULL, the length of the property value is also
+- * returned, in the integer pointed to by lenp.
+- *
+- * returns:
+- *	pointer to the property's value
+- *		if lenp is non-NULL, *lenp contains the length of the property
+- *		value (>=0)
+- *	NULL, on error
+- *		if lenp is non-NULL, *lenp contains an error code (<0):
+- *		-FDT_ERR_NOTFOUND, node does not have named property
+- *		-FDT_ERR_BADOFFSET, nodeoffset did not point to FDT_BEGIN_NODE tag
+- *		-FDT_ERR_BADMAGIC,
+- *		-FDT_ERR_BADVERSION,
+- *		-FDT_ERR_BADSTATE,
+- *		-FDT_ERR_BADSTRUCTURE,
+- *		-FDT_ERR_TRUNCATED, standard meanings
+- */
+-const void *fdt_getprop(const void *fdt, int nodeoffset,
+-			const char *name, int *lenp);
+-static inline void *fdt_getprop_w(void *fdt, int nodeoffset,
+-				  const char *name, int *lenp)
+-{
+-	return (void *)(uintptr_t)fdt_getprop(fdt, nodeoffset, name, lenp);
+-}
+-
+-/**
+- * fdt_get_phandle - retrieve the phandle of a given node
+- * @fdt: pointer to the device tree blob
+- * @nodeoffset: structure block offset of the node
+- *
+- * fdt_get_phandle() retrieves the phandle of the device tree node at
+- * structure block offset nodeoffset.
+- *
+- * returns:
+- *	the phandle of the node at nodeoffset, on success (!= 0, != -1)
+- *	0, if the node has no phandle, or another error occurs
+- */
+-uint32_t fdt_get_phandle(const void *fdt, int nodeoffset);
+-
+-/**
+- * fdt_get_alias_namelen - get alias based on substring
+- * @fdt: pointer to the device tree blob
+- * @name: name of the alias th look up
+- * @namelen: number of characters of name to consider
+- *
+- * Identical to fdt_get_alias(), but only examine the first namelen
+- * characters of name for matching the alias name.
+- */
+-const char *fdt_get_alias_namelen(const void *fdt,
+-				  const char *name, int namelen);
+-
+-/**
+- * fdt_get_alias - retrieve the path referenced by a given alias
+- * @fdt: pointer to the device tree blob
+- * @name: name of the alias to look up
+- *
+- * fdt_get_alias() retrieves the value of a given alias.  That is, the
+- * value of the property named 'name' in the node /aliases.
+- *
+- * returns:
+- *	a pointer to the expansion of the alias named 'name', if it exists
+- *	NULL, if the given alias or the /aliases node does not exist
+- */
+-const char *fdt_get_alias(const void *fdt, const char *name);
+-
+-/**
+- * fdt_get_path - determine the full path of a node
+- * @fdt: pointer to the device tree blob
+- * @nodeoffset: offset of the node whose path to find
+- * @buf: character buffer to contain the returned path (will be overwritten)
+- * @buflen: size of the character buffer at buf
+- *
+- * fdt_get_path() computes the full path of the node at offset
+- * nodeoffset, and records that path in the buffer at buf.
+- *
+- * NOTE: This function is expensive, as it must scan the device tree
+- * structure from the start to nodeoffset.
+- *
+- * returns:
+- *	0, on success
+- *		buf contains the absolute path of the node at
+- *		nodeoffset, as a NUL-terminated string.
+- *	-FDT_ERR_BADOFFSET, nodeoffset does not refer to a BEGIN_NODE tag
+- *	-FDT_ERR_NOSPACE, the path of the given node is longer than (bufsize-1)
+- *		characters and will not fit in the given buffer.
+- *	-FDT_ERR_BADMAGIC,
+- *	-FDT_ERR_BADVERSION,
+- *	-FDT_ERR_BADSTATE,
+- *	-FDT_ERR_BADSTRUCTURE, standard meanings
+- */
+-int fdt_get_path(const void *fdt, int nodeoffset, char *buf, int buflen);
+-
+-/**
+- * fdt_supernode_atdepth_offset - find a specific ancestor of a node
+- * @fdt: pointer to the device tree blob
+- * @nodeoffset: offset of the node whose parent to find
+- * @supernodedepth: depth of the ancestor to find
+- * @nodedepth: pointer to an integer variable (will be overwritten) or NULL
+- *
+- * fdt_supernode_atdepth_offset() finds an ancestor of the given node
+- * at a specific depth from the root (where the root itself has depth
+- * 0, its immediate subnodes depth 1 and so forth).  So
+- *	fdt_supernode_atdepth_offset(fdt, nodeoffset, 0, NULL);
+- * will always return 0, the offset of the root node.  If the node at
+- * nodeoffset has depth D, then:
+- *	fdt_supernode_atdepth_offset(fdt, nodeoffset, D, NULL);
+- * will return nodeoffset itself.
+- *
+- * NOTE: This function is expensive, as it must scan the device tree
+- * structure from the start to nodeoffset.
+- *
+- * returns:
+-
+- *	structure block offset of the node at node offset's ancestor
+- *		of depth supernodedepth (>=0), on success
+- *	-FDT_ERR_BADOFFSET, nodeoffset does not refer to a BEGIN_NODE tag
+-*	-FDT_ERR_NOTFOUND, supernodedepth was greater than the depth of nodeoffset
+- *	-FDT_ERR_BADMAGIC,
+- *	-FDT_ERR_BADVERSION,
+- *	-FDT_ERR_BADSTATE,
+- *	-FDT_ERR_BADSTRUCTURE, standard meanings
+- */
+-int fdt_supernode_atdepth_offset(const void *fdt, int nodeoffset,
+-				 int supernodedepth, int *nodedepth);
+-
+-/**
+- * fdt_node_depth - find the depth of a given node
+- * @fdt: pointer to the device tree blob
+- * @nodeoffset: offset of the node whose parent to find
+- *
+- * fdt_node_depth() finds the depth of a given node.  The root node
+- * has depth 0, its immediate subnodes depth 1 and so forth.
+- *
+- * NOTE: This function is expensive, as it must scan the device tree
+- * structure from the start to nodeoffset.
+- *
+- * returns:
+- *	depth of the node at nodeoffset (>=0), on success
+- *	-FDT_ERR_BADOFFSET, nodeoffset does not refer to a BEGIN_NODE tag
+- *	-FDT_ERR_BADMAGIC,
+- *	-FDT_ERR_BADVERSION,
+- *	-FDT_ERR_BADSTATE,
+- *	-FDT_ERR_BADSTRUCTURE, standard meanings
+- */
+-int fdt_node_depth(const void *fdt, int nodeoffset);
+-
+-/**
+- * fdt_parent_offset - find the parent of a given node
+- * @fdt: pointer to the device tree blob
+- * @nodeoffset: offset of the node whose parent to find
+- *
+- * fdt_parent_offset() locates the parent node of a given node (that
+- * is, it finds the offset of the node which contains the node at
+- * nodeoffset as a subnode).
+- *
+- * NOTE: This function is expensive, as it must scan the device tree
+- * structure from the start to nodeoffset, *twice*.
+- *
+- * returns:
+- *	structure block offset of the parent of the node at nodeoffset
+- *		(>=0), on success
+- *	-FDT_ERR_BADOFFSET, nodeoffset does not refer to a BEGIN_NODE tag
+- *	-FDT_ERR_BADMAGIC,
+- *	-FDT_ERR_BADVERSION,
+- *	-FDT_ERR_BADSTATE,
+- *	-FDT_ERR_BADSTRUCTURE, standard meanings
+- */
+-int fdt_parent_offset(const void *fdt, int nodeoffset);
+-
+-/**
+- * fdt_node_offset_by_prop_value - find nodes with a given property value
+- * @fdt: pointer to the device tree blob
+- * @startoffset: only find nodes after this offset
+- * @propname: property name to check
+- * @propval: property value to search for
+- * @proplen: length of the value in propval
+- *
+- * fdt_node_offset_by_prop_value() returns the offset of the first
+- * node after startoffset, which has a property named propname whose
+- * value is of length proplen and has value equal to propval; or if
+- * startoffset is -1, the very first such node in the tree.
+- *
+- * To iterate through all nodes matching the criterion, the following
+- * idiom can be used:
+- *	offset = fdt_node_offset_by_prop_value(fdt, -1, propname,
+- *					       propval, proplen);
+- *	while (offset != -FDT_ERR_NOTFOUND) {
+- *		... other code here ...
+- *		offset = fdt_node_offset_by_prop_value(fdt, offset, propname,
+- *						       propval, proplen);
+- *	}
+- *
+- * Note the -1 in the first call to the function, if 0 is used here
+- * instead, the function will never locate the root node, even if it
+- * matches the criterion.
+- *
+- * returns:
+- *	structure block offset of the located node (>= 0, >startoffset),
+- *		 on success
+- *	-FDT_ERR_NOTFOUND, no node matching the criterion exists in the
+- *		tree after startoffset
+- *	-FDT_ERR_BADOFFSET, nodeoffset does not refer to a BEGIN_NODE tag
+- *	-FDT_ERR_BADMAGIC,
+- *	-FDT_ERR_BADVERSION,
+- *	-FDT_ERR_BADSTATE,
+- *	-FDT_ERR_BADSTRUCTURE, standard meanings
+- */
+-int fdt_node_offset_by_prop_value(const void *fdt, int startoffset,
+-				  const char *propname,
+-				  const void *propval, int proplen);
+-
+-/**
+- * fdt_node_offset_by_phandle - find the node with a given phandle
+- * @fdt: pointer to the device tree blob
+- * @phandle: phandle value
+- *
+- * fdt_node_offset_by_phandle() returns the offset of the node
+- * which has the given phandle value.  If there is more than one node
+- * in the tree with the given phandle (an invalid tree), results are
+- * undefined.
+- *
+- * returns:
+- *	structure block offset of the located node (>= 0), on success
+- *	-FDT_ERR_NOTFOUND, no node with that phandle exists
+- *	-FDT_ERR_BADPHANDLE, given phandle value was invalid (0 or -1)
+- *	-FDT_ERR_BADMAGIC,
+- *	-FDT_ERR_BADVERSION,
+- *	-FDT_ERR_BADSTATE,
+- *	-FDT_ERR_BADSTRUCTURE, standard meanings
+- */
+-int fdt_node_offset_by_phandle(const void *fdt, uint32_t phandle);
+-
+-/**
+- * fdt_node_check_compatible: check a node's compatible property
+- * @fdt: pointer to the device tree blob
+- * @nodeoffset: offset of a tree node
+- * @compatible: string to match against
+- *
+- *
+- * fdt_node_check_compatible() returns 0 if the given node contains a
+- * 'compatible' property with the given string as one of its elements,
+- * it returns non-zero otherwise, or on error.
+- *
+- * returns:
+- *	0, if the node has a 'compatible' property listing the given string
+- *	1, if the node has a 'compatible' property, but it does not list
+- *		the given string
+- *	-FDT_ERR_NOTFOUND, if the given node has no 'compatible' property
+- *	-FDT_ERR_BADOFFSET, if nodeoffset does not refer to a BEGIN_NODE tag
+- *	-FDT_ERR_BADMAGIC,
+- *	-FDT_ERR_BADVERSION,
+- *	-FDT_ERR_BADSTATE,
+- *	-FDT_ERR_BADSTRUCTURE, standard meanings
+- */
+-int fdt_node_check_compatible(const void *fdt, int nodeoffset,
+-			      const char *compatible);
+-
+-/**
+- * fdt_node_offset_by_compatible - find nodes with a given 'compatible' value
+- * @fdt: pointer to the device tree blob
+- * @startoffset: only find nodes after this offset
+- * @compatible: 'compatible' string to match against
+- *
+- * fdt_node_offset_by_compatible() returns the offset of the first
+- * node after startoffset, which has a 'compatible' property which
+- * lists the given compatible string; or if startoffset is -1, the
+- * very first such node in the tree.
+- *
+- * To iterate through all nodes matching the criterion, the following
+- * idiom can be used:
+- *	offset = fdt_node_offset_by_compatible(fdt, -1, compatible);
+- *	while (offset != -FDT_ERR_NOTFOUND) {
+- *		... other code here ...
+- *		offset = fdt_node_offset_by_compatible(fdt, offset, compatible);
+- *	}
+- *
+- * Note the -1 in the first call to the function, if 0 is used here
+- * instead, the function will never locate the root node, even if it
+- * matches the criterion.
+- *
+- * returns:
+- *	structure block offset of the located node (>= 0, >startoffset),
+- *		 on success
+- *	-FDT_ERR_NOTFOUND, no node matching the criterion exists in the
+- *		tree after startoffset
+- *	-FDT_ERR_BADOFFSET, nodeoffset does not refer to a BEGIN_NODE tag
+- *	-FDT_ERR_BADMAGIC,
+- *	-FDT_ERR_BADVERSION,
+- *	-FDT_ERR_BADSTATE,
+- *	-FDT_ERR_BADSTRUCTURE, standard meanings
+- */
+-int fdt_node_offset_by_compatible(const void *fdt, int startoffset,
+-				  const char *compatible);
+-
+-/**
+- * fdt_stringlist_contains - check a string list property for a string
+- * @strlist: Property containing a list of strings to check
+- * @listlen: Length of property
+- * @str: String to search for
+- *
+- * This is a utility function provided for convenience. The list contains
+- * one or more strings, each terminated by \0, as is found in a device tree
+- * "compatible" property.
+- *
+- * @return: 1 if the string is found in the list, 0 not found, or invalid list
+- */
+-int fdt_stringlist_contains(const char *strlist, int listlen, const char *str);
+-
+-/**********************************************************************/
+-/* Write-in-place functions                                           */
+-/**********************************************************************/
+-
+-/**
+- * fdt_setprop_inplace - change a property's value, but not its size
+- * @fdt: pointer to the device tree blob
+- * @nodeoffset: offset of the node whose property to change
+- * @name: name of the property to change
+- * @val: pointer to data to replace the property value with
+- * @len: length of the property value
+- *
+- * fdt_setprop_inplace() replaces the value of a given property with
+- * the data in val, of length len.  This function cannot change the
+- * size of a property, and so will only work if len is equal to the
+- * current length of the property.
+- *
+- * This function will alter only the bytes in the blob which contain
+- * the given property value, and will not alter or move any other part
+- * of the tree.
+- *
+- * returns:
+- *	0, on success
+- *	-FDT_ERR_NOSPACE, if len is not equal to the property's current length
+- *	-FDT_ERR_NOTFOUND, node does not have the named property
+- *	-FDT_ERR_BADOFFSET, nodeoffset did not point to FDT_BEGIN_NODE tag
+- *	-FDT_ERR_BADMAGIC,
+- *	-FDT_ERR_BADVERSION,
+- *	-FDT_ERR_BADSTATE,
+- *	-FDT_ERR_BADSTRUCTURE,
+- *	-FDT_ERR_TRUNCATED, standard meanings
+- */
+-int fdt_setprop_inplace(void *fdt, int nodeoffset, const char *name,
+-			const void *val, int len);
+-
+-/**
+- * fdt_setprop_inplace_u32 - change the value of a 32-bit integer property
+- * @fdt: pointer to the device tree blob
+- * @nodeoffset: offset of the node whose property to change
+- * @name: name of the property to change
+- * @val: 32-bit integer value to replace the property with
+- *
+- * fdt_setprop_inplace_u32() replaces the value of a given property
+- * with the 32-bit integer value in val, converting val to big-endian
+- * if necessary.  This function cannot change the size of a property,
+- * and so will only work if the property already exists and has length
+- * 4.
+- *
+- * This function will alter only the bytes in the blob which contain
+- * the given property value, and will not alter or move any other part
+- * of the tree.
+- *
+- * returns:
+- *	0, on success
+- *	-FDT_ERR_NOSPACE, if the property's length is not equal to 4
+- *	-FDT_ERR_NOTFOUND, node does not have the named property
+- *	-FDT_ERR_BADOFFSET, nodeoffset did not point to FDT_BEGIN_NODE tag
+- *	-FDT_ERR_BADMAGIC,
+- *	-FDT_ERR_BADVERSION,
+- *	-FDT_ERR_BADSTATE,
+- *	-FDT_ERR_BADSTRUCTURE,
+- *	-FDT_ERR_TRUNCATED, standard meanings
+- */
+-static inline int fdt_setprop_inplace_u32(void *fdt, int nodeoffset,
+-					  const char *name, uint32_t val)
+-{
+-	fdt32_t tmp = cpu_to_fdt32(val);
+-	return fdt_setprop_inplace(fdt, nodeoffset, name, &tmp, sizeof(tmp));
+-}
+-
+-/**
+- * fdt_setprop_inplace_u64 - change the value of a 64-bit integer property
+- * @fdt: pointer to the device tree blob
+- * @nodeoffset: offset of the node whose property to change
+- * @name: name of the property to change
+- * @val: 64-bit integer value to replace the property with
+- *
+- * fdt_setprop_inplace_u64() replaces the value of a given property
+- * with the 64-bit integer value in val, converting val to big-endian
+- * if necessary.  This function cannot change the size of a property,
+- * and so will only work if the property already exists and has length
+- * 8.
+- *
+- * This function will alter only the bytes in the blob which contain
+- * the given property value, and will not alter or move any other part
+- * of the tree.
+- *
+- * returns:
+- *	0, on success
+- *	-FDT_ERR_NOSPACE, if the property's length is not equal to 8
+- *	-FDT_ERR_NOTFOUND, node does not have the named property
+- *	-FDT_ERR_BADOFFSET, nodeoffset did not point to FDT_BEGIN_NODE tag
+- *	-FDT_ERR_BADMAGIC,
+- *	-FDT_ERR_BADVERSION,
+- *	-FDT_ERR_BADSTATE,
+- *	-FDT_ERR_BADSTRUCTURE,
+- *	-FDT_ERR_TRUNCATED, standard meanings
+- */
+-static inline int fdt_setprop_inplace_u64(void *fdt, int nodeoffset,
+-					  const char *name, uint64_t val)
+-{
+-	fdt64_t tmp = cpu_to_fdt64(val);
+-	return fdt_setprop_inplace(fdt, nodeoffset, name, &tmp, sizeof(tmp));
+-}
+-
+-/**
+- * fdt_setprop_inplace_cell - change the value of a single-cell property
+- *
+- * This is an alternative name for fdt_setprop_inplace_u32()
+- */
+-static inline int fdt_setprop_inplace_cell(void *fdt, int nodeoffset,
+-					   const char *name, uint32_t val)
+-{
+-	return fdt_setprop_inplace_u32(fdt, nodeoffset, name, val);
+-}
+-
+-/**
+- * fdt_nop_property - replace a property with nop tags
+- * @fdt: pointer to the device tree blob
+- * @nodeoffset: offset of the node whose property to nop
+- * @name: name of the property to nop
+- *
+- * fdt_nop_property() will replace a given property's representation
+- * in the blob with FDT_NOP tags, effectively removing it from the
+- * tree.
+- *
+- * This function will alter only the bytes in the blob which contain
+- * the property, and will not alter or move any other part of the
+- * tree.
+- *
+- * returns:
+- *	0, on success
+- *	-FDT_ERR_NOTFOUND, node does not have the named property
+- *	-FDT_ERR_BADOFFSET, nodeoffset did not point to FDT_BEGIN_NODE tag
+- *	-FDT_ERR_BADMAGIC,
+- *	-FDT_ERR_BADVERSION,
+- *	-FDT_ERR_BADSTATE,
+- *	-FDT_ERR_BADSTRUCTURE,
+- *	-FDT_ERR_TRUNCATED, standard meanings
+- */
+-int fdt_nop_property(void *fdt, int nodeoffset, const char *name);
+-
+-/**
+- * fdt_nop_node - replace a node (subtree) with nop tags
+- * @fdt: pointer to the device tree blob
+- * @nodeoffset: offset of the node to nop
+- *
+- * fdt_nop_node() will replace a given node's representation in the
+- * blob, including all its subnodes, if any, with FDT_NOP tags,
+- * effectively removing it from the tree.
+- *
+- * This function will alter only the bytes in the blob which contain
+- * the node and its properties and subnodes, and will not alter or
+- * move any other part of the tree.
+- *
+- * returns:
+- *	0, on success
+- *	-FDT_ERR_BADOFFSET, nodeoffset did not point to FDT_BEGIN_NODE tag
+- *	-FDT_ERR_BADMAGIC,
+- *	-FDT_ERR_BADVERSION,
+- *	-FDT_ERR_BADSTATE,
+- *	-FDT_ERR_BADSTRUCTURE,
+- *	-FDT_ERR_TRUNCATED, standard meanings
+- */
+-int fdt_nop_node(void *fdt, int nodeoffset);
+-
+-/**********************************************************************/
+-/* Sequential write functions                                         */
+-/**********************************************************************/
+-
+-int fdt_create(void *buf, int bufsize);
+-int fdt_add_reservemap_entry(void *fdt, uint64_t addr, uint64_t size);
+-int fdt_finish_reservemap(void *fdt);
+-int fdt_begin_node(void *fdt, const char *name);
+-int fdt_property(void *fdt, const char *name, const void *val, int len);
+-static inline int fdt_property_u32(void *fdt, const char *name, uint32_t val)
+-{
+-	fdt32_t tmp = cpu_to_fdt32(val);
+-	return fdt_property(fdt, name, &tmp, sizeof(tmp));
+-}
+-static inline int fdt_property_u64(void *fdt, const char *name, uint64_t val)
+-{
+-	fdt64_t tmp = cpu_to_fdt64(val);
+-	return fdt_property(fdt, name, &tmp, sizeof(tmp));
+-}
+-static inline int fdt_property_cell(void *fdt, const char *name, uint32_t val)
+-{
+-	return fdt_property_u32(fdt, name, val);
+-}
+-#define fdt_property_string(fdt, name, str) \
+-	fdt_property(fdt, name, str, strlen(str)+1)
+-int fdt_end_node(void *fdt);
+-int fdt_finish(void *fdt);
+-
+-/**********************************************************************/
+-/* Read-write functions                                               */
+-/**********************************************************************/
+-
+-int fdt_create_empty_tree(void *buf, int bufsize);
+-int fdt_open_into(const void *fdt, void *buf, int bufsize);
+-int fdt_pack(void *fdt);
+-
+-/**
+- * fdt_add_mem_rsv - add one memory reserve map entry
+- * @fdt: pointer to the device tree blob
+- * @address, @size: 64-bit values (native endian)
+- *
+- * Adds a reserve map entry to the given blob reserving a region at
+- * address address of length size.
+- *
+- * This function will insert data into the reserve map and will
+- * therefore change the indexes of some entries in the table.
+- *
+- * returns:
+- *	0, on success
+- *	-FDT_ERR_NOSPACE, there is insufficient free space in the blob to
+- *		contain the new reservation entry
+- *	-FDT_ERR_BADMAGIC,
+- *	-FDT_ERR_BADVERSION,
+- *	-FDT_ERR_BADSTATE,
+- *	-FDT_ERR_BADSTRUCTURE,
+- *	-FDT_ERR_BADLAYOUT,
+- *	-FDT_ERR_TRUNCATED, standard meanings
+- */
+-int fdt_add_mem_rsv(void *fdt, uint64_t address, uint64_t size);
+-
+-/**
+- * fdt_del_mem_rsv - remove a memory reserve map entry
+- * @fdt: pointer to the device tree blob
+- * @n: entry to remove
+- *
+- * fdt_del_mem_rsv() removes the n-th memory reserve map entry from
+- * the blob.
+- *
+- * This function will delete data from the reservation table and will
+- * therefore change the indexes of some entries in the table.
+- *
+- * returns:
+- *	0, on success
+- *	-FDT_ERR_NOTFOUND, there is no entry of the given index (i.e. there
+- *		are less than n+1 reserve map entries)
+- *	-FDT_ERR_BADMAGIC,
+- *	-FDT_ERR_BADVERSION,
+- *	-FDT_ERR_BADSTATE,
+- *	-FDT_ERR_BADSTRUCTURE,
+- *	-FDT_ERR_BADLAYOUT,
+- *	-FDT_ERR_TRUNCATED, standard meanings
+- */
+-int fdt_del_mem_rsv(void *fdt, int n);
+-
+-/**
+- * fdt_set_name - change the name of a given node
+- * @fdt: pointer to the device tree blob
+- * @nodeoffset: structure block offset of a node
+- * @name: name to give the node
+- *
+- * fdt_set_name() replaces the name (including unit address, if any)
+- * of the given node with the given string.  NOTE: this function can't
+- * efficiently check if the new name is unique amongst the given
+- * node's siblings; results are undefined if this function is invoked
+- * with a name equal to one of the given node's siblings.
+- *
+- * This function may insert or delete data from the blob, and will
+- * therefore change the offsets of some existing nodes.
+- *
+- * returns:
+- *	0, on success
+- *	-FDT_ERR_NOSPACE, there is insufficient free space in the blob
+- *		to contain the new name
+- *	-FDT_ERR_BADOFFSET, nodeoffset did not point to FDT_BEGIN_NODE tag
+- *	-FDT_ERR_BADMAGIC,
+- *	-FDT_ERR_BADVERSION,
+- *	-FDT_ERR_BADSTATE, standard meanings
+- */
+-int fdt_set_name(void *fdt, int nodeoffset, const char *name);
+-
+-/**
+- * fdt_setprop - create or change a property
+- * @fdt: pointer to the device tree blob
+- * @nodeoffset: offset of the node whose property to change
+- * @name: name of the property to change
+- * @val: pointer to data to set the property value to
+- * @len: length of the property value
+- *
+- * fdt_setprop() sets the value of the named property in the given
+- * node to the given value and length, creating the property if it
+- * does not already exist.
+- *
+- * This function may insert or delete data from the blob, and will
+- * therefore change the offsets of some existing nodes.
+- *
+- * returns:
+- *	0, on success
+- *	-FDT_ERR_NOSPACE, there is insufficient free space in the blob to
+- *		contain the new property value
+- *	-FDT_ERR_BADOFFSET, nodeoffset did not point to FDT_BEGIN_NODE tag
+- *	-FDT_ERR_BADLAYOUT,
+- *	-FDT_ERR_BADMAGIC,
+- *	-FDT_ERR_BADVERSION,
+- *	-FDT_ERR_BADSTATE,
+- *	-FDT_ERR_BADSTRUCTURE,
+- *	-FDT_ERR_BADLAYOUT,
+- *	-FDT_ERR_TRUNCATED, standard meanings
+- */
+-int fdt_setprop(void *fdt, int nodeoffset, const char *name,
+-		const void *val, int len);
+-
+-/**
+- * fdt_setprop_u32 - set a property to a 32-bit integer
+- * @fdt: pointer to the device tree blob
+- * @nodeoffset: offset of the node whose property to change
+- * @name: name of the property to change
+- * @val: 32-bit integer value for the property (native endian)
+- *
+- * fdt_setprop_u32() sets the value of the named property in the given
+- * node to the given 32-bit integer value (converting to big-endian if
+- * necessary), or creates a new property with that value if it does
+- * not already exist.
+- *
+- * This function may insert or delete data from the blob, and will
+- * therefore change the offsets of some existing nodes.
+- *
+- * returns:
+- *	0, on success
+- *	-FDT_ERR_NOSPACE, there is insufficient free space in the blob to
+- *		contain the new property value
+- *	-FDT_ERR_BADOFFSET, nodeoffset did not point to FDT_BEGIN_NODE tag
+- *	-FDT_ERR_BADLAYOUT,
+- *	-FDT_ERR_BADMAGIC,
+- *	-FDT_ERR_BADVERSION,
+- *	-FDT_ERR_BADSTATE,
+- *	-FDT_ERR_BADSTRUCTURE,
+- *	-FDT_ERR_BADLAYOUT,
+- *	-FDT_ERR_TRUNCATED, standard meanings
+- */
+-static inline int fdt_setprop_u32(void *fdt, int nodeoffset, const char *name,
+-				  uint32_t val)
+-{
+-	fdt32_t tmp = cpu_to_fdt32(val);
+-	return fdt_setprop(fdt, nodeoffset, name, &tmp, sizeof(tmp));
+-}
+-
+-/**
+- * fdt_setprop_u64 - set a property to a 64-bit integer
+- * @fdt: pointer to the device tree blob
+- * @nodeoffset: offset of the node whose property to change
+- * @name: name of the property to change
+- * @val: 64-bit integer value for the property (native endian)
+- *
+- * fdt_setprop_u64() sets the value of the named property in the given
+- * node to the given 64-bit integer value (converting to big-endian if
+- * necessary), or creates a new property with that value if it does
+- * not already exist.
+- *
+- * This function may insert or delete data from the blob, and will
+- * therefore change the offsets of some existing nodes.
+- *
+- * returns:
+- *	0, on success
+- *	-FDT_ERR_NOSPACE, there is insufficient free space in the blob to
+- *		contain the new property value
+- *	-FDT_ERR_BADOFFSET, nodeoffset did not point to FDT_BEGIN_NODE tag
+- *	-FDT_ERR_BADLAYOUT,
+- *	-FDT_ERR_BADMAGIC,
+- *	-FDT_ERR_BADVERSION,
+- *	-FDT_ERR_BADSTATE,
+- *	-FDT_ERR_BADSTRUCTURE,
+- *	-FDT_ERR_BADLAYOUT,
+- *	-FDT_ERR_TRUNCATED, standard meanings
+- */
+-static inline int fdt_setprop_u64(void *fdt, int nodeoffset, const char *name,
+-				  uint64_t val)
+-{
+-	fdt64_t tmp = cpu_to_fdt64(val);
+-	return fdt_setprop(fdt, nodeoffset, name, &tmp, sizeof(tmp));
+-}
+-
+-/**
+- * fdt_setprop_cell - set a property to a single cell value
+- *
+- * This is an alternative name for fdt_setprop_u32()
+- */
+-static inline int fdt_setprop_cell(void *fdt, int nodeoffset, const char *name,
+-				   uint32_t val)
+-{
+-	return fdt_setprop_u32(fdt, nodeoffset, name, val);
+-}
+-
+-/**
+- * fdt_setprop_string - set a property to a string value
+- * @fdt: pointer to the device tree blob
+- * @nodeoffset: offset of the node whose property to change
+- * @name: name of the property to change
+- * @str: string value for the property
+- *
+- * fdt_setprop_string() sets the value of the named property in the
+- * given node to the given string value (using the length of the
+- * string to determine the new length of the property), or creates a
+- * new property with that value if it does not already exist.
+- *
+- * This function may insert or delete data from the blob, and will
+- * therefore change the offsets of some existing nodes.
+- *
+- * returns:
+- *	0, on success
+- *	-FDT_ERR_NOSPACE, there is insufficient free space in the blob to
+- *		contain the new property value
+- *	-FDT_ERR_BADOFFSET, nodeoffset did not point to FDT_BEGIN_NODE tag
+- *	-FDT_ERR_BADLAYOUT,
+- *	-FDT_ERR_BADMAGIC,
+- *	-FDT_ERR_BADVERSION,
+- *	-FDT_ERR_BADSTATE,
+- *	-FDT_ERR_BADSTRUCTURE,
+- *	-FDT_ERR_BADLAYOUT,
+- *	-FDT_ERR_TRUNCATED, standard meanings
+- */
+-#define fdt_setprop_string(fdt, nodeoffset, name, str) \
+-	fdt_setprop((fdt), (nodeoffset), (name), (str), strlen(str)+1)
+-
+-/**
+- * fdt_appendprop - append to or create a property
+- * @fdt: pointer to the device tree blob
+- * @nodeoffset: offset of the node whose property to change
+- * @name: name of the property to append to
+- * @val: pointer to data to append to the property value
+- * @len: length of the data to append to the property value
+- *
+- * fdt_appendprop() appends the value to the named property in the
+- * given node, creating the property if it does not already exist.
+- *
+- * This function may insert data into the blob, and will therefore
+- * change the offsets of some existing nodes.
+- *
+- * returns:
+- *	0, on success
+- *	-FDT_ERR_NOSPACE, there is insufficient free space in the blob to
+- *		contain the new property value
+- *	-FDT_ERR_BADOFFSET, nodeoffset did not point to FDT_BEGIN_NODE tag
+- *	-FDT_ERR_BADLAYOUT,
+- *	-FDT_ERR_BADMAGIC,
+- *	-FDT_ERR_BADVERSION,
+- *	-FDT_ERR_BADSTATE,
+- *	-FDT_ERR_BADSTRUCTURE,
+- *	-FDT_ERR_BADLAYOUT,
+- *	-FDT_ERR_TRUNCATED, standard meanings
+- */
+-int fdt_appendprop(void *fdt, int nodeoffset, const char *name,
+-		   const void *val, int len);
+-
+-/**
+- * fdt_appendprop_u32 - append a 32-bit integer value to a property
+- * @fdt: pointer to the device tree blob
+- * @nodeoffset: offset of the node whose property to change
+- * @name: name of the property to change
+- * @val: 32-bit integer value to append to the property (native endian)
+- *
+- * fdt_appendprop_u32() appends the given 32-bit integer value
+- * (converting to big-endian if necessary) to the value of the named
+- * property in the given node, or creates a new property with that
+- * value if it does not already exist.
+- *
+- * This function may insert data into the blob, and will therefore
+- * change the offsets of some existing nodes.
+- *
+- * returns:
+- *	0, on success
+- *	-FDT_ERR_NOSPACE, there is insufficient free space in the blob to
+- *		contain the new property value
+- *	-FDT_ERR_BADOFFSET, nodeoffset did not point to FDT_BEGIN_NODE tag
+- *	-FDT_ERR_BADLAYOUT,
+- *	-FDT_ERR_BADMAGIC,
+- *	-FDT_ERR_BADVERSION,
+- *	-FDT_ERR_BADSTATE,
+- *	-FDT_ERR_BADSTRUCTURE,
+- *	-FDT_ERR_BADLAYOUT,
+- *	-FDT_ERR_TRUNCATED, standard meanings
+- */
+-static inline int fdt_appendprop_u32(void *fdt, int nodeoffset,
+-				     const char *name, uint32_t val)
+-{
+-	fdt32_t tmp = cpu_to_fdt32(val);
+-	return fdt_appendprop(fdt, nodeoffset, name, &tmp, sizeof(tmp));
+-}
+-
+-/**
+- * fdt_appendprop_u64 - append a 64-bit integer value to a property
+- * @fdt: pointer to the device tree blob
+- * @nodeoffset: offset of the node whose property to change
+- * @name: name of the property to change
+- * @val: 64-bit integer value to append to the property (native endian)
+- *
+- * fdt_appendprop_u64() appends the given 64-bit integer value
+- * (converting to big-endian if necessary) to the value of the named
+- * property in the given node, or creates a new property with that
+- * value if it does not already exist.
+- *
+- * This function may insert data into the blob, and will therefore
+- * change the offsets of some existing nodes.
+- *
+- * returns:
+- *	0, on success
+- *	-FDT_ERR_NOSPACE, there is insufficient free space in the blob to
+- *		contain the new property value
+- *	-FDT_ERR_BADOFFSET, nodeoffset did not point to FDT_BEGIN_NODE tag
+- *	-FDT_ERR_BADLAYOUT,
+- *	-FDT_ERR_BADMAGIC,
+- *	-FDT_ERR_BADVERSION,
+- *	-FDT_ERR_BADSTATE,
+- *	-FDT_ERR_BADSTRUCTURE,
+- *	-FDT_ERR_BADLAYOUT,
+- *	-FDT_ERR_TRUNCATED, standard meanings
+- */
+-static inline int fdt_appendprop_u64(void *fdt, int nodeoffset,
+-				     const char *name, uint64_t val)
+-{
+-	fdt64_t tmp = cpu_to_fdt64(val);
+-	return fdt_appendprop(fdt, nodeoffset, name, &tmp, sizeof(tmp));
+-}
+-
+-/**
+- * fdt_appendprop_cell - append a single cell value to a property
+- *
+- * This is an alternative name for fdt_appendprop_u32()
+- */
+-static inline int fdt_appendprop_cell(void *fdt, int nodeoffset,
+-				      const char *name, uint32_t val)
+-{
+-	return fdt_appendprop_u32(fdt, nodeoffset, name, val);
+-}
+-
+-/**
+- * fdt_appendprop_string - append a string to a property
+- * @fdt: pointer to the device tree blob
+- * @nodeoffset: offset of the node whose property to change
+- * @name: name of the property to change
+- * @str: string value to append to the property
+- *
+- * fdt_appendprop_string() appends the given string to the value of
+- * the named property in the given node, or creates a new property
+- * with that value if it does not already exist.
+- *
+- * This function may insert data into the blob, and will therefore
+- * change the offsets of some existing nodes.
+- *
+- * returns:
+- *	0, on success
+- *	-FDT_ERR_NOSPACE, there is insufficient free space in the blob to
+- *		contain the new property value
+- *	-FDT_ERR_BADOFFSET, nodeoffset did not point to FDT_BEGIN_NODE tag
+- *	-FDT_ERR_BADLAYOUT,
+- *	-FDT_ERR_BADMAGIC,
+- *	-FDT_ERR_BADVERSION,
+- *	-FDT_ERR_BADSTATE,
+- *	-FDT_ERR_BADSTRUCTURE,
+- *	-FDT_ERR_BADLAYOUT,
+- *	-FDT_ERR_TRUNCATED, standard meanings
+- */
+-#define fdt_appendprop_string(fdt, nodeoffset, name, str) \
+-	fdt_appendprop((fdt), (nodeoffset), (name), (str), strlen(str)+1)
+-
+-/**
+- * fdt_delprop - delete a property
+- * @fdt: pointer to the device tree blob
+- * @nodeoffset: offset of the node whose property to nop
+- * @name: name of the property to nop
+- *
+- * fdt_del_property() will delete the given property.
+- *
+- * This function will delete data from the blob, and will therefore
+- * change the offsets of some existing nodes.
+- *
+- * returns:
+- *	0, on success
+- *	-FDT_ERR_NOTFOUND, node does not have the named property
+- *	-FDT_ERR_BADOFFSET, nodeoffset did not point to FDT_BEGIN_NODE tag
+- *	-FDT_ERR_BADLAYOUT,
+- *	-FDT_ERR_BADMAGIC,
+- *	-FDT_ERR_BADVERSION,
+- *	-FDT_ERR_BADSTATE,
+- *	-FDT_ERR_BADSTRUCTURE,
+- *	-FDT_ERR_TRUNCATED, standard meanings
+- */
+-int fdt_delprop(void *fdt, int nodeoffset, const char *name);
+-
+-/**
+- * fdt_add_subnode_namelen - creates a new node based on substring
+- * @fdt: pointer to the device tree blob
+- * @parentoffset: structure block offset of a node
+- * @name: name of the subnode to locate
+- * @namelen: number of characters of name to consider
+- *
+- * Identical to fdt_add_subnode(), but use only the first namelen
+- * characters of name as the name of the new node.  This is useful for
+- * creating subnodes based on a portion of a larger string, such as a
+- * full path.
+- */
+-int fdt_add_subnode_namelen(void *fdt, int parentoffset,
+-			    const char *name, int namelen);
+-
+-/**
+- * fdt_add_subnode - creates a new node
+- * @fdt: pointer to the device tree blob
+- * @parentoffset: structure block offset of a node
+- * @name: name of the subnode to locate
+- *
+- * fdt_add_subnode() creates a new node as a subnode of the node at
+- * structure block offset parentoffset, with the given name (which
+- * should include the unit address, if any).
+- *
+- * This function will insert data into the blob, and will therefore
+- * change the offsets of some existing nodes.
+-
+- * returns:
+- *	structure block offset of the created nodeequested subnode (>=0), on success
+- *	-FDT_ERR_NOTFOUND, if the requested subnode does not exist
+- *	-FDT_ERR_BADOFFSET, if parentoffset did not point to an FDT_BEGIN_NODE tag
+- *	-FDT_ERR_EXISTS, if the node at parentoffset already has a subnode of
+- *		the given name
+- *	-FDT_ERR_NOSPACE, if there is insufficient free space in the
+- *		blob to contain the new node
+- *	-FDT_ERR_NOSPACE
+- *	-FDT_ERR_BADLAYOUT
+- *      -FDT_ERR_BADMAGIC,
+- *	-FDT_ERR_BADVERSION,
+- *	-FDT_ERR_BADSTATE,
+- *	-FDT_ERR_BADSTRUCTURE,
+- *	-FDT_ERR_TRUNCATED, standard meanings.
+- */
+-int fdt_add_subnode(void *fdt, int parentoffset, const char *name);
+-
+-/**
+- * fdt_del_node - delete a node (subtree)
+- * @fdt: pointer to the device tree blob
+- * @nodeoffset: offset of the node to nop
+- *
+- * fdt_del_node() will remove the given node, including all its
+- * subnodes if any, from the blob.
+- *
+- * This function will delete data from the blob, and will therefore
+- * change the offsets of some existing nodes.
+- *
+- * returns:
+- *	0, on success
+- *	-FDT_ERR_BADOFFSET, nodeoffset did not point to FDT_BEGIN_NODE tag
+- *	-FDT_ERR_BADLAYOUT,
+- *	-FDT_ERR_BADMAGIC,
+- *	-FDT_ERR_BADVERSION,
+- *	-FDT_ERR_BADSTATE,
+- *	-FDT_ERR_BADSTRUCTURE,
+- *	-FDT_ERR_TRUNCATED, standard meanings
+- */
+-int fdt_del_node(void *fdt, int nodeoffset);
+-
+-/**********************************************************************/
+-/* Debugging / informational functions                                */
+-/**********************************************************************/
+-
+-const char *fdt_strerror(int errval);
+-
+-struct fdt_region {
+-	int offset;
+-	int size;
+-};
+-
+-/**
+- * fdt_find_regions() - find regions in device tree
+- *
+- * Given a list of nodes to include and properties to exclude, find
+- * the regions of the device tree which describe those included parts.
+- *
+- * The intent is to get a list of regions which will be invariant provided
+- * those parts are invariant. For example, if you request a list of regions
+- * for all nodes but exclude the property "data", then you will get the
+- * same region contents regardless of any change to "data" properties.
+- *
+- * This function can be used to produce a byte-stream to send to a hashing
+- * function to verify that critical parts of the FDT have not changed.
+- *
+- * Nodes which are given in 'inc' are included in the region list, as
+- * are the names of the immediate subnodes nodes (but not the properties
+- * or subnodes of those subnodes).
+- *
+- * For eaxample "/" means to include the root node, all root properties
+- * and the FDT_BEGIN_NODE and FDT_END_NODE of all subnodes of /. The latter
+- * ensures that we capture the names of the subnodes. In a hashing situation
+- * it prevents the root node from changing at all Any change to non-excluded
+- * properties, names of subnodes or number of subnodes would be detected.
+- *
+- * When used with FITs this provides the ability to hash and sign parts of
+- * the FIT based on different configurations in the FIT. Then it is
+- * impossible to change anything about that configuration (include images
+- * attached to the configuration), but it may be possible to add new
+- * configurations, new images or new signatures within the existing
+- * framework.
+- *
+- * Adding new properties to a device tree may result in the string table
+- * being extended (if the new property names are different from those
+- * already added). This function can optionally include a region for
+- * the string table so that this can be part of the hash too.
+- *
+- * The device tree header is not included in the list.
+- *
+- * @fdt:	Device tree to check
+- * @inc:	List of node paths to included
+- * @inc_count:	Number of node paths in list
+- * @exc_prop:	List of properties names to exclude
+- * @exc_prop_count:	Number of properties in exclude list
+- * @region:	Returns list of regions
+- * @max_region:	Maximum length of region list
+- * @path:	Pointer to a temporary string for the function to use for
+- *		building path names
+- * @path_len:	Length of path, must be large enough to hold the longest
+- *		path in the tree
+- * @add_string_tab:	1 to add a region for the string table
+- * @return number of regions in list. If this is >max_regions then the
+- * region array was exhausted. You should increase max_regions and try
+- * the call again.
+- */
+-int fdt_find_regions(const void *fdt, char * const inc[], int inc_count,
+-		     char * const exc_prop[], int exc_prop_count,
+-		     struct fdt_region region[], int max_regions,
+-		     char *path, int path_len, int add_string_tab);
+-
+-#endif /* _LIBFDT_H */
+diff --git a/include/libfdt_env.h b/include/libfdt_env.h
+deleted file mode 100644
+index 5630c4a..0000000
+--- a/include/libfdt_env.h
++++ /dev/null
+@@ -1,29 +0,0 @@
+-/*
+- * libfdt - Flat Device Tree manipulation (build/run environment adaptation)
+- * Copyright (C) 2007 Gerald Van Baren, Custom IDEAS, vanbaren@cideas.com
+- * Original version written by David Gibson, IBM Corporation.
+- *
+- * SPDX-License-Identifier:	LGPL-2.1+
+- */
+-
+-#ifndef _LIBFDT_ENV_H
+-#define _LIBFDT_ENV_H
+-
+-#include "linux/types.h"
+-#include <asm/byteorder.h>
+-
+-extern struct fdt_header *working_fdt;  /* Pointer to the working fdt */
+-
+-typedef __be16 fdt16_t;
+-typedef __be32 fdt32_t;
+-typedef __be64 fdt64_t;
+-
+-#define fdt32_to_cpu(x)		__be32_to_cpu(x)
+-#define cpu_to_fdt32(x)		__cpu_to_be32(x)
+-#define fdt64_to_cpu(x)		__be64_to_cpu(x)
+-#define cpu_to_fdt64(x)		__cpu_to_be64(x)
+-
+-/* adding a ramdisk needs 0x44 bytes in version 2008.10 */
+-#define FDT_RAMDISK_OVERHEAD	0x80
+-
+-#endif /* _LIBFDT_ENV_H */
+diff --git a/include/linux/libfdt.h b/include/linux/libfdt.h
+new file mode 100644
+index 0000000..641ebc5
+--- /dev/null
++++ b/include/linux/libfdt.h
+@@ -0,0 +1,1578 @@
++#ifndef _LIBFDT_H
++#define _LIBFDT_H
++/*
++ * libfdt - Flat Device Tree manipulation
++ * Copyright (C) 2006 David Gibson, IBM Corporation.
++ *
++ * libfdt is dual licensed: you can use it either under the terms of
++ * the GPL, or the BSD license, at your option.
++ *
++ *  a) This library is free software; you can redistribute it and/or
++ *     modify it under the terms of the GNU General Public License as
++ *     published by the Free Software Foundation; either version 2 of the
++ *     License, or (at your option) any later version.
++ *
++ *     This library is distributed in the hope that it will be useful,
++ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *     GNU General Public License for more details.
++ *
++ *     You should have received a copy of the GNU General Public
++ *     License along with this library; if not, write to the Free
++ *     Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
++ *     MA 02110-1301 USA
++ *
++ * Alternatively,
++ *
++ *  b) Redistribution and use in source and binary forms, with or
++ *     without modification, are permitted provided that the following
++ *     conditions are met:
++ *
++ *     1. Redistributions of source code must retain the above
++ *        copyright notice, this list of conditions and the following
++ *        disclaimer.
++ *     2. Redistributions in binary form must reproduce the above
++ *        copyright notice, this list of conditions and the following
++ *        disclaimer in the documentation and/or other materials
++ *        provided with the distribution.
++ *
++ *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
++ *     CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
++ *     INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
++ *     MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
++ *     DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
++ *     CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
++ *     SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
++ *     NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
++ *     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
++ *     HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
++ *     CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
++ *     OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
++ *     EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
++ */
++
++#include <linux/libfdt_env.h>
++#include <fdt.h>
++
++#define FDT_FIRST_SUPPORTED_VERSION	0x10
++#define FDT_LAST_SUPPORTED_VERSION	0x11
++
++/* Error codes: informative error codes */
++#define FDT_ERR_NOTFOUND	1
++	/* FDT_ERR_NOTFOUND: The requested node or property does not exist */
++#define FDT_ERR_EXISTS		2
++	/* FDT_ERR_EXISTS: Attemped to create a node or property which
++	 * already exists */
++#define FDT_ERR_NOSPACE		3
++	/* FDT_ERR_NOSPACE: Operation needed to expand the device
++	 * tree, but its buffer did not have sufficient space to
++	 * contain the expanded tree. Use fdt_open_into() to move the
++	 * device tree to a buffer with more space. */
++
++/* Error codes: codes for bad parameters */
++#define FDT_ERR_BADOFFSET	4
++	/* FDT_ERR_BADOFFSET: Function was passed a structure block
++	 * offset which is out-of-bounds, or which points to an
++	 * unsuitable part of the structure for the operation. */
++#define FDT_ERR_BADPATH		5
++	/* FDT_ERR_BADPATH: Function was passed a badly formatted path
++	 * (e.g. missing a leading / for a function which requires an
++	 * absolute path) */
++#define FDT_ERR_BADPHANDLE	6
++	/* FDT_ERR_BADPHANDLE: Function was passed an invalid phandle
++	 * value.  phandle values of 0 and -1 are not permitted. */
++#define FDT_ERR_BADSTATE	7
++	/* FDT_ERR_BADSTATE: Function was passed an incomplete device
++	 * tree created by the sequential-write functions, which is
++	 * not sufficiently complete for the requested operation. */
++
++/* Error codes: codes for bad device tree blobs */
++#define FDT_ERR_TRUNCATED	8
++	/* FDT_ERR_TRUNCATED: Structure block of the given device tree
++	 * ends without an FDT_END tag. */
++#define FDT_ERR_BADMAGIC	9
++	/* FDT_ERR_BADMAGIC: Given "device tree" appears not to be a
++	 * device tree at all - it is missing the flattened device
++	 * tree magic number. */
++#define FDT_ERR_BADVERSION	10
++	/* FDT_ERR_BADVERSION: Given device tree has a version which
++	 * can't be handled by the requested operation.  For
++	 * read-write functions, this may mean that fdt_open_into() is
++	 * required to convert the tree to the expected version. */
++#define FDT_ERR_BADSTRUCTURE	11
++	/* FDT_ERR_BADSTRUCTURE: Given device tree has a corrupt
++	 * structure block or other serious error (e.g. misnested
++	 * nodes, or subnodes preceding properties). */
++#define FDT_ERR_BADLAYOUT	12
++	/* FDT_ERR_BADLAYOUT: For read-write functions, the given
++	 * device tree has it's sub-blocks in an order that the
++	 * function can't handle (memory reserve map, then structure,
++	 * then strings).  Use fdt_open_into() to reorganize the tree
++	 * into a form suitable for the read-write operations. */
++
++/* "Can't happen" error indicating a bug in libfdt */
++#define FDT_ERR_INTERNAL	13
++	/* FDT_ERR_INTERNAL: libfdt has failed an internal assertion.
++	 * Should never be returned, if it is, it indicates a bug in
++	 * libfdt itself. */
++
++#define FDT_ERR_MAX		13
++
++/**********************************************************************/
++/* Low-level functions (you probably don't need these)                */
++/**********************************************************************/
++
++const void *fdt_offset_ptr(const void *fdt, int offset, unsigned int checklen);
++static inline void *fdt_offset_ptr_w(void *fdt, int offset, int checklen)
++{
++	return (void *)(uintptr_t)fdt_offset_ptr(fdt, offset, checklen);
++}
++
++uint32_t fdt_next_tag(const void *fdt, int offset, int *nextoffset);
++
++/**********************************************************************/
++/* Traversal functions                                                */
++/**********************************************************************/
++
++int fdt_next_node(const void *fdt, int offset, int *depth);
++
++/**
++ * fdt_first_subnode() - get offset of first direct subnode
++ *
++ * @fdt:	FDT blob
++ * @offset:	Offset of node to check
++ * @return offset of first subnode, or -FDT_ERR_NOTFOUND if there is none
++ */
++int fdt_first_subnode(const void *fdt, int offset);
++
++/**
++ * fdt_next_subnode() - get offset of next direct subnode
++ *
++ * After first calling fdt_first_subnode(), call this function repeatedly to
++ * get direct subnodes of a parent node.
++ *
++ * @fdt:	FDT blob
++ * @offset:	Offset of previous subnode
++ * @return offset of next subnode, or -FDT_ERR_NOTFOUND if there are no more
++ * subnodes
++ */
++int fdt_next_subnode(const void *fdt, int offset);
++
++/**********************************************************************/
++/* General functions                                                  */
++/**********************************************************************/
++
++#define fdt_get_header(fdt, field) \
++	(fdt32_to_cpu(((const struct fdt_header *)(fdt))->field))
++#define fdt_magic(fdt)			(fdt_get_header(fdt, magic))
++#define fdt_totalsize(fdt)		(fdt_get_header(fdt, totalsize))
++#define fdt_off_dt_struct(fdt)		(fdt_get_header(fdt, off_dt_struct))
++#define fdt_off_dt_strings(fdt)		(fdt_get_header(fdt, off_dt_strings))
++#define fdt_off_mem_rsvmap(fdt)		(fdt_get_header(fdt, off_mem_rsvmap))
++#define fdt_version(fdt)		(fdt_get_header(fdt, version))
++#define fdt_last_comp_version(fdt)	(fdt_get_header(fdt, last_comp_version))
++#define fdt_boot_cpuid_phys(fdt)	(fdt_get_header(fdt, boot_cpuid_phys))
++#define fdt_size_dt_strings(fdt)	(fdt_get_header(fdt, size_dt_strings))
++#define fdt_size_dt_struct(fdt)		(fdt_get_header(fdt, size_dt_struct))
++
++#define __fdt_set_hdr(name) \
++	static inline void fdt_set_##name(void *fdt, uint32_t val) \
++	{ \
++		struct fdt_header *fdth = (struct fdt_header*)fdt; \
++		fdth->name = cpu_to_fdt32(val); \
++	}
++__fdt_set_hdr(magic);
++__fdt_set_hdr(totalsize);
++__fdt_set_hdr(off_dt_struct);
++__fdt_set_hdr(off_dt_strings);
++__fdt_set_hdr(off_mem_rsvmap);
++__fdt_set_hdr(version);
++__fdt_set_hdr(last_comp_version);
++__fdt_set_hdr(boot_cpuid_phys);
++__fdt_set_hdr(size_dt_strings);
++__fdt_set_hdr(size_dt_struct);
++#undef __fdt_set_hdr
++
++/**
++ * fdt_check_header - sanity check a device tree or possible device tree
++ * @fdt: pointer to data which might be a flattened device tree
++ *
++ * fdt_check_header() checks that the given buffer contains what
++ * appears to be a flattened device tree with sane information in its
++ * header.
++ *
++ * returns:
++ *     0, if the buffer appears to contain a valid device tree
++ *     -FDT_ERR_BADMAGIC,
++ *     -FDT_ERR_BADVERSION,
++ *     -FDT_ERR_BADSTATE, standard meanings, as above
++ */
++int fdt_check_header(const void *fdt);
++
++/**
++ * fdt_move - move a device tree around in memory
++ * @fdt: pointer to the device tree to move
++ * @buf: pointer to memory where the device is to be moved
++ * @bufsize: size of the memory space at buf
++ *
++ * fdt_move() relocates, if possible, the device tree blob located at
++ * fdt to the buffer at buf of size bufsize.  The buffer may overlap
++ * with the existing device tree blob at fdt.  Therefore,
++ *     fdt_move(fdt, fdt, fdt_totalsize(fdt))
++ * should always succeed.
++ *
++ * returns:
++ *     0, on success
++ *     -FDT_ERR_NOSPACE, bufsize is insufficient to contain the device tree
++ *     -FDT_ERR_BADMAGIC,
++ *     -FDT_ERR_BADVERSION,
++ *     -FDT_ERR_BADSTATE, standard meanings
++ */
++int fdt_move(const void *fdt, void *buf, int bufsize);
++
++/**********************************************************************/
++/* Read-only functions                                                */
++/**********************************************************************/
++
++/**
++ * fdt_string - retrieve a string from the strings block of a device tree
++ * @fdt: pointer to the device tree blob
++ * @stroffset: offset of the string within the strings block (native endian)
++ *
++ * fdt_string() retrieves a pointer to a single string from the
++ * strings block of the device tree blob at fdt.
++ *
++ * returns:
++ *     a pointer to the string, on success
++ *     NULL, if stroffset is out of bounds
++ */
++const char *fdt_string(const void *fdt, int stroffset);
++
++/**
++ * fdt_num_mem_rsv - retrieve the number of memory reserve map entries
++ * @fdt: pointer to the device tree blob
++ *
++ * Returns the number of entries in the device tree blob's memory
++ * reservation map.  This does not include the terminating 0,0 entry
++ * or any other (0,0) entries reserved for expansion.
++ *
++ * returns:
++ *     the number of entries
++ */
++int fdt_num_mem_rsv(const void *fdt);
++
++/**
++ * fdt_get_mem_rsv - retrieve one memory reserve map entry
++ * @fdt: pointer to the device tree blob
++ * @address, @size: pointers to 64-bit variables
++ *
++ * On success, *address and *size will contain the address and size of
++ * the n-th reserve map entry from the device tree blob, in
++ * native-endian format.
++ *
++ * returns:
++ *     0, on success
++ *     -FDT_ERR_BADMAGIC,
++ *     -FDT_ERR_BADVERSION,
++ *     -FDT_ERR_BADSTATE, standard meanings
++ */
++int fdt_get_mem_rsv(const void *fdt, int n, uint64_t *address, uint64_t *size);
++
++/**
++ * fdt_subnode_offset_namelen - find a subnode based on substring
++ * @fdt: pointer to the device tree blob
++ * @parentoffset: structure block offset of a node
++ * @name: name of the subnode to locate
++ * @namelen: number of characters of name to consider
++ *
++ * Identical to fdt_subnode_offset(), but only examine the first
++ * namelen characters of name for matching the subnode name.  This is
++ * useful for finding subnodes based on a portion of a larger string,
++ * such as a full path.
++ */
++int fdt_subnode_offset_namelen(const void *fdt, int parentoffset,
++			       const char *name, int namelen);
++/**
++ * fdt_subnode_offset - find a subnode of a given node
++ * @fdt: pointer to the device tree blob
++ * @parentoffset: structure block offset of a node
++ * @name: name of the subnode to locate
++ *
++ * fdt_subnode_offset() finds a subnode of the node at structure block
++ * offset parentoffset with the given name.  name may include a unit
++ * address, in which case fdt_subnode_offset() will find the subnode
++ * with that unit address, or the unit address may be omitted, in
++ * which case fdt_subnode_offset() will find an arbitrary subnode
++ * whose name excluding unit address matches the given name.
++ *
++ * returns:
++ *	structure block offset of the requested subnode (>=0), on success
++ *	-FDT_ERR_NOTFOUND, if the requested subnode does not exist
++ *	-FDT_ERR_BADOFFSET, if parentoffset did not point to an FDT_BEGIN_NODE tag
++ *      -FDT_ERR_BADMAGIC,
++ *	-FDT_ERR_BADVERSION,
++ *	-FDT_ERR_BADSTATE,
++ *	-FDT_ERR_BADSTRUCTURE,
++ *	-FDT_ERR_TRUNCATED, standard meanings.
++ */
++int fdt_subnode_offset(const void *fdt, int parentoffset, const char *name);
++
++/**
++ * fdt_path_offset - find a tree node by its full path
++ * @fdt: pointer to the device tree blob
++ * @path: full path of the node to locate
++ *
++ * fdt_path_offset() finds a node of a given path in the device tree.
++ * Each path component may omit the unit address portion, but the
++ * results of this are undefined if any such path component is
++ * ambiguous (that is if there are multiple nodes at the relevant
++ * level matching the given component, differentiated only by unit
++ * address).
++ *
++ * returns:
++ *	structure block offset of the node with the requested path (>=0), on success
++ *	-FDT_ERR_BADPATH, given path does not begin with '/' or is invalid
++ *	-FDT_ERR_NOTFOUND, if the requested node does not exist
++ *      -FDT_ERR_BADMAGIC,
++ *	-FDT_ERR_BADVERSION,
++ *	-FDT_ERR_BADSTATE,
++ *	-FDT_ERR_BADSTRUCTURE,
++ *	-FDT_ERR_TRUNCATED, standard meanings.
++ */
++int fdt_path_offset(const void *fdt, const char *path);
++
++/**
++ * fdt_get_name - retrieve the name of a given node
++ * @fdt: pointer to the device tree blob
++ * @nodeoffset: structure block offset of the starting node
++ * @lenp: pointer to an integer variable (will be overwritten) or NULL
++ *
++ * fdt_get_name() retrieves the name (including unit address) of the
++ * device tree node at structure block offset nodeoffset.  If lenp is
++ * non-NULL, the length of this name is also returned, in the integer
++ * pointed to by lenp.
++ *
++ * returns:
++ *	pointer to the node's name, on success
++ *		If lenp is non-NULL, *lenp contains the length of that name (>=0)
++ *	NULL, on error
++ *		if lenp is non-NULL *lenp contains an error code (<0):
++ *		-FDT_ERR_BADOFFSET, nodeoffset did not point to FDT_BEGIN_NODE tag
++ *		-FDT_ERR_BADMAGIC,
++ *		-FDT_ERR_BADVERSION,
++ *		-FDT_ERR_BADSTATE, standard meanings
++ */
++const char *fdt_get_name(const void *fdt, int nodeoffset, int *lenp);
++
++/**
++ * fdt_first_property_offset - find the offset of a node's first property
++ * @fdt: pointer to the device tree blob
++ * @nodeoffset: structure block offset of a node
++ *
++ * fdt_first_property_offset() finds the first property of the node at
++ * the given structure block offset.
++ *
++ * returns:
++ *	structure block offset of the property (>=0), on success
++ *	-FDT_ERR_NOTFOUND, if the requested node has no properties
++ *	-FDT_ERR_BADOFFSET, if nodeoffset did not point to an FDT_BEGIN_NODE tag
++ *      -FDT_ERR_BADMAGIC,
++ *	-FDT_ERR_BADVERSION,
++ *	-FDT_ERR_BADSTATE,
++ *	-FDT_ERR_BADSTRUCTURE,
++ *	-FDT_ERR_TRUNCATED, standard meanings.
++ */
++int fdt_first_property_offset(const void *fdt, int nodeoffset);
++
++/**
++ * fdt_next_property_offset - step through a node's properties
++ * @fdt: pointer to the device tree blob
++ * @offset: structure block offset of a property
++ *
++ * fdt_next_property_offset() finds the property immediately after the
++ * one at the given structure block offset.  This will be a property
++ * of the same node as the given property.
++ *
++ * returns:
++ *	structure block offset of the next property (>=0), on success
++ *	-FDT_ERR_NOTFOUND, if the given property is the last in its node
++ *	-FDT_ERR_BADOFFSET, if nodeoffset did not point to an FDT_PROP tag
++ *      -FDT_ERR_BADMAGIC,
++ *	-FDT_ERR_BADVERSION,
++ *	-FDT_ERR_BADSTATE,
++ *	-FDT_ERR_BADSTRUCTURE,
++ *	-FDT_ERR_TRUNCATED, standard meanings.
++ */
++int fdt_next_property_offset(const void *fdt, int offset);
++
++/**
++ * fdt_get_property_by_offset - retrieve the property at a given offset
++ * @fdt: pointer to the device tree blob
++ * @offset: offset of the property to retrieve
++ * @lenp: pointer to an integer variable (will be overwritten) or NULL
++ *
++ * fdt_get_property_by_offset() retrieves a pointer to the
++ * fdt_property structure within the device tree blob at the given
++ * offset.  If lenp is non-NULL, the length of the property value is
++ * also returned, in the integer pointed to by lenp.
++ *
++ * returns:
++ *	pointer to the structure representing the property
++ *		if lenp is non-NULL, *lenp contains the length of the property
++ *		value (>=0)
++ *	NULL, on error
++ *		if lenp is non-NULL, *lenp contains an error code (<0):
++ *		-FDT_ERR_BADOFFSET, nodeoffset did not point to FDT_PROP tag
++ *		-FDT_ERR_BADMAGIC,
++ *		-FDT_ERR_BADVERSION,
++ *		-FDT_ERR_BADSTATE,
++ *		-FDT_ERR_BADSTRUCTURE,
++ *		-FDT_ERR_TRUNCATED, standard meanings
++ */
++const struct fdt_property *fdt_get_property_by_offset(const void *fdt,
++						      int offset,
++						      int *lenp);
++
++/**
++ * fdt_get_property_namelen - find a property based on substring
++ * @fdt: pointer to the device tree blob
++ * @nodeoffset: offset of the node whose property to find
++ * @name: name of the property to find
++ * @namelen: number of characters of name to consider
++ * @lenp: pointer to an integer variable (will be overwritten) or NULL
++ *
++ * Identical to fdt_get_property_namelen(), but only examine the first
++ * namelen characters of name for matching the property name.
++ */
++const struct fdt_property *fdt_get_property_namelen(const void *fdt,
++						    int nodeoffset,
++						    const char *name,
++						    int namelen, int *lenp);
++
++/**
++ * fdt_get_property - find a given property in a given node
++ * @fdt: pointer to the device tree blob
++ * @nodeoffset: offset of the node whose property to find
++ * @name: name of the property to find
++ * @lenp: pointer to an integer variable (will be overwritten) or NULL
++ *
++ * fdt_get_property() retrieves a pointer to the fdt_property
++ * structure within the device tree blob corresponding to the property
++ * named 'name' of the node at offset nodeoffset.  If lenp is
++ * non-NULL, the length of the property value is also returned, in the
++ * integer pointed to by lenp.
++ *
++ * returns:
++ *	pointer to the structure representing the property
++ *		if lenp is non-NULL, *lenp contains the length of the property
++ *		value (>=0)
++ *	NULL, on error
++ *		if lenp is non-NULL, *lenp contains an error code (<0):
++ *		-FDT_ERR_NOTFOUND, node does not have named property
++ *		-FDT_ERR_BADOFFSET, nodeoffset did not point to FDT_BEGIN_NODE tag
++ *		-FDT_ERR_BADMAGIC,
++ *		-FDT_ERR_BADVERSION,
++ *		-FDT_ERR_BADSTATE,
++ *		-FDT_ERR_BADSTRUCTURE,
++ *		-FDT_ERR_TRUNCATED, standard meanings
++ */
++const struct fdt_property *fdt_get_property(const void *fdt, int nodeoffset,
++					    const char *name, int *lenp);
++static inline struct fdt_property *fdt_get_property_w(void *fdt, int nodeoffset,
++						      const char *name,
++						      int *lenp)
++{
++	return (struct fdt_property *)(uintptr_t)
++		fdt_get_property(fdt, nodeoffset, name, lenp);
++}
++
++/**
++ * fdt_getprop_by_offset - retrieve the value of a property at a given offset
++ * @fdt: pointer to the device tree blob
++ * @ffset: offset of the property to read
++ * @namep: pointer to a string variable (will be overwritten) or NULL
++ * @lenp: pointer to an integer variable (will be overwritten) or NULL
++ *
++ * fdt_getprop_by_offset() retrieves a pointer to the value of the
++ * property at structure block offset 'offset' (this will be a pointer
++ * to within the device blob itself, not a copy of the value).  If
++ * lenp is non-NULL, the length of the property value is also
++ * returned, in the integer pointed to by lenp.  If namep is non-NULL,
++ * the property's namne will also be returned in the char * pointed to
++ * by namep (this will be a pointer to within the device tree's string
++ * block, not a new copy of the name).
++ *
++ * returns:
++ *	pointer to the property's value
++ *		if lenp is non-NULL, *lenp contains the length of the property
++ *		value (>=0)
++ *		if namep is non-NULL *namep contiains a pointer to the property
++ *		name.
++ *	NULL, on error
++ *		if lenp is non-NULL, *lenp contains an error code (<0):
++ *		-FDT_ERR_BADOFFSET, nodeoffset did not point to FDT_PROP tag
++ *		-FDT_ERR_BADMAGIC,
++ *		-FDT_ERR_BADVERSION,
++ *		-FDT_ERR_BADSTATE,
++ *		-FDT_ERR_BADSTRUCTURE,
++ *		-FDT_ERR_TRUNCATED, standard meanings
++ */
++const void *fdt_getprop_by_offset(const void *fdt, int offset,
++				  const char **namep, int *lenp);
++
++/**
++ * fdt_getprop_namelen - get property value based on substring
++ * @fdt: pointer to the device tree blob
++ * @nodeoffset: offset of the node whose property to find
++ * @name: name of the property to find
++ * @namelen: number of characters of name to consider
++ * @lenp: pointer to an integer variable (will be overwritten) or NULL
++ *
++ * Identical to fdt_getprop(), but only examine the first namelen
++ * characters of name for matching the property name.
++ */
++const void *fdt_getprop_namelen(const void *fdt, int nodeoffset,
++				const char *name, int namelen, int *lenp);
++
++/**
++ * fdt_getprop - retrieve the value of a given property
++ * @fdt: pointer to the device tree blob
++ * @nodeoffset: offset of the node whose property to find
++ * @name: name of the property to find
++ * @lenp: pointer to an integer variable (will be overwritten) or NULL
++ *
++ * fdt_getprop() retrieves a pointer to the value of the property
++ * named 'name' of the node at offset nodeoffset (this will be a
++ * pointer to within the device blob itself, not a copy of the value).
++ * If lenp is non-NULL, the length of the property value is also
++ * returned, in the integer pointed to by lenp.
++ *
++ * returns:
++ *	pointer to the property's value
++ *		if lenp is non-NULL, *lenp contains the length of the property
++ *		value (>=0)
++ *	NULL, on error
++ *		if lenp is non-NULL, *lenp contains an error code (<0):
++ *		-FDT_ERR_NOTFOUND, node does not have named property
++ *		-FDT_ERR_BADOFFSET, nodeoffset did not point to FDT_BEGIN_NODE tag
++ *		-FDT_ERR_BADMAGIC,
++ *		-FDT_ERR_BADVERSION,
++ *		-FDT_ERR_BADSTATE,
++ *		-FDT_ERR_BADSTRUCTURE,
++ *		-FDT_ERR_TRUNCATED, standard meanings
++ */
++const void *fdt_getprop(const void *fdt, int nodeoffset,
++			const char *name, int *lenp);
++static inline void *fdt_getprop_w(void *fdt, int nodeoffset,
++				  const char *name, int *lenp)
++{
++	return (void *)(uintptr_t)fdt_getprop(fdt, nodeoffset, name, lenp);
++}
++
++/**
++ * fdt_get_phandle - retrieve the phandle of a given node
++ * @fdt: pointer to the device tree blob
++ * @nodeoffset: structure block offset of the node
++ *
++ * fdt_get_phandle() retrieves the phandle of the device tree node at
++ * structure block offset nodeoffset.
++ *
++ * returns:
++ *	the phandle of the node at nodeoffset, on success (!= 0, != -1)
++ *	0, if the node has no phandle, or another error occurs
++ */
++uint32_t fdt_get_phandle(const void *fdt, int nodeoffset);
++
++/**
++ * fdt_get_alias_namelen - get alias based on substring
++ * @fdt: pointer to the device tree blob
++ * @name: name of the alias th look up
++ * @namelen: number of characters of name to consider
++ *
++ * Identical to fdt_get_alias(), but only examine the first namelen
++ * characters of name for matching the alias name.
++ */
++const char *fdt_get_alias_namelen(const void *fdt,
++				  const char *name, int namelen);
++
++/**
++ * fdt_get_alias - retrieve the path referenced by a given alias
++ * @fdt: pointer to the device tree blob
++ * @name: name of the alias to look up
++ *
++ * fdt_get_alias() retrieves the value of a given alias.  That is, the
++ * value of the property named 'name' in the node /aliases.
++ *
++ * returns:
++ *	a pointer to the expansion of the alias named 'name', if it exists
++ *	NULL, if the given alias or the /aliases node does not exist
++ */
++const char *fdt_get_alias(const void *fdt, const char *name);
++
++/**
++ * fdt_get_path - determine the full path of a node
++ * @fdt: pointer to the device tree blob
++ * @nodeoffset: offset of the node whose path to find
++ * @buf: character buffer to contain the returned path (will be overwritten)
++ * @buflen: size of the character buffer at buf
++ *
++ * fdt_get_path() computes the full path of the node at offset
++ * nodeoffset, and records that path in the buffer at buf.
++ *
++ * NOTE: This function is expensive, as it must scan the device tree
++ * structure from the start to nodeoffset.
++ *
++ * returns:
++ *	0, on success
++ *		buf contains the absolute path of the node at
++ *		nodeoffset, as a NUL-terminated string.
++ *	-FDT_ERR_BADOFFSET, nodeoffset does not refer to a BEGIN_NODE tag
++ *	-FDT_ERR_NOSPACE, the path of the given node is longer than (bufsize-1)
++ *		characters and will not fit in the given buffer.
++ *	-FDT_ERR_BADMAGIC,
++ *	-FDT_ERR_BADVERSION,
++ *	-FDT_ERR_BADSTATE,
++ *	-FDT_ERR_BADSTRUCTURE, standard meanings
++ */
++int fdt_get_path(const void *fdt, int nodeoffset, char *buf, int buflen);
++
++/**
++ * fdt_supernode_atdepth_offset - find a specific ancestor of a node
++ * @fdt: pointer to the device tree blob
++ * @nodeoffset: offset of the node whose parent to find
++ * @supernodedepth: depth of the ancestor to find
++ * @nodedepth: pointer to an integer variable (will be overwritten) or NULL
++ *
++ * fdt_supernode_atdepth_offset() finds an ancestor of the given node
++ * at a specific depth from the root (where the root itself has depth
++ * 0, its immediate subnodes depth 1 and so forth).  So
++ *	fdt_supernode_atdepth_offset(fdt, nodeoffset, 0, NULL);
++ * will always return 0, the offset of the root node.  If the node at
++ * nodeoffset has depth D, then:
++ *	fdt_supernode_atdepth_offset(fdt, nodeoffset, D, NULL);
++ * will return nodeoffset itself.
++ *
++ * NOTE: This function is expensive, as it must scan the device tree
++ * structure from the start to nodeoffset.
++ *
++ * returns:
++
++ *	structure block offset of the node at node offset's ancestor
++ *		of depth supernodedepth (>=0), on success
++ *	-FDT_ERR_BADOFFSET, nodeoffset does not refer to a BEGIN_NODE tag
++*	-FDT_ERR_NOTFOUND, supernodedepth was greater than the depth of nodeoffset
++ *	-FDT_ERR_BADMAGIC,
++ *	-FDT_ERR_BADVERSION,
++ *	-FDT_ERR_BADSTATE,
++ *	-FDT_ERR_BADSTRUCTURE, standard meanings
++ */
++int fdt_supernode_atdepth_offset(const void *fdt, int nodeoffset,
++				 int supernodedepth, int *nodedepth);
++
++/**
++ * fdt_node_depth - find the depth of a given node
++ * @fdt: pointer to the device tree blob
++ * @nodeoffset: offset of the node whose parent to find
++ *
++ * fdt_node_depth() finds the depth of a given node.  The root node
++ * has depth 0, its immediate subnodes depth 1 and so forth.
++ *
++ * NOTE: This function is expensive, as it must scan the device tree
++ * structure from the start to nodeoffset.
++ *
++ * returns:
++ *	depth of the node at nodeoffset (>=0), on success
++ *	-FDT_ERR_BADOFFSET, nodeoffset does not refer to a BEGIN_NODE tag
++ *	-FDT_ERR_BADMAGIC,
++ *	-FDT_ERR_BADVERSION,
++ *	-FDT_ERR_BADSTATE,
++ *	-FDT_ERR_BADSTRUCTURE, standard meanings
++ */
++int fdt_node_depth(const void *fdt, int nodeoffset);
++
++/**
++ * fdt_parent_offset - find the parent of a given node
++ * @fdt: pointer to the device tree blob
++ * @nodeoffset: offset of the node whose parent to find
++ *
++ * fdt_parent_offset() locates the parent node of a given node (that
++ * is, it finds the offset of the node which contains the node at
++ * nodeoffset as a subnode).
++ *
++ * NOTE: This function is expensive, as it must scan the device tree
++ * structure from the start to nodeoffset, *twice*.
++ *
++ * returns:
++ *	structure block offset of the parent of the node at nodeoffset
++ *		(>=0), on success
++ *	-FDT_ERR_BADOFFSET, nodeoffset does not refer to a BEGIN_NODE tag
++ *	-FDT_ERR_BADMAGIC,
++ *	-FDT_ERR_BADVERSION,
++ *	-FDT_ERR_BADSTATE,
++ *	-FDT_ERR_BADSTRUCTURE, standard meanings
++ */
++int fdt_parent_offset(const void *fdt, int nodeoffset);
++
++/**
++ * fdt_node_offset_by_prop_value - find nodes with a given property value
++ * @fdt: pointer to the device tree blob
++ * @startoffset: only find nodes after this offset
++ * @propname: property name to check
++ * @propval: property value to search for
++ * @proplen: length of the value in propval
++ *
++ * fdt_node_offset_by_prop_value() returns the offset of the first
++ * node after startoffset, which has a property named propname whose
++ * value is of length proplen and has value equal to propval; or if
++ * startoffset is -1, the very first such node in the tree.
++ *
++ * To iterate through all nodes matching the criterion, the following
++ * idiom can be used:
++ *	offset = fdt_node_offset_by_prop_value(fdt, -1, propname,
++ *					       propval, proplen);
++ *	while (offset != -FDT_ERR_NOTFOUND) {
++ *		... other code here ...
++ *		offset = fdt_node_offset_by_prop_value(fdt, offset, propname,
++ *						       propval, proplen);
++ *	}
++ *
++ * Note the -1 in the first call to the function, if 0 is used here
++ * instead, the function will never locate the root node, even if it
++ * matches the criterion.
++ *
++ * returns:
++ *	structure block offset of the located node (>= 0, >startoffset),
++ *		 on success
++ *	-FDT_ERR_NOTFOUND, no node matching the criterion exists in the
++ *		tree after startoffset
++ *	-FDT_ERR_BADOFFSET, nodeoffset does not refer to a BEGIN_NODE tag
++ *	-FDT_ERR_BADMAGIC,
++ *	-FDT_ERR_BADVERSION,
++ *	-FDT_ERR_BADSTATE,
++ *	-FDT_ERR_BADSTRUCTURE, standard meanings
++ */
++int fdt_node_offset_by_prop_value(const void *fdt, int startoffset,
++				  const char *propname,
++				  const void *propval, int proplen);
++
++/**
++ * fdt_node_offset_by_phandle - find the node with a given phandle
++ * @fdt: pointer to the device tree blob
++ * @phandle: phandle value
++ *
++ * fdt_node_offset_by_phandle() returns the offset of the node
++ * which has the given phandle value.  If there is more than one node
++ * in the tree with the given phandle (an invalid tree), results are
++ * undefined.
++ *
++ * returns:
++ *	structure block offset of the located node (>= 0), on success
++ *	-FDT_ERR_NOTFOUND, no node with that phandle exists
++ *	-FDT_ERR_BADPHANDLE, given phandle value was invalid (0 or -1)
++ *	-FDT_ERR_BADMAGIC,
++ *	-FDT_ERR_BADVERSION,
++ *	-FDT_ERR_BADSTATE,
++ *	-FDT_ERR_BADSTRUCTURE, standard meanings
++ */
++int fdt_node_offset_by_phandle(const void *fdt, uint32_t phandle);
++
++/**
++ * fdt_node_check_compatible: check a node's compatible property
++ * @fdt: pointer to the device tree blob
++ * @nodeoffset: offset of a tree node
++ * @compatible: string to match against
++ *
++ *
++ * fdt_node_check_compatible() returns 0 if the given node contains a
++ * 'compatible' property with the given string as one of its elements,
++ * it returns non-zero otherwise, or on error.
++ *
++ * returns:
++ *	0, if the node has a 'compatible' property listing the given string
++ *	1, if the node has a 'compatible' property, but it does not list
++ *		the given string
++ *	-FDT_ERR_NOTFOUND, if the given node has no 'compatible' property
++ *	-FDT_ERR_BADOFFSET, if nodeoffset does not refer to a BEGIN_NODE tag
++ *	-FDT_ERR_BADMAGIC,
++ *	-FDT_ERR_BADVERSION,
++ *	-FDT_ERR_BADSTATE,
++ *	-FDT_ERR_BADSTRUCTURE, standard meanings
++ */
++int fdt_node_check_compatible(const void *fdt, int nodeoffset,
++			      const char *compatible);
++
++/**
++ * fdt_node_offset_by_compatible - find nodes with a given 'compatible' value
++ * @fdt: pointer to the device tree blob
++ * @startoffset: only find nodes after this offset
++ * @compatible: 'compatible' string to match against
++ *
++ * fdt_node_offset_by_compatible() returns the offset of the first
++ * node after startoffset, which has a 'compatible' property which
++ * lists the given compatible string; or if startoffset is -1, the
++ * very first such node in the tree.
++ *
++ * To iterate through all nodes matching the criterion, the following
++ * idiom can be used:
++ *	offset = fdt_node_offset_by_compatible(fdt, -1, compatible);
++ *	while (offset != -FDT_ERR_NOTFOUND) {
++ *		... other code here ...
++ *		offset = fdt_node_offset_by_compatible(fdt, offset, compatible);
++ *	}
++ *
++ * Note the -1 in the first call to the function, if 0 is used here
++ * instead, the function will never locate the root node, even if it
++ * matches the criterion.
++ *
++ * returns:
++ *	structure block offset of the located node (>= 0, >startoffset),
++ *		 on success
++ *	-FDT_ERR_NOTFOUND, no node matching the criterion exists in the
++ *		tree after startoffset
++ *	-FDT_ERR_BADOFFSET, nodeoffset does not refer to a BEGIN_NODE tag
++ *	-FDT_ERR_BADMAGIC,
++ *	-FDT_ERR_BADVERSION,
++ *	-FDT_ERR_BADSTATE,
++ *	-FDT_ERR_BADSTRUCTURE, standard meanings
++ */
++int fdt_node_offset_by_compatible(const void *fdt, int startoffset,
++				  const char *compatible);
++
++/**
++ * fdt_stringlist_contains - check a string list property for a string
++ * @strlist: Property containing a list of strings to check
++ * @listlen: Length of property
++ * @str: String to search for
++ *
++ * This is a utility function provided for convenience. The list contains
++ * one or more strings, each terminated by \0, as is found in a device tree
++ * "compatible" property.
++ *
++ * @return: 1 if the string is found in the list, 0 not found, or invalid list
++ */
++int fdt_stringlist_contains(const char *strlist, int listlen, const char *str);
++
++/**********************************************************************/
++/* Write-in-place functions                                           */
++/**********************************************************************/
++
++/**
++ * fdt_setprop_inplace - change a property's value, but not its size
++ * @fdt: pointer to the device tree blob
++ * @nodeoffset: offset of the node whose property to change
++ * @name: name of the property to change
++ * @val: pointer to data to replace the property value with
++ * @len: length of the property value
++ *
++ * fdt_setprop_inplace() replaces the value of a given property with
++ * the data in val, of length len.  This function cannot change the
++ * size of a property, and so will only work if len is equal to the
++ * current length of the property.
++ *
++ * This function will alter only the bytes in the blob which contain
++ * the given property value, and will not alter or move any other part
++ * of the tree.
++ *
++ * returns:
++ *	0, on success
++ *	-FDT_ERR_NOSPACE, if len is not equal to the property's current length
++ *	-FDT_ERR_NOTFOUND, node does not have the named property
++ *	-FDT_ERR_BADOFFSET, nodeoffset did not point to FDT_BEGIN_NODE tag
++ *	-FDT_ERR_BADMAGIC,
++ *	-FDT_ERR_BADVERSION,
++ *	-FDT_ERR_BADSTATE,
++ *	-FDT_ERR_BADSTRUCTURE,
++ *	-FDT_ERR_TRUNCATED, standard meanings
++ */
++int fdt_setprop_inplace(void *fdt, int nodeoffset, const char *name,
++			const void *val, int len);
++
++/**
++ * fdt_setprop_inplace_u32 - change the value of a 32-bit integer property
++ * @fdt: pointer to the device tree blob
++ * @nodeoffset: offset of the node whose property to change
++ * @name: name of the property to change
++ * @val: 32-bit integer value to replace the property with
++ *
++ * fdt_setprop_inplace_u32() replaces the value of a given property
++ * with the 32-bit integer value in val, converting val to big-endian
++ * if necessary.  This function cannot change the size of a property,
++ * and so will only work if the property already exists and has length
++ * 4.
++ *
++ * This function will alter only the bytes in the blob which contain
++ * the given property value, and will not alter or move any other part
++ * of the tree.
++ *
++ * returns:
++ *	0, on success
++ *	-FDT_ERR_NOSPACE, if the property's length is not equal to 4
++ *	-FDT_ERR_NOTFOUND, node does not have the named property
++ *	-FDT_ERR_BADOFFSET, nodeoffset did not point to FDT_BEGIN_NODE tag
++ *	-FDT_ERR_BADMAGIC,
++ *	-FDT_ERR_BADVERSION,
++ *	-FDT_ERR_BADSTATE,
++ *	-FDT_ERR_BADSTRUCTURE,
++ *	-FDT_ERR_TRUNCATED, standard meanings
++ */
++static inline int fdt_setprop_inplace_u32(void *fdt, int nodeoffset,
++					  const char *name, uint32_t val)
++{
++	fdt32_t tmp = cpu_to_fdt32(val);
++	return fdt_setprop_inplace(fdt, nodeoffset, name, &tmp, sizeof(tmp));
++}
++
++/**
++ * fdt_setprop_inplace_u64 - change the value of a 64-bit integer property
++ * @fdt: pointer to the device tree blob
++ * @nodeoffset: offset of the node whose property to change
++ * @name: name of the property to change
++ * @val: 64-bit integer value to replace the property with
++ *
++ * fdt_setprop_inplace_u64() replaces the value of a given property
++ * with the 64-bit integer value in val, converting val to big-endian
++ * if necessary.  This function cannot change the size of a property,
++ * and so will only work if the property already exists and has length
++ * 8.
++ *
++ * This function will alter only the bytes in the blob which contain
++ * the given property value, and will not alter or move any other part
++ * of the tree.
++ *
++ * returns:
++ *	0, on success
++ *	-FDT_ERR_NOSPACE, if the property's length is not equal to 8
++ *	-FDT_ERR_NOTFOUND, node does not have the named property
++ *	-FDT_ERR_BADOFFSET, nodeoffset did not point to FDT_BEGIN_NODE tag
++ *	-FDT_ERR_BADMAGIC,
++ *	-FDT_ERR_BADVERSION,
++ *	-FDT_ERR_BADSTATE,
++ *	-FDT_ERR_BADSTRUCTURE,
++ *	-FDT_ERR_TRUNCATED, standard meanings
++ */
++static inline int fdt_setprop_inplace_u64(void *fdt, int nodeoffset,
++					  const char *name, uint64_t val)
++{
++	fdt64_t tmp = cpu_to_fdt64(val);
++	return fdt_setprop_inplace(fdt, nodeoffset, name, &tmp, sizeof(tmp));
++}
++
++/**
++ * fdt_setprop_inplace_cell - change the value of a single-cell property
++ *
++ * This is an alternative name for fdt_setprop_inplace_u32()
++ */
++static inline int fdt_setprop_inplace_cell(void *fdt, int nodeoffset,
++					   const char *name, uint32_t val)
++{
++	return fdt_setprop_inplace_u32(fdt, nodeoffset, name, val);
++}
++
++/**
++ * fdt_nop_property - replace a property with nop tags
++ * @fdt: pointer to the device tree blob
++ * @nodeoffset: offset of the node whose property to nop
++ * @name: name of the property to nop
++ *
++ * fdt_nop_property() will replace a given property's representation
++ * in the blob with FDT_NOP tags, effectively removing it from the
++ * tree.
++ *
++ * This function will alter only the bytes in the blob which contain
++ * the property, and will not alter or move any other part of the
++ * tree.
++ *
++ * returns:
++ *	0, on success
++ *	-FDT_ERR_NOTFOUND, node does not have the named property
++ *	-FDT_ERR_BADOFFSET, nodeoffset did not point to FDT_BEGIN_NODE tag
++ *	-FDT_ERR_BADMAGIC,
++ *	-FDT_ERR_BADVERSION,
++ *	-FDT_ERR_BADSTATE,
++ *	-FDT_ERR_BADSTRUCTURE,
++ *	-FDT_ERR_TRUNCATED, standard meanings
++ */
++int fdt_nop_property(void *fdt, int nodeoffset, const char *name);
++
++/**
++ * fdt_nop_node - replace a node (subtree) with nop tags
++ * @fdt: pointer to the device tree blob
++ * @nodeoffset: offset of the node to nop
++ *
++ * fdt_nop_node() will replace a given node's representation in the
++ * blob, including all its subnodes, if any, with FDT_NOP tags,
++ * effectively removing it from the tree.
++ *
++ * This function will alter only the bytes in the blob which contain
++ * the node and its properties and subnodes, and will not alter or
++ * move any other part of the tree.
++ *
++ * returns:
++ *	0, on success
++ *	-FDT_ERR_BADOFFSET, nodeoffset did not point to FDT_BEGIN_NODE tag
++ *	-FDT_ERR_BADMAGIC,
++ *	-FDT_ERR_BADVERSION,
++ *	-FDT_ERR_BADSTATE,
++ *	-FDT_ERR_BADSTRUCTURE,
++ *	-FDT_ERR_TRUNCATED, standard meanings
++ */
++int fdt_nop_node(void *fdt, int nodeoffset);
++
++/**********************************************************************/
++/* Sequential write functions                                         */
++/**********************************************************************/
++
++int fdt_create(void *buf, int bufsize);
++int fdt_add_reservemap_entry(void *fdt, uint64_t addr, uint64_t size);
++int fdt_finish_reservemap(void *fdt);
++int fdt_begin_node(void *fdt, const char *name);
++int fdt_property(void *fdt, const char *name, const void *val, int len);
++static inline int fdt_property_u32(void *fdt, const char *name, uint32_t val)
++{
++	fdt32_t tmp = cpu_to_fdt32(val);
++	return fdt_property(fdt, name, &tmp, sizeof(tmp));
++}
++static inline int fdt_property_u64(void *fdt, const char *name, uint64_t val)
++{
++	fdt64_t tmp = cpu_to_fdt64(val);
++	return fdt_property(fdt, name, &tmp, sizeof(tmp));
++}
++static inline int fdt_property_cell(void *fdt, const char *name, uint32_t val)
++{
++	return fdt_property_u32(fdt, name, val);
++}
++#define fdt_property_string(fdt, name, str) \
++	fdt_property(fdt, name, str, strlen(str)+1)
++int fdt_end_node(void *fdt);
++int fdt_finish(void *fdt);
++
++/**********************************************************************/
++/* Read-write functions                                               */
++/**********************************************************************/
++
++int fdt_create_empty_tree(void *buf, int bufsize);
++int fdt_open_into(const void *fdt, void *buf, int bufsize);
++int fdt_pack(void *fdt);
++
++/**
++ * fdt_add_mem_rsv - add one memory reserve map entry
++ * @fdt: pointer to the device tree blob
++ * @address, @size: 64-bit values (native endian)
++ *
++ * Adds a reserve map entry to the given blob reserving a region at
++ * address address of length size.
++ *
++ * This function will insert data into the reserve map and will
++ * therefore change the indexes of some entries in the table.
++ *
++ * returns:
++ *	0, on success
++ *	-FDT_ERR_NOSPACE, there is insufficient free space in the blob to
++ *		contain the new reservation entry
++ *	-FDT_ERR_BADMAGIC,
++ *	-FDT_ERR_BADVERSION,
++ *	-FDT_ERR_BADSTATE,
++ *	-FDT_ERR_BADSTRUCTURE,
++ *	-FDT_ERR_BADLAYOUT,
++ *	-FDT_ERR_TRUNCATED, standard meanings
++ */
++int fdt_add_mem_rsv(void *fdt, uint64_t address, uint64_t size);
++
++/**
++ * fdt_del_mem_rsv - remove a memory reserve map entry
++ * @fdt: pointer to the device tree blob
++ * @n: entry to remove
++ *
++ * fdt_del_mem_rsv() removes the n-th memory reserve map entry from
++ * the blob.
++ *
++ * This function will delete data from the reservation table and will
++ * therefore change the indexes of some entries in the table.
++ *
++ * returns:
++ *	0, on success
++ *	-FDT_ERR_NOTFOUND, there is no entry of the given index (i.e. there
++ *		are less than n+1 reserve map entries)
++ *	-FDT_ERR_BADMAGIC,
++ *	-FDT_ERR_BADVERSION,
++ *	-FDT_ERR_BADSTATE,
++ *	-FDT_ERR_BADSTRUCTURE,
++ *	-FDT_ERR_BADLAYOUT,
++ *	-FDT_ERR_TRUNCATED, standard meanings
++ */
++int fdt_del_mem_rsv(void *fdt, int n);
++
++/**
++ * fdt_set_name - change the name of a given node
++ * @fdt: pointer to the device tree blob
++ * @nodeoffset: structure block offset of a node
++ * @name: name to give the node
++ *
++ * fdt_set_name() replaces the name (including unit address, if any)
++ * of the given node with the given string.  NOTE: this function can't
++ * efficiently check if the new name is unique amongst the given
++ * node's siblings; results are undefined if this function is invoked
++ * with a name equal to one of the given node's siblings.
++ *
++ * This function may insert or delete data from the blob, and will
++ * therefore change the offsets of some existing nodes.
++ *
++ * returns:
++ *	0, on success
++ *	-FDT_ERR_NOSPACE, there is insufficient free space in the blob
++ *		to contain the new name
++ *	-FDT_ERR_BADOFFSET, nodeoffset did not point to FDT_BEGIN_NODE tag
++ *	-FDT_ERR_BADMAGIC,
++ *	-FDT_ERR_BADVERSION,
++ *	-FDT_ERR_BADSTATE, standard meanings
++ */
++int fdt_set_name(void *fdt, int nodeoffset, const char *name);
++
++/**
++ * fdt_setprop - create or change a property
++ * @fdt: pointer to the device tree blob
++ * @nodeoffset: offset of the node whose property to change
++ * @name: name of the property to change
++ * @val: pointer to data to set the property value to
++ * @len: length of the property value
++ *
++ * fdt_setprop() sets the value of the named property in the given
++ * node to the given value and length, creating the property if it
++ * does not already exist.
++ *
++ * This function may insert or delete data from the blob, and will
++ * therefore change the offsets of some existing nodes.
++ *
++ * returns:
++ *	0, on success
++ *	-FDT_ERR_NOSPACE, there is insufficient free space in the blob to
++ *		contain the new property value
++ *	-FDT_ERR_BADOFFSET, nodeoffset did not point to FDT_BEGIN_NODE tag
++ *	-FDT_ERR_BADLAYOUT,
++ *	-FDT_ERR_BADMAGIC,
++ *	-FDT_ERR_BADVERSION,
++ *	-FDT_ERR_BADSTATE,
++ *	-FDT_ERR_BADSTRUCTURE,
++ *	-FDT_ERR_BADLAYOUT,
++ *	-FDT_ERR_TRUNCATED, standard meanings
++ */
++int fdt_setprop(void *fdt, int nodeoffset, const char *name,
++		const void *val, int len);
++
++/**
++ * fdt_setprop_u32 - set a property to a 32-bit integer
++ * @fdt: pointer to the device tree blob
++ * @nodeoffset: offset of the node whose property to change
++ * @name: name of the property to change
++ * @val: 32-bit integer value for the property (native endian)
++ *
++ * fdt_setprop_u32() sets the value of the named property in the given
++ * node to the given 32-bit integer value (converting to big-endian if
++ * necessary), or creates a new property with that value if it does
++ * not already exist.
++ *
++ * This function may insert or delete data from the blob, and will
++ * therefore change the offsets of some existing nodes.
++ *
++ * returns:
++ *	0, on success
++ *	-FDT_ERR_NOSPACE, there is insufficient free space in the blob to
++ *		contain the new property value
++ *	-FDT_ERR_BADOFFSET, nodeoffset did not point to FDT_BEGIN_NODE tag
++ *	-FDT_ERR_BADLAYOUT,
++ *	-FDT_ERR_BADMAGIC,
++ *	-FDT_ERR_BADVERSION,
++ *	-FDT_ERR_BADSTATE,
++ *	-FDT_ERR_BADSTRUCTURE,
++ *	-FDT_ERR_BADLAYOUT,
++ *	-FDT_ERR_TRUNCATED, standard meanings
++ */
++static inline int fdt_setprop_u32(void *fdt, int nodeoffset, const char *name,
++				  uint32_t val)
++{
++	fdt32_t tmp = cpu_to_fdt32(val);
++	return fdt_setprop(fdt, nodeoffset, name, &tmp, sizeof(tmp));
++}
++
++/**
++ * fdt_setprop_u64 - set a property to a 64-bit integer
++ * @fdt: pointer to the device tree blob
++ * @nodeoffset: offset of the node whose property to change
++ * @name: name of the property to change
++ * @val: 64-bit integer value for the property (native endian)
++ *
++ * fdt_setprop_u64() sets the value of the named property in the given
++ * node to the given 64-bit integer value (converting to big-endian if
++ * necessary), or creates a new property with that value if it does
++ * not already exist.
++ *
++ * This function may insert or delete data from the blob, and will
++ * therefore change the offsets of some existing nodes.
++ *
++ * returns:
++ *	0, on success
++ *	-FDT_ERR_NOSPACE, there is insufficient free space in the blob to
++ *		contain the new property value
++ *	-FDT_ERR_BADOFFSET, nodeoffset did not point to FDT_BEGIN_NODE tag
++ *	-FDT_ERR_BADLAYOUT,
++ *	-FDT_ERR_BADMAGIC,
++ *	-FDT_ERR_BADVERSION,
++ *	-FDT_ERR_BADSTATE,
++ *	-FDT_ERR_BADSTRUCTURE,
++ *	-FDT_ERR_BADLAYOUT,
++ *	-FDT_ERR_TRUNCATED, standard meanings
++ */
++static inline int fdt_setprop_u64(void *fdt, int nodeoffset, const char *name,
++				  uint64_t val)
++{
++	fdt64_t tmp = cpu_to_fdt64(val);
++	return fdt_setprop(fdt, nodeoffset, name, &tmp, sizeof(tmp));
++}
++
++/**
++ * fdt_setprop_cell - set a property to a single cell value
++ *
++ * This is an alternative name for fdt_setprop_u32()
++ */
++static inline int fdt_setprop_cell(void *fdt, int nodeoffset, const char *name,
++				   uint32_t val)
++{
++	return fdt_setprop_u32(fdt, nodeoffset, name, val);
++}
++
++/**
++ * fdt_setprop_string - set a property to a string value
++ * @fdt: pointer to the device tree blob
++ * @nodeoffset: offset of the node whose property to change
++ * @name: name of the property to change
++ * @str: string value for the property
++ *
++ * fdt_setprop_string() sets the value of the named property in the
++ * given node to the given string value (using the length of the
++ * string to determine the new length of the property), or creates a
++ * new property with that value if it does not already exist.
++ *
++ * This function may insert or delete data from the blob, and will
++ * therefore change the offsets of some existing nodes.
++ *
++ * returns:
++ *	0, on success
++ *	-FDT_ERR_NOSPACE, there is insufficient free space in the blob to
++ *		contain the new property value
++ *	-FDT_ERR_BADOFFSET, nodeoffset did not point to FDT_BEGIN_NODE tag
++ *	-FDT_ERR_BADLAYOUT,
++ *	-FDT_ERR_BADMAGIC,
++ *	-FDT_ERR_BADVERSION,
++ *	-FDT_ERR_BADSTATE,
++ *	-FDT_ERR_BADSTRUCTURE,
++ *	-FDT_ERR_BADLAYOUT,
++ *	-FDT_ERR_TRUNCATED, standard meanings
++ */
++#define fdt_setprop_string(fdt, nodeoffset, name, str) \
++	fdt_setprop((fdt), (nodeoffset), (name), (str), strlen(str)+1)
++
++/**
++ * fdt_appendprop - append to or create a property
++ * @fdt: pointer to the device tree blob
++ * @nodeoffset: offset of the node whose property to change
++ * @name: name of the property to append to
++ * @val: pointer to data to append to the property value
++ * @len: length of the data to append to the property value
++ *
++ * fdt_appendprop() appends the value to the named property in the
++ * given node, creating the property if it does not already exist.
++ *
++ * This function may insert data into the blob, and will therefore
++ * change the offsets of some existing nodes.
++ *
++ * returns:
++ *	0, on success
++ *	-FDT_ERR_NOSPACE, there is insufficient free space in the blob to
++ *		contain the new property value
++ *	-FDT_ERR_BADOFFSET, nodeoffset did not point to FDT_BEGIN_NODE tag
++ *	-FDT_ERR_BADLAYOUT,
++ *	-FDT_ERR_BADMAGIC,
++ *	-FDT_ERR_BADVERSION,
++ *	-FDT_ERR_BADSTATE,
++ *	-FDT_ERR_BADSTRUCTURE,
++ *	-FDT_ERR_BADLAYOUT,
++ *	-FDT_ERR_TRUNCATED, standard meanings
++ */
++int fdt_appendprop(void *fdt, int nodeoffset, const char *name,
++		   const void *val, int len);
++
++/**
++ * fdt_appendprop_u32 - append a 32-bit integer value to a property
++ * @fdt: pointer to the device tree blob
++ * @nodeoffset: offset of the node whose property to change
++ * @name: name of the property to change
++ * @val: 32-bit integer value to append to the property (native endian)
++ *
++ * fdt_appendprop_u32() appends the given 32-bit integer value
++ * (converting to big-endian if necessary) to the value of the named
++ * property in the given node, or creates a new property with that
++ * value if it does not already exist.
++ *
++ * This function may insert data into the blob, and will therefore
++ * change the offsets of some existing nodes.
++ *
++ * returns:
++ *	0, on success
++ *	-FDT_ERR_NOSPACE, there is insufficient free space in the blob to
++ *		contain the new property value
++ *	-FDT_ERR_BADOFFSET, nodeoffset did not point to FDT_BEGIN_NODE tag
++ *	-FDT_ERR_BADLAYOUT,
++ *	-FDT_ERR_BADMAGIC,
++ *	-FDT_ERR_BADVERSION,
++ *	-FDT_ERR_BADSTATE,
++ *	-FDT_ERR_BADSTRUCTURE,
++ *	-FDT_ERR_BADLAYOUT,
++ *	-FDT_ERR_TRUNCATED, standard meanings
++ */
++static inline int fdt_appendprop_u32(void *fdt, int nodeoffset,
++				     const char *name, uint32_t val)
++{
++	fdt32_t tmp = cpu_to_fdt32(val);
++	return fdt_appendprop(fdt, nodeoffset, name, &tmp, sizeof(tmp));
++}
++
++/**
++ * fdt_appendprop_u64 - append a 64-bit integer value to a property
++ * @fdt: pointer to the device tree blob
++ * @nodeoffset: offset of the node whose property to change
++ * @name: name of the property to change
++ * @val: 64-bit integer value to append to the property (native endian)
++ *
++ * fdt_appendprop_u64() appends the given 64-bit integer value
++ * (converting to big-endian if necessary) to the value of the named
++ * property in the given node, or creates a new property with that
++ * value if it does not already exist.
++ *
++ * This function may insert data into the blob, and will therefore
++ * change the offsets of some existing nodes.
++ *
++ * returns:
++ *	0, on success
++ *	-FDT_ERR_NOSPACE, there is insufficient free space in the blob to
++ *		contain the new property value
++ *	-FDT_ERR_BADOFFSET, nodeoffset did not point to FDT_BEGIN_NODE tag
++ *	-FDT_ERR_BADLAYOUT,
++ *	-FDT_ERR_BADMAGIC,
++ *	-FDT_ERR_BADVERSION,
++ *	-FDT_ERR_BADSTATE,
++ *	-FDT_ERR_BADSTRUCTURE,
++ *	-FDT_ERR_BADLAYOUT,
++ *	-FDT_ERR_TRUNCATED, standard meanings
++ */
++static inline int fdt_appendprop_u64(void *fdt, int nodeoffset,
++				     const char *name, uint64_t val)
++{
++	fdt64_t tmp = cpu_to_fdt64(val);
++	return fdt_appendprop(fdt, nodeoffset, name, &tmp, sizeof(tmp));
++}
++
++/**
++ * fdt_appendprop_cell - append a single cell value to a property
++ *
++ * This is an alternative name for fdt_appendprop_u32()
++ */
++static inline int fdt_appendprop_cell(void *fdt, int nodeoffset,
++				      const char *name, uint32_t val)
++{
++	return fdt_appendprop_u32(fdt, nodeoffset, name, val);
++}
++
++/**
++ * fdt_appendprop_string - append a string to a property
++ * @fdt: pointer to the device tree blob
++ * @nodeoffset: offset of the node whose property to change
++ * @name: name of the property to change
++ * @str: string value to append to the property
++ *
++ * fdt_appendprop_string() appends the given string to the value of
++ * the named property in the given node, or creates a new property
++ * with that value if it does not already exist.
++ *
++ * This function may insert data into the blob, and will therefore
++ * change the offsets of some existing nodes.
++ *
++ * returns:
++ *	0, on success
++ *	-FDT_ERR_NOSPACE, there is insufficient free space in the blob to
++ *		contain the new property value
++ *	-FDT_ERR_BADOFFSET, nodeoffset did not point to FDT_BEGIN_NODE tag
++ *	-FDT_ERR_BADLAYOUT,
++ *	-FDT_ERR_BADMAGIC,
++ *	-FDT_ERR_BADVERSION,
++ *	-FDT_ERR_BADSTATE,
++ *	-FDT_ERR_BADSTRUCTURE,
++ *	-FDT_ERR_BADLAYOUT,
++ *	-FDT_ERR_TRUNCATED, standard meanings
++ */
++#define fdt_appendprop_string(fdt, nodeoffset, name, str) \
++	fdt_appendprop((fdt), (nodeoffset), (name), (str), strlen(str)+1)
++
++/**
++ * fdt_delprop - delete a property
++ * @fdt: pointer to the device tree blob
++ * @nodeoffset: offset of the node whose property to nop
++ * @name: name of the property to nop
++ *
++ * fdt_del_property() will delete the given property.
++ *
++ * This function will delete data from the blob, and will therefore
++ * change the offsets of some existing nodes.
++ *
++ * returns:
++ *	0, on success
++ *	-FDT_ERR_NOTFOUND, node does not have the named property
++ *	-FDT_ERR_BADOFFSET, nodeoffset did not point to FDT_BEGIN_NODE tag
++ *	-FDT_ERR_BADLAYOUT,
++ *	-FDT_ERR_BADMAGIC,
++ *	-FDT_ERR_BADVERSION,
++ *	-FDT_ERR_BADSTATE,
++ *	-FDT_ERR_BADSTRUCTURE,
++ *	-FDT_ERR_TRUNCATED, standard meanings
++ */
++int fdt_delprop(void *fdt, int nodeoffset, const char *name);
++
++/**
++ * fdt_add_subnode_namelen - creates a new node based on substring
++ * @fdt: pointer to the device tree blob
++ * @parentoffset: structure block offset of a node
++ * @name: name of the subnode to locate
++ * @namelen: number of characters of name to consider
++ *
++ * Identical to fdt_add_subnode(), but use only the first namelen
++ * characters of name as the name of the new node.  This is useful for
++ * creating subnodes based on a portion of a larger string, such as a
++ * full path.
++ */
++int fdt_add_subnode_namelen(void *fdt, int parentoffset,
++			    const char *name, int namelen);
++
++/**
++ * fdt_add_subnode - creates a new node
++ * @fdt: pointer to the device tree blob
++ * @parentoffset: structure block offset of a node
++ * @name: name of the subnode to locate
++ *
++ * fdt_add_subnode() creates a new node as a subnode of the node at
++ * structure block offset parentoffset, with the given name (which
++ * should include the unit address, if any).
++ *
++ * This function will insert data into the blob, and will therefore
++ * change the offsets of some existing nodes.
++
++ * returns:
++ *	structure block offset of the created nodeequested subnode (>=0), on success
++ *	-FDT_ERR_NOTFOUND, if the requested subnode does not exist
++ *	-FDT_ERR_BADOFFSET, if parentoffset did not point to an FDT_BEGIN_NODE tag
++ *	-FDT_ERR_EXISTS, if the node at parentoffset already has a subnode of
++ *		the given name
++ *	-FDT_ERR_NOSPACE, if there is insufficient free space in the
++ *		blob to contain the new node
++ *	-FDT_ERR_NOSPACE
++ *	-FDT_ERR_BADLAYOUT
++ *      -FDT_ERR_BADMAGIC,
++ *	-FDT_ERR_BADVERSION,
++ *	-FDT_ERR_BADSTATE,
++ *	-FDT_ERR_BADSTRUCTURE,
++ *	-FDT_ERR_TRUNCATED, standard meanings.
++ */
++int fdt_add_subnode(void *fdt, int parentoffset, const char *name);
++
++/**
++ * fdt_del_node - delete a node (subtree)
++ * @fdt: pointer to the device tree blob
++ * @nodeoffset: offset of the node to nop
++ *
++ * fdt_del_node() will remove the given node, including all its
++ * subnodes if any, from the blob.
++ *
++ * This function will delete data from the blob, and will therefore
++ * change the offsets of some existing nodes.
++ *
++ * returns:
++ *	0, on success
++ *	-FDT_ERR_BADOFFSET, nodeoffset did not point to FDT_BEGIN_NODE tag
++ *	-FDT_ERR_BADLAYOUT,
++ *	-FDT_ERR_BADMAGIC,
++ *	-FDT_ERR_BADVERSION,
++ *	-FDT_ERR_BADSTATE,
++ *	-FDT_ERR_BADSTRUCTURE,
++ *	-FDT_ERR_TRUNCATED, standard meanings
++ */
++int fdt_del_node(void *fdt, int nodeoffset);
++
++/**********************************************************************/
++/* Debugging / informational functions                                */
++/**********************************************************************/
++
++const char *fdt_strerror(int errval);
++
++struct fdt_region {
++	int offset;
++	int size;
++};
++
++/**
++ * fdt_find_regions() - find regions in device tree
++ *
++ * Given a list of nodes to include and properties to exclude, find
++ * the regions of the device tree which describe those included parts.
++ *
++ * The intent is to get a list of regions which will be invariant provided
++ * those parts are invariant. For example, if you request a list of regions
++ * for all nodes but exclude the property "data", then you will get the
++ * same region contents regardless of any change to "data" properties.
++ *
++ * This function can be used to produce a byte-stream to send to a hashing
++ * function to verify that critical parts of the FDT have not changed.
++ *
++ * Nodes which are given in 'inc' are included in the region list, as
++ * are the names of the immediate subnodes nodes (but not the properties
++ * or subnodes of those subnodes).
++ *
++ * For eaxample "/" means to include the root node, all root properties
++ * and the FDT_BEGIN_NODE and FDT_END_NODE of all subnodes of /. The latter
++ * ensures that we capture the names of the subnodes. In a hashing situation
++ * it prevents the root node from changing at all Any change to non-excluded
++ * properties, names of subnodes or number of subnodes would be detected.
++ *
++ * When used with FITs this provides the ability to hash and sign parts of
++ * the FIT based on different configurations in the FIT. Then it is
++ * impossible to change anything about that configuration (include images
++ * attached to the configuration), but it may be possible to add new
++ * configurations, new images or new signatures within the existing
++ * framework.
++ *
++ * Adding new properties to a device tree may result in the string table
++ * being extended (if the new property names are different from those
++ * already added). This function can optionally include a region for
++ * the string table so that this can be part of the hash too.
++ *
++ * The device tree header is not included in the list.
++ *
++ * @fdt:	Device tree to check
++ * @inc:	List of node paths to included
++ * @inc_count:	Number of node paths in list
++ * @exc_prop:	List of properties names to exclude
++ * @exc_prop_count:	Number of properties in exclude list
++ * @region:	Returns list of regions
++ * @max_region:	Maximum length of region list
++ * @path:	Pointer to a temporary string for the function to use for
++ *		building path names
++ * @path_len:	Length of path, must be large enough to hold the longest
++ *		path in the tree
++ * @add_string_tab:	1 to add a region for the string table
++ * @return number of regions in list. If this is >max_regions then the
++ * region array was exhausted. You should increase max_regions and try
++ * the call again.
++ */
++int fdt_find_regions(const void *fdt, char * const inc[], int inc_count,
++		     char * const exc_prop[], int exc_prop_count,
++		     struct fdt_region region[], int max_regions,
++		     char *path, int path_len, int add_string_tab);
++
++#endif /* _LIBFDT_H */
+diff --git a/include/linux/libfdt_env.h b/include/linux/libfdt_env.h
+new file mode 100644
+index 0000000..5630c4a
+--- /dev/null
++++ b/include/linux/libfdt_env.h
+@@ -0,0 +1,29 @@
++/*
++ * libfdt - Flat Device Tree manipulation (build/run environment adaptation)
++ * Copyright (C) 2007 Gerald Van Baren, Custom IDEAS, vanbaren@cideas.com
++ * Original version written by David Gibson, IBM Corporation.
++ *
++ * SPDX-License-Identifier:	LGPL-2.1+
++ */
++
++#ifndef _LIBFDT_ENV_H
++#define _LIBFDT_ENV_H
++
++#include "linux/types.h"
++#include <asm/byteorder.h>
++
++extern struct fdt_header *working_fdt;  /* Pointer to the working fdt */
++
++typedef __be16 fdt16_t;
++typedef __be32 fdt32_t;
++typedef __be64 fdt64_t;
++
++#define fdt32_to_cpu(x)		__be32_to_cpu(x)
++#define cpu_to_fdt32(x)		__cpu_to_be32(x)
++#define fdt64_to_cpu(x)		__be64_to_cpu(x)
++#define cpu_to_fdt64(x)		__cpu_to_be64(x)
++
++/* adding a ramdisk needs 0x44 bytes in version 2008.10 */
++#define FDT_RAMDISK_OVERHEAD	0x80
++
++#endif /* _LIBFDT_ENV_H */
+diff --git a/lib/fdtdec.c b/lib/fdtdec.c
+index 33265ec..905b2f9 100644
+--- a/lib/fdtdec.c
++++ b/lib/fdtdec.c
+@@ -5,7 +5,7 @@
+ 
+ #include <common.h>
+ #include <serial.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <fdtdec.h>
+ 
+ #include <asm/gpio.h>
+diff --git a/lib/fdtdec_test.c b/lib/fdtdec_test.c
+index cc8b918..c51ffd7 100644
+--- a/lib/fdtdec_test.c
++++ b/lib/fdtdec_test.c
+@@ -8,7 +8,7 @@
+ 
+ #include <common.h>
+ #include <fdtdec.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #include <malloc.h>
+ #include <os.h>
+ 
+diff --git a/lib/libfdt/fdt.c b/lib/libfdt/fdt.c
+index e146aba..12306f2 100644
+--- a/lib/libfdt/fdt.c
++++ b/lib/libfdt/fdt.c
+@@ -3,11 +3,11 @@
+  * Copyright (C) 2006 David Gibson, IBM Corporation.
+  * SPDX-License-Identifier:	GPL-2.0+ BSD-2-Clause
+  */
+-#include "libfdt_env.h"
++#include "linux/libfdt_env.h"
+ 
+ #ifndef USE_HOSTCC
+ #include <fdt.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #else
+ #include "fdt_host.h"
+ #endif
+diff --git a/lib/libfdt/fdt_empty_tree.c b/lib/libfdt/fdt_empty_tree.c
+index 34f1c84..7a44072 100644
+--- a/lib/libfdt/fdt_empty_tree.c
++++ b/lib/libfdt/fdt_empty_tree.c
+@@ -3,10 +3,10 @@
+  * Copyright (C) 2012 David Gibson, IBM Corporation.
+  * SPDX-License-Identifier:	GPL-2.0+ BSD-2-Clause
+  */
+-#include "libfdt_env.h"
++#include "linux/libfdt_env.h"
+ 
+ #include <fdt.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ 
+ #include "libfdt_internal.h"
+ 
+diff --git a/lib/libfdt/fdt_ro.c b/lib/libfdt/fdt_ro.c
+index f2154e8..b64f387 100644
+--- a/lib/libfdt/fdt_ro.c
++++ b/lib/libfdt/fdt_ro.c
+@@ -3,11 +3,11 @@
+  * Copyright (C) 2006 David Gibson, IBM Corporation.
+  * SPDX-License-Identifier:	GPL-2.0+ BSD-2-Clause
+  */
+-#include "libfdt_env.h"
++#include "linux/libfdt_env.h"
+ 
+ #ifndef USE_HOSTCC
+ #include <fdt.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #else
+ #include "fdt_host.h"
+ #endif
+diff --git a/lib/libfdt/fdt_rw.c b/lib/libfdt/fdt_rw.c
+index 6fa4f13..b14199c 100644
+--- a/lib/libfdt/fdt_rw.c
++++ b/lib/libfdt/fdt_rw.c
+@@ -3,11 +3,11 @@
+  * Copyright (C) 2006 David Gibson, IBM Corporation.
+  * SPDX-License-Identifier:	GPL-2.0+ BSD-2-Clause
+  */
+-#include "libfdt_env.h"
++#include "linux/libfdt_env.h"
+ 
+ #ifndef USE_HOSTCC
+ #include <fdt.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #else
+ #include "fdt_host.h"
+ #endif
+diff --git a/lib/libfdt/fdt_strerror.c b/lib/libfdt/fdt_strerror.c
+index 2f3cc24..96b524d 100644
+--- a/lib/libfdt/fdt_strerror.c
++++ b/lib/libfdt/fdt_strerror.c
+@@ -3,11 +3,11 @@
+  * Copyright (C) 2006 David Gibson, IBM Corporation.
+  * SPDX-License-Identifier:	GPL-2.0+ BSD-2-Clause
+  */
+-#include "libfdt_env.h"
++#include "linux/libfdt_env.h"
+ 
+ #ifndef USE_HOSTCC
+ #include <fdt.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #else
+ #include "fdt_host.h"
+ #endif
+diff --git a/lib/libfdt/fdt_sw.c b/lib/libfdt/fdt_sw.c
+index 580b570..99cbfe2 100644
+--- a/lib/libfdt/fdt_sw.c
++++ b/lib/libfdt/fdt_sw.c
+@@ -3,10 +3,10 @@
+  * Copyright (C) 2006 David Gibson, IBM Corporation.
+  * SPDX-License-Identifier:	GPL-2.0+ BSD-2-Clause
+  */
+-#include "libfdt_env.h"
++#include "linux/libfdt_env.h"
+ 
+ #include <fdt.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ 
+ #include "libfdt_internal.h"
+ 
+diff --git a/lib/libfdt/fdt_wip.c b/lib/libfdt/fdt_wip.c
+index 3f2dfa5..989e667 100644
+--- a/lib/libfdt/fdt_wip.c
++++ b/lib/libfdt/fdt_wip.c
+@@ -3,11 +3,11 @@
+  * Copyright (C) 2006 David Gibson, IBM Corporation.
+  * SPDX-License-Identifier:	GPL-2.0+ BSD-2-Clause
+  */
+-#include "libfdt_env.h"
++#include "linux/libfdt_env.h"
+ 
+ #ifndef USE_HOSTCC
+ #include <fdt.h>
+-#include <libfdt.h>
++#include <linux/libfdt.h>
+ #else
+ #include "fdt_host.h"
+ #endif
+diff --git a/tools/Makefile b/tools/Makefile
+index 0c4f9a4..d0c55e5 100644
+--- a/tools/Makefile
++++ b/tools/Makefile
+@@ -173,7 +173,7 @@ endif # !LOGO_BMP
+ # Define __KERNEL_STRICT_NAMES to prevent typedef overlaps
+ # Define _GNU_SOURCE to obtain the getline prototype from stdio.h
+ #
+-HOST_EXTRACFLAGS += -include $(srctree)/include/libfdt_env.h \
++HOST_EXTRACFLAGS += -include $(srctree)/include/linux/libfdt_env.h \
+ 		$(patsubst -I%,-idirafter%, $(UBOOTINCLUDE)) \
+ 		-I$(srctree)/lib/libfdt \
+ 		-I$(srctree)/tools \
+diff --git a/tools/fdt_host.h b/tools/fdt_host.h
+index c2b23c6..c0b8c1d 100644
+--- a/tools/fdt_host.h
++++ b/tools/fdt_host.h
+@@ -8,7 +8,7 @@
+ #define __FDT_HOST_H__
+ 
+ /* Make sure to include u-boot version of libfdt include files */
+-#include "../include/libfdt.h"
++#include "../include/linux/libfdt.h"
+ #include "../include/fdt_support.h"
+ 
+ #endif /* __FDT_HOST_H__ */
+-- 
+2.7.4
+

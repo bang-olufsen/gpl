@@ -1,0 +1,96 @@
+From bec21f3f02de02b18e7e4b9d5682df9eb3060b2a Mon Sep 17 00:00:00 2001
+From: Fionn Cleary <fionn.cleary@streamunlimited.com>
+Date: Fri, 12 Sep 2014 17:49:53 +0200
+Subject: [PATCH] stream800: Increase CPU speed to 720 MHz
+
+In board_init() increase the supply voltages and then increase the CPU
+speed from 500MHz to 720Mhz; this improves linux boot speed and startup
+of the system.
+
+Signed-off-by: Fionn Cleary <fionn.cleary@streamunlimited.com>
+---
+ board/streamunlimited/stream800/board.c | 38 +++++++++++++++++++++++++++++++++
+ include/configs/stream800.h             |  4 ++++
+ 2 files changed, 42 insertions(+)
+
+diff --git a/board/streamunlimited/stream800/board.c b/board/streamunlimited/stream800/board.c
+index 53b6ee2..020b697 100755
+--- a/board/streamunlimited/stream800/board.c
++++ b/board/streamunlimited/stream800/board.c
+@@ -38,6 +38,8 @@
+ #include <nand.h>
+ #include <malloc.h>
+ #include <linux/err.h>
++#include <power/tps65217.h>
++#include "board.h"
+ #include "mux.h"
+ #include "board-sue_demo_client_board.h"
+ #include "board-sue_first_carrier_board.h"
+@@ -97,6 +99,41 @@ static void board_printf_info(void)
+ 		   stream800CarrierBoardTypeStrings[board.carrierBoardType]);
+ }
+ 
++static void boost_cpu_speed(void)
++{
++	/* Get the frequency */
++	if (i2c_probe(TPS65217_CHIP_PM))
++		return;
++
++	dpll_mpu_opp100.m = MPUPLL_M_720;
++
++	/* Set DCDC3 (CORE) voltage to 1.125V */
++	if (tps65217_voltage_update(TPS65217_DEFDCDC3,
++								TPS65217_DCDC_VOLT_SEL_1125MV)) {
++		puts("tps65217_voltage_update failure\n");
++		return;
++	}
++
++	/* Set CORE Frequencies to OPP100 */
++	do_setup_dpll(&dpll_core_regs, &dpll_core_opp100);
++
++	/* Set DCDC2 (MPU) voltage */
++	if (tps65217_voltage_update(TPS65217_DEFDCDC2,
++								TPS65217_DCDC_VOLT_SEL_1275MV)) {
++		puts("tps65217_voltage_update failure\n");
++		return;
++	}
++
++	if (tps65217_reg_write(TPS65217_PROT_LEVEL_2,
++						   TPS65217_DEFLS2,
++						   TPS65217_LDO_VOLTAGE_OUT_3_3,
++						   TPS65217_LDO_MASK))
++		puts("tps65217_reg_write failure\n");
++
++	/* Set MPU Frequency to what we detected now that voltages are set */
++	do_setup_dpll(&dpll_mpu_regs, &dpll_mpu_opp100);
++}
++
+ void set_board_interface(struct StreamBoardInterface * interface) {
+ 	board_interface = interface;
+ }
+@@ -133,6 +170,7 @@ int board_init(void)
+ 
+ 	i2c_init(CONFIG_SYS_I2C_SPEED, CONFIG_SYS_I2C_SLAVE);
+ 	init_si5351x();
++	boost_cpu_speed();
+ 
+ 	/* This is temporarily (after reset during FW update we sometime detect unwanted external warm reset) */
+ 	{
+diff --git a/include/configs/stream800.h b/include/configs/stream800.h
+index d21febc..2320e1b 100644
+--- a/include/configs/stream800.h
++++ b/include/configs/stream800.h
+@@ -951,6 +951,10 @@
+ #define CONFIG_SYS_NS16550_COM5		0x481a8000	/* UART4 */
+ #define CONFIG_SYS_NS16550_COM6		0x481aa000	/* UART5 */
+ 
++/* PMIC support */
++#define CONFIG_POWER_TPS65217
++#define CONFIG_POWER_TPS65910
++
+ /* I2C Configuration */
+ #define CONFIG_I2C
+ #define CONFIG_CMD_I2C
+-- 
+2.7.4
+

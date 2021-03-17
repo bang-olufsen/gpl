@@ -1,0 +1,205 @@
+<!-- ##### SECTION Title ##### -->
+gmime-stream
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### ENUM GMimeSeekWhence ##### -->
+<para>
+
+</para>
+
+@GMIME_STREAM_SEEK_SET: 
+@GMIME_STREAM_SEEK_CUR: 
+@GMIME_STREAM_SEEK_END: 
+
+<!-- ##### STRUCT GMimeStreamIOVector ##### -->
+<para>
+
+</para>
+
+@data: 
+@len: 
+
+<!-- ##### STRUCT GMimeStream ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION g_mime_stream_construct ##### -->
+<para>
+
+</para>
+
+@stream: 
+@start: 
+@end: 
+
+
+<!-- ##### FUNCTION g_mime_stream_read ##### -->
+<para>
+
+</para>
+
+@stream: 
+@buf: 
+@len: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_stream_write ##### -->
+<para>
+
+</para>
+
+@stream: 
+@buf: 
+@len: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_stream_flush ##### -->
+<para>
+
+</para>
+
+@stream: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_stream_seek ##### -->
+<para>
+
+</para>
+
+@stream: 
+@offset: 
+@whence: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_stream_tell ##### -->
+<para>
+
+</para>
+
+@stream: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_stream_reset ##### -->
+<para>
+
+</para>
+
+@stream: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_stream_eos ##### -->
+<para>
+
+</para>
+
+@stream: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_stream_close ##### -->
+<para>
+
+</para>
+
+@stream: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_stream_length ##### -->
+<para>
+
+</para>
+
+@stream: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_stream_substream ##### -->
+<para>
+
+</para>
+
+@stream: 
+@start: 
+@end: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_stream_set_bounds ##### -->
+<para>
+
+</para>
+
+@stream: 
+@start: 
+@end: 
+
+
+<!-- ##### FUNCTION g_mime_stream_write_string ##### -->
+<para>
+
+</para>
+
+@stream: 
+@str: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_stream_printf ##### -->
+<para>
+
+</para>
+
+@stream: 
+@fmt: 
+@...: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_stream_write_to_stream ##### -->
+<para>
+
+</para>
+
+@src: 
+@dest: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_stream_writev ##### -->
+<para>
+
+</para>
+
+@stream: 
+@vector: 
+@count: 
+@Returns: 
+
+

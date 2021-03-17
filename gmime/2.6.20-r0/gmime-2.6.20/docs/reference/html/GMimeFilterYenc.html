@@ -1,0 +1,498 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GMimeFilterYenc</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="GMime 2.6 Reference Manual">
+<link rel="up" href="Filters.html" title="Stream Filters">
+<link rel="prev" href="GMimeFilterWindows.html" title="GMimeFilterWindows">
+<link rel="next" href="DataWrappers.html" title="Data Wrappers">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="GMimeFilterWindows.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="Filters.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">GMime 2.6 Reference Manual</th>
+<td><a accesskey="n" href="DataWrappers.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#GMimeFilterYenc.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#GMimeFilterYenc.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#GMimeFilterYenc.object-hierarchy" class="shortcut">Object Hierarchy</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="GMimeFilterYenc"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="GMimeFilterYenc.top_of_page"></a>GMimeFilterYenc</span></h2>
+<p>GMimeFilterYenc — yEncode or yDecode</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="GMimeFilterYenc.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">struct              <a class="link" href="GMimeFilterYenc.html#GMimeFilterYenc-struct" title="struct GMimeFilterYenc">GMimeFilterYenc</a>;
+<a class="link" href="GMimeFilter.html" title="GMimeFilter"><span class="returnvalue">GMimeFilter</span></a> *       <a class="link" href="GMimeFilterYenc.html#g-mime-filter-yenc-new" title="g_mime_filter_yenc_new ()">g_mime_filter_yenc_new</a>              (<em class="parameter"><code><span class="type">gboolean</span> encode</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimeFilterYenc.html#g-mime-filter-yenc-set-state" title="g_mime_filter_yenc_set_state ()">g_mime_filter_yenc_set_state</a>        (<em class="parameter"><code><a class="link" href="GMimeFilterYenc.html" title="GMimeFilterYenc"><span class="type">GMimeFilterYenc</span></a> *yenc</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> state</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimeFilterYenc.html#g-mime-filter-yenc-set-crc" title="g_mime_filter_yenc_set_crc ()">g_mime_filter_yenc_set_crc</a>          (<em class="parameter"><code><a class="link" href="GMimeFilterYenc.html" title="GMimeFilterYenc"><span class="type">GMimeFilterYenc</span></a> *yenc</code></em>,
+                                                         <em class="parameter"><code><span class="type">guint32</span> crc</code></em>);
+<span class="returnvalue">guint32</span>             <a class="link" href="GMimeFilterYenc.html#g-mime-filter-yenc-get-crc" title="g_mime_filter_yenc_get_crc ()">g_mime_filter_yenc_get_crc</a>          (<em class="parameter"><code><a class="link" href="GMimeFilterYenc.html" title="GMimeFilterYenc"><span class="type">GMimeFilterYenc</span></a> *yenc</code></em>);
+<span class="returnvalue">guint32</span>             <a class="link" href="GMimeFilterYenc.html#g-mime-filter-yenc-get-pcrc" title="g_mime_filter_yenc_get_pcrc ()">g_mime_filter_yenc_get_pcrc</a>         (<em class="parameter"><code><a class="link" href="GMimeFilterYenc.html" title="GMimeFilterYenc"><span class="type">GMimeFilterYenc</span></a> *yenc</code></em>);
+
+#define             <a class="link" href="GMimeFilterYenc.html#GMIME-YENCODE-CRC-INIT:CAPS" title="GMIME_YENCODE_CRC_INIT">GMIME_YENCODE_CRC_INIT</a>
+#define             <a class="link" href="GMimeFilterYenc.html#GMIME-YENCODE-CRC-FINAL:CAPS" title="GMIME_YENCODE_CRC_FINAL()">GMIME_YENCODE_CRC_FINAL</a>             (crc)
+#define             <a class="link" href="GMimeFilterYenc.html#GMIME-YENCODE-STATE-INIT:CAPS" title="GMIME_YENCODE_STATE_INIT">GMIME_YENCODE_STATE_INIT</a>
+#define             <a class="link" href="GMimeFilterYenc.html#GMIME-YDECODE-STATE-INIT:CAPS" title="GMIME_YDECODE_STATE_INIT">GMIME_YDECODE_STATE_INIT</a>
+#define             <a class="link" href="GMimeFilterYenc.html#GMIME-YDECODE-STATE-EOLN:CAPS" title="GMIME_YDECODE_STATE_EOLN">GMIME_YDECODE_STATE_EOLN</a>
+#define             <a class="link" href="GMimeFilterYenc.html#GMIME-YDECODE-STATE-ESCAPE:CAPS" title="GMIME_YDECODE_STATE_ESCAPE">GMIME_YDECODE_STATE_ESCAPE</a>
+#define             <a class="link" href="GMimeFilterYenc.html#GMIME-YDECODE-STATE-END:CAPS" title="GMIME_YDECODE_STATE_END">GMIME_YDECODE_STATE_END</a>
+#define             <a class="link" href="GMimeFilterYenc.html#GMIME-YDECODE-STATE-BEGIN:CAPS" title="GMIME_YDECODE_STATE_BEGIN">GMIME_YDECODE_STATE_BEGIN</a>
+#define             <a class="link" href="GMimeFilterYenc.html#GMIME-YDECODE-STATE-DECODE:CAPS" title="GMIME_YDECODE_STATE_DECODE">GMIME_YDECODE_STATE_DECODE</a>
+#define             <a class="link" href="GMimeFilterYenc.html#GMIME-YDECODE-STATE-PART:CAPS" title="GMIME_YDECODE_STATE_PART">GMIME_YDECODE_STATE_PART</a>
+<span class="returnvalue">size_t</span>              <a class="link" href="GMimeFilterYenc.html#g-mime-ydecode-step" title="g_mime_ydecode_step ()">g_mime_ydecode_step</a>                 (<em class="parameter"><code>const unsigned <span class="type">char</span> *inbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> inlen</code></em>,
+                                                         <em class="parameter"><code>unsigned <span class="type">char</span> *outbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> *state</code></em>,
+                                                         <em class="parameter"><code><span class="type">guint32</span> *pcrc</code></em>,
+                                                         <em class="parameter"><code><span class="type">guint32</span> *crc</code></em>);
+<span class="returnvalue">size_t</span>              <a class="link" href="GMimeFilterYenc.html#g-mime-yencode-step" title="g_mime_yencode_step ()">g_mime_yencode_step</a>                 (<em class="parameter"><code>const unsigned <span class="type">char</span> *inbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> inlen</code></em>,
+                                                         <em class="parameter"><code>unsigned <span class="type">char</span> *outbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> *state</code></em>,
+                                                         <em class="parameter"><code><span class="type">guint32</span> *pcrc</code></em>,
+                                                         <em class="parameter"><code><span class="type">guint32</span> *crc</code></em>);
+<span class="returnvalue">size_t</span>              <a class="link" href="GMimeFilterYenc.html#g-mime-yencode-close" title="g_mime_yencode_close ()">g_mime_yencode_close</a>                (<em class="parameter"><code>const unsigned <span class="type">char</span> *inbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> inlen</code></em>,
+                                                         <em class="parameter"><code>unsigned <span class="type">char</span> *outbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> *state</code></em>,
+                                                         <em class="parameter"><code><span class="type">guint32</span> *pcrc</code></em>,
+                                                         <em class="parameter"><code><span class="type">guint32</span> *crc</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="GMimeFilterYenc.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  GObject
+   +----<a class="link" href="GMimeFilter.html" title="GMimeFilter">GMimeFilter</a>
+         +----GMimeFilterYenc
+</pre>
+</div>
+<div class="refsect1">
+<a name="GMimeFilterYenc.description"></a><h2>Description</h2>
+<p>
+A <a class="link" href="GMimeFilter.html" title="GMimeFilter"><span class="type">GMimeFilter</span></a> used to encode or decode the Usenet yEncoding.
+</p>
+</div>
+<div class="refsect1">
+<a name="GMimeFilterYenc.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="GMimeFilterYenc-struct"></a><h3>struct GMimeFilterYenc</h3>
+<pre class="programlisting">struct GMimeFilterYenc;</pre>
+<p>
+A filter for yEncoding or yDecoding a stream.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-filter-yenc-new"></a><h3>g_mime_filter_yenc_new ()</h3>
+<pre class="programlisting"><a class="link" href="GMimeFilter.html" title="GMimeFilter"><span class="returnvalue">GMimeFilter</span></a> *       g_mime_filter_yenc_new              (<em class="parameter"><code><span class="type">gboolean</span> encode</code></em>);</pre>
+<p>
+Creates a new yEnc filter.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>encode</code></em> :</span></p></td>
+<td>encode vs decode</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new yEnc filter.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-filter-yenc-set-state"></a><h3>g_mime_filter_yenc_set_state ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_filter_yenc_set_state        (<em class="parameter"><code><a class="link" href="GMimeFilterYenc.html" title="GMimeFilterYenc"><span class="type">GMimeFilterYenc</span></a> *yenc</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> state</code></em>);</pre>
+<p>
+Sets the current state of the yencoder/ydecoder
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>yenc</code></em> :</span></p></td>
+<td>yEnc filter</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>state</code></em> :</span></p></td>
+<td>encode/decode state</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-filter-yenc-set-crc"></a><h3>g_mime_filter_yenc_set_crc ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_filter_yenc_set_crc          (<em class="parameter"><code><a class="link" href="GMimeFilterYenc.html" title="GMimeFilterYenc"><span class="type">GMimeFilterYenc</span></a> *yenc</code></em>,
+                                                         <em class="parameter"><code><span class="type">guint32</span> crc</code></em>);</pre>
+<p>
+Sets the current crc32 value on the yEnc filter <em class="parameter"><code>yenc</code></em> to <em class="parameter"><code>crc</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>yenc</code></em> :</span></p></td>
+<td>yEnc filter</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>crc</code></em> :</span></p></td>
+<td>crc32</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-filter-yenc-get-crc"></a><h3>g_mime_filter_yenc_get_crc ()</h3>
+<pre class="programlisting"><span class="returnvalue">guint32</span>             g_mime_filter_yenc_get_crc          (<em class="parameter"><code><a class="link" href="GMimeFilterYenc.html" title="GMimeFilterYenc"><span class="type">GMimeFilterYenc</span></a> *yenc</code></em>);</pre>
+<p>
+Get the computed crc or (guint32) -1 on fail.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>yenc</code></em> :</span></p></td>
+<td>yEnc filter</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the computed crc or (guint32) -1 on fail.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-filter-yenc-get-pcrc"></a><h3>g_mime_filter_yenc_get_pcrc ()</h3>
+<pre class="programlisting"><span class="returnvalue">guint32</span>             g_mime_filter_yenc_get_pcrc         (<em class="parameter"><code><a class="link" href="GMimeFilterYenc.html" title="GMimeFilterYenc"><span class="type">GMimeFilterYenc</span></a> *yenc</code></em>);</pre>
+<p>
+Get the computed part crc or (guint32) -1 on fail.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>yenc</code></em> :</span></p></td>
+<td>yEnc filter</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the computed part crc or (guint32) -1 on fail.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GMIME-YENCODE-CRC-INIT:CAPS"></a><h3>GMIME_YENCODE_CRC_INIT</h3>
+<pre class="programlisting">#define GMIME_YENCODE_CRC_INIT       (~0)
+</pre>
+<p>
+Initial state for the crc and pcrc state variables.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GMIME-YENCODE-CRC-FINAL:CAPS"></a><h3>GMIME_YENCODE_CRC_FINAL()</h3>
+<pre class="programlisting">#define GMIME_YENCODE_CRC_FINAL(crc) (~crc)
+</pre>
+<p>
+Gets the final crc value from <em class="parameter"><code>crc</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><em class="parameter"><code>crc</code></em> :</span></p></td>
+<td>crc or pcrc state variable</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GMIME-YENCODE-STATE-INIT:CAPS"></a><h3>GMIME_YENCODE_STATE_INIT</h3>
+<pre class="programlisting">#define GMIME_YENCODE_STATE_INIT     (0)
+</pre>
+<p>
+Initial state for the <a class="link" href="GMimeFilterYenc.html#g-mime-ydecode-step" title="g_mime_ydecode_step ()"><code class="function">g_mime_ydecode_step()</code></a> function.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GMIME-YDECODE-STATE-INIT:CAPS"></a><h3>GMIME_YDECODE_STATE_INIT</h3>
+<pre class="programlisting">#define GMIME_YDECODE_STATE_INIT     (0)
+</pre>
+<p>
+Initial state for the <a class="link" href="GMimeFilterYenc.html#g-mime-ydecode-step" title="g_mime_ydecode_step ()"><code class="function">g_mime_ydecode_step()</code></a> function.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GMIME-YDECODE-STATE-EOLN:CAPS"></a><h3>GMIME_YDECODE_STATE_EOLN</h3>
+<pre class="programlisting">#define GMIME_YDECODE_STATE_EOLN     (1 &lt;&lt; 8)
+</pre>
+<p>
+State bit that denotes the yEnc filter has reached an end-of-line.
+</p>
+<p>
+This state is for internal use only.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GMIME-YDECODE-STATE-ESCAPE:CAPS"></a><h3>GMIME_YDECODE_STATE_ESCAPE</h3>
+<pre class="programlisting">#define GMIME_YDECODE_STATE_ESCAPE   (1 &lt;&lt; 9)
+</pre>
+<p>
+State bit that denotes the yEnc filter has reached an escape
+sequence.
+</p>
+<p>
+This state is for internal use only.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GMIME-YDECODE-STATE-END:CAPS"></a><h3>GMIME_YDECODE_STATE_END</h3>
+<pre class="programlisting">#define GMIME_YDECODE_STATE_END      (1 &lt;&lt; 15)
+</pre>
+<p>
+State bit that denoates that <a class="link" href="GMimeFilterYenc.html#g-mime-ydecode-step" title="g_mime_ydecode_step ()"><code class="function">g_mime_ydecode_step()</code></a> has finished
+decoding.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GMIME-YDECODE-STATE-BEGIN:CAPS"></a><h3>GMIME_YDECODE_STATE_BEGIN</h3>
+<pre class="programlisting">#define GMIME_YDECODE_STATE_BEGIN    (1 &lt;&lt; 12)
+</pre>
+<p>
+State bit that denotes the yEnc filter has found the =ybegin line.
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GMIME-YDECODE-STATE-DECODE:CAPS"></a><h3>GMIME_YDECODE_STATE_DECODE</h3>
+<pre class="programlisting">#define GMIME_YDECODE_STATE_DECODE   (1 &lt;&lt; 14)
+</pre>
+<p>
+State bit that denotes yEnc filter has begun decoding the actual
+yencoded content and will continue to do so until an =yend line is
+found (or until there is nothing left to decode).
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GMIME-YDECODE-STATE-PART:CAPS"></a><h3>GMIME_YDECODE_STATE_PART</h3>
+<pre class="programlisting">#define GMIME_YDECODE_STATE_PART     (1 &lt;&lt; 13)
+</pre>
+<p>
+State bit that denotes the yEnc filter has found the =ypart
+line. (Note: not all yencoded blocks have one)
+</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-ydecode-step"></a><h3>g_mime_ydecode_step ()</h3>
+<pre class="programlisting"><span class="returnvalue">size_t</span>              g_mime_ydecode_step                 (<em class="parameter"><code>const unsigned <span class="type">char</span> *inbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> inlen</code></em>,
+                                                         <em class="parameter"><code>unsigned <span class="type">char</span> *outbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> *state</code></em>,
+                                                         <em class="parameter"><code><span class="type">guint32</span> *pcrc</code></em>,
+                                                         <em class="parameter"><code><span class="type">guint32</span> *crc</code></em>);</pre>
+<p>
+Performs a 'decode step' on a chunk of yEncoded data of length
+<em class="parameter"><code>inlen</code></em> pointed to by <em class="parameter"><code>inbuf</code></em> and writes to <em class="parameter"><code>outbuf</code></em>. Assumes the =ybegin
+and =ypart lines have already been stripped off.
+</p>
+<p>
+To get the crc32 value of the part, use <a class="link" href="GMimeFilterYenc.html#GMIME-YENCODE-CRC-FINAL:CAPS" title="GMIME_YENCODE_CRC_FINAL()"><span class="type">GMIME_YENCODE_CRC_FINAL</span></a>
+(<em class="parameter"><code>pcrc</code></em>). If there are more parts, you should reuse <em class="parameter"><code>crc</code></em> without
+re-initializing. Once all parts have been decoded, you may get the
+combined crc32 value of all the parts using <a class="link" href="GMimeFilterYenc.html#GMIME-YENCODE-CRC-FINAL:CAPS" title="GMIME_YENCODE_CRC_FINAL()"><span class="type">GMIME_YENCODE_CRC_FINAL</span></a>
+(<em class="parameter"><code>crc</code></em>).
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>inbuf</code></em> :</span></p></td>
+<td>input buffer</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>inlen</code></em> :</span></p></td>
+<td>input buffer length</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>outbuf</code></em> :</span></p></td>
+<td>output buffer</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>state</code></em> :</span></p></td>
+<td>ydecode state</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>pcrc</code></em> :</span></p></td>
+<td>part crc state</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>crc</code></em> :</span></p></td>
+<td>crc state</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the number of bytes decoded.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-yencode-step"></a><h3>g_mime_yencode_step ()</h3>
+<pre class="programlisting"><span class="returnvalue">size_t</span>              g_mime_yencode_step                 (<em class="parameter"><code>const unsigned <span class="type">char</span> *inbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> inlen</code></em>,
+                                                         <em class="parameter"><code>unsigned <span class="type">char</span> *outbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> *state</code></em>,
+                                                         <em class="parameter"><code><span class="type">guint32</span> *pcrc</code></em>,
+                                                         <em class="parameter"><code><span class="type">guint32</span> *crc</code></em>);</pre>
+<p>
+Performs an yEncode 'encode step' on a chunk of raw data of length
+<em class="parameter"><code>inlen</code></em> pointed to by <em class="parameter"><code>inbuf</code></em> and writes to <em class="parameter"><code>outbuf</code></em>.
+</p>
+<p>
+<em class="parameter"><code>state</code></em> should be initialized to <a class="link" href="GMimeFilterYenc.html#GMIME-YENCODE-STATE-INIT:CAPS" title="GMIME_YENCODE_STATE_INIT"><span class="type">GMIME_YENCODE_STATE_INIT</span></a> before
+beginning making the first call to this function. Subsequent calls
+should reuse <em class="parameter"><code>state</code></em>.
+</p>
+<p>
+Along the same lines, <em class="parameter"><code>pcrc</code></em> and <em class="parameter"><code>crc</code></em> should be initialized to
+<a class="link" href="GMimeFilterYenc.html#GMIME-YENCODE-CRC-INIT:CAPS" title="GMIME_YENCODE_CRC_INIT"><span class="type">GMIME_YENCODE_CRC_INIT</span></a> before using.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>inbuf</code></em> :</span></p></td>
+<td>input buffer</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>inlen</code></em> :</span></p></td>
+<td>input buffer length</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>outbuf</code></em> :</span></p></td>
+<td>output buffer</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>state</code></em> :</span></p></td>
+<td>yencode state</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>pcrc</code></em> :</span></p></td>
+<td>part crc state</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>crc</code></em> :</span></p></td>
+<td>crc state</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the number of bytes encoded.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-yencode-close"></a><h3>g_mime_yencode_close ()</h3>
+<pre class="programlisting"><span class="returnvalue">size_t</span>              g_mime_yencode_close                (<em class="parameter"><code>const unsigned <span class="type">char</span> *inbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> inlen</code></em>,
+                                                         <em class="parameter"><code>unsigned <span class="type">char</span> *outbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> *state</code></em>,
+                                                         <em class="parameter"><code><span class="type">guint32</span> *pcrc</code></em>,
+                                                         <em class="parameter"><code><span class="type">guint32</span> *crc</code></em>);</pre>
+<p>
+Call this function when finished encoding data with
+<a class="link" href="GMimeFilterYenc.html#g-mime-yencode-step" title="g_mime_yencode_step ()"><code class="function">g_mime_yencode_step()</code></a> to flush off the remaining state.
+</p>
+<p>
+<a class="link" href="GMimeFilterYenc.html#GMIME-YENCODE-CRC-FINAL:CAPS" title="GMIME_YENCODE_CRC_FINAL()"><span class="type">GMIME_YENCODE_CRC_FINAL</span></a> (<em class="parameter"><code>pcrc</code></em>) will give you the crc32 of the
+encoded "part". If there are more "parts" to encode, you should
+re-use <em class="parameter"><code>crc</code></em> when encoding the next "parts" and then use
+<a class="link" href="GMimeFilterYenc.html#GMIME-YENCODE-CRC-FINAL:CAPS" title="GMIME_YENCODE_CRC_FINAL()"><span class="type">GMIME_YENCODE_CRC_FINAL</span></a> (<em class="parameter"><code>crc</code></em>) to get the combined crc32 value of
+all the parts.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>inbuf</code></em> :</span></p></td>
+<td>input buffer</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>inlen</code></em> :</span></p></td>
+<td>input buffer length</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>outbuf</code></em> :</span></p></td>
+<td>output buffer</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>state</code></em> :</span></p></td>
+<td>yencode state</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>pcrc</code></em> :</span></p></td>
+<td>part crc state</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>crc</code></em> :</span></p></td>
+<td>crc state</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the number of bytes encoded.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<div class="refsect1">
+<a name="GMimeFilterYenc.see-also"></a><h2>See Also</h2>
+<a class="link" href="GMimeFilter.html" title="GMimeFilter"><span class="type">GMimeFilter</span></a>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

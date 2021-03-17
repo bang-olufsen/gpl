@@ -1,0 +1,166 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GMimeStreamMmap</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="GMime 2.6 Reference Manual">
+<link rel="up" href="Streams.html" title="Streams">
+<link rel="prev" href="GMimeStreamMem.html" title="GMimeStreamMem">
+<link rel="next" href="GMimeStreamNull.html" title="GMimeStreamNull">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="GMimeStreamMem.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="Streams.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">GMime 2.6 Reference Manual</th>
+<td><a accesskey="n" href="GMimeStreamNull.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#GMimeStreamMmap.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#GMimeStreamMmap.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#GMimeStreamMmap.object-hierarchy" class="shortcut">Object Hierarchy</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="GMimeStreamMmap"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="GMimeStreamMmap.top_of_page"></a>GMimeStreamMmap</span></h2>
+<p>GMimeStreamMmap — A memory-mapped file stream</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="GMimeStreamMmap.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">struct              <a class="link" href="GMimeStreamMmap.html#GMimeStreamMmap-struct" title="struct GMimeStreamMmap">GMimeStreamMmap</a>;
+<a class="link" href="GMimeStream.html" title="GMimeStream"><span class="returnvalue">GMimeStream</span></a> *       <a class="link" href="GMimeStreamMmap.html#g-mime-stream-mmap-new" title="g_mime_stream_mmap_new ()">g_mime_stream_mmap_new</a>              (<em class="parameter"><code><span class="type">int</span> fd</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> prot</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> flags</code></em>);
+<a class="link" href="GMimeStream.html" title="GMimeStream"><span class="returnvalue">GMimeStream</span></a> *       <a class="link" href="GMimeStreamMmap.html#g-mime-stream-mmap-new-with-bounds" title="g_mime_stream_mmap_new_with_bounds ()">g_mime_stream_mmap_new_with_bounds</a>  (<em class="parameter"><code><span class="type">int</span> fd</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> prot</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> flags</code></em>,
+                                                         <em class="parameter"><code><span class="type">gint64</span> start</code></em>,
+                                                         <em class="parameter"><code><span class="type">gint64</span> end</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="GMimeStreamMmap.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  GObject
+   +----<a class="link" href="GMimeStream.html" title="GMimeStream">GMimeStream</a>
+         +----GMimeStreamMmap
+</pre>
+</div>
+<div class="refsect1">
+<a name="GMimeStreamMmap.description"></a><h2>Description</h2>
+<p>
+A <a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a> implementation using a memory-mapped file backing
+store. This may be faster than <a class="link" href="GMimeStreamFs.html" title="GMimeStreamFs"><span class="type">GMimeStreamFs</span></a> or <a class="link" href="GMimeStreamFile.html" title="GMimeStreamFile"><span class="type">GMimeStreamFile</span></a>
+but you'll have to do your own performance checking to be sure for
+your particular application/platform.
+</p>
+</div>
+<div class="refsect1">
+<a name="GMimeStreamMmap.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="GMimeStreamMmap-struct"></a><h3>struct GMimeStreamMmap</h3>
+<pre class="programlisting">struct GMimeStreamMmap;</pre>
+<p>
+A memory-mapped <a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-stream-mmap-new"></a><h3>g_mime_stream_mmap_new ()</h3>
+<pre class="programlisting"><a class="link" href="GMimeStream.html" title="GMimeStream"><span class="returnvalue">GMimeStream</span></a> *       g_mime_stream_mmap_new              (<em class="parameter"><code><span class="type">int</span> fd</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> prot</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> flags</code></em>);</pre>
+<p>
+Creates a new <a class="link" href="GMimeStreamMmap.html" title="GMimeStreamMmap"><span class="type">GMimeStreamMmap</span></a> object around <em class="parameter"><code>fd</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>fd</code></em> :</span></p></td>
+<td>file descriptor</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>prot</code></em> :</span></p></td>
+<td>protection flags</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>flags</code></em> :</span></p></td>
+<td>map flags</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a stream using <em class="parameter"><code>fd</code></em>.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-stream-mmap-new-with-bounds"></a><h3>g_mime_stream_mmap_new_with_bounds ()</h3>
+<pre class="programlisting"><a class="link" href="GMimeStream.html" title="GMimeStream"><span class="returnvalue">GMimeStream</span></a> *       g_mime_stream_mmap_new_with_bounds  (<em class="parameter"><code><span class="type">int</span> fd</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> prot</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> flags</code></em>,
+                                                         <em class="parameter"><code><span class="type">gint64</span> start</code></em>,
+                                                         <em class="parameter"><code><span class="type">gint64</span> end</code></em>);</pre>
+<p>
+Creates a new <a class="link" href="GMimeStreamMmap.html" title="GMimeStreamMmap"><span class="type">GMimeStreamMmap</span></a> object around <em class="parameter"><code>fd</code></em> with bounds <em class="parameter"><code>start</code></em>
+and <em class="parameter"><code>end</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>fd</code></em> :</span></p></td>
+<td>file descriptor</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>prot</code></em> :</span></p></td>
+<td>protection flags</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>flags</code></em> :</span></p></td>
+<td>map flags</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>start</code></em> :</span></p></td>
+<td>start boundary</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>end</code></em> :</span></p></td>
+<td>end boundary</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a stream using <em class="parameter"><code>fd</code></em> with bounds <em class="parameter"><code>start</code></em> and <em class="parameter"><code>end</code></em>.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<div class="refsect1">
+<a name="GMimeStreamMmap.see-also"></a><h2>See Also</h2>
+<a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

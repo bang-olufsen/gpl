@@ -1,0 +1,97 @@
+From e0520447789fd0347b5c9f9f63933cb0e5165a1e Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Thu, 28 Jul 2016 16:02:06 +0200
+Subject: [PATCH] Implement channel map parsing
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+
+%% original patch: 0006-Implement-channel-map-parsing.patch
+---
+ src/pcm/pcm_switch.c | 37 +++++++++++++++++++++++++++----------
+ 1 file changed, 27 insertions(+), 10 deletions(-)
+
+diff --git a/src/pcm/pcm_switch.c b/src/pcm/pcm_switch.c
+index ec45890..bd779b4 100644
+--- a/src/pcm/pcm_switch.c
++++ b/src/pcm/pcm_switch.c
+@@ -1402,6 +1402,7 @@ int _snd_pcm_switch_open(snd_pcm_t **pcmp, const char *name,
+ 	snd_config_t *slave = NULL, *sconf;
+ 	snd_config_t *control = NULL;
+ 	snd_ctl_elem_id_t *ctl_id;
++	snd_pcm_chmap_query_t **chmap = NULL;
+ 	int ctl_card = -1, cchannels = 2, err;
+ 
+ 	snd_config_for_each(i, next, conf) {
+@@ -1419,36 +1420,46 @@ int _snd_pcm_switch_open(snd_pcm_t **pcmp, const char *name,
+ 			control = n;
+ 			continue;
+ 		}
++		if (strcmp(id, "chmap") == 0) {
++			snd_pcm_free_chmaps(chmap);
++			chmap = _snd_pcm_parse_config_chmaps(n);
++			if (!chmap) {
++				SNDERR("Invalid channel map for %s", id);
++				return -EINVAL;
++			}
++			continue;
++		}
+ 		SNDERR("Unknown field %s", id);
+-		return -EINVAL;
++		err = -EINVAL;
++		goto failed_open;
+ 	}
+ 	if (!slave) {
+ 		SNDERR("slave is not defined");
+-		return -EINVAL;
++		err = -EINVAL;
++		goto failed_open;
+ 	}
+ 	if (!control) {
+ 		SNDERR("control is not defined");
+-		return -EINVAL;
++		err = -EINVAL;
++		goto failed_open;
+ 	}
+ 
+ 	err = snd_pcm_slave_conf(root, slave, &sconf, 0);
+ 	if (err < 0)
+-		return err;
++		goto failed_open;
+ 
+ 	err = snd_pcm_open_slave(&spcm, root, sconf, stream, mode, conf);
+ 	if (err < 0)
+-		return err;
++		goto failed_open;
+ 
+ 	snd_ctl_elem_id_alloca(&ctl_id);
+ 	err = snd_pcm_parse_control_id(control, ctl_id, &ctl_card, &cchannels, NULL);
+-	if (err < 0) {
+-		snd_pcm_close(spcm);
+-		return err;
+-	}
++	if (err < 0)
++		goto failed_open;
+ 
+ 	err = snd_pcm_switch_open(pcmp, name, stream, mode, ctl_card, ctl_id, cchannels, spcm, 1);
+ 	if (err < 0)
+-		snd_pcm_close(spcm);
++		goto failed_open;
+ 
+ 	snd_pcm_switch_t *swtch = (*pcmp)->private_data;
+ 	snd_config_copy(&swtch->conf, conf);
+@@ -1461,6 +1472,12 @@ int _snd_pcm_switch_open(snd_pcm_t **pcmp, const char *name,
+ 
+ 	apply_switch_value(*pcmp);
+ 
++	return 0;
++
++failed_open:
++	snd_pcm_free_chmaps(chmap);
++	if (spcm)
++		snd_pcm_close(spcm);
+ 	return err;
+ }
+ 
+-- 
+2.7.4
+

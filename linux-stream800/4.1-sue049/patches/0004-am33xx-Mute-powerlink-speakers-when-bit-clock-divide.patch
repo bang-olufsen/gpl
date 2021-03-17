@@ -1,0 +1,107 @@
+From 72bb062b8f6f283a88bc512ec288d39359ab206d Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Thu, 4 Apr 2019 09:04:37 +0200
+Subject: [PATCH] am33xx: Mute powerlink speakers when bit-clock divider
+ changes
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ kernel/sysctl.c                 | 16 ++++++++++++++++
+ sound/soc/davinci/am33xx-s800.c | 22 +++++++++++++++++-----
+ 2 files changed, 33 insertions(+), 5 deletions(-)
+
+diff --git a/kernel/sysctl.c b/kernel/sysctl.c
+index 1431089b..80e4bb7 100644
+--- a/kernel/sysctl.c
++++ b/kernel/sysctl.c
+@@ -112,6 +112,8 @@ extern int sysctl_nr_open_min, sysctl_nr_open_max;
+ #ifndef CONFIG_MMU
+ extern int sysctl_nr_trim_pages;
+ #endif
++extern unsigned int beo_pl_mute_delay;
++extern unsigned int beo_pl_mute_duration;
+ 
+ /* Constants used for minimum and  maximum */
+ #ifdef CONFIG_LOCKUP_DETECTOR
+@@ -1133,6 +1135,20 @@ static struct ctl_table kern_table[] = {
+ 		.extra1		= &zero,
+ 		.extra2		= &one,
+ 	},
++	{
++		.procname	= "beo-pl-mute-delay",
++		.data		= &beo_pl_mute_delay,
++		.maxlen		= sizeof(unsigned int),
++		.mode		= 0644,
++		.proc_handler	= proc_dointvec_minmax,
++	},
++	{
++		.procname	= "beo-pl-mute-duration",
++		.data		= &beo_pl_mute_duration,
++		.maxlen		= sizeof(unsigned int),
++		.mode		= 0644,
++		.proc_handler	= proc_dointvec_minmax,
++	},
+ 	{ }
+ };
+ 
+diff --git a/sound/soc/davinci/am33xx-s800.c b/sound/soc/davinci/am33xx-s800.c
+index 2df8d47..3ed5cde 100644
+--- a/sound/soc/davinci/am33xx-s800.c
++++ b/sound/soc/davinci/am33xx-s800.c
+@@ -27,6 +27,12 @@
+ 
+ #include "davinci-mcasp.h"
+ 
++static unsigned int last_playback_clkdiv = 0;
++unsigned int beo_pl_mute_delay = 0;
++unsigned int beo_pl_mute_duration = 0;
++int (*beo_pl_mute_enable_func)(unsigned int) = NULL;
++EXPORT_SYMBOL(beo_pl_mute_enable_func);
++
+ #define DATA_WORD_WIDTH 32
+ 
+ #define MCLK_48k	24576000
+@@ -255,12 +261,12 @@ static int am33xx_s800_common_hw_params(struct snd_pcm_substream *substream,
+ 	struct snd_soc_dai *cpu_dai = rtd->cpu_dai;
+ 	struct snd_soc_card *card = codec_dai->component->card;
+ 	struct snd_soc_am33xx_s800 *priv = snd_soc_card_get_drvdata(card);
+-	unsigned int mclk, rate, bclk;
++	unsigned int mclk, bclk, clkdiv;
+ 	unsigned int bclk_div = is_spdif ? 4 : 2;
+ 	int ret;
+ 	int clk_id, div_mclk, div_bclk, div_lrclk;
+ 
+-	rate = params_rate(params);
++	unsigned int rate = params_rate(params);
+ 
+ 	unsigned int clk_base_48k = priv->mclk_rate_base_48k;
+ 	mclk = (rate % 16000 == 0) ? clk_base_48k : clk_base_48k / 48000 * 44100;
+@@ -335,16 +341,22 @@ static int am33xx_s800_common_hw_params(struct snd_pcm_substream *substream,
+ 
+ 	/* CPU BCLK divider */
+ 	if (params_format(params) == SNDRV_PCM_FORMAT_DSD_U8) {
+-		ret = snd_soc_dai_set_clkdiv(cpu_dai, div_bclk, mclk / bclk);
++		clkdiv = mclk / bclk;
+ 	} else {
+-		ret = snd_soc_dai_set_clkdiv(cpu_dai, div_bclk, mclk / (rate * bclk_div * DATA_WORD_WIDTH));
++		clkdiv = mclk / (rate * bclk_div * DATA_WORD_WIDTH);
++	}
++	if (last_playback_clkdiv != clkdiv && beo_pl_mute_enable_func) {
++		(*beo_pl_mute_enable_func)(beo_pl_mute_duration);
++		last_playback_clkdiv = clkdiv;
++		msleep(beo_pl_mute_delay);
+ 	}
++	ret = snd_soc_dai_set_clkdiv(cpu_dai, div_bclk, clkdiv);
+ 	if (ret < 0) {
+ 		dev_warn(card->dev, "Unsupported cpu dai BCLK divider : %d\n", ret);
+ 		return ret;
+ 	}
+ 
+-	dev_dbg(card->dev, "Configured common HW params, RATE %d, MCLK %d, BCLK %d", rate, mclk, bclk);
++	dev_dbg(card->dev, "Configured common HW params, RATE %u, MCLK %u, BCLK %u CLKDIV %u", rate, mclk, bclk, clkdiv);
+ 
+ 	return 0;
+ }
+-- 
+2.7.4
+

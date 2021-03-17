@@ -1,0 +1,443 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>librygel-server Reference Manual: RygelMediaServerPlugin</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="index.html" title="librygel-server Reference Manual">
+<link rel="up" href="api-main-list.html" title="librygel-server API Reference">
+<link rel="prev" href="RygelMediaServer.html" title="RygelMediaServer">
+<link rel="next" href="RygelMusicItem.html" title="RygelMusicItem">
+<meta name="generator" content="GTK-Doc V1.20.1 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#RygelMediaServerPlugin.description" class="shortcut">Description</a></span><span id="nav_hierarchy">  <span class="dim">|</span> 
+                  <a href="#RygelMediaServerPlugin.object-hierarchy" class="shortcut">Object Hierarchy</a></span><span id="nav_properties">  <span class="dim">|</span> 
+                  <a href="#RygelMediaServerPlugin.properties" class="shortcut">Properties</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="api-main-list.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="RygelMediaServer.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="RygelMusicItem.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry">
+<a name="RygelMediaServerPlugin"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="RygelMediaServerPlugin.top_of_page"></a>RygelMediaServerPlugin</span></h2>
+<p>RygelMediaServerPlugin — This is the base class for every Rygel implementation of a UPnP media server. It should be used either for a real plug-in for the Rygel process or used in-process via the librygel-server API.</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1">
+<a name="RygelMediaServerPlugin.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="functions_return">
+<col class="functions_name">
+</colgroup>
+<tbody>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a class="link" href="RygelMediaServerPlugin.html#RYGEL-TYPE-MEDIA-SERVER-PLUGIN:CAPS" title="RYGEL_TYPE_MEDIA_SERVER_PLUGIN">RYGEL_TYPE_MEDIA_SERVER_PLUGIN</a></td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="RygelMediaContainer.html" title="RygelMediaContainer"><span class="returnvalue">RygelMediaContainer</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="RygelMediaServerPlugin.html#rygel-media-server-plugin-get-root-container" title="rygel_media_server_plugin_get_root_container ()">rygel_media_server_plugin_get_root_container</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">const <a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="RygelMediaServerPlugin.html#rygel-media-server-plugin-get-search-caps" title="rygel_media_server_plugin_get_search_caps ()">rygel_media_server_plugin_get_search_caps</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="returnvalue">GList</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="RygelMediaServerPlugin.html#rygel-media-server-plugin-get-upload-profiles" title="rygel_media_server_plugin_get_upload_profiles ()">rygel_media_server_plugin_get_upload_profiles</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="RygelMediaServerPlugin.html#rygel-media-server-plugin-set-upload-profiles" title="rygel_media_server_plugin_set_upload_profiles ()">rygel_media_server_plugin_set_upload_profiles</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="returnvalue">GList</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="RygelMediaServerPlugin.html#rygel-media-server-plugin-get-supported-profiles" title="rygel_media_server_plugin_get_supported_profiles ()">rygel_media_server_plugin_get_supported_profiles</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="RygelMediaServerPlugin.html#rygel-media-server-plugin-set-supported-profiles" title="rygel_media_server_plugin_set_supported_profiles ()">rygel_media_server_plugin_set_supported_profiles</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="RygelMediaServerPlugin.properties"></a><h2>Properties</h2>
+<div class="informaltable"><table border="0">
+<colgroup>
+<col width="150px" class="properties_type">
+<col width="300px" class="properties_name">
+<col width="200px" class="properties_flags">
+</colgroup>
+<tbody>
+<tr>
+<td class="property_type">
+<a class="link" href="RygelMediaContainer.html" title="RygelMediaContainer"><span class="type">RygelMediaContainer</span></a> *</td>
+<td class="property_name"><a class="link" href="RygelMediaServerPlugin.html#RygelMediaServerPlugin--root-container" title="The “root-container” property">root-container</a></td>
+<td class="property_flags">Read / Write / Construct Only</td>
+</tr>
+<tr>
+<td class="property_type">
+<a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *</td>
+<td class="property_name"><a class="link" href="RygelMediaServerPlugin.html#RygelMediaServerPlugin--search-caps" title="The “search-caps” property">search-caps</a></td>
+<td class="property_flags">Read</td>
+</tr>
+<tr>
+<td class="property_type"><a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a></td>
+<td class="property_name"><a class="link" href="RygelMediaServerPlugin.html#RygelMediaServerPlugin--supported-profiles" title="The “supported-profiles” property">supported-profiles</a></td>
+<td class="property_flags">Read / Write / Construct</td>
+</tr>
+<tr>
+<td class="property_type"><a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a></td>
+<td class="property_name"><a class="link" href="RygelMediaServerPlugin.html#RygelMediaServerPlugin--upload-profiles" title="The “upload-profiles” property">upload-profiles</a></td>
+<td class="property_flags">Read / Write / Construct</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="RygelMediaServerPlugin.other"></a><h2>Types and Values</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="name">
+<col class="description">
+</colgroup>
+<tbody>
+<tr>
+<td class="datatype_keyword">struct</td>
+<td class="function_name"><a class="link" href="RygelMediaServerPlugin.html#RygelMediaServerPlugin-struct" title="struct RygelMediaServerPlugin">RygelMediaServerPlugin</a></td>
+</tr>
+<tr>
+<td class="datatype_keyword">struct</td>
+<td class="function_name"><a class="link" href="RygelMediaServerPlugin.html#RygelMediaServerPluginClass" title="struct RygelMediaServerPluginClass">RygelMediaServerPluginClass</a></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="RygelMediaServerPlugin.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="screen">    <a href="../gobject/gobject-The-Base-Object-Type.html#GObject">GObject</a>
+    <span class="lineart">╰──</span> <a href="../gupnp/GUPnPResourceFactory.html">GUPnPResourceFactory</a>
+        <span class="lineart">╰──</span> <a href="../librygel-core/RygelPlugin.html">RygelPlugin</a>
+            <span class="lineart">╰──</span> RygelMediaServerPlugin
+</pre>
+</div>
+<div class="refsect1">
+<a name="RygelMediaServerPlugin.description"></a><h2>Description</h2>
+<p>The plugin instance should have a <a class="link" href="RygelMediaContainer.html" title="RygelMediaContainer"><span class="type">RygelMediaContainer</span></a> instance as its root container, which may be provided to the constructor.</p>
+<p>See the &lt;link linkend="implementing-server-plugins"&gt;Implementing Server Plugins&lt;/link&gt; section.</p>
+</div>
+<div class="refsect1">
+<a name="RygelMediaServerPlugin.functions_details"></a><h2>Functions</h2>
+<div class="refsect2">
+<a name="RYGEL-TYPE-MEDIA-SERVER-PLUGIN:CAPS"></a><h3>RYGEL_TYPE_MEDIA_SERVER_PLUGIN</h3>
+<pre class="programlisting">#define RYGEL_TYPE_MEDIA_SERVER_PLUGIN (rygel_media_server_plugin_get_type ())
+</pre>
+<p>The type for <a class="link" href="RygelMediaServerPlugin.html" title="RygelMediaServerPlugin"><span class="type">RygelMediaServerPlugin</span></a>.</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-media-server-plugin-get-root-container"></a><h3>rygel_media_server_plugin_get_root_container ()</h3>
+<pre class="programlisting"><a class="link" href="RygelMediaContainer.html" title="RygelMediaContainer"><span class="returnvalue">RygelMediaContainer</span></a> *
+rygel_media_server_plugin_get_root_container
+                               (<em class="parameter"><code><a class="link" href="RygelMediaServerPlugin.html" title="RygelMediaServerPlugin"><span class="type">RygelMediaServerPlugin</span></a> *self</code></em>);</pre>
+<p>Get and return the current value of the <a class="link" href="RygelMediaServerPlugin.html#RygelMediaServerPlugin--root-container" title="The “root-container” property"><span class="type">"root-container"</span></a> property.</p>
+<div class="refsect3">
+<a name="id-1.6.14.8.3.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelMediaServerPlugin.html" title="RygelMediaServerPlugin"><span class="type">RygelMediaServerPlugin</span></a> instance to query</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.6.14.8.3.6"></a><h4>Returns</h4>
+<p> the value of the <a class="link" href="RygelMediaServerPlugin.html#RygelMediaServerPlugin--root-container" title="The “root-container” property"><span class="type">"root-container"</span></a> property</p>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-media-server-plugin-get-search-caps"></a><h3>rygel_media_server_plugin_get_search_caps ()</h3>
+<pre class="programlisting">const <a href="../glib/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *
+rygel_media_server_plugin_get_search_caps
+                               (<em class="parameter"><code><a class="link" href="RygelMediaServerPlugin.html" title="RygelMediaServerPlugin"><span class="type">RygelMediaServerPlugin</span></a> *self</code></em>);</pre>
+<p>Get and return the current value of the <a class="link" href="RygelMediaServerPlugin.html#RygelMediaServerPlugin--search-caps" title="The “search-caps” property"><span class="type">"search-caps"</span></a> property.</p>
+<p>The SearchCapabilities this MediaServer plugin supports.</p>
+<p>Implementations can override this to match their capabilities. If they do, they should take care to include the change tracking capabilities (upnp:objectUpdateID, upnp:containerUpdateID) based on PluginCapabilities.TRACK_CHANGES.</p>
+<div class="refsect3">
+<a name="id-1.6.14.8.4.7"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelMediaServerPlugin.html" title="RygelMediaServerPlugin"><span class="type">RygelMediaServerPlugin</span></a> instance to query</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.6.14.8.4.8"></a><h4>Returns</h4>
+<p> the value of the <a class="link" href="RygelMediaServerPlugin.html#RygelMediaServerPlugin--search-caps" title="The “search-caps” property"><span class="type">"search-caps"</span></a> property</p>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-media-server-plugin-get-upload-profiles"></a><h3>rygel_media_server_plugin_get_upload_profiles ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="returnvalue">GList</span></a> *
+rygel_media_server_plugin_get_upload_profiles
+                               (<em class="parameter"><code><a class="link" href="RygelMediaServerPlugin.html" title="RygelMediaServerPlugin"><span class="type">RygelMediaServerPlugin</span></a> *self</code></em>);</pre>
+<p>Get and return the current value of the <a class="link" href="RygelMediaServerPlugin.html#RygelMediaServerPlugin--upload-profiles" title="The “upload-profiles” property"><span class="type">"upload-profiles"</span></a> property.</p>
+<p>The list of DLNA profiles the MediaServer in this plugin will accept files as upload.</p>
+<p>Can be a subset of :supported_profiles. If set to <a href="../glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>, it will be reset to :supported_profiles.</p>
+<div class="refsect3">
+<a name="id-1.6.14.8.5.7"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelMediaServerPlugin.html" title="RygelMediaServerPlugin"><span class="type">RygelMediaServerPlugin</span></a> instance to query</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.6.14.8.5.8"></a><h4>Returns</h4>
+<p> the value of the <a class="link" href="RygelMediaServerPlugin.html#RygelMediaServerPlugin--upload-profiles" title="The “upload-profiles” property"><span class="type">"upload-profiles"</span></a> property</p>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-media-server-plugin-set-upload-profiles"></a><h3>rygel_media_server_plugin_set_upload_profiles ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+rygel_media_server_plugin_set_upload_profiles
+                               (<em class="parameter"><code><a class="link" href="RygelMediaServerPlugin.html" title="RygelMediaServerPlugin"><span class="type">RygelMediaServerPlugin</span></a> *self</code></em>,
+                                <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> *value</code></em>);</pre>
+<p>Set the value of the <a class="link" href="RygelMediaServerPlugin.html#RygelMediaServerPlugin--upload-profiles" title="The “upload-profiles” property"><span class="type">"upload-profiles"</span></a> property to <em class="parameter"><code>value</code></em>
+.</p>
+<p>The list of DLNA profiles the MediaServer in this plugin will accept files as upload.</p>
+<p>Can be a subset of :supported_profiles. If set to <a href="../glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>, it will be reset to :supported_profiles.</p>
+<div class="refsect3">
+<a name="id-1.6.14.8.6.7"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelMediaServerPlugin.html" title="RygelMediaServerPlugin"><span class="type">RygelMediaServerPlugin</span></a> instance to modify</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>value</p></td>
+<td class="parameter_description"><p>the new value of the <a class="link" href="RygelMediaServerPlugin.html#RygelMediaServerPlugin--upload-profiles" title="The “upload-profiles” property"><span class="type">"upload-profiles"</span></a> property</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-media-server-plugin-get-supported-profiles"></a><h3>rygel_media_server_plugin_get_supported_profiles ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="returnvalue">GList</span></a> *
+rygel_media_server_plugin_get_supported_profiles
+                               (<em class="parameter"><code><a class="link" href="RygelMediaServerPlugin.html" title="RygelMediaServerPlugin"><span class="type">RygelMediaServerPlugin</span></a> *self</code></em>);</pre>
+<p>Get and return the current value of the <a class="link" href="RygelMediaServerPlugin.html#RygelMediaServerPlugin--supported-profiles" title="The “supported-profiles” property"><span class="type">"supported-profiles"</span></a> property.</p>
+<p>The list of DLNA profiles the MediaServer in this plugin will be able to serve.</p>
+<p>If it does not accept all formats it can serve for uploading, :upload_profiles needs to be set to the supported subset.</p>
+<p>By default it will be the supported profiles of the <a class="link" href="RygelMediaEngine.html" title="RygelMediaEngine"><span class="type">RygelMediaEngine</span></a>.</p>
+<div class="refsect3">
+<a name="id-1.6.14.8.7.8"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelMediaServerPlugin.html" title="RygelMediaServerPlugin"><span class="type">RygelMediaServerPlugin</span></a> instance to query</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.6.14.8.7.9"></a><h4>Returns</h4>
+<p> the value of the <a class="link" href="RygelMediaServerPlugin.html#RygelMediaServerPlugin--supported-profiles" title="The “supported-profiles” property"><span class="type">"supported-profiles"</span></a> property</p>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-media-server-plugin-set-supported-profiles"></a><h3>rygel_media_server_plugin_set_supported_profiles ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+rygel_media_server_plugin_set_supported_profiles
+                               (<em class="parameter"><code><a class="link" href="RygelMediaServerPlugin.html" title="RygelMediaServerPlugin"><span class="type">RygelMediaServerPlugin</span></a> *self</code></em>,
+                                <em class="parameter"><code><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="type">GList</span></a> *value</code></em>);</pre>
+<p>Set the value of the <a class="link" href="RygelMediaServerPlugin.html#RygelMediaServerPlugin--supported-profiles" title="The “supported-profiles” property"><span class="type">"supported-profiles"</span></a> property to <em class="parameter"><code>value</code></em>
+.</p>
+<p>The list of DLNA profiles the MediaServer in this plugin will be able to serve.</p>
+<p>If it does not accept all formats it can serve for uploading, :upload_profiles needs to be set to the supported subset.</p>
+<p>By default it will be the supported profiles of the <a class="link" href="RygelMediaEngine.html" title="RygelMediaEngine"><span class="type">RygelMediaEngine</span></a>.</p>
+<div class="refsect3">
+<a name="id-1.6.14.8.8.8"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelMediaServerPlugin.html" title="RygelMediaServerPlugin"><span class="type">RygelMediaServerPlugin</span></a> instance to modify</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>value</p></td>
+<td class="parameter_description"><p>the new value of the <a class="link" href="RygelMediaServerPlugin.html#RygelMediaServerPlugin--supported-profiles" title="The “supported-profiles” property"><span class="type">"supported-profiles"</span></a> property</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="refsect1">
+<a name="RygelMediaServerPlugin.other_details"></a><h2>Types and Values</h2>
+<div class="refsect2">
+<a name="RygelMediaServerPlugin-struct"></a><h3>struct RygelMediaServerPlugin</h3>
+<pre class="programlisting">struct RygelMediaServerPlugin;</pre>
+<p>This is the base class for every Rygel implementation of a UPnP media server. It should be used either for a real plug-in for the Rygel process or used in-process via the librygel-server API.</p>
+<p>The plugin instance should have a <a class="link" href="RygelMediaContainer.html" title="RygelMediaContainer"><span class="type">RygelMediaContainer</span></a> instance as its root container, which may be provided to the constructor.</p>
+<p>See the &lt;link linkend="implementing-server-plugins"&gt;Implementing Server Plugins&lt;/link&gt; section.</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelMediaServerPluginClass"></a><h3>struct RygelMediaServerPluginClass</h3>
+<pre class="programlisting">struct RygelMediaServerPluginClass {
+	RygelPluginClass parent_class;
+	const gchar* (*get_search_caps) (RygelMediaServerPlugin* self);
+};
+</pre>
+<p>The class structure for <a class="link" href="RygelMediaServerPlugin.html#RYGEL-TYPE-MEDIA-SERVER-PLUGIN:CAPS" title="RYGEL_TYPE_MEDIA_SERVER_PLUGIN"><code class="literal">RYGEL_TYPE_MEDIA_SERVER_PLUGIN</code></a>. All the fields in this structure are private and should never be accessed directly.</p>
+<div class="refsect3">
+<a name="id-1.6.14.9.3.5"></a><h4>Members</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="300px" class="struct_members_name">
+<col class="struct_members_description">
+<col width="200px" class="struct_members_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="struct_member_name"><p><a href="../librygel-core/RygelPlugin.html#RygelPluginClass"><span class="type">RygelPluginClass</span></a> <em class="structfield"><code><a name="RygelMediaServerPluginClass.parent-class"></a>parent_class</code></em>;</p></td>
+<td class="struct_member_description"><p>the parent class structure</p></td>
+<td class="struct_member_annotations"> </td>
+</tr>
+<tr>
+<td class="struct_member_name"><p><em class="structfield"><code><a name="RygelMediaServerPluginClass.get-search-caps"></a>get_search_caps</code></em> ()</p></td>
+<td class="struct_member_description"><p>getter method for the abstract property <a class="link" href="RygelMediaServerPlugin.html#RygelMediaServerPlugin--search-caps" title="The “search-caps” property"><span class="type">"search-caps"</span></a></p></td>
+<td class="struct_member_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="refsect1">
+<a name="RygelMediaServerPlugin.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="RygelMediaServerPlugin--root-container"></a><h3>The <code class="literal">“root-container”</code> property</h3>
+<pre class="programlisting">  “root-container”           <a class="link" href="RygelMediaContainer.html" title="RygelMediaContainer"><span class="type">RygelMediaContainer</span></a> *</pre>
+<p>root-container.</p>
+<p>Flags: Read / Write / Construct Only</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelMediaServerPlugin--search-caps"></a><h3>The <code class="literal">“search-caps”</code> property</h3>
+<pre class="programlisting">  “search-caps”              <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *</pre>
+<p>The SearchCapabilities this MediaServer plugin supports.</p>
+<p>Implementations can override this to match their capabilities. If they do, they should take care to include the change tracking capabilities (upnp:objectUpdateID, upnp:containerUpdateID) based on PluginCapabilities.TRACK_CHANGES.</p>
+<p>Flags: Read</p>
+<p>Default value: NULL</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelMediaServerPlugin--supported-profiles"></a><h3>The <code class="literal">“supported-profiles”</code> property</h3>
+<pre class="programlisting">  “supported-profiles”       <a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a></pre>
+<p>The list of DLNA profiles the MediaServer in this plugin will be able to serve.</p>
+<p>If it does not accept all formats it can serve for uploading, :upload_profiles needs to be set to the supported subset.</p>
+<p>By default it will be the supported profiles of the <a class="link" href="RygelMediaEngine.html" title="RygelMediaEngine"><span class="type">RygelMediaEngine</span></a>.</p>
+<p>Flags: Read / Write / Construct</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelMediaServerPlugin--upload-profiles"></a><h3>The <code class="literal">“upload-profiles”</code> property</h3>
+<pre class="programlisting">  “upload-profiles”          <a href="../glib/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a></pre>
+<p>The list of DLNA profiles the MediaServer in this plugin will accept files as upload.</p>
+<p>Can be a subset of :supported_profiles. If set to <a href="../glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>, it will be reset to :supported_profiles.</p>
+<p>Flags: Read / Write / Construct</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.20.1</div>
+</body>
+</html>

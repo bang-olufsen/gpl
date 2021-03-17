@@ -1,0 +1,33 @@
+From e417864f3e24b34d236c1e64180910ae580c5c8f Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Fri, 6 Nov 2020 13:34:43 +0100
+Subject: [PATCH] GstIcyDemux: Use empty stream titles
+
+---
+ gst/icydemux/gsticydemux.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/gst/icydemux/gsticydemux.c b/gst/icydemux/gsticydemux.c
+index 594b147..56fc8bf 100644
+--- a/gst/icydemux/gsticydemux.c
++++ b/gst/icydemux/gsticydemux.c
+@@ -340,6 +340,8 @@ gst_icydemux_parse_and_send_tags (GstICYDemux * icydemux)
+ 
+   for (i = 0; strings[i]; i++) {
+     if (!g_ascii_strncasecmp (strings[i], "StreamTitle=", 12)) {
++      const gchar *title_start = strings[i] + 13;
++      /* This will return only non-empty strings, NULL otherwise */
+       char *title = gst_icydemux_unicodify (strings[i] + 13);
+       tags_found = TRUE;
+ 
+@@ -347,6 +349,10 @@ gst_icydemux_parse_and_send_tags (GstICYDemux * icydemux)
+         gst_tag_list_add (tags, GST_TAG_MERGE_REPLACE, GST_TAG_TITLE,
+             title, NULL);
+         g_free (title);
++      } /* If the stream title is an empty string we still use it */
++      else if (*title_start == '\0') {
++        gst_tag_list_add (tags, GST_TAG_MERGE_REPLACE, GST_TAG_TITLE,
++                          title_start, NULL);
+       }
+     } else if (!g_ascii_strncasecmp (strings[i], "StreamUrl=", 10)) {
+       char *url = gst_icydemux_unicodify (strings[i] + 11);

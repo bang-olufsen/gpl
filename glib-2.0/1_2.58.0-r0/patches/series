@@ -1,0 +1,12 @@
+configure-libtool.patch -p1
+uclibc_musl_translation.patch -p1
+0001-Remove-the-warning-about-deprecated-paths-in-schemas.patch -p1
+Enable-more-tests-while-cross-compiling.patch -p1
+0001-Install-gio-querymodules-as-libexec_PROGRAM.patch -p1
+0001-Do-not-ignore-return-value-of-write.patch -p1
+0010-Do-not-hardcode-python-path-into-various-tools.patch -p1
+date-lt.patch -p1
+CVE-2019-12450.patch -p1
+CVE-2019-9633_p1.patch -p1
+CVE-2019-9633_p2.patch -p1
+CVE-2019-13012.patch -p1

@@ -1,0 +1,390 @@
+<!-- ##### SECTION Title ##### -->
+gmime-certificate
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### ENUM GMimePubKeyAlgo ##### -->
+<para>
+
+</para>
+
+@GMIME_PUBKEY_ALGO_DEFAULT: 
+@GMIME_PUBKEY_ALGO_RSA: 
+@GMIME_PUBKEY_ALGO_RSA_E: 
+@GMIME_PUBKEY_ALGO_RSA_S: 
+@GMIME_PUBKEY_ALGO_ELG_E: 
+@GMIME_PUBKEY_ALGO_DSA: 
+@GMIME_PUBKEY_ALGO_ELG: 
+
+<!-- ##### ENUM GMimeDigestAlgo ##### -->
+<para>
+
+</para>
+
+@GMIME_DIGEST_ALGO_DEFAULT: 
+@GMIME_DIGEST_ALGO_MD5: 
+@GMIME_DIGEST_ALGO_SHA1: 
+@GMIME_DIGEST_ALGO_RIPEMD160: 
+@GMIME_DIGEST_ALGO_MD2: 
+@GMIME_DIGEST_ALGO_TIGER192: 
+@GMIME_DIGEST_ALGO_HAVAL5160: 
+@GMIME_DIGEST_ALGO_SHA256: 
+@GMIME_DIGEST_ALGO_SHA384: 
+@GMIME_DIGEST_ALGO_SHA512: 
+@GMIME_DIGEST_ALGO_SHA224: 
+@GMIME_DIGEST_ALGO_MD4: 
+
+<!-- ##### ENUM GMimeCertificateTrust ##### -->
+<para>
+
+</para>
+
+@GMIME_CERTIFICATE_TRUST_NONE: 
+@GMIME_CERTIFICATE_TRUST_NEVER: 
+@GMIME_CERTIFICATE_TRUST_UNDEFINED: 
+@GMIME_CERTIFICATE_TRUST_MARGINAL: 
+@GMIME_CERTIFICATE_TRUST_FULLY: 
+@GMIME_CERTIFICATE_TRUST_ULTIMATE: 
+
+<!-- ##### STRUCT GMimeCertificate ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION g_mime_certificate_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_certificate_get_pubkey_algo ##### -->
+<para>
+
+</para>
+
+@cert: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_certificate_set_pubkey_algo ##### -->
+<para>
+
+</para>
+
+@cert: 
+@algo: 
+
+
+<!-- ##### FUNCTION g_mime_certificate_get_digest_algo ##### -->
+<para>
+
+</para>
+
+@cert: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_certificate_set_digest_algo ##### -->
+<para>
+
+</para>
+
+@cert: 
+@algo: 
+
+
+<!-- ##### FUNCTION g_mime_certificate_get_issuer_serial ##### -->
+<para>
+
+</para>
+
+@cert: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_certificate_set_issuer_serial ##### -->
+<para>
+
+</para>
+
+@cert: 
+@issuer_serial: 
+
+
+<!-- ##### FUNCTION g_mime_certificate_get_issuer_name ##### -->
+<para>
+
+</para>
+
+@cert: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_certificate_set_issuer_name ##### -->
+<para>
+
+</para>
+
+@cert: 
+@issuer_name: 
+
+
+<!-- ##### FUNCTION g_mime_certificate_get_fingerprint ##### -->
+<para>
+
+</para>
+
+@cert: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_certificate_set_fingerprint ##### -->
+<para>
+
+</para>
+
+@cert: 
+@fingerprint: 
+
+
+<!-- ##### FUNCTION g_mime_certificate_get_created ##### -->
+<para>
+
+</para>
+
+@cert: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_certificate_set_created ##### -->
+<para>
+
+</para>
+
+@cert: 
+@created: 
+
+
+<!-- ##### FUNCTION g_mime_certificate_get_expires ##### -->
+<para>
+
+</para>
+
+@cert: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_certificate_set_expires ##### -->
+<para>
+
+</para>
+
+@cert: 
+@expires: 
+
+
+<!-- ##### FUNCTION g_mime_certificate_get_key_id ##### -->
+<para>
+
+</para>
+
+@cert: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_certificate_set_key_id ##### -->
+<para>
+
+</para>
+
+@cert: 
+@key_id: 
+
+
+<!-- ##### FUNCTION g_mime_certificate_get_trust ##### -->
+<para>
+
+</para>
+
+@cert: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_certificate_set_trust ##### -->
+<para>
+
+</para>
+
+@cert: 
+@trust: 
+
+
+<!-- ##### FUNCTION g_mime_certificate_get_email ##### -->
+<para>
+
+</para>
+
+@cert: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_certificate_set_email ##### -->
+<para>
+
+</para>
+
+@cert: 
+@email: 
+
+
+<!-- ##### FUNCTION g_mime_certificate_get_name ##### -->
+<para>
+
+</para>
+
+@cert: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_certificate_set_name ##### -->
+<para>
+
+</para>
+
+@cert: 
+@name: 
+
+
+<!-- ##### STRUCT GMimeCertificateList ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION g_mime_certificate_list_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_certificate_list_length ##### -->
+<para>
+
+</para>
+
+@list: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_certificate_list_clear ##### -->
+<para>
+
+</para>
+
+@list: 
+
+
+<!-- ##### FUNCTION g_mime_certificate_list_add ##### -->
+<para>
+
+</para>
+
+@list: 
+@cert: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_certificate_list_insert ##### -->
+<para>
+
+</para>
+
+@list: 
+@index: 
+@cert: 
+
+
+<!-- ##### FUNCTION g_mime_certificate_list_remove ##### -->
+<para>
+
+</para>
+
+@list: 
+@cert: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_certificate_list_remove_at ##### -->
+<para>
+
+</para>
+
+@list: 
+@index: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_certificate_list_contains ##### -->
+<para>
+
+</para>
+
+@list: 
+@cert: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_certificate_list_index_of ##### -->
+<para>
+
+</para>
+
+@list: 
+@cert: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_certificate_list_get_certificate ##### -->
+<para>
+
+</para>
+
+@list: 
+@index: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_certificate_list_set_certificate ##### -->
+<para>
+
+</para>
+
+@list: 
+@index: 
+@cert: 
+
+

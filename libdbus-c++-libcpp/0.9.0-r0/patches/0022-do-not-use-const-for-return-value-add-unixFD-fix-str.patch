@@ -1,0 +1,54 @@
+From 0a6181f0413eecd7c1dcef9a48a384f24bad8278 Mon Sep 17 00:00:00 2001
+From: Martin Geier <martin.geier@streamunlimited.com>
+Date: Fri, 25 May 2018 08:51:44 +0200
+Subject: [PATCH] do not use const for return value, add unixFD, fix strange
+ indent in some lines
+
+const for primitive types can generate warnings
+
+Signed-off-by: Martin Geier <martin.geier@streamunlimited.com>
+---
+ tools/generate_proxy.cpp  | 6 +++---
+ tools/generator_utils.cpp | 1 +
+ 2 files changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/tools/generate_proxy.cpp b/tools/generate_proxy.cpp
+index 81e5231..d4a7048 100644
+--- a/tools/generate_proxy.cpp
++++ b/tools/generate_proxy.cpp
+@@ -143,9 +143,9 @@ void generate_proxy(Xml::Document &doc, const char *filename)
+       string property_access = property.get("access");
+       if (property_access == "read" || property_access == "readwrite")
+       {
+-        body << tab << tab << "const " << signature_to_type(property.get("type"))
++        body << tab << tab << signature_to_type(property.get("type"))
+              << " " << prop_name << "() {" << endl;
+-        body << tab << tab << tab << "::DBus::CallMessage call ;\n ";
++        body << tab << tab << tab << "::DBus::CallMessage call ;" << endl;
+         body << tab << tab << tab
+              << "call.member(\"Get\"); call.interface(\"org.freedesktop.DBus.Properties\");"
+              << endl;
+@@ -173,7 +173,7 @@ void generate_proxy(Xml::Document &doc, const char *filename)
+       if (property_access == "write" || property_access == "readwrite")
+       {
+         body << tab << tab << "void " << prop_name << "( const " << signature_to_type(property.get("type")) << " & input" << ") {" << endl;
+-        body << tab << tab << tab << "::DBus::CallMessage call ;\n ";
++        body << tab << tab << tab << "::DBus::CallMessage call ;" << endl;
+         body << tab << tab << tab << "call.member(\"Set\");  call.interface( \"org.freedesktop.DBus.Properties\");" << endl;
+         body << tab << tab << tab << "::DBus::MessageIter wi = call.writer(); " << endl;
+         body << tab << tab << tab << "::DBus::Variant value;" << endl;
+diff --git a/tools/generator_utils.cpp b/tools/generator_utils.cpp
+index 5686f6b..fd307c3 100644
+--- a/tools/generator_utils.cpp
++++ b/tools/generator_utils.cpp
+@@ -70,6 +70,7 @@ const char *atomic_type_to_string(char t)
+     { 'o', "::DBus::Path" },
+     { 'g', "::DBus::Signature" },
+     { 'v', "::DBus::Variant" },
++    { 'h', "::DBus::UnixFD" },
+     { '\0', "" }
+   };
+   int i;
+-- 
+2.7.4
+

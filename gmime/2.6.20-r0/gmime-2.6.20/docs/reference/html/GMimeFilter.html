@@ -1,0 +1,313 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GMimeFilter</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="GMime 2.6 Reference Manual">
+<link rel="up" href="Filters.html" title="Stream Filters">
+<link rel="prev" href="Filters.html" title="Stream Filters">
+<link rel="next" href="GMimeFilterBasic.html" title="GMimeFilterBasic">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="Filters.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="Filters.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">GMime 2.6 Reference Manual</th>
+<td><a accesskey="n" href="GMimeFilterBasic.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#GMimeFilter.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#GMimeFilter.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#GMimeFilter.object-hierarchy" class="shortcut">Object Hierarchy</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="GMimeFilter"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="GMimeFilter.top_of_page"></a>GMimeFilter</span></h2>
+<p>GMimeFilter — Abstract filter class</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="GMimeFilter.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">struct              <a class="link" href="GMimeFilter.html#GMimeFilter-struct" title="struct GMimeFilter">GMimeFilter</a>;
+<a class="link" href="GMimeFilter.html" title="GMimeFilter"><span class="returnvalue">GMimeFilter</span></a> *       <a class="link" href="GMimeFilter.html#g-mime-filter-copy" title="g_mime_filter_copy ()">g_mime_filter_copy</a>                  (<em class="parameter"><code><a class="link" href="GMimeFilter.html" title="GMimeFilter"><span class="type">GMimeFilter</span></a> *filter</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimeFilter.html#g-mime-filter-filter" title="g_mime_filter_filter ()">g_mime_filter_filter</a>                (<em class="parameter"><code><a class="link" href="GMimeFilter.html" title="GMimeFilter"><span class="type">GMimeFilter</span></a> *filter</code></em>,
+                                                         <em class="parameter"><code><span class="type">char</span> *inbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> inlen</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> prespace</code></em>,
+                                                         <em class="parameter"><code><span class="type">char</span> **outbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> *outlen</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> *outprespace</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimeFilter.html#g-mime-filter-complete" title="g_mime_filter_complete ()">g_mime_filter_complete</a>              (<em class="parameter"><code><a class="link" href="GMimeFilter.html" title="GMimeFilter"><span class="type">GMimeFilter</span></a> *filter</code></em>,
+                                                         <em class="parameter"><code><span class="type">char</span> *inbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> inlen</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> prespace</code></em>,
+                                                         <em class="parameter"><code><span class="type">char</span> **outbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> *outlen</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> *outprespace</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimeFilter.html#g-mime-filter-reset" title="g_mime_filter_reset ()">g_mime_filter_reset</a>                 (<em class="parameter"><code><a class="link" href="GMimeFilter.html" title="GMimeFilter"><span class="type">GMimeFilter</span></a> *filter</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimeFilter.html#g-mime-filter-backup" title="g_mime_filter_backup ()">g_mime_filter_backup</a>                (<em class="parameter"><code><a class="link" href="GMimeFilter.html" title="GMimeFilter"><span class="type">GMimeFilter</span></a> *filter</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *data</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> length</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimeFilter.html#g-mime-filter-set-size" title="g_mime_filter_set_size ()">g_mime_filter_set_size</a>              (<em class="parameter"><code><a class="link" href="GMimeFilter.html" title="GMimeFilter"><span class="type">GMimeFilter</span></a> *filter</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> size</code></em>,
+                                                         <em class="parameter"><code><span class="type">gboolean</span> keep</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="GMimeFilter.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  GObject
+   +----GMimeFilter
+         +----<a class="link" href="GMimeFilterBasic.html" title="GMimeFilterBasic">GMimeFilterBasic</a>
+         +----<a class="link" href="GMimeFilterBest.html" title="GMimeFilterBest">GMimeFilterBest</a>
+         +----<a class="link" href="GMimeFilterCharset.html" title="GMimeFilterCharset">GMimeFilterCharset</a>
+         +----<a class="link" href="GMimeFilterCRLF.html" title="GMimeFilterCRLF">GMimeFilterCRLF</a>
+         +----<a class="link" href="GMimeFilterEnriched.html" title="GMimeFilterEnriched">GMimeFilterEnriched</a>
+         +----<a class="link" href="GMimeFilterFrom.html" title="GMimeFilterFrom">GMimeFilterFrom</a>
+         +----<a class="link" href="GMimeFilterGZip.html" title="GMimeFilterGZip">GMimeFilterGZip</a>
+         +----<a class="link" href="GMimeFilterHTML.html" title="GMimeFilterHTML">GMimeFilterHTML</a>
+         +----<a class="link" href="GMimeFilterMd5.html" title="GMimeFilterMd5">GMimeFilterMd5</a>
+         +----<a class="link" href="GMimeFilterStrip.html" title="GMimeFilterStrip">GMimeFilterStrip</a>
+         +----<a class="link" href="GMimeFilterWindows.html" title="GMimeFilterWindows">GMimeFilterWindows</a>
+         +----<a class="link" href="GMimeFilterYenc.html" title="GMimeFilterYenc">GMimeFilterYenc</a>
+</pre>
+</div>
+<div class="refsect1">
+<a name="GMimeFilter.description"></a><h2>Description</h2>
+<p>
+Stream filters are an efficient way of converting data from one
+format to another.
+</p>
+</div>
+<div class="refsect1">
+<a name="GMimeFilter.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="GMimeFilter-struct"></a><h3>struct GMimeFilter</h3>
+<pre class="programlisting">struct GMimeFilter;</pre>
+<p>
+Base class for filters used by <a class="link" href="GMimeStreamFilter.html" title="GMimeStreamFilter"><span class="type">GMimeStreamFilter</span></a>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-filter-copy"></a><h3>g_mime_filter_copy ()</h3>
+<pre class="programlisting"><a class="link" href="GMimeFilter.html" title="GMimeFilter"><span class="returnvalue">GMimeFilter</span></a> *       g_mime_filter_copy                  (<em class="parameter"><code><a class="link" href="GMimeFilter.html" title="GMimeFilter"><span class="type">GMimeFilter</span></a> *filter</code></em>);</pre>
+<p>
+Copies <em class="parameter"><code>filter</code></em> into a new GMimeFilter object.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>filter</code></em> :</span></p></td>
+<td>filter</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a duplicate of <em class="parameter"><code>filter</code></em>. <span class="annotation">[<a href="http://foldoc.org/transfer%20full"><span class="acronym">transfer full</span></a>]</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-filter-filter"></a><h3>g_mime_filter_filter ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_filter_filter                (<em class="parameter"><code><a class="link" href="GMimeFilter.html" title="GMimeFilter"><span class="type">GMimeFilter</span></a> *filter</code></em>,
+                                                         <em class="parameter"><code><span class="type">char</span> *inbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> inlen</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> prespace</code></em>,
+                                                         <em class="parameter"><code><span class="type">char</span> **outbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> *outlen</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> *outprespace</code></em>);</pre>
+<p>
+Filters the input data and writes it to <em class="parameter"><code>out</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>filter</code></em> :</span></p></td>
+<td>filter</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>inbuf</code></em> :</span></p></td>
+<td>input buffer. <span class="annotation">[<a href="http://foldoc.org/array"><span class="acronym">array</span></a> length=inlen][<a href="http://foldoc.org/element-type"><span class="acronym">element-type</span></a> guint8]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>inlen</code></em> :</span></p></td>
+<td>input buffer length</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>prespace</code></em> :</span></p></td>
+<td>prespace buffer length</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>outbuf</code></em> :</span></p></td>
+<td>pointer to output buffer. <span class="annotation">[<a href="http://foldoc.org/out"><span class="acronym">out</span></a>][<a href="http://foldoc.org/array"><span class="acronym">array</span></a> length=outlen][<a href="http://foldoc.org/element-type"><span class="acronym">element-type</span></a> guint8][<a href="http://foldoc.org/transfer%20none"><span class="acronym">transfer none</span></a>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>outlen</code></em> :</span></p></td>
+<td>pointer to output length. <span class="annotation">[<a href="http://foldoc.org/out"><span class="acronym">out</span></a>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>outprespace</code></em> :</span></p></td>
+<td>pointer to output prespace buffer length. <span class="annotation">[<a href="http://foldoc.org/out"><span class="acronym">out</span></a>]</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-filter-complete"></a><h3>g_mime_filter_complete ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_filter_complete              (<em class="parameter"><code><a class="link" href="GMimeFilter.html" title="GMimeFilter"><span class="type">GMimeFilter</span></a> *filter</code></em>,
+                                                         <em class="parameter"><code><span class="type">char</span> *inbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> inlen</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> prespace</code></em>,
+                                                         <em class="parameter"><code><span class="type">char</span> **outbuf</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> *outlen</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> *outprespace</code></em>);</pre>
+<p>
+Completes the filtering.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>filter</code></em> :</span></p></td>
+<td>filter</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>inbuf</code></em> :</span></p></td>
+<td>input buffer. <span class="annotation">[<a href="http://foldoc.org/array"><span class="acronym">array</span></a> length=inlen][<a href="http://foldoc.org/element-type"><span class="acronym">element-type</span></a> guint8]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>inlen</code></em> :</span></p></td>
+<td>input buffer length</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>prespace</code></em> :</span></p></td>
+<td>prespace buffer length</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>outbuf</code></em> :</span></p></td>
+<td>pointer to output buffer. <span class="annotation">[<a href="http://foldoc.org/out"><span class="acronym">out</span></a>][<a href="http://foldoc.org/array"><span class="acronym">array</span></a> length=outlen][<a href="http://foldoc.org/element-type"><span class="acronym">element-type</span></a> guint8][<a href="http://foldoc.org/transfer%20none"><span class="acronym">transfer none</span></a>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>outlen</code></em> :</span></p></td>
+<td>pointer to output length. <span class="annotation">[<a href="http://foldoc.org/out"><span class="acronym">out</span></a>]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>outprespace</code></em> :</span></p></td>
+<td>pointer to output prespace buffer length. <span class="annotation">[<a href="http://foldoc.org/out"><span class="acronym">out</span></a>]</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-filter-reset"></a><h3>g_mime_filter_reset ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_filter_reset                 (<em class="parameter"><code><a class="link" href="GMimeFilter.html" title="GMimeFilter"><span class="type">GMimeFilter</span></a> *filter</code></em>);</pre>
+<p>
+Resets the filter.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><em class="parameter"><code>filter</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeFilter.html" title="GMimeFilter"><span class="type">GMimeFilter</span></a> object</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-filter-backup"></a><h3>g_mime_filter_backup ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_filter_backup                (<em class="parameter"><code><a class="link" href="GMimeFilter.html" title="GMimeFilter"><span class="type">GMimeFilter</span></a> *filter</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *data</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> length</code></em>);</pre>
+<p>
+Sets number of bytes backed up on the input, new calls replace
+previous ones
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>filter</code></em> :</span></p></td>
+<td>filter</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>data</code></em> :</span></p></td>
+<td>data to backup. <span class="annotation">[<a href="http://foldoc.org/array"><span class="acronym">array</span></a> length=length][<a href="http://foldoc.org/element-type"><span class="acronym">element-type</span></a> guint8]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>length</code></em> :</span></p></td>
+<td>length of <em class="parameter"><code>data</code></em>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-filter-set-size"></a><h3>g_mime_filter_set_size ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_filter_set_size              (<em class="parameter"><code><a class="link" href="GMimeFilter.html" title="GMimeFilter"><span class="type">GMimeFilter</span></a> *filter</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> size</code></em>,
+                                                         <em class="parameter"><code><span class="type">gboolean</span> keep</code></em>);</pre>
+<p>
+Ensure this much size is available for filter output (if required)
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>filter</code></em> :</span></p></td>
+<td>filter</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>size</code></em> :</span></p></td>
+<td>requested size for the output buffer</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>keep</code></em> :</span></p></td>
+<td>
+<code class="literal">TRUE</code> if existing data in the output buffer should be kept</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<div class="refsect1">
+<a name="GMimeFilter.see-also"></a><h2>See Also</h2>
+<a class="link" href="GMimeStreamFilter.html" title="GMimeStreamFilter"><span class="type">GMimeStreamFilter</span></a>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

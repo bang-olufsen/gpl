@@ -1,0 +1,2 @@
+0001-ensure-the-XATTR_NAME_CAPS-is-defined-when-it-is-use.patch -p1
+0001-Fix-build-with-gperf-3.1.patch -p1

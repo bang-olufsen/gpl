@@ -1,0 +1,7 @@
+0001-autogen.sh.patch -p1
+0002-configure.ac.patch -p1
+0003-plparse-Makefile.am.patch -p1
+0004-plparse-totem-pl-parser.c.patch -p1
+0005-plparse-totem-pl-parser.h.patch -p1
+0006-plparse-totem-pl-parser-podcast.c.patch -p1
+0007-plparse-totem-pl-parser-wm.c.patch -p1

@@ -1,0 +1,427 @@
+From c64fc14aad9d6dfd2e6fc121cc8e19119da5d6fd Mon Sep 17 00:00:00 2001
+From: Matus Ujhelyi <matus.ujhelyi@streamunlimited.com>
+Date: Fri, 8 Mar 2013 08:19:04 +0100
+Subject: [PATCH] stream800: move all boards under one StreamBoardInterface
+
+Signed-off-by: Matus Ujhelyi <matus.ujhelyi@streamunlimited.com>
+---
+ .../stream800/board-lan_dock_board.c               | 23 +++++++
+ .../stream800/board-lan_dock_board.h               |  2 +
+ .../stream800/board-sue_demo_client_board.c        | 39 ++++++++++-
+ .../stream800/board-sue_demo_client_board.h        |  2 +
+ .../stream800/board-sue_factory_test_board.c       | 11 +++
+ .../stream800/board-sue_factory_test_board.h       |  2 +
+ .../stream800/board-sue_first_carrier_board.c      | 17 +++++
+ .../stream800/board-sue_first_carrier_board.h      |  2 +
+ board/streamunlimited/stream800/board.c            | 79 ++++++----------------
+ board/streamunlimited/stream800/board.h            | 14 ++++
+ board/streamunlimited/stream800/fwupdate.c         | 24 ++-----
+ 11 files changed, 135 insertions(+), 80 deletions(-)
+
+diff --git a/board/streamunlimited/stream800/board-lan_dock_board.c b/board/streamunlimited/stream800/board-lan_dock_board.c
+index 6aee8cf..3a557bc 100644
+--- a/board/streamunlimited/stream800/board-lan_dock_board.c
++++ b/board/streamunlimited/stream800/board-lan_dock_board.c
+@@ -120,6 +120,8 @@ void lan_dock__init(const struct Stream800Board *board)
+ 		 */
+ 		writel(PRM_RSTST_EXTERNAL_WARM_RST, PRM_RSTST);
+ 	}
++
++	lan_dock__pin_mux_post_init();
+ }
+ 
+ void lan_dock__late_init(const struct Stream800Board *board)
+@@ -222,3 +224,24 @@ int lan_dock__get_reset_button_status(void)
+ {
+ 	return (gpio_get_value(RESET_BUTTON_STATUS_GPIO) == 0) ? 1 : 0;
+ }
++
++int lan_dock__do_usb_update(void)
++{
++
++	/* Reset button is also used for requesting FW update from USB during boot-up
++	 * 1: reset button held - dow FW update, 0: reset button is not active
++	 */
++	return (lan_dock__get_reset_button_status()) ? 1 : 0;
++}
++
++static struct StreamBoardInterface lan_dock_board_interface = {
++	.init = lan_dock__init,
++	.late_init = lan_dock__late_init,
++	.cpsw_eth_init = lan_dock__cpsw_eth_init,
++	.on_board_state_changed = lan_dock__on_board_state_changed,
++	.do_usb_update = lan_dock__do_usb_update,
++};
++
++void lan_dock__set_board_interface(void) {
++	set_board_interface(&lan_dock_board_interface);
++}
+diff --git a/board/streamunlimited/stream800/board-lan_dock_board.h b/board/streamunlimited/stream800/board-lan_dock_board.h
+index 235e2df..21d4cba 100644
+--- a/board/streamunlimited/stream800/board-lan_dock_board.h
++++ b/board/streamunlimited/stream800/board-lan_dock_board.h
+@@ -21,6 +21,8 @@
+ #include "board.h"
+ #include <cpsw.h>
+ 
++void lan_dock__set_board_interface(void);
++
+ // "Dictations LAN dock" board initialization
+ void lan_dock__init(const struct Stream800Board *board);
+ 
+diff --git a/board/streamunlimited/stream800/board-sue_demo_client_board.c b/board/streamunlimited/stream800/board-sue_demo_client_board.c
+index 0fb9399..427e926 100644
+--- a/board/streamunlimited/stream800/board-sue_demo_client_board.c
++++ b/board/streamunlimited/stream800/board-sue_demo_client_board.c
+@@ -26,16 +26,30 @@
+ #include <asm/arch/hardware.h>
+ #include <phy.h>
+ #include <asm/arch-am33xx/phy.h>
++#include <asm-generic/gpio.h>
++#include <asm/arch/mux.h>
+ 
+ static struct ctrl_dev *cdev = (struct ctrl_dev *)CTRL_DEVICE_BASE;
+ 
++/* GPIO1_9 - reset button status - check sfupdate file on USB if pressed during the boot-up */
++#define FW_UPDATE_BUTTON_STATUS_GPIO	(32 + 9)
++
++static struct module_pin_mux fw_update_button_pin_mux[] = {
++		{OFFSET(uart0_rtsn), (MODE(7) | PULLUP_EN | RXACTIVE)},	/* Reset button status gpio1_9, conflict: uart0_pin_mux rts */
++		{-1},
++	};
++
+ // "SUE demo client" board initialization
+ void demo_client__init(const struct Stream800Board *board)
+ {
+ 	if (!board || board->carrierBoardType != CBT_SueDemoClientBoard)
+ 		BUG();
+ 
+-	printf("TODO: 'SUE demo client' board initialization.\n");
++	configure_module_pin_mux(fw_update_button_pin_mux);
++
++	if (gpio_request(FW_UPDATE_BUTTON_STATUS_GPIO, "Reset status"))
++		printf("error: cannot request GPIO %d\n", FW_UPDATE_BUTTON_STATUS_GPIO);
++	gpio_direction_input(FW_UPDATE_BUTTON_STATUS_GPIO);
+ }
+ 
+ // "SUE demo client" board late initialization
+@@ -72,7 +86,30 @@ void demo_client__cpsw_eth_init(const struct Stream800Board *board, struct cpsw_
+ }
+ #endif /* CONFIG_DRIVER_TI_CPSW */
+ 
++int demo_client__get_fw_update_button_status(void)
++{
++	return (gpio_get_value(FW_UPDATE_BUTTON_STATUS_GPIO) == 0) ? 1 : 0;
++}
++
+ void demo_client__on_board_state_changed(const struct Stream800Board *board, BoardState state)
+ {
+ 	printf("TODO: Board state changed to '%s'\n", boardStateStrings[state]);
+ }
++
++int demo_client__do_usb_update(void)
++{
++	return (demo_client__get_fw_update_button_status()) ? 1 : 0 ;	// fw update button -> check update file on USB
++}
++
++
++static struct StreamBoardInterface demo_client_board_interface = {
++	.init = demo_client__init,
++	.late_init = demo_client__late_init,
++	.cpsw_eth_init = demo_client__cpsw_eth_init,
++	.on_board_state_changed = demo_client__on_board_state_changed,
++	.do_usb_update = demo_client__do_usb_update,
++};
++
++void demo_client__set_board_interface(void) {
++	set_board_interface(&demo_client_board_interface);
++}
+diff --git a/board/streamunlimited/stream800/board-sue_demo_client_board.h b/board/streamunlimited/stream800/board-sue_demo_client_board.h
+index 02ef72b..a65f1d8 100644
+--- a/board/streamunlimited/stream800/board-sue_demo_client_board.h
++++ b/board/streamunlimited/stream800/board-sue_demo_client_board.h
+@@ -21,6 +21,8 @@
+ #include "board.h"
+ #include <cpsw.h>
+ 
++void demo_client__set_board_interface(void);
++
+ // "SUE demo client" board initialization
+ void demo_client__init(const struct Stream800Board *board);
+ 
+diff --git a/board/streamunlimited/stream800/board-sue_factory_test_board.c b/board/streamunlimited/stream800/board-sue_factory_test_board.c
+index bf63e87..ecfa67c 100644
+--- a/board/streamunlimited/stream800/board-sue_factory_test_board.c
++++ b/board/streamunlimited/stream800/board-sue_factory_test_board.c
+@@ -83,3 +83,14 @@ void factory_test__on_board_state_changed(const struct Stream800Board *board, Bo
+ {
+ 	printf("TODO: Board state changed to '%s'\n", boardStateStrings[state]);
+ }
++
++static struct StreamBoardInterface factory_test_board_interface = {
++	.init = factory_test__init,
++	.late_init = factory_test__late_init,
++	.cpsw_eth_init = factory_test__cpsw_eth_init,
++	.on_board_state_changed = factory_test__on_board_state_changed,
++};
++
++void factory_test__set_board_interface(void) {
++	set_board_interface(&factory_test_board_interface);
++}
+diff --git a/board/streamunlimited/stream800/board-sue_factory_test_board.h b/board/streamunlimited/stream800/board-sue_factory_test_board.h
+index d5290f2..f4c20db 100644
+--- a/board/streamunlimited/stream800/board-sue_factory_test_board.h
++++ b/board/streamunlimited/stream800/board-sue_factory_test_board.h
+@@ -21,6 +21,8 @@
+ #include "board.h"
+ #include <cpsw.h>
+ 
++void factory_test__set_board_interface(void);
++
+ // "SUE Factory Test Board" board initialization
+ void factory_test__init(const struct Stream800Board *board);
+ 
+diff --git a/board/streamunlimited/stream800/board-sue_first_carrier_board.c b/board/streamunlimited/stream800/board-sue_first_carrier_board.c
+index 20b5e52..76ccece 100644
+--- a/board/streamunlimited/stream800/board-sue_first_carrier_board.c
++++ b/board/streamunlimited/stream800/board-sue_first_carrier_board.c
+@@ -83,3 +83,20 @@ void first_carrier__on_board_state_changed(const struct Stream800Board *board, B
+ {
+ 	printf("TODO: Board state changed to '%s'\n", boardStateStrings[state]);
+ }
++
++int first_carrier__do_usb_update(void)
++{
++	return 1;
++}
++
++static struct StreamBoardInterface carrier_board_interface = {
++	.init = first_carrier__init,
++	.late_init = first_carrier__late_init,
++	.cpsw_eth_init = first_carrier__cpsw_eth_init,
++	.on_board_state_changed = first_carrier__on_board_state_changed,
++	.do_usb_update = first_carrier__do_usb_update,
++};
++
++void first_carrier__set_board_interface(void) {
++	set_board_interface(&carrier_board_interface);
++}
+diff --git a/board/streamunlimited/stream800/board-sue_first_carrier_board.h b/board/streamunlimited/stream800/board-sue_first_carrier_board.h
+index d0749e3..c127cdc 100644
+--- a/board/streamunlimited/stream800/board-sue_first_carrier_board.h
++++ b/board/streamunlimited/stream800/board-sue_first_carrier_board.h
+@@ -21,6 +21,8 @@
+ #include "board.h"
+ #include <cpsw.h>
+ 
++void first_carrier__set_board_interface(void);
++
+ // "SUE Carrier Board" board initialization
+ void first_carrier__init(const struct Stream800Board *board);
+ 
+diff --git a/board/streamunlimited/stream800/board.c b/board/streamunlimited/stream800/board.c
+index 9ac8efe..c9eb7bc 100644
+--- a/board/streamunlimited/stream800/board.c
++++ b/board/streamunlimited/stream800/board.c
+@@ -72,6 +72,8 @@ static struct Stream800Board __attribute__((section (".data"))) board = {moduleV
+ 
+ static BoardState boardState = BS_Off;
+ 
++struct StreamBoardInterface *board_interface = NULL;
++
+ static void init_si5351x(void);
+ 
+ void enable_caches(void)
+@@ -108,6 +110,10 @@ void s_init(void)
+ 
+ static void board_detect(struct Stream800Board *board);
+ 
++void set_board_interface(struct StreamBoardInterface * interface) {
++	board_interface = interface;
++}
++
+ /*
+  * Basic board specific setup.  Pinmux has been handled already.
+  */
+@@ -129,25 +135,24 @@ int board_init(void)
+ 
+ 	switch (get_carrier_board_type()) {
+ 		case CBT_LanDockBoard:
+-			lan_dock__init(&board);
++			lan_dock__set_board_interface();
+ 			break;
+ 		case CBT_SueDemoClientBoard:
+-			demo_client__init(&board);
++			demo_client__set_board_interface();
+ 			break;
+ 		case CBT_SueFirstCarrierBoard:
+-			first_carrier__init(&board);
++			first_carrier__set_board_interface();
+ 			break;
+ 		case CBT_SueFactoryTestBoard:
+-			factory_test__init(&board);
++			factory_test__set_board_interface();
+ 			break;
+ 		default:
+ 			printf("board_late_init: Not supported board!\n");
+ 			//panic("Not supported board!");
+ 	}
+ 
+-	/* LANDock board mux post init - must be done after SI5351 initialization due to conflict with i2c1_pin_mux */
+-	if (get_carrier_board_type() == CBT_LanDockBoard)
+-		lan_dock__pin_mux_post_init();
++	if ((board_interface != NULL) && (board_interface->init != NULL))
++		board_interface->init(&board);
+ 
+ 	set_board_state(BS_Normal);
+ 
+@@ -346,23 +351,8 @@ int board_late_init(void)
+ 			break;
+ 	}
+ 
+-	switch (get_carrier_board_type()) {
+-		case CBT_LanDockBoard:
+-			lan_dock__late_init(&board);
+-			break;
+-		case CBT_SueDemoClientBoard:
+-			demo_client__late_init(&board);
+-			break;
+-		case CBT_SueFirstCarrierBoard:
+-			first_carrier__late_init(&board);
+-			break;
+-		case CBT_SueFactoryTestBoard:
+-			factory_test__late_init(&board);
+-			break;
+-		default:
+-			printf("board_late_init: Not supported board!\n");
+-			//panic("Not supported board!");
+-	}
++	if ((board_interface != NULL) && (board_interface->late_init != NULL))
++		board_interface->late_init(&board);
+ 
+     setenv("buildtime_uboot_version", STREAM_UBOOT_VERSION);
+ 
+@@ -438,24 +428,10 @@ int board_eth_init(bd_t *bis)
+ 		}
+ 	}
+ 
+-	switch (get_carrier_board_type()) {
+-		case CBT_LanDockBoard:
+-			lan_dock__cpsw_eth_init(&board, &cpsw_data);
+-			break;
+-		case CBT_SueDemoClientBoard:
+-			demo_client__cpsw_eth_init(&board, &cpsw_data);
+-			break;
+-		case CBT_SueFirstCarrierBoard:
+-			first_carrier__cpsw_eth_init(&board, &cpsw_data);
+-			break;
+-		case CBT_SueFactoryTestBoard:
+-			factory_test__cpsw_eth_init(&board, &cpsw_data);
+-			break;
+-		default:
+-			printf("board_eth_init: Not supported board!\n");
+-			//panic("Not supported board!");
+-			goto try_usbether;
+-	}
++	if ((board_interface != NULL) && (board_interface->cpsw_eth_init != NULL))
++		board_interface->cpsw_eth_init(&board, &cpsw_data);
++	else
++		goto try_usbether;
+ 
+ 	rv = cpsw_register(&cpsw_data);
+ 	if (rv < 0)
+@@ -510,23 +486,8 @@ U_BOOT_CMD(
+  */
+ void on_board_state_changed(BoardState state)
+ {
+-	switch (get_carrier_board_type()) {
+-	case CBT_LanDockBoard:
+-		lan_dock__on_board_state_changed(&board,state);
+-		break;
+-	case CBT_SueDemoClientBoard:
+-		demo_client__on_board_state_changed(&board, state);
+-		break;
+-	case CBT_SueFirstCarrierBoard:
+-		first_carrier__on_board_state_changed(&board, state);
+-		break;
+-	case CBT_SueFactoryTestBoard:
+-		factory_test__on_board_state_changed(&board, state);
+-		break;
+-	default:
+-		printf("on_board_state_changed: Not supported board!\n");
+-		//panic("Not supported board!");
+-	}
++	if ((board_interface != NULL) && (board_interface->on_board_state_changed != NULL))
++		board_interface->on_board_state_changed(&board, state);
+ }
+ 
+ void set_board_state(BoardState state)
+diff --git a/board/streamunlimited/stream800/board.h b/board/streamunlimited/stream800/board.h
+index 540474b..2a84dac 100644
+--- a/board/streamunlimited/stream800/board.h
++++ b/board/streamunlimited/stream800/board.h
+@@ -83,7 +83,18 @@ static const char *boardStateStrings[] = {
+ Stream800ModuleVersion get_module_version(void);
+ Stream800CarrierBoardType get_carrier_board_type(void);
+ 
++struct StreamBoardInterface {
+ 
++	void (*init) (const struct Stream800Board *board);
++	void (*late_init) (const struct Stream800Board *board);
++	void (*cpsw_eth_init) (const struct Stream800Board *board, struct cpsw_platform_data *cpsw_data);
++	void (*on_board_state_changed) (const struct Stream800Board *board, BoardState state);
++	/* return 0, usb update should not start, return 1, usb update should start immediately  */
++	int (*do_usb_update) (void);
++
++};
++
++void set_board_interface(struct StreamBoardInterface * interface);
+ void set_board_state(BoardState state);
+ BoardState get_board_state(void);
+ 
+@@ -92,4 +103,7 @@ BoardState get_board_state(void);
+  */
+ void on_board_state_changed(BoardState state);
+ 
++extern struct StreamBoardInterface *board_interface;
++
++
+ #endif	// _BOARD_H_
+diff --git a/board/streamunlimited/stream800/fwupdate.c b/board/streamunlimited/stream800/fwupdate.c
+index 26d7ac8..63a6d7a 100644
+--- a/board/streamunlimited/stream800/fwupdate.c
++++ b/board/streamunlimited/stream800/fwupdate.c
+@@ -140,26 +140,10 @@ int fwupdate_setBootCount(uint8_t bootCnt)
+ 
+ static int fwupdate_getUsbUpdateReq(void)
+ {
+-	switch (get_carrier_board_type()) {
+-	case CBT_LanDockBoard:
+-		{
+-			/* Reset button is also used for requesting FW update from USB during boot-up
+-			* 1: reset button held - dow FW update, 0: reset button is not active
+-			*/
+-			return lan_dock__get_reset_button_status() ? 1 : 0;
+-		}
+-		break;
+-	case CBT_SueDemoClientBoard:
+-	case CBT_SueFirstCarrierBoard:
+-		{
+-			return 1;
+-		}
+-		break;
+-	default:
+-		printf("fwupdate_getUsbUpdateReq: Not supported board!\n");
+-		//panic("Not supported board!");
+-		return 0;
+-	}
++	if (board_interface != NULL && board_interface->do_usb_update != NULL)
++		return board_interface->do_usb_update();
++	//panic("Not supported board!");
++	return 0;
+ }
+ 
+ static int do_fwup(cmd_tbl_t * cmdtp, int flag, int argc, char * const argv[])
+-- 
+2.7.4
+

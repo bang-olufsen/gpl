@@ -1,0 +1,47 @@
+<!-- ##### SECTION Title ##### -->
+gmime-stream-cat
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GMimeStreamCat ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION g_mime_stream_cat_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_stream_cat_add_source ##### -->
+<para>
+
+</para>
+
+@cat: 
+@source: 
+@Returns: 
+
+

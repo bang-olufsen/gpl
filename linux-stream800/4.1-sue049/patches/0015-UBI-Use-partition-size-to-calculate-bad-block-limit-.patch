@@ -1,0 +1,58 @@
+From 9667b29e1aeacd4c204f1c0c5d3fa547186da25a Mon Sep 17 00:00:00 2001
+From: Martin Flaska <martin.flaska@streamunlimited.com>
+Date: Thu, 31 Jan 2013 08:58:10 +0100
+Subject: [PATCH] UBI: Use partition size to calculate bad block limit (not
+ entire flash)
+
+Signed-off-by: Martin Flaska <martin.flaska@streamunlimited.com>
+[increase limit for tiny partitions from 2 to 4 pebs]
+Signed-off-by: Radek Dostal <radek.dostal@streamunlimited.com>
+---
+ drivers/mtd/ubi/build.c | 23 ++++++++---------------
+ 1 file changed, 8 insertions(+), 15 deletions(-)
+
+diff --git a/drivers/mtd/ubi/build.c b/drivers/mtd/ubi/build.c
+index b7f824d..4ce231d 100644
+--- a/drivers/mtd/ubi/build.c
++++ b/drivers/mtd/ubi/build.c
+@@ -594,29 +594,22 @@ void ubi_free_internal_volumes(struct ubi_device *ubi)
+ 
+ static int get_bad_peb_limit(const struct ubi_device *ubi, int max_beb_per1024)
+ {
+-	int limit, device_pebs;
+-	uint64_t device_size;
++	int limit;
+ 
+ 	if (!max_beb_per1024)
+ 		return 0;
+ 
+-	/*
+-	 * Here we are using size of the entire flash chip and
+-	 * not just the MTD partition size because the maximum
+-	 * number of bad eraseblocks is a percentage of the
+-	 * whole device and bad eraseblocks are not fairly
+-	 * distributed over the flash chip. So the worst case
+-	 * is that all the bad eraseblocks of the chip are in
+-	 * the MTD partition we are attaching (ubi->mtd).
+-	 */
+-	device_size = mtd_get_device_size(ubi->mtd);
+-	device_pebs = mtd_div_by_eb(device_size, ubi->mtd);
+-	limit = mult_frac(device_pebs, max_beb_per1024, 1024);
++	/* Use size of MTD partition to calculate the max number of bad blocks */
++	limit = mult_frac(ubi->peb_count, max_beb_per1024, 1024);
+ 
+ 	/* Round it up */
+-	if (mult_frac(limit, 1024, max_beb_per1024) < device_pebs)
++	if (mult_frac(limit, 1024, max_beb_per1024) < ubi->peb_count)
+ 		limit += 1;
+ 
++	/* For tiny parts use at least 4 pebs */
++	if (limit < 4)
++		limit = 4;
++
+ 	return limit;
+ }
+ 
+-- 
+2.7.0.rc3
+

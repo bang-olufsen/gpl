@@ -1,0 +1,114 @@
+From 0192b4ce1bab3397d073f8bec51990b4d0f82072 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Thu, 28 Nov 2013 11:12:32 +0100
+Subject: [PATCH] Add stftpup command which handle tftp update stages.
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ board/streamunlimited/stream800/Makefile      |  2 +-
+ board/streamunlimited/stream800/tftp_update.c | 80 +++++++++++++++++++++++++++
+ 2 files changed, 81 insertions(+), 1 deletion(-)
+ create mode 100644 board/streamunlimited/stream800/tftp_update.c
+
+diff --git a/board/streamunlimited/stream800/Makefile b/board/streamunlimited/stream800/Makefile
+index b73e3d1..097a8bd 100644
+--- a/board/streamunlimited/stream800/Makefile
++++ b/board/streamunlimited/stream800/Makefile
+@@ -21,7 +21,7 @@ LIB	= $(obj)lib$(BOARD).o
+ ifdef CONFIG_SPL_BUILD
+ COBJS	:= board-spl.o mux.o
+ else
+-COBJS	:= board.o mux.o adc.o board-sue_demo_client_board.o board-sue_first_carrier_board.o board-sue_factory_test_board.o fwupdate.o sfu_parser.o omap_wdt.o
++COBJS	:= board.o mux.o adc.o board-sue_demo_client_board.o board-sue_first_carrier_board.o board-sue_factory_test_board.o fwupdate.o sfu_parser.o omap_wdt.o tftp_update.o
+ endif
+ 
+ SRCS	:= $(SOBJS:.o=.S) $(COBJS:.o=.c)
+diff --git a/board/streamunlimited/stream800/tftp_update.c b/board/streamunlimited/stream800/tftp_update.c
+new file mode 100644
+index 0000000..0dbc58d
+--- /dev/null
++++ b/board/streamunlimited/stream800/tftp_update.c
+@@ -0,0 +1,80 @@
++/*
++ * Copyright 2013 StreamUnlimited GmbH
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * Version 2 as published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
++ * MA 02111-1307 USA
++ */
++
++#include <common.h>
++
++static int do_stftpup(cmd_tbl_t * cmdtp, int flag, int argc, char * const argv[])
++{
++	char *cmd = NULL;
++
++	if (argc < 2)
++		goto usage;
++
++	cmd = argv[1];
++
++	debug("CMD:%s\n", cmd);
++
++	if (strcmp(cmd, "data") == 0) {
++		/* run dhcp request */
++		return run_command("dhcp", 0);
++	} else if (strcmp(cmd, "use_local_ip") == 0) {
++		char tmp[20];
++		int i;
++
++		if (NetOurIP) {
++			ip_to_string(NetOurIP, tmp);
++
++			debug("old serverip: %s\n", tmp);
++
++			/* replace last digit with 10 and use it as serverip */
++			for (i = sizeof(tmp); i >= 0; i--) {
++				if (tmp[i] == '.' && (sizeof(tmp) - i) >= 3) {
++					tmp[i+1] = '1';
++					tmp[i+2] = '0';
++					tmp[i+3] = '\0';
++					break;
++				}
++			}
++			setenv("serverip", tmp);
++
++			debug("new serverip: %s\n", tmp);
++		} else {
++			printf("serverip is empty\n");
++			return 1;
++		}
++	} else if (strcmp(cmd, "use_static_data") == 0) {
++		/* set static configuration */
++		setenv("ipaddr", "169.254.0.100");
++		setenv("netmask", "255.255.255.0");
++		setenv("bootfile", "169_254_0_100");
++		setenv("serverip", "169.254.0.10");
++	}
++
++	return 0;
++usage:
++	return cmd_usage(cmdtp);
++}
++
++U_BOOT_CMD(
++		stftpup, CONFIG_SYS_MAXARGS, 1, do_stftpup,
++		"Streamunlimited tftp firmware update",
++		"data - run dhcp to get bootfile, rootpath and serverip\n"
++		"stftpup use_local_ip - serverip unknown use local ip just replace last digit with 10\n"
++		"stftpup - use_static_data - set serverip, netmask, bootfile to static values\n"
++		);
++
+-- 
+2.7.4
+

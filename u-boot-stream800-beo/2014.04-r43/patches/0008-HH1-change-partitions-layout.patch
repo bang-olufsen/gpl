@@ -1,0 +1,32 @@
+From d7f394aaacc74bd3b03cd1dc04a5cc3982f65bc0 Mon Sep 17 00:00:00 2001
+From: Matus Ujhelyi <matus.ujhelyi@streamunlimited.com>
+Date: Wed, 8 Jan 2014 14:58:05 +0100
+Subject: [PATCH] HH1: change partitions layout
+
+Signed-off-by: Matus Ujhelyi <matus.ujhelyi@streamunlimited.com>
+---
+ board/streamunlimited/stream800/partitions.h | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/board/streamunlimited/stream800/partitions.h b/board/streamunlimited/stream800/partitions.h
+index 48f54ee..89176ac 100644
+--- a/board/streamunlimited/stream800/partitions.h
++++ b/board/streamunlimited/stream800/partitions.h
+@@ -31,10 +31,10 @@ struct partition s800_part_256M[] = {
+ 	 * and CONFIG_CONSTANTS_BASE  in stream800.h
+ 	 */
+ 	[6] = { 0x00300000, 0x00080000, "constants" },
+-	[7] = { 0x00380000, 0x00800000, "settings" },
+-	[8] = { 0x00B80000, 0x00600000, "kernel" },
+-	[9] = { 0x01180000, 0x00200000, "dts" },
+-	[10] = { 0x01380000, 0x07300000, "rootfs" },
++	[7] = { 0x00380000, 0x01400000, "settings" },
++	[8] = { 0x01780000, 0x00600000, "kernel" },
++	[9] = { 0x01D80000, 0x00200000, "dts" },
++	[10] = { 0x01F80000, 0x06700000, "rootfs" },
+ 	[11] = { 0x08680000, 0x07980000, "download" }
+ };
+ 
+-- 
+2.7.4
+

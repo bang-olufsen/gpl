@@ -1,0 +1,102 @@
+diff -x .vscode -Naur a/src/device.c b/src/device.c
+--- a/src/device.c	2020-07-17 10:33:02.083317050 +0000
++++ b/src/device.c	2020-07-20 05:47:50.914495287 +0000
+@@ -4935,7 +4935,10 @@
+ 
+ static void gatt_debug(const char *str, void *user_data)
+ {
+-	DBG("%s", str);
++	if (user_data)
++		DBG("%s%s", (const char *)user_data, str);
++	else
++		DBG("%s", str);
+ }
+ 
+ static void gatt_client_init(struct btd_device *device)
+@@ -4949,7 +4952,8 @@
+ 		return;
+ 	}
+ 
+-	bt_gatt_client_set_debug(device->client, gatt_debug, NULL, NULL);
++	bt_gatt_client_set_debug(device->client, gatt_debug, "bt_gatt_client:", NULL);
++	bt_att_set_debug(device->att, gatt_debug, "bt_att:", NULL);
+ 
+ 	/*
+ 	 * Notify notify existing service about the new connection so they can
+diff -x .vscode -Naur a/src/gatt-client.c b/src/gatt-client.c
+--- a/src/gatt-client.c	2020-07-17 10:33:02.079316949 +0000
++++ b/src/gatt-client.c	2020-07-24 04:35:14.415102731 +0000
+@@ -490,6 +490,7 @@
+ 	}
+ 
+ done:
++	DBG("Write result %s(0x%X)", success ? "true" : "false", err);
+ 	async_dbus_op_reply(op, err, NULL, -1);
+ }
+ 
+@@ -507,6 +508,8 @@
+ {
+ 	struct async_dbus_op *op;
+ 
++	DBG("Write %d bytes", value_len);
++
+ 	op = async_dbus_op_new(msg, data);
+ 	op->complete = complete;
+ 	op->offset = offset;
+@@ -533,6 +536,8 @@
+ {
+ 	struct async_dbus_op *op;
+ 
++	DBG("Write %d bytes", value_len);
++
+ 	op = async_dbus_op_new(msg, data);
+ 	op->complete = complete;
+ 
+@@ -904,6 +909,12 @@
+ 	return !!chrc->service;
+ }
+ 
++static const bt_uuid_t baldwin_control_char_uuid = {
++	.type = BT_UUID128,
++	.value.u128 = { .data = { 0xBF, 0x9A, 0x77, 0xDD, 0xB3, 0xB2, 0x40, 0xC3,
++			0xB7, 0x26, 0xB2, 0xB1, 0xD8, 0x7B, 0xAF, 0x37 } }
++};
++
+ static DBusMessage *characteristic_write_value(DBusConnection *conn,
+ 					DBusMessage *msg, void *user_data)
+ {
+@@ -914,6 +925,7 @@
+ 	int value_len = 0;
+ 	bool supported = false;
+ 	uint16_t offset = 0;
++	char char_uuid_str[MAX_LEN_UUID_STR];
+ 
+ 	if (!gatt)
+ 		return btd_error_failed(msg, "Not connected");
+@@ -929,6 +941,9 @@
+ 	if (parse_options(&iter, &offset))
+ 		return btd_error_invalid_args(msg);
+ 
++	bt_uuid_to_string(&chrc->uuid, char_uuid_str, sizeof(char_uuid_str));
++	DBG("value_len=%d, uuid=%s, props=0x%02x, ext_props=0x%04x", value_len, char_uuid_str, chrc->props, chrc->ext_props);
++
+ 	/*
+ 	 * Decide which write to use based on characteristic properties. For now
+ 	 * we don't perform signed writes since gatt-client doesn't support them
+@@ -949,7 +964,15 @@
+ 			return NULL;
+ 	}
+ 
+-	if (chrc->props & BT_GATT_CHRC_PROP_WRITE) {
++	uint8_t write_with_resp_mask = chrc->props & BT_GATT_CHRC_PROP_WRITE;
++	if (bt_uuid_cmp(&baldwin_control_char_uuid, &chrc->uuid) == 0 && (chrc->props & BT_GATT_CHRC_PROP_WRITE_WITHOUT_RESP)) {
++		// On Beoremote Halo we prioritize BT_GATT_CHRC_PROP_WRITE_WITHOUT_RESP
++		// before BT_GATT_CHRC_PROP_WRITE
++		write_with_resp_mask = 0;
++	}
++	DBG("writeWithResp=%s", write_with_resp_mask ? "true" : "false");
++
++	if (write_with_resp_mask) {
+ 		uint16_t mtu;
+ 
+ 		supported = true;

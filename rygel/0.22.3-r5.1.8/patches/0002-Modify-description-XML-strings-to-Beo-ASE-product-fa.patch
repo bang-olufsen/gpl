@@ -1,0 +1,367 @@
+From 9032586f48a14bf0638dfbc11b2f8b0951d5a17f Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Thu, 13 Aug 2015 09:29:50 +0200
+Subject: [PATCH] Modify description XML strings to Beo ASE product family
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ data/xml/MediaRenderer2.xml.in.in               |  11 +-
+ src/librygel-core/rygel-description-file.c      | 227 ++++++++++++------------
+ src/librygel-core/rygel-description-file.vala   |   7 +-
+ src/librygel-renderer/rygel-media-renderer.c    |   2 +-
+ src/librygel-renderer/rygel-media-renderer.vala |   2 +-
+ 5 files changed, 126 insertions(+), 123 deletions(-)
+
+diff --git a/data/xml/MediaRenderer2.xml.in.in b/data/xml/MediaRenderer2.xml.in.in
+index ca1c144..790bfb7 100644
+--- a/data/xml/MediaRenderer2.xml.in.in
++++ b/data/xml/MediaRenderer2.xml.in.in
+@@ -8,11 +8,12 @@
+     <qq:X_QPlay_SoftwareCapability>QPlay:2</qq:X_QPlay_SoftwareCapability>
+     <deviceType>urn:schemas-upnp-org:device:MediaRenderer:2</deviceType>
+     <friendlyName></friendlyName>
+-    <manufacturer>Rygel Developers</manufacturer>
+-    <manufacturerURL>@PACKAGE_URL@</manufacturerURL>
+-    <modelName>Rygel</modelName>
+-    <modelNumber>@VERSION@</modelNumber>
+-    <modelURL>@PACKAGE_URL@</modelURL>
++    <manufacturer>Bang &amp;amp; Olufsen</manufacturer>
++    <manufacturerURL>www.bang-olufsen.dk</manufacturerURL>
++    <modelDescription></modelDescription>
++    <modelName>Beo_ASE</modelName>
++    <modelNumber>1</modelNumber>
++    <modelURL>www.bang-olufsen.dk</modelURL>
+     <UDN></UDN>
+     <serviceList>
+     </serviceList>
+diff --git a/src/librygel-core/rygel-description-file.c b/src/librygel-core/rygel-description-file.c
+index b21c23f..dba6b44 100644
+--- a/src/librygel-core/rygel-description-file.c
++++ b/src/librygel-core/rygel-description-file.c
+@@ -82,6 +82,7 @@ typedef struct _RygelConfigurationIface RygelConfigurationIface;
+ typedef struct _RygelResourceInfo RygelResourceInfo;
+ typedef struct _RygelResourceInfoClass RygelResourceInfoClass;
+ typedef struct _RygelResourceInfoPrivate RygelResourceInfoPrivate;
++#define _g_regex_unref0(var) ((var == NULL) ? NULL : (var = (g_regex_unref (var), NULL)))
+ 
+ #define RYGEL_TYPE_ICON_INFO (rygel_icon_info_get_type ())
+ #define RYGEL_ICON_INFO(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), RYGEL_TYPE_ICON_INFO, RygelIconInfo))
+@@ -95,7 +96,6 @@ typedef struct _RygelIconInfoClass RygelIconInfoClass;
+ typedef struct _RygelIconInfoPrivate RygelIconInfoPrivate;
+ #define _xmlXPathFreeContext0(var) ((var == NULL) ? NULL : (var = (xmlXPathFreeContext (var), NULL)))
+ #define _fclose0(var) ((var == NULL) ? NULL : (var = (fclose (var), NULL)))
+-#define _g_regex_unref0(var) ((var == NULL) ? NULL : (var = (g_regex_unref (var), NULL)))
+ #define _vala_assert(expr, msg) if G_LIKELY (expr) ; else g_assertion_message_expr (G_LOG_DOMAIN, __FILE__, __LINE__, G_STRFUNC, msg);
+ 
+ struct _RygelDescriptionFile {
+@@ -987,6 +987,78 @@ void rygel_description_file_clear_service_list (RygelDescriptionFile* self) {
+ }
+ 
+ 
++static gchar* string_replace (const gchar* self, const gchar* old, const gchar* replacement) {
++	gchar* result = NULL;
++	GError * _inner_error_ = NULL;
++	g_return_val_if_fail (self != NULL, NULL);
++	g_return_val_if_fail (old != NULL, NULL);
++	g_return_val_if_fail (replacement != NULL, NULL);
++	{
++		GRegex* regex = NULL;
++		const gchar* _tmp0_ = NULL;
++		gchar* _tmp1_ = NULL;
++		gchar* _tmp2_ = NULL;
++		GRegex* _tmp3_ = NULL;
++		GRegex* _tmp4_ = NULL;
++		gchar* _tmp5_ = NULL;
++		GRegex* _tmp6_ = NULL;
++		const gchar* _tmp7_ = NULL;
++		gchar* _tmp8_ = NULL;
++		gchar* _tmp9_ = NULL;
++		_tmp0_ = old;
++		_tmp1_ = g_regex_escape_string (_tmp0_, -1);
++		_tmp2_ = _tmp1_;
++		_tmp3_ = g_regex_new (_tmp2_, 0, 0, &_inner_error_);
++		_tmp4_ = _tmp3_;
++		_g_free0 (_tmp2_);
++		regex = _tmp4_;
++		if (_inner_error_ != NULL) {
++			if (_inner_error_->domain == G_REGEX_ERROR) {
++				goto __catch6_g_regex_error;
++			}
++			g_critical ("file %s: line %d: unexpected error: %s (%s, %d)", __FILE__, __LINE__, _inner_error_->message, g_quark_to_string (_inner_error_->domain), _inner_error_->code);
++			g_clear_error (&_inner_error_);
++			return NULL;
++		}
++		_tmp6_ = regex;
++		_tmp7_ = replacement;
++		_tmp8_ = g_regex_replace_literal (_tmp6_, self, (gssize) (-1), 0, _tmp7_, 0, &_inner_error_);
++		_tmp5_ = _tmp8_;
++		if (_inner_error_ != NULL) {
++			_g_regex_unref0 (regex);
++			if (_inner_error_->domain == G_REGEX_ERROR) {
++				goto __catch6_g_regex_error;
++			}
++			_g_regex_unref0 (regex);
++			g_critical ("file %s: line %d: unexpected error: %s (%s, %d)", __FILE__, __LINE__, _inner_error_->message, g_quark_to_string (_inner_error_->domain), _inner_error_->code);
++			g_clear_error (&_inner_error_);
++			return NULL;
++		}
++		_tmp9_ = _tmp5_;
++		_tmp5_ = NULL;
++		result = _tmp9_;
++		_g_free0 (_tmp5_);
++		_g_regex_unref0 (regex);
++		return result;
++	}
++	goto __finally6;
++	__catch6_g_regex_error:
++	{
++		GError* e = NULL;
++		e = _inner_error_;
++		_inner_error_ = NULL;
++		g_assert_not_reached ();
++		_g_error_free0 (e);
++	}
++	__finally6:
++	if (_inner_error_ != NULL) {
++		g_critical ("file %s: line %d: uncaught error: %s (%s, %d)", __FILE__, __LINE__, _inner_error_->message, g_quark_to_string (_inner_error_->domain), _inner_error_->code);
++		g_clear_error (&_inner_error_);
++		return NULL;
++	}
++}
++
++
+ void rygel_description_file_add_service (RygelDescriptionFile* self, const gchar* device_name, RygelResourceInfo* resource_info) {
+ 	xmlNode* list = NULL;
+ 	GUPnPXMLDoc* _tmp0_ = NULL;
+@@ -1005,26 +1077,25 @@ void rygel_description_file_add_service (RygelDescriptionFile* self, const gchar
+ 	const gchar* _tmp12_ = NULL;
+ 	gchar* _tmp13_ = NULL;
+ 	const gchar* _tmp14_ = NULL;
+-	const gchar* _tmp15_ = NULL;
+-	gchar* _tmp16_ = NULL;
+-	gchar* _tmp17_ = NULL;
++	gchar* service_name = NULL;
++	RygelResourceInfo* _tmp15_ = NULL;
++	GType _tmp16_ = 0UL;
++	const gchar* _tmp17_ = NULL;
+ 	gchar* _tmp18_ = NULL;
+-	gchar* _tmp19_ = NULL;
+-	RygelResourceInfo* _tmp20_ = NULL;
+-	GType _tmp21_ = 0UL;
+-	const gchar* _tmp22_ = NULL;
++	const gchar* _tmp19_ = NULL;
++	gchar* _tmp20_ = NULL;
++	gchar* _tmp21_ = NULL;
++	gchar* _tmp22_ = NULL;
+ 	gchar* _tmp23_ = NULL;
+-	const gchar* _tmp24_ = NULL;
++	gchar* _tmp24_ = NULL;
+ 	const gchar* _tmp25_ = NULL;
+-	gchar* _tmp26_ = NULL;
++	const gchar* _tmp26_ = NULL;
+ 	gchar* _tmp27_ = NULL;
+ 	gchar* _tmp28_ = NULL;
+ 	gchar* _tmp29_ = NULL;
+-	RygelResourceInfo* _tmp30_ = NULL;
+-	GType _tmp31_ = 0UL;
++	gchar* _tmp30_ = NULL;
++	gchar* _tmp31_ = NULL;
+ 	const gchar* _tmp32_ = NULL;
+-	gchar* _tmp33_ = NULL;
+-	const gchar* _tmp34_ = NULL;
+ 	g_return_if_fail (self != NULL);
+ 	g_return_if_fail (device_name != NULL);
+ 	g_return_if_fail (resource_info != NULL);
+@@ -1053,36 +1124,36 @@ void rygel_description_file_add_service (RygelDescriptionFile* self, const gchar
+ 	url = _tmp13_;
+ 	_tmp14_ = url;
+ 	xmlNewChild (service_node, NULL, (xmlChar*) "SCPDURL", (xmlChar*) _tmp14_);
+-	_tmp15_ = device_name;
+-	_tmp16_ = g_strconcat ("/Control/", _tmp15_, NULL);
+-	_tmp17_ = _tmp16_;
+-	_tmp18_ = g_strconcat (_tmp17_, "/", NULL);
+-	_tmp19_ = _tmp18_;
+-	_tmp20_ = resource_info;
+-	_tmp21_ = _tmp20_->type;
+-	_tmp22_ = g_type_name (_tmp21_);
+-	_tmp23_ = g_strconcat (_tmp19_, _tmp22_, NULL);
++	_tmp15_ = resource_info;
++	_tmp16_ = _tmp15_->type;
++	_tmp17_ = g_type_name (_tmp16_);
++	_tmp18_ = string_replace (_tmp17_, "Rygel", "");
++	service_name = _tmp18_;
++	_tmp19_ = device_name;
++	_tmp20_ = g_strconcat ("/Control/", _tmp19_, NULL);
++	_tmp21_ = _tmp20_;
++	_tmp22_ = g_strconcat (_tmp21_, "/", NULL);
++	_tmp23_ = _tmp22_;
++	_tmp24_ = g_strconcat (_tmp23_, service_name, NULL);
+ 	_g_free0 (url);
+-	url = _tmp23_;
+-	_g_free0 (_tmp19_);
+-	_g_free0 (_tmp17_);
+-	_tmp24_ = url;
+-	xmlNewChild (service_node, NULL, (xmlChar*) "controlURL", (xmlChar*) _tmp24_);
+-	_tmp25_ = device_name;
+-	_tmp26_ = g_strconcat ("/Event/", _tmp25_, NULL);
+-	_tmp27_ = _tmp26_;
+-	_tmp28_ = g_strconcat (_tmp27_, "/", NULL);
+-	_tmp29_ = _tmp28_;
+-	_tmp30_ = resource_info;
+-	_tmp31_ = _tmp30_->type;
+-	_tmp32_ = g_type_name (_tmp31_);
+-	_tmp33_ = g_strconcat (_tmp29_, _tmp32_, NULL);
++	url = _tmp24_;
++	_g_free0 (_tmp23_);
++	_g_free0 (_tmp21_);
++	_tmp25_ = url;
++	xmlNewChild (service_node, NULL, (xmlChar*) "controlURL", (xmlChar*) _tmp25_);
++	_tmp26_ = device_name;
++	_tmp27_ = g_strconcat ("/Event/", _tmp26_, NULL);
++	_tmp28_ = _tmp27_;
++	_tmp29_ = g_strconcat (_tmp28_, "/", NULL);
++	_tmp30_ = _tmp29_;
++	_tmp31_ = g_strconcat (_tmp30_, service_name, NULL);
+ 	_g_free0 (url);
+-	url = _tmp33_;
+-	_g_free0 (_tmp29_);
+-	_g_free0 (_tmp27_);
+-	_tmp34_ = url;
+-	xmlNewChild (service_node, NULL, (xmlChar*) "eventSubURL", (xmlChar*) _tmp34_);
++	url = _tmp31_;
++	_g_free0 (_tmp30_);
++	_g_free0 (_tmp28_);
++	_tmp32_ = url;
++	xmlNewChild (service_node, NULL, (xmlChar*) "eventSubURL", (xmlChar*) _tmp32_);
++	_g_free0 (service_name);
+ 	_g_free0 (url);
+ }
+ 
+@@ -1224,78 +1295,6 @@ void rygel_description_file_modify_service_type (RygelDescriptionFile* self, con
+      * @param path is a path to a file.
+      * @throws GLib.Error if anything fails while creating the XML dump.
+      */
+-static gchar* string_replace (const gchar* self, const gchar* old, const gchar* replacement) {
+-	gchar* result = NULL;
+-	GError * _inner_error_ = NULL;
+-	g_return_val_if_fail (self != NULL, NULL);
+-	g_return_val_if_fail (old != NULL, NULL);
+-	g_return_val_if_fail (replacement != NULL, NULL);
+-	{
+-		GRegex* regex = NULL;
+-		const gchar* _tmp0_ = NULL;
+-		gchar* _tmp1_ = NULL;
+-		gchar* _tmp2_ = NULL;
+-		GRegex* _tmp3_ = NULL;
+-		GRegex* _tmp4_ = NULL;
+-		gchar* _tmp5_ = NULL;
+-		GRegex* _tmp6_ = NULL;
+-		const gchar* _tmp7_ = NULL;
+-		gchar* _tmp8_ = NULL;
+-		gchar* _tmp9_ = NULL;
+-		_tmp0_ = old;
+-		_tmp1_ = g_regex_escape_string (_tmp0_, -1);
+-		_tmp2_ = _tmp1_;
+-		_tmp3_ = g_regex_new (_tmp2_, 0, 0, &_inner_error_);
+-		_tmp4_ = _tmp3_;
+-		_g_free0 (_tmp2_);
+-		regex = _tmp4_;
+-		if (_inner_error_ != NULL) {
+-			if (_inner_error_->domain == G_REGEX_ERROR) {
+-				goto __catch6_g_regex_error;
+-			}
+-			g_critical ("file %s: line %d: unexpected error: %s (%s, %d)", __FILE__, __LINE__, _inner_error_->message, g_quark_to_string (_inner_error_->domain), _inner_error_->code);
+-			g_clear_error (&_inner_error_);
+-			return NULL;
+-		}
+-		_tmp6_ = regex;
+-		_tmp7_ = replacement;
+-		_tmp8_ = g_regex_replace_literal (_tmp6_, self, (gssize) (-1), 0, _tmp7_, 0, &_inner_error_);
+-		_tmp5_ = _tmp8_;
+-		if (_inner_error_ != NULL) {
+-			_g_regex_unref0 (regex);
+-			if (_inner_error_->domain == G_REGEX_ERROR) {
+-				goto __catch6_g_regex_error;
+-			}
+-			_g_regex_unref0 (regex);
+-			g_critical ("file %s: line %d: unexpected error: %s (%s, %d)", __FILE__, __LINE__, _inner_error_->message, g_quark_to_string (_inner_error_->domain), _inner_error_->code);
+-			g_clear_error (&_inner_error_);
+-			return NULL;
+-		}
+-		_tmp9_ = _tmp5_;
+-		_tmp5_ = NULL;
+-		result = _tmp9_;
+-		_g_free0 (_tmp5_);
+-		_g_regex_unref0 (regex);
+-		return result;
+-	}
+-	goto __finally6;
+-	__catch6_g_regex_error:
+-	{
+-		GError* e = NULL;
+-		e = _inner_error_;
+-		_inner_error_ = NULL;
+-		g_assert_not_reached ();
+-		_g_error_free0 (e);
+-	}
+-	__finally6:
+-	if (_inner_error_ != NULL) {
+-		g_critical ("file %s: line %d: uncaught error: %s (%s, %d)", __FILE__, __LINE__, _inner_error_->message, g_quark_to_string (_inner_error_->domain), _inner_error_->code);
+-		g_clear_error (&_inner_error_);
+-		return NULL;
+-	}
+-}
+-
+-
+ void rygel_description_file_save (RygelDescriptionFile* self, const gchar* path, GError** error) {
+ 	FILE* file = NULL;
+ 	const gchar* _tmp0_ = NULL;
+diff --git a/src/librygel-core/rygel-description-file.vala b/src/librygel-core/rygel-description-file.vala
+index 4c1e82d..e20efa6 100644
+--- a/src/librygel-core/rygel-description-file.vala
++++ b/src/librygel-core/rygel-description-file.vala
+@@ -268,10 +268,13 @@ public class Rygel.DescriptionFile : Object {
+         string url = "/" + resource_info.description_path;
+         service_node->new_child (null, "SCPDURL", url);
+ 
+-        url = "/Control/" + device_name + "/" + resource_info.type.name ();
++        /* Remove Rygel portion of service URLs */
++        string service_name = resource_info.type.name ().replace ("Rygel", "");
++
++        url = "/Control/" + device_name + "/" + service_name;
+         service_node->new_child (null, "controlURL", url);
+ 
+-        url = "/Event/" + device_name + "/" + resource_info.type.name ();
++        url = "/Event/" + device_name + "/" + service_name;
+         service_node->new_child (null, "eventSubURL", url);
+     }
+ 
+diff --git a/src/librygel-renderer/rygel-media-renderer.c b/src/librygel-renderer/rygel-media-renderer.c
+index 3cab942..5eea469 100644
+--- a/src/librygel-renderer/rygel-media-renderer.c
++++ b/src/librygel-renderer/rygel-media-renderer.c
+@@ -265,7 +265,7 @@ Plugin* plugin_construct (GType object_type, RygelMediaPlayer* player, RygelPlug
+ 	g_return_val_if_fail (player != NULL, NULL);
+ 	_tmp0_ = capabilities;
+ 	_tmp1_ = controller;
+-	self = (Plugin*) rygel_media_renderer_plugin_construct (object_type, "LibRygelRenderer", "LibRygelRenderer", NULL, _tmp0_, _tmp1_);
++	self = (Plugin*) rygel_media_renderer_plugin_construct (object_type, "Beo_ASE", "Beo_ASE", NULL, _tmp0_, _tmp1_);
+ 	_tmp2_ = player;
+ 	_tmp3_ = _g_object_ref0 (_tmp2_);
+ 	_g_object_unref0 (self->priv->player);
+diff --git a/src/librygel-renderer/rygel-media-renderer.vala b/src/librygel-renderer/rygel-media-renderer.vala
+index a258350..6eabd2c 100644
+--- a/src/librygel-renderer/rygel-media-renderer.vala
++++ b/src/librygel-renderer/rygel-media-renderer.vala
+@@ -25,7 +25,7 @@ internal class Plugin : Rygel.MediaRendererPlugin {
+     public Plugin (Rygel.MediaPlayer        player,
+                    Rygel.PluginCapabilities capabilities,
+                    Rygel.PlayerControllerInterface?  controller = null) {
+-        base ("LibRygelRenderer", "LibRygelRenderer", null, capabilities,
++        base ("Beo_ASE", "Beo_ASE", null, capabilities,
+ 		controller);
+         this.player = player;
+     }
+-- 
+1.9.1
+

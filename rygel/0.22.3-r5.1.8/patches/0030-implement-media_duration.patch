@@ -1,0 +1,412 @@
+From d7b470ede628e8354a53dfa4cd3b2d3a28afdd6a Mon Sep 17 00:00:00 2001
+From: Andrii Markhaichuk <andrii.markhaichuk@streamunlimited.com>
+Date: Mon, 26 Jan 2015 17:44:13 +0100
+Subject: [PATCH] implement media_duration
+
+get total media duration of playlist and qplay2's queue
+
+Signed-off-by: Andrii Markhaichuk <andrii.markhaichuk@streamunlimited.com>
+Signed-off-by: Xia Zhou <xia.zhou@streamunlimited.com>
+---
+ src/librygel-renderer/rygel-av-transport.c         | 96 ++++++++++++----------
+ src/librygel-renderer/rygel-av-transport.vala      |  2 +-
+ .../rygel-media-renderer-plugin.c                  |  1 +
+ src/librygel-renderer/rygel-media-renderer.c       |  1 +
+ .../rygel-player-controller-interface.c            | 25 ++++++
+ .../rygel-player-controller-interface.vala         |  8 ++
+ src/librygel-renderer/rygel-player-controller.c    | 21 ++++-
+ src/librygel-renderer/rygel-player-controller.vala |  5 ++
+ src/librygel-renderer/rygel-qplay.c                |  1 +
+ src/librygel-renderer/rygel-renderer.h             |  3 +
+ 10 files changed, 115 insertions(+), 48 deletions(-)
+
+diff --git a/src/librygel-renderer/rygel-av-transport.c b/src/librygel-renderer/rygel-av-transport.c
+index 882f4ca..650c29d 100644
+--- a/src/librygel-renderer/rygel-av-transport.c
++++ b/src/librygel-renderer/rygel-av-transport.c
+@@ -203,6 +203,7 @@ struct _RygelPlayerControllerInterfaceIface {
+ 	void (*set_tracks_count) (RygelPlayerControllerInterface* self, const gchar* value);
+ 	const gchar* (*get_max_tracks) (RygelPlayerControllerInterface* self);
+ 	void (*set_max_tracks) (RygelPlayerControllerInterface* self, const gchar* value);
++	gint64 (*get_media_duration) (RygelPlayerControllerInterface* self);
+ };
+ 
+ struct _RygelAVTransportPrivate {
+@@ -389,6 +390,7 @@ static void rygel_av_transport_handle_new_transport_uri (RygelAVTransport* self,
+ static gboolean rygel_av_transport_is_valid_mime_type (RygelAVTransport* self, const gchar* mime);
+ gchar** rygel_media_player_get_mime_types (RygelMediaPlayer* self, int* result_length1);
+ static gboolean _vala_string_array_contains (gchar** stack, int stack_length, gchar* needle);
++gchar* rygel_player_controller_interface_get_media_duration_as_str (RygelPlayerControllerInterface* self);
+ gchar* rygel_media_player_get_position_as_str (RygelMediaPlayer* self);
+ gint64 rygel_media_player_get_byte_position (RygelMediaPlayer* self);
+ void rygel_player_controller_interface_set_playback_state (RygelPlayerControllerInterface* self, const gchar* value);
+@@ -1152,26 +1154,26 @@ static void rygel_av_transport_get_media_info_cb (RygelAVTransport* self, GUPnPS
+ 	RygelPlayerControllerInterface* _tmp2_ = NULL;
+ 	guint _tmp3_ = 0U;
+ 	guint _tmp4_ = 0U;
+-	GUPnPServiceAction* _tmp9_ = NULL;
+-	RygelPlayerControllerInterface* _tmp10_ = NULL;
+-	guint _tmp11_ = 0U;
+-	guint _tmp12_ = 0U;
+-	const gchar* _tmp13_ = NULL;
+-	RygelPlayerControllerInterface* _tmp14_ = NULL;
++	GUPnPServiceAction* _tmp11_ = NULL;
++	RygelPlayerControllerInterface* _tmp12_ = NULL;
++	guint _tmp13_ = 0U;
++	guint _tmp14_ = 0U;
+ 	const gchar* _tmp15_ = NULL;
+-	const gchar* _tmp16_ = NULL;
+-	RygelPlayerControllerInterface* _tmp17_ = NULL;
++	RygelPlayerControllerInterface* _tmp16_ = NULL;
++	const gchar* _tmp17_ = NULL;
+ 	const gchar* _tmp18_ = NULL;
+-	const gchar* _tmp19_ = NULL;
+-	RygelPlayerControllerInterface* _tmp20_ = NULL;
++	RygelPlayerControllerInterface* _tmp19_ = NULL;
++	const gchar* _tmp20_ = NULL;
+ 	const gchar* _tmp21_ = NULL;
+-	const gchar* _tmp22_ = NULL;
+-	RygelPlayerControllerInterface* _tmp23_ = NULL;
++	RygelPlayerControllerInterface* _tmp22_ = NULL;
++	const gchar* _tmp23_ = NULL;
+ 	const gchar* _tmp24_ = NULL;
+-	const gchar* _tmp25_ = NULL;
++	RygelPlayerControllerInterface* _tmp25_ = NULL;
+ 	const gchar* _tmp26_ = NULL;
+ 	const gchar* _tmp27_ = NULL;
+-	GUPnPServiceAction* _tmp28_ = NULL;
++	const gchar* _tmp28_ = NULL;
++	const gchar* _tmp29_ = NULL;
++	GUPnPServiceAction* _tmp30_ = NULL;
+ 	g_return_if_fail (self != NULL);
+ 	g_return_if_fail (service != NULL);
+ 	g_return_if_fail (action != NULL);
+@@ -1184,42 +1186,46 @@ static void rygel_av_transport_get_media_info_cb (RygelAVTransport* self, GUPnPS
+ 	_tmp3_ = rygel_player_controller_interface_get_n_tracks (_tmp2_);
+ 	_tmp4_ = _tmp3_;
+ 	if (_tmp4_ > ((guint) 1)) {
+-		gchar* _tmp5_ = NULL;
+-		_tmp5_ = g_strdup ("0:00:00");
++		RygelPlayerControllerInterface* _tmp5_ = NULL;
++		gchar* _tmp6_ = NULL;
++		gchar* _tmp7_ = NULL;
++		_tmp5_ = self->priv->controller;
++		_tmp6_ = rygel_player_controller_interface_get_media_duration_as_str (_tmp5_);
++		_tmp7_ = _tmp6_;
+ 		_g_free0 (media_duration);
+-		media_duration = _tmp5_;
++		media_duration = _tmp7_;
+ 	} else {
+-		RygelMediaPlayer* _tmp6_ = NULL;
+-		gchar* _tmp7_ = NULL;
+-		gchar* _tmp8_ = NULL;
+-		_tmp6_ = self->priv->player;
+-		_tmp7_ = rygel_media_player_get_duration_as_str (_tmp6_);
+-		_tmp8_ = _tmp7_;
++		RygelMediaPlayer* _tmp8_ = NULL;
++		gchar* _tmp9_ = NULL;
++		gchar* _tmp10_ = NULL;
++		_tmp8_ = self->priv->player;
++		_tmp9_ = rygel_media_player_get_duration_as_str (_tmp8_);
++		_tmp10_ = _tmp9_;
+ 		_g_free0 (media_duration);
+-		media_duration = _tmp8_;
++		media_duration = _tmp10_;
+ 	}
+-	_tmp9_ = action;
+-	_tmp10_ = self->priv->controller;
+-	_tmp11_ = rygel_player_controller_interface_get_n_tracks (_tmp10_);
+-	_tmp12_ = _tmp11_;
+-	_tmp13_ = media_duration;
+-	_tmp14_ = self->priv->controller;
+-	_tmp15_ = rygel_player_controller_interface_get_uri (_tmp14_);
+-	_tmp16_ = _tmp15_;
+-	_tmp17_ = self->priv->controller;
+-	_tmp18_ = rygel_player_controller_interface_get_metadata (_tmp17_);
+-	_tmp19_ = _tmp18_;
+-	_tmp20_ = self->priv->controller;
+-	_tmp21_ = rygel_player_controller_interface_get_next_uri (_tmp20_);
+-	_tmp22_ = _tmp21_;
+-	_tmp23_ = self->priv->controller;
+-	_tmp24_ = rygel_player_controller_interface_get_next_metadata (_tmp23_);
+-	_tmp25_ = _tmp24_;
+-	_tmp26_ = rygel_av_transport_get_playback_medium (self);
++	_tmp11_ = action;
++	_tmp12_ = self->priv->controller;
++	_tmp13_ = rygel_player_controller_interface_get_n_tracks (_tmp12_);
++	_tmp14_ = _tmp13_;
++	_tmp15_ = media_duration;
++	_tmp16_ = self->priv->controller;
++	_tmp17_ = rygel_player_controller_interface_get_uri (_tmp16_);
++	_tmp18_ = _tmp17_;
++	_tmp19_ = self->priv->controller;
++	_tmp20_ = rygel_player_controller_interface_get_metadata (_tmp19_);
++	_tmp21_ = _tmp20_;
++	_tmp22_ = self->priv->controller;
++	_tmp23_ = rygel_player_controller_interface_get_next_uri (_tmp22_);
++	_tmp24_ = _tmp23_;
++	_tmp25_ = self->priv->controller;
++	_tmp26_ = rygel_player_controller_interface_get_next_metadata (_tmp25_);
+ 	_tmp27_ = _tmp26_;
+-	gupnp_service_action_set (_tmp9_, "NrTracks", G_TYPE_UINT, _tmp12_, "MediaDuration", G_TYPE_STRING, _tmp13_, "CurrentURI", G_TYPE_STRING, _tmp16_, "CurrentURIMetaData", G_TYPE_STRING, _tmp19_, "NextURI", G_TYPE_STRING, _tmp22_, "NextURIMetaData", G_TYPE_STRING, _tmp25_, "PlayMedium", G_TYPE_STRING, _tmp27_, "RecordMedium", G_TYPE_STRING, "NOT_IMPLEMENTED", "WriteStatus", G_TYPE_STRING, "NOT_IMPLEMENTED", NULL);
+-	_tmp28_ = action;
+-	gupnp_service_action_return (_tmp28_);
++	_tmp28_ = rygel_av_transport_get_playback_medium (self);
++	_tmp29_ = _tmp28_;
++	gupnp_service_action_set (_tmp11_, "NrTracks", G_TYPE_UINT, _tmp14_, "MediaDuration", G_TYPE_STRING, _tmp15_, "CurrentURI", G_TYPE_STRING, _tmp18_, "CurrentURIMetaData", G_TYPE_STRING, _tmp21_, "NextURI", G_TYPE_STRING, _tmp24_, "NextURIMetaData", G_TYPE_STRING, _tmp27_, "PlayMedium", G_TYPE_STRING, _tmp29_, "RecordMedium", G_TYPE_STRING, "NOT_IMPLEMENTED", "WriteStatus", G_TYPE_STRING, "NOT_IMPLEMENTED", NULL);
++	_tmp30_ = action;
++	gupnp_service_action_return (_tmp30_);
+ 	_g_free0 (media_duration);
+ }
+ 
+diff --git a/src/librygel-renderer/rygel-av-transport.vala b/src/librygel-renderer/rygel-av-transport.vala
+index 2b9561b..faa9693 100644
+--- a/src/librygel-renderer/rygel-av-transport.vala
++++ b/src/librygel-renderer/rygel-av-transport.vala
+@@ -264,7 +264,7 @@ internal class Rygel.AVTransport : Service {
+         if (this.controller.n_tracks > 1) {
+             // We don't know the size of the playlist. Might need change if we
+             // support playlists whose size we know in advance
+-            media_duration = "0:00:00";
++            media_duration = this.controller.media_duration_as_str;
+         } else {
+             media_duration = this.player.duration_as_str;
+         }
+diff --git a/src/librygel-renderer/rygel-media-renderer-plugin.c b/src/librygel-renderer/rygel-media-renderer-plugin.c
+index 8503e4e..6d388e6 100644
+--- a/src/librygel-renderer/rygel-media-renderer-plugin.c
++++ b/src/librygel-renderer/rygel-media-renderer-plugin.c
+@@ -223,6 +223,7 @@ struct _RygelPlayerControllerInterfaceIface {
+ 	void (*set_tracks_count) (RygelPlayerControllerInterface* self, const gchar* value);
+ 	const gchar* (*get_max_tracks) (RygelPlayerControllerInterface* self);
+ 	void (*set_max_tracks) (RygelPlayerControllerInterface* self, const gchar* value);
++	gint64 (*get_media_duration) (RygelPlayerControllerInterface* self);
+ };
+ 
+ struct _RygelMediaRendererPluginPrivate {
+diff --git a/src/librygel-renderer/rygel-media-renderer.c b/src/librygel-renderer/rygel-media-renderer.c
+index 24f37a8..23c742a 100644
+--- a/src/librygel-renderer/rygel-media-renderer.c
++++ b/src/librygel-renderer/rygel-media-renderer.c
+@@ -200,6 +200,7 @@ struct _RygelPlayerControllerInterfaceIface {
+ 	void (*set_tracks_count) (RygelPlayerControllerInterface* self, const gchar* value);
+ 	const gchar* (*get_max_tracks) (RygelPlayerControllerInterface* self);
+ 	void (*set_max_tracks) (RygelPlayerControllerInterface* self, const gchar* value);
++	gint64 (*get_media_duration) (RygelPlayerControllerInterface* self);
+ };
+ 
+ struct _RygelMediaRenderer {
+diff --git a/src/librygel-renderer/rygel-player-controller-interface.c b/src/librygel-renderer/rygel-player-controller-interface.c
+index 29f8f73..ffc8afa 100644
+--- a/src/librygel-renderer/rygel-player-controller-interface.c
++++ b/src/librygel-renderer/rygel-player-controller-interface.c
+@@ -101,6 +101,7 @@ struct _RygelPlayerControllerInterfaceIface {
+ 	void (*set_tracks_count) (RygelPlayerControllerInterface* self, const gchar* value);
+ 	const gchar* (*get_max_tracks) (RygelPlayerControllerInterface* self);
+ 	void (*set_max_tracks) (RygelPlayerControllerInterface* self, const gchar* value);
++	gint64 (*get_media_duration) (RygelPlayerControllerInterface* self);
+ };
+ 
+ 
+@@ -169,6 +170,9 @@ const gchar* rygel_player_controller_interface_get_tracks_count (RygelPlayerCont
+ void rygel_player_controller_interface_set_tracks_count (RygelPlayerControllerInterface* self, const gchar* value);
+ const gchar* rygel_player_controller_interface_get_max_tracks (RygelPlayerControllerInterface* self);
+ void rygel_player_controller_interface_set_max_tracks (RygelPlayerControllerInterface* self, const gchar* value);
++gint64 rygel_player_controller_interface_get_media_duration (RygelPlayerControllerInterface* self);
++gchar* rygel_player_controller_interface_get_media_duration_as_str (RygelPlayerControllerInterface* self);
++gchar* rygel_time_utils_time_to_string (gint64 time);
+ 
+ 
+ void rygel_player_controller_interface_set_network (RygelPlayerControllerInterface* self, const gchar* ssid, const gchar* key) {
+@@ -549,6 +553,26 @@ void rygel_player_controller_interface_set_max_tracks (RygelPlayerControllerInte
+ }
+ 
+ 
++gint64 rygel_player_controller_interface_get_media_duration (RygelPlayerControllerInterface* self) {
++	g_return_val_if_fail (self != NULL, 0LL);
++	return RYGEL_PLAYER_CONTROLLER_INTERFACE_GET_INTERFACE (self)->get_media_duration (self);
++}
++
++
++gchar* rygel_player_controller_interface_get_media_duration_as_str (RygelPlayerControllerInterface* self) {
++	gchar* result;
++	gint64 _tmp0_ = 0LL;
++	gint64 _tmp1_ = 0LL;
++	gchar* _tmp2_ = NULL;
++	g_return_val_if_fail (self != NULL, NULL);
++	_tmp0_ = rygel_player_controller_interface_get_media_duration (self);
++	_tmp1_ = _tmp0_;
++	_tmp2_ = rygel_time_utils_time_to_string (_tmp1_);
++	result = _tmp2_;
++	return result;
++}
++
++
+ static void rygel_player_controller_interface_base_init (RygelPlayerControllerInterfaceIface * iface) {
+ 	static gboolean initialized = FALSE;
+ 	if (!initialized) {
+@@ -577,6 +601,7 @@ static void rygel_player_controller_interface_base_init (RygelPlayerControllerIn
+ 		g_object_interface_install_property (iface, g_param_spec_string ("next-index", "next-index", "next-index", NULL, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE));
+ 		g_object_interface_install_property (iface, g_param_spec_string ("tracks-count", "tracks-count", "tracks-count", NULL, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE));
+ 		g_object_interface_install_property (iface, g_param_spec_string ("max-tracks", "max-tracks", "max-tracks", NULL, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE | G_PARAM_WRITABLE));
++		g_object_interface_install_property (iface, g_param_spec_int64 ("media-duration", "media-duration", "media-duration", G_MININT64, G_MAXINT64, 0, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE));
+ 	}
+ }
+ 
+diff --git a/src/librygel-renderer/rygel-player-controller-interface.vala b/src/librygel-renderer/rygel-player-controller-interface.vala
+index 14c633e..8177472 100644
+--- a/src/librygel-renderer/rygel-player-controller-interface.vala
++++ b/src/librygel-renderer/rygel-player-controller-interface.vala
+@@ -79,4 +79,12 @@ public interface Rygel.PlayerControllerInterface : Object {
+     public abstract void calc_tracks_count ();
+     public abstract void calc_max_tracks ();
+     public abstract void set_play_mode (string new_play_mode);
++    /// Total duration of the current playlist in microseconds
++    public abstract int64 media_duration { get; }
++    /// The duration as a human-readable string, in HH:MM:SS format
++    public string media_duration_as_str {
++        owned get {
++            return TimeUtils.time_to_string (media_duration);
++        }
++    }
+ }
+diff --git a/src/librygel-renderer/rygel-player-controller.c b/src/librygel-renderer/rygel-player-controller.c
+index af9d5db..84a350e 100644
+--- a/src/librygel-renderer/rygel-player-controller.c
++++ b/src/librygel-renderer/rygel-player-controller.c
+@@ -128,6 +128,7 @@ struct _RygelPlayerControllerInterfaceIface {
+ 	void (*set_tracks_count) (RygelPlayerControllerInterface* self, const gchar* value);
+ 	const gchar* (*get_max_tracks) (RygelPlayerControllerInterface* self);
+ 	void (*set_max_tracks) (RygelPlayerControllerInterface* self, const gchar* value);
++	gint64 (*get_media_duration) (RygelPlayerControllerInterface* self);
+ };
+ 
+ struct _RygelPlayerController {
+@@ -232,6 +233,7 @@ enum  {
+ 	RYGEL_PLAYER_CONTROLLER_METADATA,
+ 	RYGEL_PLAYER_CONTROLLER_TRACK_URI,
+ 	RYGEL_PLAYER_CONTROLLER_TRACK_METADATA,
++	RYGEL_PLAYER_CONTROLLER_MEDIA_DURATION,
+ 	RYGEL_PLAYER_CONTROLLER_NEXT_URI,
+ 	RYGEL_PLAYER_CONTROLLER_NEXT_METADATA,
+ 	RYGEL_PLAYER_CONTROLLER_CURRENT_TRANSPORT_ACTIONS,
+@@ -342,6 +344,7 @@ const gchar* rygel_player_controller_interface_get_number_of_success (RygelPlaye
+ const gchar* rygel_player_controller_interface_get_number_of_tracks (RygelPlayerControllerInterface* self);
+ gchar* rygel_player_controller_interface_get_track_uri (RygelPlayerControllerInterface* self);
+ gchar* rygel_player_controller_interface_get_track_metadata (RygelPlayerControllerInterface* self);
++gint64 rygel_player_controller_interface_get_media_duration (RygelPlayerControllerInterface* self);
+ gchar* rygel_player_controller_interface_get_current_transport_actions (RygelPlayerControllerInterface* self);
+ const gchar* rygel_player_controller_interface_get_next_index (RygelPlayerControllerInterface* self);
+ const gchar* rygel_player_controller_interface_get_tracks_count (RygelPlayerControllerInterface* self);
+@@ -1009,7 +1012,7 @@ static void rygel_player_controller_setup_image_timeouts (RygelPlayerController*
+ 		timeout = (guint) _tmp2_;
+ 	}
+ 	_tmp3_ = timeout;
+-	g_debug ("rygel-player-controller.vala:622: Item is image, setup timer: %ld", (glong) _tmp3_);
++	g_debug ("rygel-player-controller.vala:627: Item is image, setup timer: %ld", (glong) _tmp3_);
+ 	_tmp4_ = self->priv->timeout_id;
+ 	if (_tmp4_ != ((guint) 0)) {
+ 		guint _tmp5_ = 0U;
+@@ -1071,7 +1074,7 @@ static void rygel_player_controller_on_setting_changed (RygelPlayerController* s
+ 		return;
+ 	}
+ 	_tmp7_ = self->priv->default_image_timeout;
+-	g_debug ("rygel-player-controller.vala:652: New image timeout: %lu", (gulong) _tmp7_);
++	g_debug ("rygel-player-controller.vala:657: New image timeout: %lu", (gulong) _tmp7_);
+ }
+ 
+ 
+@@ -1792,6 +1795,15 @@ static void rygel_player_controller_real_set_track_metadata (RygelPlayerControll
+ }
+ 
+ 
++static gint64 rygel_player_controller_real_get_media_duration (RygelPlayerControllerInterface* base) {
++	gint64 result;
++	RygelPlayerController* self;
++	self = (RygelPlayerController*) base;
++	result = (gint64) 0;
++	return result;
++}
++
++
+ static const gchar* rygel_player_controller_real_get_next_uri (RygelPlayerControllerInterface* base) {
+ 	const gchar* result;
+ 	RygelPlayerController* self;
+@@ -2186,6 +2198,7 @@ static void rygel_player_controller_class_init (RygelPlayerControllerClass * kla
+ 	g_object_class_install_property (G_OBJECT_CLASS (klass), RYGEL_PLAYER_CONTROLLER_METADATA, g_param_spec_string ("metadata", "metadata", "metadata", NULL, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE));
+ 	g_object_class_install_property (G_OBJECT_CLASS (klass), RYGEL_PLAYER_CONTROLLER_TRACK_URI, g_param_spec_string ("track-uri", "track-uri", "track-uri", NULL, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE));
+ 	g_object_class_install_property (G_OBJECT_CLASS (klass), RYGEL_PLAYER_CONTROLLER_TRACK_METADATA, g_param_spec_string ("track-metadata", "track-metadata", "track-metadata", NULL, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE));
++	g_object_class_install_property (G_OBJECT_CLASS (klass), RYGEL_PLAYER_CONTROLLER_MEDIA_DURATION, g_param_spec_int64 ("media-duration", "media-duration", "media-duration", G_MININT64, G_MAXINT64, 0, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE));
+ 	g_object_class_install_property (G_OBJECT_CLASS (klass), RYGEL_PLAYER_CONTROLLER_NEXT_URI, g_param_spec_string ("next-uri", "next-uri", "next-uri", NULL, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE));
+ 	g_object_class_install_property (G_OBJECT_CLASS (klass), RYGEL_PLAYER_CONTROLLER_NEXT_METADATA, g_param_spec_string ("next-metadata", "next-metadata", "next-metadata", NULL, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE));
+ 	g_object_class_install_property (G_OBJECT_CLASS (klass), RYGEL_PLAYER_CONTROLLER_CURRENT_TRANSPORT_ACTIONS, g_param_spec_string ("current-transport-actions", "current-transport-actions", "current-transport-actions", NULL, G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | G_PARAM_STATIC_BLURB | G_PARAM_READABLE));
+@@ -2249,6 +2262,7 @@ static void rygel_player_controller_rygel_player_controller_interface_interface_
+ 	iface->set_track_uri = rygel_player_controller_real_set_track_uri;
+ 	iface->get_track_metadata = rygel_player_controller_real_get_track_metadata;
+ 	iface->set_track_metadata = rygel_player_controller_real_set_track_metadata;
++	iface->get_media_duration = rygel_player_controller_real_get_media_duration;
+ 	iface->get_next_uri = rygel_player_controller_real_get_next_uri;
+ 	iface->set_next_uri = rygel_player_controller_real_set_next_uri;
+ 	iface->get_next_metadata = rygel_player_controller_real_get_next_metadata;
+@@ -2465,6 +2479,9 @@ static void _vala_rygel_player_controller_get_property (GObject * object, guint
+ 		case RYGEL_PLAYER_CONTROLLER_TRACK_METADATA:
+ 		g_value_take_string (value, rygel_player_controller_interface_get_track_metadata ((RygelPlayerControllerInterface*) self));
+ 		break;
++		case RYGEL_PLAYER_CONTROLLER_MEDIA_DURATION:
++		g_value_set_int64 (value, rygel_player_controller_interface_get_media_duration ((RygelPlayerControllerInterface*) self));
++		break;
+ 		case RYGEL_PLAYER_CONTROLLER_NEXT_URI:
+ 		g_value_set_string (value, rygel_player_controller_interface_get_next_uri ((RygelPlayerControllerInterface*) self));
+ 		break;
+diff --git a/src/librygel-renderer/rygel-player-controller.vala b/src/librygel-renderer/rygel-player-controller.vala
+index 9de01b1..30dd9b5 100644
+--- a/src/librygel-renderer/rygel-player-controller.vala
++++ b/src/librygel-renderer/rygel-player-controller.vala
+@@ -264,6 +264,11 @@ public class Rygel.PlayerController : Object, PlayerControllerInterface {
+         }
+     }
+ 
++    [CCode (notify = false)]
++    public int64 media_duration {
++        get { return 0; }
++    }
++
+     public string next_uri { get; private set; default = ""; }
+     public string next_metadata { get; private set; default = ""; }
+ 
+diff --git a/src/librygel-renderer/rygel-qplay.c b/src/librygel-renderer/rygel-qplay.c
+index a35f65a..bdaf372 100644
+--- a/src/librygel-renderer/rygel-qplay.c
++++ b/src/librygel-renderer/rygel-qplay.c
+@@ -138,6 +138,7 @@ struct _RygelPlayerControllerInterfaceIface {
+ 	void (*set_tracks_count) (RygelPlayerControllerInterface* self, const gchar* value);
+ 	const gchar* (*get_max_tracks) (RygelPlayerControllerInterface* self);
+ 	void (*set_max_tracks) (RygelPlayerControllerInterface* self, const gchar* value);
++	gint64 (*get_media_duration) (RygelPlayerControllerInterface* self);
+ };
+ 
+ struct _QPlayPrivate {
+diff --git a/src/librygel-renderer/rygel-renderer.h b/src/librygel-renderer/rygel-renderer.h
+index e18b4ae..0d4b109 100644
+--- a/src/librygel-renderer/rygel-renderer.h
++++ b/src/librygel-renderer/rygel-renderer.h
+@@ -170,6 +170,7 @@ struct _RygelPlayerControllerInterfaceIface {
+ 	void (*set_tracks_count) (RygelPlayerControllerInterface* self, const gchar* value);
+ 	const gchar* (*get_max_tracks) (RygelPlayerControllerInterface* self);
+ 	void (*set_max_tracks) (RygelPlayerControllerInterface* self, const gchar* value);
++	gint64 (*get_media_duration) (RygelPlayerControllerInterface* self);
+ };
+ 
+ struct _RygelPlayerController {
+@@ -296,6 +297,8 @@ const gchar* rygel_player_controller_interface_get_tracks_count (RygelPlayerCont
+ void rygel_player_controller_interface_set_tracks_count (RygelPlayerControllerInterface* self, const gchar* value);
+ const gchar* rygel_player_controller_interface_get_max_tracks (RygelPlayerControllerInterface* self);
+ void rygel_player_controller_interface_set_max_tracks (RygelPlayerControllerInterface* self, const gchar* value);
++gint64 rygel_player_controller_interface_get_media_duration (RygelPlayerControllerInterface* self);
++gchar* rygel_player_controller_interface_get_media_duration_as_str (RygelPlayerControllerInterface* self);
+ GType rygel_media_renderer_get_type (void) G_GNUC_CONST;
+ RygelMediaRenderer* rygel_media_renderer_new (const gchar* title, RygelMediaPlayer* player, RygelPluginCapabilities capabilities, RygelPlayerControllerInterface* controller);
+ RygelMediaRenderer* rygel_media_renderer_construct (GType object_type, const gchar* title, RygelMediaPlayer* player, RygelPluginCapabilities capabilities, RygelPlayerControllerInterface* controller);
+-- 
+1.9.1
+

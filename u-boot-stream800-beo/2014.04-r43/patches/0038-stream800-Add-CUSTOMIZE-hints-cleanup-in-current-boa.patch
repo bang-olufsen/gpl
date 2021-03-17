@@ -1,0 +1,109 @@
+From 2c4073c6755a73567bbdf2fdb219c6c040d66d32 Mon Sep 17 00:00:00 2001
+From: Vladimir Koutny <vladimir.koutny@streamunlimited.com>
+Date: Wed, 29 May 2013 17:17:04 +0200
+Subject: [PATCH] stream800: Add "// CUSTOMIZE " hints, cleanup in current
+ board/module definitions
+
+Signed-off-by: Vladimir Koutny <vladimir.koutny@streamunlimited.com>
+---
+ board/streamunlimited/stream800/board.c | 28 +++++++++++++++++-----------
+ board/streamunlimited/stream800/board.h |  2 ++
+ 2 files changed, 19 insertions(+), 11 deletions(-)
+
+diff --git a/board/streamunlimited/stream800/board.c b/board/streamunlimited/stream800/board.c
+index 722015c..dd4835d 100644
+--- a/board/streamunlimited/stream800/board.c
++++ b/board/streamunlimited/stream800/board.c
+@@ -128,9 +128,6 @@ int board_init(void)
+ 	board_printf_info();
+ 
+ 	switch (get_carrier_board_type()) {
+-		case CBT_LanDockBoard:
+-			lan_dock__set_board_interface();
+-			break;
+ 		case CBT_SueDemoClientBoard:
+ 			demo_client__set_board_interface();
+ 			break;
+@@ -140,6 +137,12 @@ int board_init(void)
+ 		case CBT_SueFactoryTestBoard:
+ 			factory_test__set_board_interface();
+ 			break;
++		case CBT_LanDockBoard:
++			lan_dock__set_board_interface();
++			break;
++
++		// CUSTOMIZE: Add your board __set_board_interface() call here
++
+ 		default:
+ 			printf("board_late_init: Not supported board!\n");
+ 			//panic("Not supported board!");
+@@ -189,7 +192,7 @@ static struct SupportedModules {
+ 	unsigned lsb_min;	// Ain6
+ 	unsigned lsb_max;
+ } supportedModules[] = {
+-	{MV_L2,		0xCCC,	0xD54,	0x4CC,	0x555}
++	{MV_L2,		0xCCC,	0xD54,	0x4CC,	0x555},
+ 	// TODO: add another stream800 module revisions here
+ };
+ 
+@@ -200,10 +203,10 @@ static struct SupportedCarrierBoards {
+ 	unsigned lsb_min;	// Ain2
+ 	unsigned lsb_max;
+ } supportedCarrierBoards[] = {
+-	{CBT_SueDemoClientBoard,	0xF76,	0xFFF,	0x000,	0x088}
+-	,{CBT_LanDockBoard,			0x7FF,	0x910,	0x7FF,	0x910}
+-	,{CBT_SueFactoryTestBoard,	0x000,	0x088,	0x000,	0x088}
+-	// TODO: add another boards here
++	{CBT_SueDemoClientBoard,	0xF76,	0xFFF,	0x000,	0x088},
++	{CBT_SueFactoryTestBoard,	0x000,	0x088,	0x000,	0x088},
++	{CBT_LanDockBoard,			0x7FF,	0x910,	0x7FF,	0x910},
++	// CUSTOMIZE: add your board here
+ };
+ 
+ #ifdef CONFIG_BOOTCOUNT_LIMIT
+@@ -364,9 +367,6 @@ int board_late_init(void)
+ 	}
+ 
+ 	switch (get_carrier_board_type()) {
+-		case CBT_LanDockBoard:
+-			setenv("cramfsdir", "lan_dock_board");
+-			break;
+ 		case CBT_SueDemoClientBoard:
+ 			setenv("cramfsdir", "sue_demo_client_board");
+ 			break;
+@@ -376,6 +376,12 @@ int board_late_init(void)
+ 		case CBT_SueFactoryTestBoard:
+ 			setenv("cramfsdir", "sue_factory_test_board");
+ 			break;
++		case CBT_LanDockBoard:
++			setenv("cramfsdir", "lan_dock_board");
++			break;
++
++		// CUSTOMIZE: Add your board here
++
+ 		default:
+ 			printf("board_late_init: Not supported board!\n");
+ 			setenv("cramfsdir", "");
+diff --git a/board/streamunlimited/stream800/board.h b/board/streamunlimited/stream800/board.h
+index 88936f1..a6aab9d 100644
+--- a/board/streamunlimited/stream800/board.h
++++ b/board/streamunlimited/stream800/board.h
+@@ -48,6 +48,7 @@ typedef enum {
+ 	CBT_SueFirstCarrierBoard,		///< SUE Carrier Board
+ 	CBT_SueDemoClientBoard,			///< SUE demo client
+ 	CBT_LanDockBoard				///< Dictations LAN dock
++	// CUSTOMIZE: Add entry for you board here
+ } Stream800CarrierBoardType;
+ 
+ static const char *stream800CarrierBoardTypeStrings[] = {
+@@ -56,6 +57,7 @@ static const char *stream800CarrierBoardTypeStrings[] = {
+ 	[CBT_SueFirstCarrierBoard]	= "SUE first carrier board",
+ 	[CBT_SueDemoClientBoard]	= "SUE demo client board",
+ 	[CBT_LanDockBoard]			= "Dictations LAN dock board"
++	// CUSTOMIZE: Add name for you board here
+ };
+ 
+ 
+-- 
+2.7.4
+

@@ -1,0 +1,239 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GIConstantInfo: GObject Introspection Reference Manual</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
+<link rel="home" href="index.html" title="GObject Introspection Reference Manual">
+<link rel="up" href="ch01.html" title="GIRepository">
+<link rel="prev" href="gi-GIArgInfo.html" title="GIArgInfo">
+<link rel="next" href="gi-GIFieldInfo.html" title="GIFieldInfo">
+<meta name="generator" content="GTK-Doc V1.29.1 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#gi-GIConstantInfo.description" class="shortcut">Description</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="gi-GIArgInfo.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="gi-GIFieldInfo.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry">
+<a name="gi-GIConstantInfo"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="gi-GIConstantInfo.top_of_page"></a>GIConstantInfo</span></h2>
+<p>GIConstantInfo — Struct representing a constant</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1">
+<a name="gi-GIConstantInfo.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="functions_return">
+<col class="functions_name">
+</colgroup>
+<tbody>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name">
+<a class="link" href="gi-GIConstantInfo.html#GI-IS-CONSTANT-INFO:CAPS" title="GI_IS_CONSTANT_INFO()">GI_IS_CONSTANT_INFO</a><span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="gi-GIConstantInfo.html#g-constant-info-free-value" title="g_constant_info_free_value ()">g_constant_info_free_value</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="gi-GITypeInfo.html#GITypeInfo" title="GITypeInfo"><span class="returnvalue">GITypeInfo</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="gi-GIConstantInfo.html#g-constant-info-get-type" title="g_constant_info_get_type ()">g_constant_info_get_type</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">gint</span>
+</td>
+<td class="function_name">
+<a class="link" href="gi-GIConstantInfo.html#g-constant-info-get-value" title="g_constant_info_get_value ()">g_constant_info_get_value</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="gi-GIConstantInfo.other"></a><h2>Types and Values</h2>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="name">
+<col class="description">
+</colgroup>
+<tbody><tr>
+<td class="typedef_keyword">typedef</td>
+<td class="function_name"><a class="link" href="gi-GIConstantInfo.html#GIConstantInfo" title="GIConstantInfo">GIConstantInfo</a></td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="gi-GIConstantInfo.description"></a><h2>Description</h2>
+<p>GIConstantInfo represents a constant. A constant has a type associated
+which can be obtained by calling <a class="link" href="gi-GIConstantInfo.html#g-constant-info-get-type" title="g_constant_info_get_type ()"><code class="function">g_constant_info_get_type()</code></a> and a value,
+which can be obtained by calling <a class="link" href="gi-GIConstantInfo.html#g-constant-info-get-value" title="g_constant_info_get_value ()"><code class="function">g_constant_info_get_value()</code></a>.</p>
+<div class="refsect1">
+<a name="gi-giconstantinfo.struct-hierarchy"></a><h2>Struct hierarchy</h2>
+<pre class="synopsis">
+  <a class="link" href="gi-GIBaseInfo.html" title="GIBaseInfo">GIBaseInfo</a>
+   +----GIConstantInfo
+</pre>
+</div>
+</div>
+<div class="refsect1">
+<a name="gi-GIConstantInfo.functions_details"></a><h2>Functions</h2>
+<div class="refsect2">
+<a name="GI-IS-CONSTANT-INFO:CAPS"></a><h3>GI_IS_CONSTANT_INFO()</h3>
+<pre class="programlisting">#define             GI_IS_CONSTANT_INFO(info)</pre>
+<p>Checks if <em class="parameter"><code>info</code></em>
+ is a <a class="link" href="gi-GIConstantInfo.html#GIConstantInfo" title="GIConstantInfo"><span class="type">GIConstantInfo</span></a>.</p>
+<div class="refsect3">
+<a name="GI-IS-CONSTANT-INFO.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>an info structure</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-constant-info-free-value"></a><h3>g_constant_info_free_value ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+g_constant_info_free_value (<em class="parameter"><code><a class="link" href="gi-GIConstantInfo.html#GIConstantInfo" title="GIConstantInfo"><span class="type">GIConstantInfo</span></a> *info</code></em>,
+                            <em class="parameter"><code><a class="link" href="gi-common-types.html#GIArgument" title="GIArgument"><span class="type">GIArgument</span></a> *value</code></em>);</pre>
+<p>Free the value returned from <a class="link" href="gi-GIConstantInfo.html#g-constant-info-get-value" title="g_constant_info_get_value ()"><code class="function">g_constant_info_get_value()</code></a>.</p>
+<p><span class="annotation">[<acronym title="Exposed in C code, not necessarily available in other languages."><span class="acronym">skip</span></acronym>]</span></p>
+<div class="refsect3">
+<a name="g-constant-info-free-value.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>a <a class="link" href="gi-GIConstantInfo.html#GIConstantInfo" title="GIConstantInfo"><span class="type">GIConstantInfo</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>value</p></td>
+<td class="parameter_description"><p>the argument</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<p class="since">Since: <a class="link" href="api-index-1-30-1.html#api-index-1.30.1">1.30.1</a></p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-constant-info-get-type"></a><h3>g_constant_info_get_type ()</h3>
+<pre class="programlisting"><a class="link" href="gi-GITypeInfo.html#GITypeInfo" title="GITypeInfo"><span class="returnvalue">GITypeInfo</span></a> *
+g_constant_info_get_type (<em class="parameter"><code><a class="link" href="gi-GIConstantInfo.html#GIConstantInfo" title="GIConstantInfo"><span class="type">GIConstantInfo</span></a> *info</code></em>);</pre>
+<p>Obtain the type of the constant as a <a class="link" href="gi-GITypeInfo.html#GITypeInfo" title="GITypeInfo"><span class="type">GITypeInfo</span></a>.</p>
+<div class="refsect3">
+<a name="g-constant-info-get-type.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>a <a class="link" href="gi-GIConstantInfo.html#GIConstantInfo" title="GIConstantInfo"><span class="type">GIConstantInfo</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="g-constant-info-get-type.returns"></a><h4>Returns</h4>
+<p>the <a class="link" href="gi-GITypeInfo.html#GITypeInfo" title="GITypeInfo"><span class="type">GITypeInfo</span></a>. Free the struct by calling
+<a class="link" href="gi-GIBaseInfo.html#g-base-info-unref" title="g_base_info_unref ()"><code class="function">g_base_info_unref()</code></a> when done. </p>
+<p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-constant-info-get-value"></a><h3>g_constant_info_get_value ()</h3>
+<pre class="programlisting"><span class="returnvalue">gint</span>
+g_constant_info_get_value (<em class="parameter"><code><a class="link" href="gi-GIConstantInfo.html#GIConstantInfo" title="GIConstantInfo"><span class="type">GIConstantInfo</span></a> *info</code></em>,
+                           <em class="parameter"><code><a class="link" href="gi-common-types.html#GIArgument" title="GIArgument"><span class="type">GIArgument</span></a> *value</code></em>);</pre>
+<p>Obtain the value associated with the <a class="link" href="gi-GIConstantInfo.html#GIConstantInfo" title="GIConstantInfo"><span class="type">GIConstantInfo</span></a> and store it in the
+<em class="parameter"><code>value</code></em>
+ parameter. <em class="parameter"><code>argument</code></em>
+ needs to be allocated before passing it in.
+The size of the constant value stored in <em class="parameter"><code>argument</code></em>
+ will be returned.
+Free the value with <a class="link" href="gi-GIConstantInfo.html#g-constant-info-free-value" title="g_constant_info_free_value ()"><code class="function">g_constant_info_free_value()</code></a>.</p>
+<p><span class="annotation">[<acronym title="Exposed in C code, not necessarily available in other languages."><span class="acronym">skip</span></acronym>]</span></p>
+<div class="refsect3">
+<a name="g-constant-info-get-value.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>a <a class="link" href="gi-GIConstantInfo.html#GIConstantInfo" title="GIConstantInfo"><span class="type">GIConstantInfo</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>value</p></td>
+<td class="parameter_description"><p>an argument. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Parameter for returning results. Default is transfer full."><span class="acronym">out</span></acronym>]</span></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="g-constant-info-get-value.returns"></a><h4>Returns</h4>
+<p> size of the constant</p>
+</div>
+</div>
+</div>
+<div class="refsect1">
+<a name="gi-GIConstantInfo.other_details"></a><h2>Types and Values</h2>
+<div class="refsect2">
+<a name="GIConstantInfo"></a><h3>GIConstantInfo</h3>
+<pre class="programlisting">typedef GIBaseInfo GIConstantInfo;
+</pre>
+<p>Represents a constant.</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>Generated by GTK-Doc V1.29.1</div>
+</body>
+</html>

@@ -1,0 +1,15 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+plugindir=@RYGEL_PLUGIN_DIR@
+plugin_ldflags=@RYGEL_PLUGIN_LINKER_FLAGS@
+
+Name: rygel-core-2.2
+Description: GNOME (Mobile) UPnP/DLNA Media Server
+Version: @VERSION@
+Libs: -L${libdir} -lrygel-core-2.2
+Cflags: -I${includedir}/rygel-2.2
+Requires: gupnp-av-1.0 gee-0.8
+Requires.Private: uuid gmodule-2.0

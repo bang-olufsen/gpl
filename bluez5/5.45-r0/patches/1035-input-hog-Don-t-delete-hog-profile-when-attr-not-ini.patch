@@ -1,0 +1,35 @@
+From b427925f539696db3c231a3eb3d4e6ddac810e3e Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Tue, 3 Oct 2017 17:39:56 +0200
+Subject: [PATCH] input/hog: Don't delete hog profile when attr not initialized
+
+when device connects and gatt cache database is not initialized attr also
+fails to initialize when we try to accept profile. This is OK because
+HID handles will come later when we discover primary services etc.
+
+Deletion of hog profile caused that we can miss first input event from
+remote.
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ profiles/input/hog-lib.c | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/profiles/input/hog-lib.c b/profiles/input/hog-lib.c
+index 50d2e7a..2dfb30e 100644
+--- a/profiles/input/hog-lib.c
++++ b/profiles/input/hog-lib.c
+@@ -1508,10 +1508,6 @@ struct bt_hog *bt_hog_new(int fd, const char *name, uint16_t vendor,
+ 		/* Handle the HID services */
+ 		bt_uuid16_create(&uuid, HOG_UUID16);
+ 		gatt_db_foreach_service(db, &uuid, foreach_hog_service, hog);
+-		if (!hog->attr) {
+-			hog_free(hog);
+-			return NULL;
+-		}
+ 
+ 		/* Try creating a DIS instance in case pid/vid are not set */
+ 		if (!vendor && !product) {
+-- 
+2.7.4
+

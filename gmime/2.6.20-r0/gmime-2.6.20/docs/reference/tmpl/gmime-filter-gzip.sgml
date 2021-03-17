@@ -1,0 +1,46 @@
+<!-- ##### SECTION Title ##### -->
+gmime-filter-gzip
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GMimeFilterGZip ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ENUM GMimeFilterGZipMode ##### -->
+<para>
+
+</para>
+
+@GMIME_FILTER_GZIP_MODE_ZIP: 
+@GMIME_FILTER_GZIP_MODE_UNZIP: 
+
+<!-- ##### FUNCTION g_mime_filter_gzip_new ##### -->
+<para>
+
+</para>
+
+@mode: 
+@level: 
+@Returns: 
+
+

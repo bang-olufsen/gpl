@@ -1,0 +1,65 @@
+From 83edb6bdcfbe0956843d85c55ea5f1139cc34cc2 Mon Sep 17 00:00:00 2001
+From: Fionn Cleary <fionn.cleary@streamunlimited.com>
+Date: Tue, 12 Aug 2014 18:52:26 +0200
+Subject: [PATCH] stream800: Fix compiler warning with extra casts
+
+Compiler was producing a large number of warnings due to mismatched
+pointers and automatic uint-to-pointer casts.
+
+Signed-off-by: Fionn Cleary <fionn.cleary@streamunlimited.com>
+---
+ board/streamunlimited/stream800/board.c      |  2 +-
+ board/streamunlimited/stream800/sfu_parser.c | 12 ++++++------
+ 2 files changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/board/streamunlimited/stream800/board.c b/board/streamunlimited/stream800/board.c
+index 0ba3984..53b6ee2 100755
+--- a/board/streamunlimited/stream800/board.c
++++ b/board/streamunlimited/stream800/board.c
+@@ -195,7 +195,7 @@ static void init_si5351x(void)
+ {
+ 	int i;
+ 	for (i = 0; i < Si5351x_NUMREGS; ++i) {
+-		if (i2c_write(Si5351x_ADDRR, i, 1, &si5351x_default_clock_table[i], 1)){
++		if (i2c_write(Si5351x_ADDRR, i, 1, (uint8_t*)&si5351x_default_clock_table[i], 1)){
+ 			printf("Si5351x cannot be initialized\n");
+ 			return;
+ 		}
+diff --git a/board/streamunlimited/stream800/sfu_parser.c b/board/streamunlimited/stream800/sfu_parser.c
+index 001fb88..1ccb11e 100644
+--- a/board/streamunlimited/stream800/sfu_parser.c
++++ b/board/streamunlimited/stream800/sfu_parser.c
+@@ -596,24 +596,24 @@ int32_t sfu_ImageValid(
+ 			chnk_data_addr = startAddr + chunk_hdr.data;
+ 
+ 			if (chunk_hdr.hdr_flag & SFU_HDR_FLAG__CR32) {
+-				calcCrc32 = crc32(0, chnk_data_addr, chunk_hdr.size);
++				calcCrc32 = crc32(0, (unsigned char*)chnk_data_addr, chunk_hdr.size);
+ 				if (calcCrc32 != chunk_hdr.crc32)
+ 					return IMG_VALIDITY__CRC32_ERR;
+ 			}
+ 
+ 			if (chunk_hdr.hdr_flag & SFU_HDR_FLAG__MD5_) {
+ 
+-				md5(chnk_data_addr, chunk_hdr.size, md5_output);
+-				if (strncmp(md5_output, chunk_hdr.md5, 16) != 0)
++				md5((unsigned char*)chnk_data_addr, chunk_hdr.size, (unsigned char*)md5_output);
++				if (strncmp(md5_output, (const char*)chunk_hdr.md5, 16) != 0)
+ 					return IMG_VALIDITY__MD5_ERR;
+ 			}
+ 
+ 			if (chunk_hdr.hdr_flag & SFU_HDR_FLAG__SHA2) {
+ 				sha256_starts(&sha256);
+-				sha256_update(&sha256, chnk_data_addr, chunk_hdr.size);
+-				sha256_finish(&sha256, sha256_output);
++				sha256_update(&sha256, (unsigned char*)chnk_data_addr, chunk_hdr.size);
++				sha256_finish(&sha256, (uint8_t*)sha256_output);
+ 
+-				if (strncmp(sha256_output, chunk_hdr.sha256, 32) != 0)
++				if (strncmp(sha256_output, (const char*)chunk_hdr.sha256, 32) != 0)
+ 					return IMG_VALIDITY__SH256_ERR;
+ 			}
+ 		}
+-- 
+2.7.4
+

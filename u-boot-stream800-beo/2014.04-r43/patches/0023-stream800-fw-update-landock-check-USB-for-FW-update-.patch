@@ -1,0 +1,127 @@
+From 310036983857d07dd28308e3b652c455e027c691 Mon Sep 17 00:00:00 2001
+From: Matus Ujhelyi <matus.ujhelyi@streamunlimited.com>
+Date: Fri, 8 Mar 2013 08:12:23 +0100
+Subject: [PATCH] stream800: fw update: landock: check USB for FW update file
+ only if the reset button is held
+
+Signed-off-by: Martin Flaska <martin.flaska@streamunlimited.com>
+---
+ board/streamunlimited/stream800/fwupdate.c | 35 ++++++++++++++++++++++++++++++
+ include/configs/stream800.h                | 29 +++++++++++++++----------
+ 2 files changed, 53 insertions(+), 11 deletions(-)
+
+diff --git a/board/streamunlimited/stream800/fwupdate.c b/board/streamunlimited/stream800/fwupdate.c
+index ddafc32..0468e7e 100644
+--- a/board/streamunlimited/stream800/fwupdate.c
++++ b/board/streamunlimited/stream800/fwupdate.c
+@@ -23,6 +23,8 @@
+ #include "fwupdate.h"
+ #include "board.h"
+ 
++#include "board-lan_dock_board.h"
++
+ #include <common.h>
+ #include <hush.h>
+ #include <asm/arch/cpu.h>
+@@ -136,6 +138,29 @@ int fwupdate_setBootCount(uint8_t bootCnt)
+ 	return flag_write(BOOT_COUNT_FLAG_INDEX, bootCnt);
+ }
+ 
++static int fwupdate_getUsbUpdateReq(void)
++{
++	switch (get_carrier_board_type()) {
++	case CBT_LanDockBoard:
++		{
++			/* Reset button is also used for requesting FW update from USB during boot-up
++			* 1: reset button held - dow FW update, 0: reset button is not active
++			*/
++			return lan_dock__get_reset_button_status() ? 1 : 0;
++		}
++		break;
++	case CBT_SueDemoClientBoard:
++	case CBT_SueFirstCarrierBoard:
++		{
++			return 1;
++		}
++		break;
++	default:
++		printf("fwupdate_getUsbUpdateReq: Not supported board!\n");
++		//panic("Not supported board!");
++		return 0;
++	}
++}
+ 
+ static int do_fwup(cmd_tbl_t * cmdtp, int flag, int argc, char * const argv[])
+ {
+@@ -217,6 +242,14 @@ static int do_fwup(cmd_tbl_t * cmdtp, int flag, int argc, char * const argv[])
+ 	/*
+ 	 * Syntax is:
+ 	 *   0    1
++	 *   fwup usb_update_req
++	 */
++	if (strcmp(cmd, "usb_update_req") == 0)
++            return fwupdate_getUsbUpdateReq() ? 0 : 1;
++
++	/*
++	 * Syntax is:
++	 *   0    1
+ 	 *   fwup fail
+ 	 */
+ 	if (strcmp(cmd, "fail") == 0) {
+@@ -272,8 +305,10 @@ U_BOOT_CMD(
+ 		fwup, CONFIG_SYS_MAXARGS, 1, do_fwup,
+ 		"Streamunlimited firmware update",
+ 		"clear flag - clears the user requested flag\n"
++		"fwup flags      - print current flags\n"
+ 		"fwup set flag   - sets the user requested flag\n"
+ 		"fwup update     - checks if update flag is set\n"
++		"fwup usb_update_req - checks if USB update request active\n"
+ 		"fwup fail       - checks if fail flag is set\n"
+ 		"fwup incbootcnt - increments boot count\n"
+ 		"fwup bootcnt    - checks if boot count is less than maximum allowed"
+diff --git a/include/configs/stream800.h b/include/configs/stream800.h
+index 3e0c805..75c8654 100644
+--- a/include/configs/stream800.h
++++ b/include/configs/stream800.h
+@@ -747,20 +747,27 @@
+         "fi; " \
+         "if test ${bootcount} -eq 1; " \
+             "then " \
+-            "echo \"INFO: bootcount(${bootcount}) equals 1\"; " \
+-            "run usbmount; " \
+-            "if usb storage; " \
+-            "then " \
+-                "if fatfind usb 0 / sfupdate; " \
++            "if fwup usb_update_req; " \
++                "then " \
++                "echo \"INFO: USB update request active, checking USB for update file ...\"; " \
++                "run usbmount; " \
++                "if usb storage; " \
+                     "then " \
+-                    "echo \"INFO: sfupdate image found on USB thumbdrive\"; " \
+-                    "bstate dontunplug; " \
+-                    "run update_download_from_usb; " \
+-                "else " \
+-                    "echo \"ERROR: sfupdate image not found on USB thumbdrive\"; " \
+-                    "sfu errstate; " \
++                    "if fatfind usb 0 / sfupdate; " \
++                        "then " \
++                        "echo \"INFO: sfupdate image found on USB thumbdrive\"; " \
++                        "bstate dontunplug; " \
++                        "run update_download_from_usb; " \
++                    "else " \
++                        "echo \"ERROR: sfupdate image not found on USB thumbdrive\"; " \
++                        "sfu errstate; " \
++                    "fi; " \
+                 "fi; " \
++            "else " \
++                "echo \"INFO: USB update request is not active, not checking USB for FW update file\" ;" \
+             "fi; " \
++        "else " \
++	        "echo \"INFO: Bootcount != 1, not checking USB for FW update file\" ;" \
+         "fi; " \
+         "if fwup fail || fwup update || test -z \\\\'${mlo_vers}\\\\' || test -z \\\\'${uboot_vers}\\\\' || test -z \\\\'${ubootenv_vers}\\\\' || test -z \\\\'${dts_vers}\\\\' || test -z \\\\'${rootfs_vers}\\\\' || test -z \\\\'${kernel_vers}\\\\'; " \
+             "then " \
+-- 
+2.7.4
+

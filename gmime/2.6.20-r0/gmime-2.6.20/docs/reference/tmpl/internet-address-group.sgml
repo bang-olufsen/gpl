@@ -1,0 +1,65 @@
+<!-- ##### SECTION Title ##### -->
+internet-address-group
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT InternetAddressGroup ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION internet_address_group_new ##### -->
+<para>
+
+</para>
+
+@name: 
+@Returns: 
+
+
+<!-- ##### FUNCTION internet_address_group_get_members ##### -->
+<para>
+
+</para>
+
+@group: 
+@Returns: 
+
+
+<!-- ##### FUNCTION internet_address_group_set_members ##### -->
+<para>
+
+</para>
+
+@group: 
+@members: 
+
+
+<!-- ##### FUNCTION internet_address_group_add_member ##### -->
+<para>
+
+</para>
+
+@group: 
+@member: 
+@Returns: 
+
+

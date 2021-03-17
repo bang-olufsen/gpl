@@ -1,0 +1,94 @@
+<!-- ##### SECTION Title ##### -->
+gmime-filter-html
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GMimeFilterHTML ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO GMIME_FILTER_HTML_PRE ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO GMIME_FILTER_HTML_CONVERT_NL ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO GMIME_FILTER_HTML_CONVERT_SPACES ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO GMIME_FILTER_HTML_CONVERT_URLS ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO GMIME_FILTER_HTML_MARK_CITATION ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO GMIME_FILTER_HTML_CONVERT_ADDRESSES ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO GMIME_FILTER_HTML_ESCAPE_8BIT ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO GMIME_FILTER_HTML_CITE ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### FUNCTION g_mime_filter_html_new ##### -->
+<para>
+
+</para>
+
+@flags: 
+@colour: 
+@Returns: 
+
+

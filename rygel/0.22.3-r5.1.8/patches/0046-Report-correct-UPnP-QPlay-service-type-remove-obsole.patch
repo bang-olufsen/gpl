@@ -1,0 +1,60 @@
+From 4cb22a02c62e3e248c144ac39317dc13bb832255 Mon Sep 17 00:00:00 2001
+From: Milan Plzik <milan.plzik@streamunlimited.com>
+Date: Fri, 27 Mar 2015 16:26:16 +0100
+Subject: [PATCH] Report correct UPnP QPlay service type; remove obsolete
+ COMPAT_TYPE
+
+Signed-off-by: Milan Plzik <milan.plzik@streamunlimited.com>
+---
+ src/librygel-renderer/rygel-media-renderer-plugin.c | 2 +-
+ src/librygel-renderer/rygel-qplay.c                 | 3 +--
+ src/librygel-renderer/rygel-qplay.vala              | 6 +-----
+ 3 files changed, 3 insertions(+), 8 deletions(-)
+
+diff --git a/src/librygel-renderer/rygel-media-renderer-plugin.c b/src/librygel-renderer/rygel-media-renderer-plugin.c
+index 4a26b8f..16f56a5 100644
+--- a/src/librygel-renderer/rygel-media-renderer-plugin.c
++++ b/src/librygel-renderer/rygel-media-renderer-plugin.c
+@@ -257,7 +257,7 @@ GType rygel_av_transport_get_type (void) G_GNUC_CONST;
+ #define RYGEL_RENDERING_CONTROL_DESCRIPTION_PATH "xml/RenderingControl2.xml"
+ GType rygel_rendering_control_get_type (void) G_GNUC_CONST;
+ #define QPLAY_UPNP_ID "urn:tencent-com:serviceId:QPlay"
+-#define QPLAY_UPNP_TYPE "urn:tencent-com:service:QPlay:2"
++#define QPLAY_UPNP_TYPE "urn:schemas-tencent-com:service:QPlay:1"
+ #define QPLAY_DESCRIPTION_PATH "xml/QPlayDescription.xml"
+ GType qplay_get_type (void) G_GNUC_CONST;
+ RygelMediaPlayer* rygel_media_renderer_plugin_get_player (RygelMediaRendererPlugin* self);
+diff --git a/src/librygel-renderer/rygel-qplay.c b/src/librygel-renderer/rygel-qplay.c
+index b3a7f64..afaf276 100644
+--- a/src/librygel-renderer/rygel-qplay.c
++++ b/src/librygel-renderer/rygel-qplay.c
+@@ -152,8 +152,7 @@ enum  {
+ 	QPLAY_DUMMY_PROPERTY
+ };
+ #define QPLAY_UPNP_ID "urn:tencent-com:serviceId:QPlay"
+-#define QPLAY_UPNP_TYPE "urn:tencent-com:service:QPlay:2"
+-#define QPLAY_COMPAT_TYPE "urn:schemas-tencent-com:service:QPlay:2"
++#define QPLAY_UPNP_TYPE "urn:schemas-tencent-com:service:QPlay:1"
+ #define QPLAY_DESCRIPTION_PATH "xml/QPlayDescription.xml"
+ static void qplay_real_constructed (GObject* base);
+ GType rygel_media_renderer_plugin_get_type (void) G_GNUC_CONST;
+diff --git a/src/librygel-renderer/rygel-qplay.vala b/src/librygel-renderer/rygel-qplay.vala
+index a47f1ba..84d1b00 100644
+--- a/src/librygel-renderer/rygel-qplay.vala
++++ b/src/librygel-renderer/rygel-qplay.vala
+@@ -31,11 +31,7 @@ internal class QPlay: Service {
+                     "urn:tencent-com:serviceId:QPlay";
+     // UPnP requires that points replaced by hyphens in domain names
+     public const string UPNP_TYPE =
+-                    "urn:tencent-com:service:QPlay:2";
+-    // The XBox however doesn't like that so we replace it in the service
+-    // description later
+-    public const string COMPAT_TYPE =
+-                    "urn:schemas-tencent-com:service:QPlay:2";
++                    "urn:schemas-tencent-com:service:QPlay:1";
+     public const string DESCRIPTION_PATH =
+                     "xml/QPlayDescription.xml";
+ 
+-- 
+1.9.1
+

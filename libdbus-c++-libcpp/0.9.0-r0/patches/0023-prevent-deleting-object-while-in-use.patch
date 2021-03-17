@@ -1,0 +1,262 @@
+From 7cf8a931f29df66068d02bf596886f48141d60f0 Mon Sep 17 00:00:00 2001
+From: Martin Geier <martin.geier@streamunlimited.com>
+Date: Mon, 4 Jun 2018 13:23:18 +0200
+Subject: [PATCH] prevent deleting object while in use
+
+handle_message method can be running in dispatcher thread
+while somebody calls object destructor from different thread.
+Destructor has to wait until message is processed.
+
+Signed-off-by: Martin Geier <martin.geier@streamunlimited.com>
+---
+ src/object.cpp | 158 ++++++++++++++++++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 152 insertions(+), 6 deletions(-)
+
+diff --git a/src/object.cpp b/src/object.cpp
+index 96e20ba..b30f1a9 100644
+--- a/src/object.cpp
++++ b/src/object.cpp
+@@ -69,6 +69,10 @@ static DBusObjectPathVTable _vtable =
+   NULL, NULL, NULL, NULL
+ };
+ 
++static std::map<Object *, int> _activeObjects;
++static pthread_mutex_t _activeObjectMutex = PTHREAD_MUTEX_INITIALIZER;
++static pthread_cond_t _activeObjectCond = PTHREAD_COND_INITIALIZER;
++
+ void ObjectAdaptor::Private::unregister_function_stub(DBusConnection *conn, void *data)
+ {
+   //TODO: what do we have to do here ?
+@@ -78,6 +82,24 @@ DBusHandlerResult ObjectAdaptor::Private::message_function_stub(DBusConnection *
+ {
+   ObjectAdaptor *o = static_cast<ObjectAdaptor *>(data);
+ 
++  pthread_mutex_lock(&_activeObjectMutex);
++
++  std::map<Object *, int>::iterator it = _activeObjects.find(o);
++
++  if (it != _activeObjects.end())
++  {
++    // increment usage count
++    it->second++;
++  }
++  else
++  {
++    // object was removed
++    o = NULL;
++  }
++
++  pthread_mutex_unlock(&_activeObjectMutex);
++
++  DBusHandlerResult result;
+   if (o)
+   {
+     Message msg(new Message::Private(dmsg));
+@@ -89,14 +111,32 @@ DBusHandlerResult ObjectAdaptor::Private::message_function_stub(DBusConnection *
+               msg.destination()
+              );
+ 
+-    return o->handle_message(msg)
++    result = o->handle_message(msg)
+            ? DBUS_HANDLER_RESULT_HANDLED
+            : DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
+   }
+   else
+   {
+-    return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
++    result = DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
++  }
++
++  if (o)
++  {
++    pthread_mutex_lock(&_activeObjectMutex);
++
++    // decrement usage count
++    it = _activeObjects.find(o);
++    if (it != _activeObjects.end())
++    {
++      it->second--;
++    }
++
++    pthread_cond_broadcast(&_activeObjectCond);
++
++    pthread_mutex_unlock(&_activeObjectMutex);
+   }
++
++  return result;
+ }
+ 
+ typedef std::map<Path, ObjectAdaptor *> ObjectAdaptorTable;
+@@ -171,6 +211,13 @@ void ObjectAdaptor::register_obj()
+ {
+   debug_log("registering local object %s", path().c_str());
+ 
++  pthread_mutex_lock(&_activeObjectMutex);
++
++  // add object to existing objects, set usage count to 0
++  _activeObjects[this] = 0;
++
++  pthread_mutex_unlock(&_activeObjectMutex);
++
+   if (!dbus_connection_register_object_path(conn()._pvt->conn, path().c_str(), &_vtable, this))
+   {
+     throw ErrorNoMemory("unable to register object path");
+@@ -186,6 +233,30 @@ void ObjectAdaptor::unregister_obj(bool)
+   debug_log("unregistering local object %s", path().c_str());
+ 
+   dbus_connection_unregister_object_path(conn()._pvt->conn, path().c_str());
++
++  pthread_mutex_lock(&_activeObjectMutex);
++
++  while (true)
++  {
++    // wait till object is free for use
++    std::map<Object *, int>::iterator it = _activeObjects.find(this);
++    if (it != _activeObjects.end() && it->second != 0)
++    {
++      pthread_cond_wait(&_activeObjectCond, &_activeObjectMutex);
++    }
++    else
++    {
++      break;
++    }
++  }
++
++  // remove object
++  _activeObjects.erase(this);
++
++  // notify threads
++  pthread_cond_broadcast(&_activeObjectCond);
++
++  pthread_mutex_unlock(&_activeObjectMutex);
+ }
+ 
+ void ObjectAdaptor::_emit_signal(SignalMessage &sig)
+@@ -302,6 +373,13 @@ void ObjectProxy::register_obj()
+ {
+   debug_log("registering remote object %s", path().c_str());
+ 
++  pthread_mutex_lock(&_activeObjectMutex);
++
++  // add object to existing objects, set usage count to 0
++  _activeObjects[this] = 0;
++
++  pthread_mutex_unlock(&_activeObjectMutex);
++
+   _filtered = new Callback<ObjectProxy, bool, const Message &>(this, &ObjectProxy::handle_message);
+ 
+   conn().add_filter(_filtered);
+@@ -327,6 +405,30 @@ void ObjectProxy::unregister_obj(bool throw_on_error)
+     ++ii;
+   }
+   conn().remove_filter(_filtered);
++
++  pthread_mutex_lock(&_activeObjectMutex);
++
++  while (true)
++  {
++    // wait till object is free for use
++    std::map<Object *, int>::iterator it = _activeObjects.find(this);
++    if (it != _activeObjects.end() && it->second != 0)
++    {
++      pthread_cond_wait(&_activeObjectCond, &_activeObjectMutex);
++    }
++    else
++    {
++      break;
++    }
++  }
++
++  // remove object
++  _activeObjects.erase(this);
++
++  // notify threads
++  pthread_cond_broadcast(&_activeObjectCond);
++
++  pthread_mutex_unlock(&_activeObjectMutex);
+ }
+ 
+ Message ObjectProxy::_invoke_method(CallMessage &call)
+@@ -353,6 +455,29 @@ bool ObjectProxy::_invoke_method_noreply(CallMessage &call)
+ 
+ bool ObjectProxy::handle_message(const Message &msg)
+ {
++  bool exit = false;
++  pthread_mutex_lock(&_activeObjectMutex);
++
++  std::map<Object *, int>::iterator it = _activeObjects.find(this);
++
++  if (it != _activeObjects.end())
++  {
++    // increment usage count
++    it->second++;
++  }
++  else
++  {
++    // object was removed
++    exit = true;
++  }
++
++  pthread_mutex_unlock(&_activeObjectMutex);
++
++  // this object was already removed, exit immediatelly
++  if (exit)
++    return false;
++
++  bool ret = false;
+   switch (msg.type())
+   {
+   case DBUS_MESSAGE_TYPE_SIGNAL:
+@@ -362,7 +487,11 @@ bool ObjectProxy::handle_message(const Message &msg)
+     const char *member	= smsg.member();
+     const char *objpath	= smsg.path();
+ 
+-    if (objpath != path()) return false;
++    if (objpath != path())
++    {
++      ret = false;
++      break;
++    }
+ 
+     debug_log("filtered signal %s(in %s) from %s to object %s",
+               member, interface, msg.sender(), objpath);
+@@ -370,16 +499,33 @@ bool ObjectProxy::handle_message(const Message &msg)
+     InterfaceProxy *ii = find_interface(interface);
+     if (ii)
+     {
+-      return ii->dispatch_signal(smsg);
++      ret = ii->dispatch_signal(smsg);
++      break;
+     }
+     else
+     {
+-      return false;
++      ret = false;
++      break;
+     }
+   }
+   default:
+   {
+-    return false;
++    ret = false;
+   }
+   }
++
++  pthread_mutex_lock(&_activeObjectMutex);
++
++  // decrement usage count
++  it = _activeObjects.find(this);
++  if (it != _activeObjects.end())
++  {
++    it->second--;
++  }
++
++  pthread_cond_broadcast(&_activeObjectCond);
++
++  pthread_mutex_unlock(&_activeObjectMutex);
++
++  return ret;
+ }
+-- 
+2.7.4
+

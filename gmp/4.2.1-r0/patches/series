@@ -1,0 +1,4 @@
+Use-__gnu_inline__-attribute.patch -p1
+gmp_fix_for_automake-1.12.patch -p1
+avoid-h-asm-constraint-for-MIPS.patch -p1
+prevent-calls-to-mpn_add_nc-if-HAVE_NATIVE_mpn_sub_n.patch -p1

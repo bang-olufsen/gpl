@@ -1,0 +1,168 @@
+From 013e7d7a5f89be4dba1d21004540c0cd1a47098d Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Fri, 28 Apr 2017 15:03:56 +0200
+Subject: [PATCH] sound :davinci: am33xx-s800: Export dsp clocks over alsa
+ interface
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ sound/soc/davinci/am33xx-s800.c | 118 ++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 118 insertions(+)
+
+diff --git a/sound/soc/davinci/am33xx-s800.c b/sound/soc/davinci/am33xx-s800.c
+index 08f64dd..ed29328 100644
+--- a/sound/soc/davinci/am33xx-s800.c
++++ b/sound/soc/davinci/am33xx-s800.c
+@@ -32,10 +32,17 @@
+ #define MCLK_48k	24576000
+ #define MCLK_44k1	22579200
+ 
++#define DSP_CLK1_KCONTROL_NAME "DSPclk1"
++#define DSP_CLK2_KCONTROL_NAME "DSPclk2"
++
+ struct snd_soc_am33xx_s800 {
+ 	struct snd_soc_card	card;
+ 	struct clk 		*mclk;
+ 	struct clk		*mclk_rx;
++	struct clk		*mclk_dsp1;
++	int			mclk_dsp1_enabled;
++	struct clk		*mclk_dsp2;
++	int			mclk_dsp2_enabled;
+ 	unsigned int		mclk_rate_base_48k;
+ 	unsigned int		mclk_rate;
+ 	unsigned int		mclk_rate_rx;
+@@ -424,6 +431,77 @@ static int am33xx_s800_drift_put(struct snd_kcontrol *kcontrol,
+         return 1;
+ }
+ 
++static int am33xx_s800_dspclk_info(struct snd_kcontrol *kcontrol,
++				      struct snd_ctl_elem_info *uinfo)
++{
++	uinfo->type = SNDRV_CTL_ELEM_TYPE_BOOLEAN;
++	uinfo->value.integer.min = 0;
++	uinfo->value.integer.max = 1;
++	uinfo->count = 1;
++
++	return 0;
++}
++
++static int am33xx_s800_dspclk_get(struct snd_kcontrol *kcontrol,
++				 struct snd_ctl_elem_value *ucontrol)
++{
++        struct snd_soc_card *card =  snd_kcontrol_chip(kcontrol);
++	struct snd_soc_am33xx_s800 *priv = snd_soc_card_get_drvdata(card);
++	int val = 0;
++
++	if (!strcmp(kcontrol->id.name, DSP_CLK1_KCONTROL_NAME)) {
++		val = priv->mclk_dsp1_enabled;
++	}
++
++	if (!strcmp(kcontrol->id.name, DSP_CLK2_KCONTROL_NAME)) {
++		val = priv->mclk_dsp2_enabled;
++	}
++
++	ucontrol->value.integer.value[0] = val;
++
++	return 0;
++}
++
++static int am33xx_s800_dspclk_put(struct snd_kcontrol *kcontrol,
++				     struct snd_ctl_elem_value *ucontrol)
++{
++        struct snd_soc_card *card =  snd_kcontrol_chip(kcontrol);
++	struct snd_soc_am33xx_s800 *priv = snd_soc_card_get_drvdata(card);
++	int val = ucontrol->value.integer.value[0];
++	struct clk *dsp_clk = NULL;
++	int clk_status = -1, dsp1 = 0, dsp2 = 0;
++
++	if (!strcmp(kcontrol->id.name, DSP_CLK1_KCONTROL_NAME)) {
++		dsp1 = 1;
++		dsp_clk = priv->mclk_dsp1;
++		clk_status = priv->mclk_dsp1_enabled;
++	}
++
++	if (!strcmp(kcontrol->id.name, DSP_CLK2_KCONTROL_NAME)) {
++		dsp2 = 1;
++		dsp_clk = priv->mclk_dsp2;
++		clk_status = priv->mclk_dsp2_enabled;
++	}
++
++	if (clk_status == -1 || dsp_clk == NULL)
++		return 0;
++
++	if (val) {
++		if (!clk_status)
++			clk_prepare_enable(dsp_clk);
++	} else {
++		if (clk_status)
++			clk_disable_unprepare(dsp_clk);
++	}
++
++	/* update internal value */
++	if (dsp1)
++		priv->mclk_dsp1_enabled = val;
++	else if (dsp2)
++		priv->mclk_dsp2_enabled = val;
++
++        return 1;
++}
+ static const struct snd_kcontrol_new am33xx_s800_controls[] = {
+ 	{
+ 		.iface 	= SNDRV_CTL_ELEM_IFACE_MIXER,
+@@ -432,6 +510,20 @@ static const struct snd_kcontrol_new am33xx_s800_controls[] = {
+ 		.get	= am33xx_s800_drift_get,
+ 		.put	= am33xx_s800_drift_put,
+ 	},
++	{
++		.iface 	= SNDRV_CTL_ELEM_IFACE_MIXER,
++		.name	= "DSPclk1",
++		.info	= am33xx_s800_dspclk_info,
++		.get	= am33xx_s800_dspclk_get,
++		.put	= am33xx_s800_dspclk_put,
++	},
++	{
++		.iface 	= SNDRV_CTL_ELEM_IFACE_MIXER,
++		.name	= "DSPclk2",
++		.info	= am33xx_s800_dspclk_info,
++		.get	= am33xx_s800_dspclk_get,
++		.put	= am33xx_s800_dspclk_put,
++	},
+ };
+ 
+ static int am33xx_s800_passive_mode_get(struct snd_kcontrol *kcontrol,
+@@ -591,6 +683,32 @@ static int snd_soc_am33xx_s800_probe(struct platform_device *pdev)
+ 		dev_err(dev, "failed to get MCLK RX\n");
+ 		return -EPROBE_DEFER;
+ 	}
++	/*
++	 * dspclk1 and dspclk2 are ASE specific clocks
++	 * which we need to disable/enable based on device state (online/standby)
++	 * we export them over alsa controls to have easy access
++	 */
++	priv->mclk_dsp1 = of_clk_get(top_node, 2);
++	if (IS_ERR(priv->mclk_dsp1)) {
++		dev_err(dev, "failed to get MCLK dsp1\n");
++		priv->mclk_dsp1 = NULL;
++	} else {
++		/* during startup clocks should be disabled */
++		clk_prepare_enable(priv->mclk_dsp1);
++		clk_disable_unprepare(priv->mclk_dsp1);
++		priv->mclk_dsp1_enabled = 0;
++	}
++
++	priv->mclk_dsp2 = of_clk_get(top_node, 3);
++	if (IS_ERR(priv->mclk_dsp2)) {
++		dev_err(dev, "failed to get MCLK dsp2\n");
++		priv->mclk_dsp2 = NULL;
++	} else {
++		/* during startup clocks should be disabled */
++		clk_prepare_enable(priv->mclk_dsp2);
++		clk_disable_unprepare(priv->mclk_dsp2);
++		priv->mclk_dsp2_enabled = 0;
++	}
+ 
+ 	priv->regulator = devm_regulator_get(dev, "vd");
+ 	if (IS_ERR(priv->regulator)) {
+-- 
+2.7.4
+

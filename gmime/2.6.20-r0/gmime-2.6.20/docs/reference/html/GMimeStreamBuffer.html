@@ -1,0 +1,214 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GMimeStreamBuffer</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="GMime 2.6 Reference Manual">
+<link rel="up" href="Streams.html" title="Streams">
+<link rel="prev" href="GMimeStreamFilter.html" title="GMimeStreamFilter">
+<link rel="next" href="GMimeStreamPipe.html" title="GMimeStreamPipe">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="GMimeStreamFilter.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="Streams.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">GMime 2.6 Reference Manual</th>
+<td><a accesskey="n" href="GMimeStreamPipe.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#GMimeStreamBuffer.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#GMimeStreamBuffer.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#GMimeStreamBuffer.object-hierarchy" class="shortcut">Object Hierarchy</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="GMimeStreamBuffer"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="GMimeStreamBuffer.top_of_page"></a>GMimeStreamBuffer</span></h2>
+<p>GMimeStreamBuffer — A buffered stream</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="GMimeStreamBuffer.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">enum                <a class="link" href="GMimeStreamBuffer.html#GMimeStreamBufferMode" title="enum GMimeStreamBufferMode">GMimeStreamBufferMode</a>;
+struct              <a class="link" href="GMimeStreamBuffer.html#GMimeStreamBuffer-struct" title="struct GMimeStreamBuffer">GMimeStreamBuffer</a>;
+<a class="link" href="GMimeStream.html" title="GMimeStream"><span class="returnvalue">GMimeStream</span></a> *       <a class="link" href="GMimeStreamBuffer.html#g-mime-stream-buffer-new" title="g_mime_stream_buffer_new ()">g_mime_stream_buffer_new</a>            (<em class="parameter"><code><a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a> *source</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeStreamBuffer.html#GMimeStreamBufferMode" title="enum GMimeStreamBufferMode"><span class="type">GMimeStreamBufferMode</span></a> mode</code></em>);
+<span class="returnvalue">ssize_t</span>             <a class="link" href="GMimeStreamBuffer.html#g-mime-stream-buffer-gets" title="g_mime_stream_buffer_gets ()">g_mime_stream_buffer_gets</a>           (<em class="parameter"><code><a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a> *stream</code></em>,
+                                                         <em class="parameter"><code><span class="type">char</span> *buf</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> max</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimeStreamBuffer.html#g-mime-stream-buffer-readln" title="g_mime_stream_buffer_readln ()">g_mime_stream_buffer_readln</a>         (<em class="parameter"><code><a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a> *stream</code></em>,
+                                                         <em class="parameter"><code><span class="type">GByteArray</span> *buffer</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="GMimeStreamBuffer.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  GObject
+   +----<a class="link" href="GMimeStream.html" title="GMimeStream">GMimeStream</a>
+         +----GMimeStreamBuffer
+</pre>
+</div>
+<div class="refsect1">
+<a name="GMimeStreamBuffer.description"></a><h2>Description</h2>
+<p>
+A <a class="link" href="GMimeStreamBuffer.html" title="GMimeStreamBuffer"><span class="type">GMimeStreamBuffer</span></a> can be used on top of any other type of stream
+and has 3 modes: block reads, block writes, and cached reads. Block
+reads are especially useful if you will be making a lot of small
+reads from a stream that accesses the file system. Block writes are
+useful for very much the same reason. The final mode, cached reads,
+can become memory intensive but can be very helpful when inheriting
+from a stream that does not support seeking (Note: this mode is the
+least tested so be careful using it).
+</p>
+</div>
+<div class="refsect1">
+<a name="GMimeStreamBuffer.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="GMimeStreamBufferMode"></a><h3>enum GMimeStreamBufferMode</h3>
+<pre class="programlisting">typedef enum {
+	GMIME_STREAM_BUFFER_CACHE_READ,
+	GMIME_STREAM_BUFFER_BLOCK_READ,
+	GMIME_STREAM_BUFFER_BLOCK_WRITE
+} GMimeStreamBufferMode;
+</pre>
+<p>
+The buffering mode for a <a class="link" href="GMimeStreamBuffer.html" title="GMimeStreamBuffer"><span class="type">GMimeStreamBuffer</span></a> stream.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><a name="GMIME-STREAM-BUFFER-CACHE-READ:CAPS"></a><span class="term"><code class="literal">GMIME_STREAM_BUFFER_CACHE_READ</code></span></p></td>
+<td>Cache all reads.
+</td>
+</tr>
+<tr>
+<td><p><a name="GMIME-STREAM-BUFFER-BLOCK-READ:CAPS"></a><span class="term"><code class="literal">GMIME_STREAM_BUFFER_BLOCK_READ</code></span></p></td>
+<td>Read in 4k blocks.
+</td>
+</tr>
+<tr>
+<td><p><a name="GMIME-STREAM-BUFFER-BLOCK-WRITE:CAPS"></a><span class="term"><code class="literal">GMIME_STREAM_BUFFER_BLOCK_WRITE</code></span></p></td>
+<td>Write in 4k blocks.
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GMimeStreamBuffer-struct"></a><h3>struct GMimeStreamBuffer</h3>
+<pre class="programlisting">struct GMimeStreamBuffer;</pre>
+<p>
+A buffered stream wrapper around any <a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a> object.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-stream-buffer-new"></a><h3>g_mime_stream_buffer_new ()</h3>
+<pre class="programlisting"><a class="link" href="GMimeStream.html" title="GMimeStream"><span class="returnvalue">GMimeStream</span></a> *       g_mime_stream_buffer_new            (<em class="parameter"><code><a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a> *source</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeStreamBuffer.html#GMimeStreamBufferMode" title="enum GMimeStreamBufferMode"><span class="type">GMimeStreamBufferMode</span></a> mode</code></em>);</pre>
+<p>
+Creates a new GMimeStreamBuffer object.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>source</code></em> :</span></p></td>
+<td>source stream</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>mode</code></em> :</span></p></td>
+<td>buffering mode</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new buffer stream with source <em class="parameter"><code>source</code></em> and mode <em class="parameter"><code>mode</code></em>.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-stream-buffer-gets"></a><h3>g_mime_stream_buffer_gets ()</h3>
+<pre class="programlisting"><span class="returnvalue">ssize_t</span>             g_mime_stream_buffer_gets           (<em class="parameter"><code><a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a> *stream</code></em>,
+                                                         <em class="parameter"><code><span class="type">char</span> *buf</code></em>,
+                                                         <em class="parameter"><code><span class="type">size_t</span> max</code></em>);</pre>
+<p>
+Reads in at most one less than <em class="parameter"><code>max</code></em> characters from <em class="parameter"><code>stream</code></em> and
+stores them into the buffer pointed to by <em class="parameter"><code>buf</code></em>. Reading stops after
+an EOS or newline ('\n'). If a newline is read, it is stored into
+the buffer. A '\0' is stored after the last character in the
+buffer.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>stream</code></em> :</span></p></td>
+<td>stream</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>buf</code></em> :</span></p></td>
+<td>line buffer</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>max</code></em> :</span></p></td>
+<td>max length of a line</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the number of characters read into <em class="parameter"><code>buf</code></em> on success or <code class="literal">-1</code>
+on fail.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-stream-buffer-readln"></a><h3>g_mime_stream_buffer_readln ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_stream_buffer_readln         (<em class="parameter"><code><a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a> *stream</code></em>,
+                                                         <em class="parameter"><code><span class="type">GByteArray</span> *buffer</code></em>);</pre>
+<p>
+Reads a single line into <em class="parameter"><code>buffer</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>stream</code></em> :</span></p></td>
+<td>stream</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>buffer</code></em> :</span></p></td>
+<td>output buffer</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<div class="refsect1">
+<a name="GMimeStreamBuffer.see-also"></a><h2>See Also</h2>
+<a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

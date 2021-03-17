@@ -1,0 +1,264 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GMimeDataWrapper</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="GMime 2.6 Reference Manual">
+<link rel="up" href="DataWrappers.html" title="Data Wrappers">
+<link rel="prev" href="DataWrappers.html" title="Data Wrappers">
+<link rel="next" href="Headers.html" title="Message and MIME Headers">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="DataWrappers.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="DataWrappers.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">GMime 2.6 Reference Manual</th>
+<td><a accesskey="n" href="Headers.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#GMimeDataWrapper.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#GMimeDataWrapper.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#GMimeDataWrapper.object-hierarchy" class="shortcut">Object Hierarchy</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="GMimeDataWrapper"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="GMimeDataWrapper.top_of_page"></a>GMimeDataWrapper</span></h2>
+<p>GMimeDataWrapper — Content objects</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="GMimeDataWrapper.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">struct              <a class="link" href="GMimeDataWrapper.html#GMimeDataWrapper-struct" title="struct GMimeDataWrapper">GMimeDataWrapper</a>;
+<a class="link" href="GMimeDataWrapper.html" title="GMimeDataWrapper"><span class="returnvalue">GMimeDataWrapper</span></a> *  <a class="link" href="GMimeDataWrapper.html#g-mime-data-wrapper-new" title="g_mime_data_wrapper_new ()">g_mime_data_wrapper_new</a>             (<em class="parameter"><code><span class="type">void</span></code></em>);
+<a class="link" href="GMimeDataWrapper.html" title="GMimeDataWrapper"><span class="returnvalue">GMimeDataWrapper</span></a> *  <a class="link" href="GMimeDataWrapper.html#g-mime-data-wrapper-new-with-stream" title="g_mime_data_wrapper_new_with_stream ()">g_mime_data_wrapper_new_with_stream</a> (<em class="parameter"><code><a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a> *stream</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="gmime-gmime-encodings.html#GMimeContentEncoding" title="enum GMimeContentEncoding"><span class="type">GMimeContentEncoding</span></a> encoding</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimeDataWrapper.html#g-mime-data-wrapper-set-stream" title="g_mime_data_wrapper_set_stream ()">g_mime_data_wrapper_set_stream</a>      (<em class="parameter"><code><a class="link" href="GMimeDataWrapper.html" title="GMimeDataWrapper"><span class="type">GMimeDataWrapper</span></a> *wrapper</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a> *stream</code></em>);
+<a class="link" href="GMimeStream.html" title="GMimeStream"><span class="returnvalue">GMimeStream</span></a> *       <a class="link" href="GMimeDataWrapper.html#g-mime-data-wrapper-get-stream" title="g_mime_data_wrapper_get_stream ()">g_mime_data_wrapper_get_stream</a>      (<em class="parameter"><code><a class="link" href="GMimeDataWrapper.html" title="GMimeDataWrapper"><span class="type">GMimeDataWrapper</span></a> *wrapper</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimeDataWrapper.html#g-mime-data-wrapper-set-encoding" title="g_mime_data_wrapper_set_encoding ()">g_mime_data_wrapper_set_encoding</a>    (<em class="parameter"><code><a class="link" href="GMimeDataWrapper.html" title="GMimeDataWrapper"><span class="type">GMimeDataWrapper</span></a> *wrapper</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="gmime-gmime-encodings.html#GMimeContentEncoding" title="enum GMimeContentEncoding"><span class="type">GMimeContentEncoding</span></a> encoding</code></em>);
+<a class="link" href="gmime-gmime-encodings.html#GMimeContentEncoding" title="enum GMimeContentEncoding"><span class="returnvalue">GMimeContentEncoding</span></a> <a class="link" href="GMimeDataWrapper.html#g-mime-data-wrapper-get-encoding" title="g_mime_data_wrapper_get_encoding ()">g_mime_data_wrapper_get_encoding</a>   (<em class="parameter"><code><a class="link" href="GMimeDataWrapper.html" title="GMimeDataWrapper"><span class="type">GMimeDataWrapper</span></a> *wrapper</code></em>);
+<span class="returnvalue">ssize_t</span>             <a class="link" href="GMimeDataWrapper.html#g-mime-data-wrapper-write-to-stream" title="g_mime_data_wrapper_write_to_stream ()">g_mime_data_wrapper_write_to_stream</a> (<em class="parameter"><code><a class="link" href="GMimeDataWrapper.html" title="GMimeDataWrapper"><span class="type">GMimeDataWrapper</span></a> *wrapper</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a> *stream</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="GMimeDataWrapper.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  GObject
+   +----GMimeDataWrapper
+</pre>
+</div>
+<div class="refsect1">
+<a name="GMimeDataWrapper.description"></a><h2>Description</h2>
+<p>
+A <a class="link" href="GMimeDataWrapper.html" title="GMimeDataWrapper"><span class="type">GMimeDataWrapper</span></a> is a wrapper object for a <a class="link" href="GMimePart.html" title="GMimePart"><span class="type">GMimePart</span></a>'s body,
+allowing clients to read the content from the backing stream
+without having to know whether it is encoded/compressed/etc and not
+neding to know how to undo said encoding(s).
+</p>
+</div>
+<div class="refsect1">
+<a name="GMimeDataWrapper.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="GMimeDataWrapper-struct"></a><h3>struct GMimeDataWrapper</h3>
+<pre class="programlisting">struct GMimeDataWrapper;</pre>
+<p>
+A wrapper for a stream which may be encoded.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-data-wrapper-new"></a><h3>g_mime_data_wrapper_new ()</h3>
+<pre class="programlisting"><a class="link" href="GMimeDataWrapper.html" title="GMimeDataWrapper"><span class="returnvalue">GMimeDataWrapper</span></a> *  g_mime_data_wrapper_new             (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>
+Creates a new <a class="link" href="GMimeDataWrapper.html" title="GMimeDataWrapper"><span class="type">GMimeDataWrapper</span></a> object.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new data wrapper object.</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-data-wrapper-new-with-stream"></a><h3>g_mime_data_wrapper_new_with_stream ()</h3>
+<pre class="programlisting"><a class="link" href="GMimeDataWrapper.html" title="GMimeDataWrapper"><span class="returnvalue">GMimeDataWrapper</span></a> *  g_mime_data_wrapper_new_with_stream (<em class="parameter"><code><a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a> *stream</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="gmime-gmime-encodings.html#GMimeContentEncoding" title="enum GMimeContentEncoding"><span class="type">GMimeContentEncoding</span></a> encoding</code></em>);</pre>
+<p>
+Creates a new <a class="link" href="GMimeDataWrapper.html" title="GMimeDataWrapper"><span class="type">GMimeDataWrapper</span></a> object around <em class="parameter"><code>stream</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>stream</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>encoding</code></em> :</span></p></td>
+<td>stream's encoding</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a data wrapper around <em class="parameter"><code>stream</code></em>. Since the wrapper owns its
+own reference on the stream, caller is responsible for unrefing
+its own copy.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-data-wrapper-set-stream"></a><h3>g_mime_data_wrapper_set_stream ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_data_wrapper_set_stream      (<em class="parameter"><code><a class="link" href="GMimeDataWrapper.html" title="GMimeDataWrapper"><span class="type">GMimeDataWrapper</span></a> *wrapper</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a> *stream</code></em>);</pre>
+<p>
+Replaces the wrapper's internal stream with <em class="parameter"><code>stream</code></em>. Don't forget,
+if <em class="parameter"><code>stream</code></em> is not of the same encoding as the old stream, you'll
+want to call <a class="link" href="GMimeDataWrapper.html#g-mime-data-wrapper-set-encoding" title="g_mime_data_wrapper_set_encoding ()"><code class="function">g_mime_data_wrapper_set_encoding()</code></a> as well.
+</p>
+<p>
+Note: caller is responsible for its own reference on
+<em class="parameter"><code>stream</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>wrapper</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeDataWrapper.html" title="GMimeDataWrapper"><span class="type">GMimeDataWrapper</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>stream</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-data-wrapper-get-stream"></a><h3>g_mime_data_wrapper_get_stream ()</h3>
+<pre class="programlisting"><a class="link" href="GMimeStream.html" title="GMimeStream"><span class="returnvalue">GMimeStream</span></a> *       g_mime_data_wrapper_get_stream      (<em class="parameter"><code><a class="link" href="GMimeDataWrapper.html" title="GMimeDataWrapper"><span class="type">GMimeDataWrapper</span></a> *wrapper</code></em>);</pre>
+<p>
+Gets a reference to the stream wrapped by <em class="parameter"><code>wrapper</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>wrapper</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeDataWrapper.html" title="GMimeDataWrapper"><span class="type">GMimeDataWrapper</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a reference to the internal stream. <span class="annotation">[<a href="http://foldoc.org/transfer%20none"><span class="acronym">transfer none</span></a>]</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-data-wrapper-set-encoding"></a><h3>g_mime_data_wrapper_set_encoding ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_data_wrapper_set_encoding    (<em class="parameter"><code><a class="link" href="GMimeDataWrapper.html" title="GMimeDataWrapper"><span class="type">GMimeDataWrapper</span></a> *wrapper</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="gmime-gmime-encodings.html#GMimeContentEncoding" title="enum GMimeContentEncoding"><span class="type">GMimeContentEncoding</span></a> encoding</code></em>);</pre>
+<p>
+Sets the encoding type of the internal stream.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>wrapper</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeDataWrapper.html" title="GMimeDataWrapper"><span class="type">GMimeDataWrapper</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>encoding</code></em> :</span></p></td>
+<td>encoding</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-data-wrapper-get-encoding"></a><h3>g_mime_data_wrapper_get_encoding ()</h3>
+<pre class="programlisting"><a class="link" href="gmime-gmime-encodings.html#GMimeContentEncoding" title="enum GMimeContentEncoding"><span class="returnvalue">GMimeContentEncoding</span></a> g_mime_data_wrapper_get_encoding   (<em class="parameter"><code><a class="link" href="GMimeDataWrapper.html" title="GMimeDataWrapper"><span class="type">GMimeDataWrapper</span></a> *wrapper</code></em>);</pre>
+<p>
+Gets the encoding type of the stream wrapped by <em class="parameter"><code>wrapper</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>wrapper</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeDataWrapper.html" title="GMimeDataWrapper"><span class="type">GMimeDataWrapper</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the encoding type of the internal stream.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-data-wrapper-write-to-stream"></a><h3>g_mime_data_wrapper_write_to_stream ()</h3>
+<pre class="programlisting"><span class="returnvalue">ssize_t</span>             g_mime_data_wrapper_write_to_stream (<em class="parameter"><code><a class="link" href="GMimeDataWrapper.html" title="GMimeDataWrapper"><span class="type">GMimeDataWrapper</span></a> *wrapper</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a> *stream</code></em>);</pre>
+<p>
+Writes the raw (decoded) data to the output stream.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>wrapper</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeDataWrapper.html" title="GMimeDataWrapper"><span class="type">GMimeDataWrapper</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>stream</code></em> :</span></p></td>
+<td>output stream</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the number of bytes written or <code class="literal">-1</code> on failure.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<div class="refsect1">
+<a name="GMimeDataWrapper.see-also"></a><h2>See Also</h2>
+<a class="link" href="GMimePart.html" title="GMimePart"><span class="type">GMimePart</span></a>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

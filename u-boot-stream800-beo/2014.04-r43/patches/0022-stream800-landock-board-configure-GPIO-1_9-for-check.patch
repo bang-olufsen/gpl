@@ -1,0 +1,94 @@
+From 82f47601a48d7730565121674f684cd57264d93c Mon Sep 17 00:00:00 2001
+From: Matus Ujhelyi <matus.ujhelyi@streamunlimited.com>
+Date: Thu, 28 Feb 2013 16:12:41 +0100
+Subject: [PATCH] stream800: landock board: configure GPIO 1_9 for checking the
+ reset button status
+
+Signed-off-by: Martin Flaska <martin.flaska@streamunlimited.com>
+Signed-off-by: Matus Ujhelyi <matus.ujhelyi@streamunlimited.com>
+---
+ .../stream800/board-lan_dock_board.c                | 21 ++++++++++++++++++++-
+ .../stream800/board-lan_dock_board.h                |  5 +++++
+ 2 files changed, 25 insertions(+), 1 deletion(-)
+
+diff --git a/board/streamunlimited/stream800/board-lan_dock_board.c b/board/streamunlimited/stream800/board-lan_dock_board.c
+index 6af23e2..78c27a2 100644
+--- a/board/streamunlimited/stream800/board-lan_dock_board.c
++++ b/board/streamunlimited/stream800/board-lan_dock_board.c
+@@ -50,6 +50,9 @@ static struct ctrl_dev *cdev = (struct ctrl_dev *)CTRL_DEVICE_BASE;
+ #define LED2_G_ON	gpio_set_value(LED2_G_GPIO, 0)
+ #define LED2_G_OFF	gpio_set_value(LED2_G_GPIO, 1)
+ 
++/* GPIO1_9 - reset button status - check sfupdate file on USB if pressed during the boot-up */
++#define RESET_BUTTON_STATUS_GPIO	(32 + 9)
++
+ static struct module_pin_mux leds_pin_mux[] = {
+ 		{OFFSET(spi0_sclk), (MODE(7))},	/* LED2 R (D12) gpio0_2, conflict: uart2_pin_mux, spi0_pin_mux */
+ 		{OFFSET(spi0_d0), (MODE(7))},	/* LED1 R (D13) gpio0_3, conflict: uart2_pin_mux, spi0_pin_mux */
+@@ -58,6 +61,11 @@ static struct module_pin_mux leds_pin_mux[] = {
+ 		{-1},
+ 	};
+ 
++static struct module_pin_mux button_pin_mux[] = {
++		{OFFSET(uart0_rtsn), (MODE(7) | PULLUP_EN | RXACTIVE)},	/* Reset button status gpio1_9, conflict: uart0_pin_mux rts */
++		{-1},
++	};
++
+ // "Dictations LAN dock" board initialization
+ void lan_dock__init(const struct Stream800Board *board)
+ {
+@@ -76,6 +84,8 @@ void lan_dock__init(const struct Stream800Board *board)
+ 	 */
+ 	configure_module_pin_mux(leds_pin_mux);
+ 
++	configure_module_pin_mux(button_pin_mux);
++
+ 	if (gpio_request(LED1_R_GPIO, "D1 R"))
+ 		printf("error: cannot request GPIO %d\n", LED1_R_GPIO);
+ 	gpio_direction_output(LED1_R_GPIO, 1);
+@@ -91,6 +101,10 @@ void lan_dock__init(const struct Stream800Board *board)
+ 	if (gpio_request(LED2_G_GPIO, "D1 G"))
+ 		printf("error: cannot request GPIO %d\n", LED2_G_GPIO);
+ 	gpio_direction_output(LED2_G_GPIO, 1);
++
++	if (gpio_request(RESET_BUTTON_STATUS_GPIO, "Reset status"))
++		printf("error: cannot request GPIO %d\n", RESET_BUTTON_STATUS_GPIO);
++	gpio_direction_input(RESET_BUTTON_STATUS_GPIO);
+ }
+ 
+ void lan_dock__late_init(const struct Stream800Board *board)
+@@ -98,7 +112,7 @@ void lan_dock__late_init(const struct Stream800Board *board)
+ 	if (!board || board->carrierBoardType != CBT_LanDockBoard)
+ 		BUG();
+ 
+-	printf("TODO: 'Dictations LAN dock' board initialization.\n");
++	printf("Reset button status: %d\n", lan_dock__get_reset_button_status());
+ }
+ 
+ #ifdef CONFIG_DRIVER_TI_CPSW
+@@ -188,3 +202,8 @@ void lan_dock__on_board_state_changed(const struct Stream800Board *board, BoardS
+ 		break;
+ 	}
+ }
++
++int lan_dock__get_reset_button_status(void)
++{
++	return (gpio_get_value(RESET_BUTTON_STATUS_GPIO) == 0) ? 1 : 0;
++}
+diff --git a/board/streamunlimited/stream800/board-lan_dock_board.h b/board/streamunlimited/stream800/board-lan_dock_board.h
+index cc0313a..235e2df 100644
+--- a/board/streamunlimited/stream800/board-lan_dock_board.h
++++ b/board/streamunlimited/stream800/board-lan_dock_board.h
+@@ -33,4 +33,9 @@ void lan_dock__cpsw_eth_init(const struct Stream800Board *board, struct cpsw_pla
+ 
+ void lan_dock__on_board_state_changed(const struct Stream800Board *board, BoardState state);
+ 
++/* Button is used also for requesting FW update from USB during boot-up
++ * returns: 1: reset button held, 0: reset button not active
++ */
++int lan_dock__get_reset_button_status(void);
++
+ #endif	// __BOARD_LAN_DOCK_BOARD_H
+-- 
+2.7.4
+

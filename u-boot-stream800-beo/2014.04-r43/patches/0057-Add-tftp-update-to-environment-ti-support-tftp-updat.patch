@@ -1,0 +1,49 @@
+From 4b75ecdf47307efa1e7a940aa89856fa6271fced Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Thu, 28 Nov 2013 14:31:56 +0100
+Subject: [PATCH] Add tftp update to environment ti support tftp update.
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ include/configs/stream800.h | 25 +++++++++++++++++++++++++
+ 1 file changed, 25 insertions(+)
+
+diff --git a/include/configs/stream800.h b/include/configs/stream800.h
+index be8039e..fe6ecd0 100644
+--- a/include/configs/stream800.h
++++ b/include/configs/stream800.h
+@@ -824,6 +824,31 @@
+                             "sfu errstate; " \
+ 			"fi;" \
+ 		    "fi; " \
++		    "else "\
++		    "set autoload no; " \
++		    "set autostart no; " \
++		    "echo \"INFO: starting tftp update process.\"; " \
++		    "if stftpup data; " \
++			"then "\
++			"if test -z \\\\'${serverip}\\\\'; then " \
++			    "stftpup use_local_ip; " \
++			    "echo \"INFO: Serverip unknown. Using local ip with last digit .10\"; " \
++			"fi; " \
++		    "else " \
++			"echo \"DHCP failed, use static settings\"; " \
++			"stftpup use_static_data; " \
++		    "fi; " \
++			\
++		    "if test -z \\\\'${bootfile}\\\\' || test \\\\'${bootfile}\\\\' -eq \"uImage\"; then " \
++			"set bootfile sfupdate; " \
++		    "fi; " \
++			\
++		    "if tftp ${sfu_load_addr} ${rootpath}${bootfile}; " \
++			"then " \
++			"run verify_sfu_image; " \
++		    "else " \
++			"echo \"INFO: Cannot fetch update file\"; " \
++		    "fi; " \
+                 "fi; " \
+             "else " \
+                 "echo \"INFO: USB update request is not active, not checking USB for FW update file\" ;" \
+-- 
+2.7.4
+

@@ -1,0 +1,29 @@
+From a4127c707cca2528c4b22bbdc3381463d539e487 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Thu, 24 Apr 2014 15:19:04 +0200
+Subject: [PATCH] rsa-sign: Return original value when error occurred
+
+Don't overwrite error value with -EINVAL as also fdt_add_subnode can return
+FDT_ERR_NOSPACE and in this case we don't resize but stop handling with error.
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ lib/rsa/rsa-sign.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/lib/rsa/rsa-sign.c b/lib/rsa/rsa-sign.c
+index 69f1408..dd8283f 100644
+--- a/lib/rsa/rsa-sign.c
++++ b/lib/rsa/rsa-sign.c
+@@ -432,7 +432,7 @@ int rsa_add_verify_data(struct image_sign_info *info, void *keydest)
+ 		if (parent < 0) {
+ 			fprintf(stderr, "Couldn't create signature node: %s\n",
+ 				fdt_strerror(parent));
+-			return -EINVAL;
++			return parent;
+ 		}
+ 	}
+ 
+-- 
+2.7.4
+

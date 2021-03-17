@@ -1,0 +1,31 @@
+From 8e6ae4fc8fe1da844a9a4228dd8341daefc1104f Mon Sep 17 00:00:00 2001
+From: Fionn Cleary <fionn.cleary@streamunlimited.com>
+Date: Tue, 9 Dec 2014 17:29:52 +0100
+Subject: [PATCH] stream800: Fix DDR3 demo client module detection
+
+The Stream800 demo client uses a maximum value (0xFFF) for the carrier
+board detection resistors.  However, the ADC code uses (% 0xFFF) instead of
+(& 0xFFF) to extract the value read from the register, and this wraps
+0xFFF back to 0, breaking the carrier board detection.
+
+Signed-off-by: Fionn Cleary <fionn.cleary@streamunlimited.com>
+---
+ board/streamunlimited/stream800/adc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/board/streamunlimited/stream800/adc.c b/board/streamunlimited/stream800/adc.c
+index 909ff60..5b80c21 100644
+--- a/board/streamunlimited/stream800/adc.c
++++ b/board/streamunlimited/stream800/adc.c
+@@ -143,7 +143,7 @@ int read_adc_channel(int channel)
+ 			continue;
+ 		for (fifo = 0; fifo < 2; fifo++)
+ 			if ((adc_readl(REG_FIFOCOUNT(fifo)) > 0))
+-				return adc_readl(REG_FIFODATA(fifo)) % 0xfff;
++				return adc_readl(REG_FIFODATA(fifo)) & 0xfff;
+ 		//printf("waiting ... state %08lx\n", adc_readl(REG_ADCSTAT));
+ 	}
+ 	printf("Read from ADC channel: %d timed out!\n", channel);
+-- 
+2.7.4
+

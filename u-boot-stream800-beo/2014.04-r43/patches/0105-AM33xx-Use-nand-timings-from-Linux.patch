@@ -1,0 +1,36 @@
+From 6215292fa7082b14e3fae2cdade66ce94c4d16a8 Mon Sep 17 00:00:00 2001
+From: Daniel Mack <zonque@gmail.com>
+Date: Fri, 6 Jun 2014 15:03:33 +0200
+Subject: [PATCH] AM33xx: Use nand timings from Linux
+
+Original commit from Daniel Mack.
+
+Signed-off-by: Fionn Cleary <fionn.cleary@streamunlimited.com>
+---
+ arch/arm/include/asm/arch-am33xx/mem.h | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/arch/arm/include/asm/arch-am33xx/mem.h b/arch/arm/include/asm/arch-am33xx/mem.h
+index e7e8c58..d9ed14c 100644
+--- a/arch/arm/include/asm/arch-am33xx/mem.h
++++ b/arch/arm/include/asm/arch-am33xx/mem.h
+@@ -39,11 +39,11 @@
+ #define GPMC_SIZE_16M		0xF
+ 
+ #define M_NAND_GPMC_CONFIG1	0x00000800
+-#define M_NAND_GPMC_CONFIG2	0x001e1e00
+-#define M_NAND_GPMC_CONFIG3	0x001e1e00
+-#define M_NAND_GPMC_CONFIG4	0x16051807
+-#define M_NAND_GPMC_CONFIG5	0x00151e1e
+-#define M_NAND_GPMC_CONFIG6	0x16000f80
++#define M_NAND_GPMC_CONFIG2	0x00050500
++#define M_NAND_GPMC_CONFIG3	0x00050401
++#define M_NAND_GPMC_CONFIG4	0x04010601
++#define M_NAND_GPMC_CONFIG5	0x00070909
++#define M_NAND_GPMC_CONFIG6	0x00000000
+ #define M_NAND_GPMC_CONFIG7	0x00000008
+ 
+ #define STNOR_GPMC_CONFIG1	0x00001200
+-- 
+2.7.4
+

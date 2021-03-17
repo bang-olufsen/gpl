@@ -1,0 +1,211 @@
+From e1757a37e5d1be973b575bbe03c31c3242206d05 Mon Sep 17 00:00:00 2001
+From: Stanislav Ruzani <stanislav.ruzani@streamunlimited.com>
+Date: Thu, 17 Jan 2019 09:20:04 +0100
+Subject: [PATCH] gupnp: implemented "no-request-socket" property (To be able
+ to disable request socket on UDP port 1900 in gssdp client)
+
+Signed-off-by: Stanislav Ruzani <stanislav.ruzani@streamunlimited.com>
+---
+ libgupnp/gupnp-context-manager.c       | 34 ++++++++++++++++++++++++++++++++--
+ libgupnp/gupnp-context-manager.h       |  3 ++-
+ libgupnp/gupnp-context.c               |  9 +++++++++
+ libgupnp/gupnp-linux-context-manager.c |  6 ++++++
+ tests/test-white-list.c                |  2 +-
+ 5 files changed, 50 insertions(+), 4 deletions(-)
+
+diff --git a/libgupnp/gupnp-context-manager.c b/libgupnp/gupnp-context-manager.c
+index 7c58f31..00a8766 100644
+--- a/libgupnp/gupnp-context-manager.c
++++ b/libgupnp/gupnp-context-manager.c
+@@ -64,6 +64,7 @@ G_DEFINE_ABSTRACT_TYPE (GUPnPContextManager,
+ 
+ struct _GUPnPContextManagerPrivate {
+         guint              port;
++        gboolean           no_request_socket;
+ 
+         GUPnPContextManager *impl;
+ 
+@@ -77,6 +78,7 @@ enum {
+         PROP_0,
+         PROP_MAIN_CONTEXT,
+         PROP_PORT,
++        PROP_NO_REQUEST_SOCKET,
+         PROP_WHITE_LIST
+ };
+ 
+@@ -313,6 +315,9 @@ gupnp_context_manager_set_property (GObject      *object,
+         case PROP_PORT:
+                 priv->port = g_value_get_uint (value);
+                 break;
++		case PROP_NO_REQUEST_SOCKET:
++				priv->no_request_socket = g_value_get_boolean (value);
++				break;
+         case PROP_MAIN_CONTEXT:
+                 if (g_value_get_pointer (value) != NULL)
+                         g_warning ("GUPnPContextManager:main-context is "
+@@ -340,6 +345,9 @@ gupnp_context_manager_get_property (GObject    *object,
+         case PROP_PORT:
+                 g_value_set_uint (value, manager->priv->port);
+                 break;
++		case PROP_NO_REQUEST_SOCKET:
++				g_value_set_boolean (value, manager->priv->no_request_socket);
++				break;
+         case PROP_MAIN_CONTEXT:
+                 g_warning ("GUPnPContextManager:main-context is deprecated. "
+                            "Use g_main_context_push_thread_default()"
+@@ -459,6 +467,27 @@ gupnp_context_manager_class_init (GUPnPContextManagerClass *klass)
+                                       G_PARAM_STATIC_NICK |
+                                       G_PARAM_STATIC_BLURB));
+ 
++		/**
++         * GUPnPContextManager:no-request-socket:
++         *
++         * Disable unicast request socket on UDP port 1900.
++         * This is useful when two instances of gssdp client are running at the same,
++         * where one instance could "steal" packets heading to port 1900.
++         * Used by #GUPnPContext objects created by this object.
++         * This property can be only set during object construction.
++         **/
++        g_object_class_install_property
++                (object_class,
++                 PROP_NO_REQUEST_SOCKET,
++                 g_param_spec_boolean ("no-request-socket",
++									   "Disable request socket",
++									   "Flag to disable unicast request socket at port 1900",
++									   FALSE,
++									   G_PARAM_READWRITE |
++									   G_PARAM_CONSTRUCT_ONLY |
++									   G_PARAM_STATIC_NAME |
++									   G_PARAM_STATIC_NICK |
++									   G_PARAM_STATIC_BLURB));
+        /**
+          * GUPnPContextManager::context-available:
+          * @context_manager: The #GUPnPContextManager that received the signal
+@@ -521,7 +550,7 @@ gupnp_context_manager_new (GMainContext *main_context,
+                        " deprecated. Use "
+                        " g_main_context_push_thread_default() instead");
+ 
+-    return gupnp_context_manager_create (port);
++    return gupnp_context_manager_create (port, FALSE);
+ }
+ 
+ #ifdef HAVE_LINUX_RTNETLINK_H
+@@ -542,7 +571,7 @@ gupnp_context_manager_new (GMainContext *main_context,
+  * Since: 0.17.2
+  **/
+ GUPnPContextManager *
+-gupnp_context_manager_create (guint port)
++gupnp_context_manager_create (guint port, gboolean no_request_socket)
+ {
+ #if defined(USE_NETWORK_MANAGER) || defined (USE_CONNMAN)
+         GDBusConnection *system_bus;
+@@ -588,6 +617,7 @@ gupnp_context_manager_create (guint port)
+ #endif /* G_OS_WIN32 */
+         impl = GUPNP_CONTEXT_MANAGER (g_object_new (impl_type,
+                                                     "port", port,
++                                                    "no-request-socket", no_request_socket,
+                                                     NULL));
+ 
+ #if defined(USE_NETWORK_MANAGER) || defined(USE_CONNMAN)
+diff --git a/libgupnp/gupnp-context-manager.h b/libgupnp/gupnp-context-manager.h
+index 9ff917d..2844f0f 100644
+--- a/libgupnp/gupnp-context-manager.h
++++ b/libgupnp/gupnp-context-manager.h
+@@ -90,7 +90,8 @@ gupnp_context_manager_new              (GMainContext *main_context,
+ #endif
+ 
+ GUPnPContextManager *
+-gupnp_context_manager_create           (guint port);
++gupnp_context_manager_create           (guint       port,
++                                        gboolean	no_request_socket);
+ 
+ void
+ gupnp_context_manager_rescan_control_points
+diff --git a/libgupnp/gupnp-context.c b/libgupnp/gupnp-context.c
+index 7df33f1..7300ffe 100644
+--- a/libgupnp/gupnp-context.c
++++ b/libgupnp/gupnp-context.c
+@@ -86,6 +86,7 @@ G_DEFINE_TYPE_EXTENDED (GUPnPContext,
+ 
+ struct _GUPnPContextPrivate {
+         guint        port;
++        gboolean     no_request_socket;
+ 
+         guint        subscription_timeout;
+ 
+@@ -103,6 +104,7 @@ struct _GUPnPContextPrivate {
+ enum {
+         PROP_0,
+         PROP_PORT,
++        PROP_NO_REQUEST_SOCKET,
+         PROP_SERVER,
+         PROP_SESSION,
+         PROP_SUBSCRIPTION_TIMEOUT,
+@@ -253,6 +255,9 @@ gupnp_context_set_property (GObject      *object,
+         case PROP_PORT:
+                 context->priv->port = g_value_get_uint (value);
+                 break;
++		case PROP_NO_REQUEST_SOCKET:
++				context->priv->no_request_socket = g_value_get_boolean (value);
++				break;
+         case PROP_SUBSCRIPTION_TIMEOUT:
+                 context->priv->subscription_timeout = g_value_get_uint (value);
+                 break;
+@@ -285,6 +290,10 @@ gupnp_context_get_property (GObject    *object,
+                 g_value_set_uint (value,
+                                   gupnp_context_get_port (context));
+                 break;
++		case PROP_NO_REQUEST_SOCKET:
++				g_value_set_uint (value,
++                                  context->priv->no_request_socket);
++                break;
+         case PROP_SERVER:
+                 g_value_set_object (value,
+                                     gupnp_context_get_server (context));
+diff --git a/libgupnp/gupnp-linux-context-manager.c b/libgupnp/gupnp-linux-context-manager.c
+index 46a5408..f19c958 100644
+--- a/libgupnp/gupnp-linux-context-manager.c
++++ b/libgupnp/gupnp-linux-context-manager.c
+@@ -254,6 +254,7 @@ static void
+                                const char       *mask)
+ {
+         guint port;
++        gboolean no_request_socket;
+         GError *error = NULL;
+         GUPnPContext *context;
+ 
+@@ -267,6 +268,10 @@ network_device_create_context (NetworkInterface *device, const char *label)
+ 
+         g_object_get (device->manager, "port", &port, NULL);
+ 
++        g_object_get (device->manager,
++                      "no-request-socket", &no_request_socket,
++                      NULL);
++
+         network_device_update_essid (device);
+ 
+         context = g_initable_new (GUPNP_TYPE_CONTEXT,
+@@ -277,6 +282,7 @@ network_device_create_context (NetworkInterface *device, const char *label)
+                                   "network", device->essid ? device->essid
+                                                            : mask,
+                                   "port", port,
++                                  "no-request-socket", no_request_socket,
+                                   NULL);
+ 
+         if (error) {
+diff --git a/tests/test-white-list.c b/tests/test-white-list.c
+index 465ac72..49a51d1 100644
+--- a/tests/test-white-list.c
++++ b/tests/test-white-list.c
+@@ -252,7 +252,7 @@ main (G_GNUC_UNUSED int argc, G_GNUC_UNUSED char **argv)
+ 
+         setlocale (LC_ALL, "");
+ 
+-        cm = gupnp_context_manager_create(0);
++        cm = gupnp_context_manager_create(0, FALSE);
+ 
+         g_signal_connect(cm,
+                          "context-available",
+-- 
+2.7.4
+

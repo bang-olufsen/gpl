@@ -1,0 +1,142 @@
+From 885c7f8faeff4d0b440eb5fc8cf79f3ae9412332 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Tue, 2 May 2017 08:25:38 +0200
+Subject: [PATCH] log: Add timestamps to logs
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ src/log.c | 69 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++-------
+ 1 file changed, 62 insertions(+), 7 deletions(-)
+
+diff --git a/src/log.c b/src/log.c
+index d2a20de..3bb1729 100644
+--- a/src/log.c
++++ b/src/log.c
+@@ -46,6 +46,26 @@
+ #define LOG_IDENT "bluetoothd"
+ #define LOG_IDENT_LEN sizeof(LOG_IDENT)
+ 
++void timestamp(char *buf, int len)
++{
++	time_t now;
++	struct timeval tv;
++	char msec[5];
++
++	gettimeofday(&tv, NULL);
++	now = tv.tv_sec;
++	strftime(buf, len, "%Y%m%d %H:%M:%S", localtime(&now));
++	sprintf(msec, ".%03d", (tv.tv_usec/1000));
++	strcat(buf, msec);
++}
++
++void prependTimestamp(char *buf, int len, const char *format, const char *msg)
++{
++	timestamp(buf, len);
++	int actlen = strlen(buf);
++	snprintf(buf + actlen, len, " %s %s", msg, format);
++}
++
+ struct log_hdr {
+ 	uint16_t opcode;
+ 	uint16_t index;
+@@ -137,7 +157,12 @@ void error(const char *format, ...)
+ 	va_list ap;
+ 
+ 	va_start(ap, format);
+-	vsyslog(LOG_ERR, format, ap);
++
++	int sz = strlen(format);
++	char final[sz + 80];
++	prependTimestamp(final, sizeof(final), format, "ERROR");
++
++	vsyslog(LOG_ERR, final, ap);
+ 	va_end(ap);
+ 
+ 	if (logging_fd < 0)
+@@ -153,7 +178,12 @@ void warn(const char *format, ...)
+ 	va_list ap;
+ 
+ 	va_start(ap, format);
+-	vsyslog(LOG_WARNING, format, ap);
++
++	int sz = strlen(format);
++	char final[sz + 80];
++	prependTimestamp(final, sizeof(final), format, "WARN");
++
++	vsyslog(LOG_WARNING, final, ap);
+ 	va_end(ap);
+ 
+ 	if (logging_fd < 0)
+@@ -169,7 +199,12 @@ void info(const char *format, ...)
+ 	va_list ap;
+ 
+ 	va_start(ap, format);
+-	vsyslog(LOG_INFO, format, ap);
++
++	int sz = strlen(format);
++	char final[sz + 80];
++	prependTimestamp(final, sizeof(final), format, "INFO");
++
++	vsyslog(LOG_INFO, final, ap);
+ 	va_end(ap);
+ 
+ 	if (logging_fd < 0)
+@@ -201,7 +236,12 @@ void btd_error(uint16_t index, const char *format, ...)
+ 	va_list ap;
+ 
+ 	va_start(ap, format);
+-	vsyslog(LOG_ERR, format, ap);
++
++	int sz = strlen(format);
++	char final[sz + 80];
++	prependTimestamp(final, sizeof(final), format, "ERROR");
++
++	vsyslog(LOG_ERR, final, ap);
+ 	va_end(ap);
+ 
+ 	if (logging_fd < 0)
+@@ -217,7 +257,12 @@ void btd_warn(uint16_t index, const char *format, ...)
+ 	va_list ap;
+ 
+ 	va_start(ap, format);
+-	vsyslog(LOG_WARNING, format, ap);
++
++	int sz = strlen(format);
++	char final[sz + 80];
++	prependTimestamp(final, sizeof(final), format, "WARN");
++
++	vsyslog(LOG_WARNING, final, ap);
+ 	va_end(ap);
+ 
+ 	if (logging_fd < 0)
+@@ -233,7 +278,12 @@ void btd_info(uint16_t index, const char *format, ...)
+ 	va_list ap;
+ 
+ 	va_start(ap, format);
+-	vsyslog(LOG_INFO, format, ap);
++
++	int sz = strlen(format);
++	char final[sz + 80];
++	prependTimestamp(final, sizeof(final), format, "INFO");
++
++	vsyslog(LOG_INFO, final, ap);
+ 	va_end(ap);
+ 
+ 	if (logging_fd < 0)
+@@ -249,7 +299,12 @@ void btd_debug(uint16_t index, const char *format, ...)
+ 	va_list ap;
+ 
+ 	va_start(ap, format);
+-	vsyslog(LOG_DEBUG, format, ap);
++
++	int sz = strlen(format);
++	char final[sz + 80];
++	prependTimestamp(final, sizeof(final), format, "DEBUG");
++
++	vsyslog(LOG_DEBUG, final, ap);
+ 	va_end(ap);
+ 
+ 	if (logging_fd < 0)
+-- 
+2.7.4
+

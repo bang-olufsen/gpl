@@ -1,0 +1,47 @@
+From 037ef6c12a08ecffef441378366e251404ec90ed Mon Sep 17 00:00:00 2001
+From: Martin Geier <martin.geier@streamunlimited.com>
+Date: Fri, 2 May 2014 16:00:17 +0200
+Subject: [PATCH] ASE: late board detection
+
+Signed-off-by: Martin Geier <martin.geier@streamunlimited.com>
+---
+ arch/arm/lib/board.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/arch/arm/lib/board.c b/arch/arm/lib/board.c
+index c5df8fe..8173a4e 100644
+--- a/arch/arm/lib/board.c
++++ b/arch/arm/lib/board.c
+@@ -511,8 +511,6 @@ void board_init_r(gd_t *id, ulong dest_addr)
+ 	/* Enable caches */
+ 	enable_caches();
+ 
+-	debug("monitor flash len: %08lX\n", monitor_flash_len);
+-	board_init();	/* Setup chipselects */
+ 	/*
+ 	 * TODO: printing of the clock inforamtion of the board is now
+ 	 * implemented as part of bdinfo command. Currently only support for
+@@ -537,6 +535,11 @@ void board_init_r(gd_t *id, ulong dest_addr)
+ 	malloc_start = dest_addr - TOTAL_MALLOC_LEN;
+ 	mem_malloc_init (malloc_start, TOTAL_MALLOC_LEN);
+ 
++	stdio_init();	/* get the devices list going. */
++
++	debug("monitor flash len: %08lX\n", monitor_flash_len);
++	board_init();	/* Setup chipselects */
++
+ #ifdef CONFIG_ARCH_EARLY_INIT_R
+ 	arch_early_init_r();
+ #endif
+@@ -608,8 +611,6 @@ void board_init_r(gd_t *id, ulong dest_addr)
+ 	arm_pci_init();
+ #endif
+ 
+-	stdio_init();	/* get the devices list going. */
+-
+ 	jumptable_init();
+ 
+ #if defined(CONFIG_API)
+-- 
+2.7.4
+

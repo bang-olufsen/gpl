@@ -1,0 +1,55 @@
+<!-- ##### SECTION Title ##### -->
+gmime-pkcs7-context
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT GMimePkcs7Context ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION g_mime_pkcs7_context_new ##### -->
+<para>
+
+</para>
+
+@request_passwd: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_pkcs7_context_get_always_trust ##### -->
+<para>
+
+</para>
+
+@ctx: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_pkcs7_context_set_always_trust ##### -->
+<para>
+
+</para>
+
+@ctx: 
+@always_trust: 
+
+

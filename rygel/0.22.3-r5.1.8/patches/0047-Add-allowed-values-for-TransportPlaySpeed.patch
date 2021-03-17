@@ -1,0 +1,29 @@
+From f66e5992817b83a8140f0c4a389e30973e404e24 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Thu, 23 Apr 2015 14:33:12 +0200
+Subject: [PATCH] Add allowed values for TransportPlaySpeed
+
+This fixes UDA-2.1.2 UPnP test case
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ data/xml/AVTransport2.xml.in | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/data/xml/AVTransport2.xml.in b/data/xml/AVTransport2.xml.in
+index efc4b4b..41fea4e 100644
+--- a/data/xml/AVTransport2.xml.in
++++ b/data/xml/AVTransport2.xml.in
+@@ -593,6 +593,9 @@
+       <stateVariable sendEvents="no">
+          <name>TransportPlaySpeed</name>
+          <dataType>string</dataType>
++         <allowedValueList>
++            <allowedValue>1</allowedValue>
++         </allowedValueList>
+          <defaultValue>1</defaultValue>
+       </stateVariable>
+ 
+-- 
+1.9.1
+

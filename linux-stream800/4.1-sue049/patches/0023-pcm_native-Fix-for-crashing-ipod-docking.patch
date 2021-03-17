@@ -1,0 +1,43 @@
+From 62047d30088bc8dc945c5e9888357b08b107bde8 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Fri, 20 Jan 2017 13:52:28 +0100
+Subject: [PATCH] pcm_native: Fix for crashing ipod docking
+
+It seems that we cannot call soft mute for record playback (which is case
+for ipod) because some pointers are then invalid.
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ sound/core/pcm_native.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/sound/core/pcm_native.c b/sound/core/pcm_native.c
+index 3d4ff62..b5568c3 100644
+--- a/sound/core/pcm_native.c
++++ b/sound/core/pcm_native.c
+@@ -878,6 +878,10 @@ static int snd_pcm_fade_in(struct snd_pcm_substream *substream)
+ 	int count, i, step, smpl, ms_div;
+ 	uint32_t sample_mask;
+ 
++	if (substream->stream == SNDRV_PCM_STREAM_CAPTURE) {
++		return 0;
++	}
++
+ 	buf_size = snd_pcm_lib_buffer_bytes(substream);
+ 
+ 	/* specify fady in duration by fraction to avoid overflow */
+@@ -886,6 +890,11 @@ static int snd_pcm_fade_in(struct snd_pcm_substream *substream)
+ 	count = runtime->rate / ms_div;
+ 	/* step between samples */
+ 	step = runtime->byte_align / runtime->channels;
++
++	/* check pointer validity */
++	if (!runtime->dma_buffer_p) {
++		return 0;
++	}
+ 	/* start pointer in buffer */
+ 	samples = runtime->dma_buffer_p->area;
+ 	/* sample mask */
+-- 
+2.7.4
+

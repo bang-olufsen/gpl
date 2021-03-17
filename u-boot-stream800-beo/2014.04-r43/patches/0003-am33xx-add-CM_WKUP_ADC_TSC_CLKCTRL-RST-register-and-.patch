@@ -1,0 +1,56 @@
+From 87ada3f4c8a24633a6c3e7c4cb033b52eb641e90 Mon Sep 17 00:00:00 2001
+From: Martin Flaska <martin.flaska@streamunlimited.com>
+Date: Mon, 10 Dec 2012 15:30:46 +0100
+Subject: [PATCH] am33xx: add CM_WKUP_ADC_TSC_CLKCTRL, RST register, and RST
+ masks
+
+Signed-off-by: Martin Flaska <martin.flaska@streamunlimited.com>
+Signed-off-by: Matus Ujhelyi <matus.ujhelyi@streamunlimited.com>
+---
+ arch/arm/include/asm/arch-am33xx/cpu.h | 23 ++++++++++++++++++++++-
+ 1 file changed, 22 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm/include/asm/arch-am33xx/cpu.h b/arch/arm/include/asm/arch-am33xx/cpu.h
+index d9f0306..1d9f219 100644
+--- a/arch/arm/include/asm/arch-am33xx/cpu.h
++++ b/arch/arm/include/asm/arch-am33xx/cpu.h
+@@ -54,7 +54,16 @@
+ 					| BIT(3) | BIT(4))
+ 
+ #define PRM_RSTCTRL_RESET		0x01
+-#define PRM_RSTST_WARM_RESET_MASK	0x232
++
++/* PRM_RSTST field masks */
++#define PRM_RSTST_CEPICK_RST		0x200
++#define PRM_RSTST_EXTERNAL_WARM_RST	0x20
++#define PRM_RSTST_WDT1_RST		0x10
++#define PRM_RSTST_GLOBAL_WARM_SW_RS	0x02
++#define PRM_RSTST_GLOBAL_COLD_RST	0x01
++#define PRM_RSTST_WARM_RESET_MASK	((PRM_RSTST_CEPICK_RST) | (PRM_RSTST_EXTERNAL_WARM_RST)\
++					 | (PRM_RSTST_WDT1_RST) | (PRM_RSTST_GLOBAL_WARM_SW_RS))
++
+ 
+ /*
+  * Watchdog:
+@@ -424,6 +433,18 @@ struct gptimer {
+ 	unsigned int tcar2;		/* offset 0x58 */
+ };
+ 
++/* RTC Registers */
++struct rtc_regs {
++	unsigned int res[21];
++	unsigned int osc;		/* offset 0x54 */
++	unsigned int res2[2];
++	unsigned int scratch0;		/* offset 0x60 */
++	unsigned int scratch1;		/* offset 0x64 */
++	unsigned int scratch2;		/* offset 0x68 */
++	unsigned int kick0r;		/* offset 0x6c */
++	unsigned int kick1r;		/* offset 0x70 */
++};
++
+ /* UART Registers */
+ struct uart_sys {
+ 	unsigned int resv1[21];
+-- 
+2.7.4
+

@@ -1,0 +1,18 @@
+<SECTION>
+<FILE>gupnp-dlna-metadata-extractor</FILE>
+<TITLE>GUPnPDLNAMetadataExtractor</TITLE>
+GUPnPDLNAMetadataExtractor
+GUPnPDLNAMetadataExtractorClass
+gupnp_dlna_metadata_extractor_extract_async
+gupnp_dlna_metadata_extractor_extract_sync
+gupnp_dlna_metadata_extractor_emit_done
+<SUBSECTION Standard>
+GUPNP_DLNA_METADATA_EXTRACTOR
+GUPNP_DLNA_METADATA_EXTRACTOR_CLASS
+GUPNP_DLNA_METADATA_EXTRACTOR_GET_CLASS
+GUPNP_IS_DLNA_METADATA_EXTRACTOR
+GUPNP_IS_DLNA_METADATA_EXTRACTOR_CLASS
+GUPNP_TYPE_DLNA_METADATA_EXTRACTOR
+gupnp_dlna_metadata_extractor_get_type
+</SECTION>
+

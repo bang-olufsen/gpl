@@ -1,0 +1,85 @@
+From 16d554f13fa1a42accb860b1fe2279a4a46f5af9 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Mon, 19 Aug 2019 12:26:01 +0200
+Subject: [PATCH] beoremote_one: Add VOLUME characteristic
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ plugins/beoremote_one.c       | 12 +++++++++++-
+ plugins/beoremote_one_types.c |  3 +++
+ plugins/beoremote_one_types.h |  1 +
+ 3 files changed, 15 insertions(+), 1 deletion(-)
+
+diff --git a/plugins/beoremote_one.c b/plugins/beoremote_one.c
+index a9534a4..65e89b0 100644
+--- a/plugins/beoremote_one.c
++++ b/plugins/beoremote_one.c
+@@ -134,7 +134,8 @@ gboolean do_attrib_changed(gpointer data)
+         }
+ #endif
+ 
+-        if (payload->attrib_type == BEOREMOTE_ONE_ATTRIB_FEATURES_CHANGED) {
++        if (payload->attrib_type == BEOREMOTE_ONE_ATTRIB_FEATURES_CHANGED
++            || payload->attrib_type == BEOREMOTE_ONE_ATTRIB_VOLUME) {
+ #ifdef BEOREMOTE_ONE_PLUGIN_VERBOSE
+             DBG("notify_attrib_change for attribute %s", beoremote_one_attrib_to_string(payload->attrib_type));
+ #endif
+@@ -273,6 +274,7 @@ static gboolean beoremote_one_service_register(beoremote_one_adapter_t *adapter)
+     bt_string_to_uuid(&uuid[BEOREMOTE_ONE_ATTRIB_SOURCE_CONTENT_10], "0000002D-0000-1000-1000-00805F9B34FB");
+     bt_string_to_uuid(&uuid[BEOREMOTE_ONE_ATTRIB_ACTIVE_SOURCE_CONTENT], "0000002E-0000-1000-1000-00805F9B34FB");
+     bt_string_to_uuid(&uuid[BEOREMOTE_ONE_ATTRIB_MY_BUTTONS], "0000002F-0000-1000-1000-00805F9B34FB");
++    bt_string_to_uuid(&uuid[BEOREMOTE_ONE_ATTRIB_VOLUME], "00000030-0000-1000-1000-00805F9B34FB");
+ 
+     /* IMPORTANT: When adding new characterists to the service below they MUST be added to the top of the list
+      * This is so the exists characteristics does not get a new handle (which bluez assigsn from the bottom up).
+@@ -282,6 +284,14 @@ static gboolean beoremote_one_service_register(beoremote_one_adapter_t *adapter)
+         /* Service UUID */
+         GATT_PRIM_SVC_UUID, &uuid[0],
+ 
++        /* Volume characteristic */
++        GATT_OPT_CHR_UUID, &uuid[BEOREMOTE_ONE_ATTRIB_VOLUME],
++        GATT_OPT_CHR_PROPS, GATT_CHR_PROP_READ | GATT_CHR_PROP_WRITE | GATT_CHR_PROP_NOTIFY,
++        GATT_OPT_CHR_VALUE_CB, ATTRIB_READ, beoremote_one_attrib_read, beoremote_one_adapter->adapter,
++        GATT_OPT_CHR_VALUE_CB, ATTRIB_WRITE, beoremote_one_attrib_write, beoremote_one_adapter->adapter,
++        GATT_OPT_CCC_GET_HANDLE, &beoremote_one_adapter->ccc_handle[BEOREMOTE_ONE_ATTRIB_VOLUME],
++        GATT_OPT_CHR_VALUE_GET_HANDLE, &beoremote_one_adapter->value_handle[BEOREMOTE_ONE_ATTRIB_VOLUME],
++
+         /* Home control scenes characteristic */
+         GATT_OPT_CHR_UUID, &uuid[BEOREMOTE_ONE_ATTRIB_HOME_CONTROL_SCENES],
+         GATT_OPT_CHR_PROPS, GATT_CHR_PROP_READ,
+diff --git a/plugins/beoremote_one_types.c b/plugins/beoremote_one_types.c
+index 9e022cb..98cd3d5 100644
+--- a/plugins/beoremote_one_types.c
++++ b/plugins/beoremote_one_types.c
+@@ -23,6 +23,7 @@ size_t beoremote_one_attrib_size(enum beoremote_one_attrib attrib)
+     case BEOREMOTE_ONE_ATTRIB_CONTROL_1:
+     case BEOREMOTE_ONE_ATTRIB_CONTROL_2:
+     case BEOREMOTE_ONE_ATTRIB_ACTIVE_SOURCE_CONTENT:
++    case BEOREMOTE_ONE_ATTRIB_VOLUME:
+         attrib_size = 1;
+         break;
+ 
+@@ -130,6 +131,8 @@ const char *beoremote_one_attrib_to_string(enum beoremote_one_attrib attrib)
+         return "BEOREMOTE_ONE_ATTRIB_ACTIVE_SOURCE_CONTENT";
+     case BEOREMOTE_ONE_ATTRIB_MY_BUTTONS:
+         return "BEOREMOTE_ONE_ATTRIB_MY_BUTTONS";
++    case BEOREMOTE_ONE_ATTRIB_VOLUME:
++        return "BEOREMOTE_ONE_ATTRIB_VOLUME";
+     case BEOREMOTE_ONE_ATTRIB_MAX:
+         return "BEOREMOTE_ONE_ATTRIB_MAX";
+     default:
+diff --git a/plugins/beoremote_one_types.h b/plugins/beoremote_one_types.h
+index 585fd8e..02b400f 100644
+--- a/plugins/beoremote_one_types.h
++++ b/plugins/beoremote_one_types.h
+@@ -52,6 +52,7 @@ enum beoremote_one_attrib {
+     BEOREMOTE_ONE_ATTRIB_SOURCE_CONTENT_10,
+     BEOREMOTE_ONE_ATTRIB_ACTIVE_SOURCE_CONTENT,
+     BEOREMOTE_ONE_ATTRIB_MY_BUTTONS,
++    BEOREMOTE_ONE_ATTRIB_VOLUME,
+ 
+     /* Must be the last item! */
+     BEOREMOTE_ONE_ATTRIB_MAX
+-- 
+2.7.4
+

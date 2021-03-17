@@ -1,0 +1,331 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>librygel-server Reference Manual: Implementing Server Plugins: Simple Example</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="index.html" title="librygel-server Reference Manual">
+<link rel="up" href="implementing-server-plugins.html" title="Implementing Rygel Server Plugins">
+<link rel="prev" href="implementing-server-plugins.html" title="Implementing Rygel Server Plugins">
+<link rel="next" href="implementing-server-plugins-full-example.html" title="Implementing Server Plugins: Full Example">
+<meta name="generator" content="GTK-Doc V1.20.1 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts"></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="implementing-server-plugins.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="implementing-server-plugins.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="implementing-server-plugins-full-example.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="section">
+<div class="titlepage"><div><div><h2 class="title" style="clear: both">
+<a name="implementing-server-plugins-simple-example"></a>Implementing Server Plugins: Simple Example</h2></div></div></div>
+<p>
+This example source code shows how to implement a Rygel Server plugin.</p>
+<p>This example implements a root <a class="link" href="RygelMediaContainer.html" title="RygelMediaContainer">RygelMediaContainer</a> by
+deriving from <a class="link" href="RygelSimpleContainer.html" title="RygelSimpleContainer">RygelSimpleContainer</a> and adding some
+hard-coded items. A real Rygel server plugin's root container, or its child items, would typically
+populate themselves dynamically. For instance, they might add and remove items based on some source
+such as a file system or database. See, for instance, the 
+<a class="ulink" href="http://git.gnome.org/browse/rygel/tree/src/plugins/tracker" target="_top">Rygel Tracker Plugin</a> or the
+<a class="ulink" href="http://git.gnome.org/browse/rygel/tree/src/plugins/media-export" target="_top">Rygel MediaExport Plugin</a> plugins,
+implemented in Vala.
+</p>
+<pre class="programlisting">
+/*
+ * Copyright (C) 2012 Intel Corporation
+ *
+ * This file is part of Rygel.
+ *
+ * Rygel is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * Rygel is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ */
+
+#ifndef __RYGEL_EXAMPLE_SERVER_PLUGIN_H__
+#define __RYGEL_EXAMPLE_SERVER_PLUGIN_H__
+
+#include &lt;glib.h&gt;
+#include &lt;glib-object.h&gt;
+#include &lt;rygel-server.h&gt;
+
+G_BEGIN_DECLS
+
+#define RYGEL_EXAMPLE_TYPE_SERVER_PLUGIN (rygel_example_server_plugin_get_type ())
+#define RYGEL_EXAMPLE_SERVER_PLUGIN(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), RYGEL_EXAMPLE_TYPE_SERVER_PLUGIN, RygelExampleServerPlugin))
+#define RYGEL_EXAMPLE_SERVER_PLUGIN_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), RYGEL_EXAMPLE_TYPE_SERVER_PLUGIN, RygelExampleServerPluginClass))
+#define RYGEL_EXAMPLE_IS_SERVER_PLUGIN(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), RYGEL_EXAMPLE_TYPE_SERVER_PLUGIN))
+#define RYGEL_EXAMPLE_IS_SERVER_PLUGIN_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), RYGEL_EXAMPLE_TYPE_SERVER_PLUGIN))
+#define RYGEL_EXAMPLE_SERVER_PLUGIN_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), RYGEL_EXAMPLE_TYPE_SERVER_PLUGIN, RygelExampleServerPluginClass))
+
+typedef struct _RygelExampleServerPlugin RygelExampleServerPlugin;
+typedef struct _RygelExampleServerPluginClass RygelExampleServerPluginClass;
+typedef struct _RygelExampleServerPluginPrivate RygelExampleServerPluginPrivate;
+
+struct _RygelExampleServerPlugin {
+  RygelMediaServerPlugin parent_instance;
+  RygelExampleServerPluginPrivate * priv;
+};
+
+struct _RygelExampleServerPluginClass {
+  RygelMediaServerPluginClass parent_class;
+};
+
+GType rygel_example_server_plugin_get_type (void) G_GNUC_CONST;
+
+RygelExampleServerPlugin* rygel_example_server_plugin_new (void);
+
+void module_init (RygelPluginLoader* loader);
+
+G_END_DECLS
+
+#endif /* __RYGEL_EXAMPLE_SERVER_PLUGIN_H__ */
+
+
+</pre>
+<pre class="programlisting">
+/*
+ * Copyright (C) 2012 Intel Corporation
+ *
+ * This file is part of Rygel.
+ *
+ * Rygel is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * Rygel is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ */
+
+#include "example-server-plugin.h"
+#include "example-root-container.h"
+
+#define RYGEL_EXAMPLE_SERVER_PLUGIN_NAME "ExampleServerPluginC"
+
+enum  {
+  RYGEL_EXAMPLE_SERVER_PLUGIN_DUMMY_PROPERTY
+};
+
+#define RYGEL_EXAMPLE_SERVER_PLUGIN_TITLE "Example Server Plugin C"
+#define RYGEL_EXAMPLE_SERVER_PLUGIN_DESCRIPTION "An example Rygel server plugin implemented in C."
+
+G_DEFINE_TYPE (RygelExampleServerPlugin, rygel_example_server_plugin, RYGEL_TYPE_MEDIA_SERVER_PLUGIN)
+
+void
+module_init (RygelPluginLoader* loader) {
+  RygelExampleServerPlugin* plugin;
+
+  g_return_if_fail (loader != NULL);
+
+  if (rygel_plugin_loader_plugin_disabled (loader, RYGEL_EXAMPLE_SERVER_PLUGIN_NAME)) {
+    g_message ("Plugin '%s' disabled by user. Ignoring.",
+      RYGEL_EXAMPLE_SERVER_PLUGIN_NAME);
+    return;
+  }
+
+  plugin = rygel_example_server_plugin_new ();
+  rygel_plugin_loader_add_plugin (loader, RYGEL_PLUGIN (plugin));
+  g_object_unref (plugin);
+}
+
+
+static RygelExampleServerPlugin*
+rygel_example_server_plugin_construct (GType object_type) {
+  RygelExampleServerPlugin *self;
+  RygelExampleRootContainer *root_container;
+
+  root_container =
+    rygel_example_root_container_new (RYGEL_EXAMPLE_SERVER_PLUGIN_TITLE);
+  self = (RygelExampleServerPlugin*) rygel_media_server_plugin_construct (object_type,
+    (RygelMediaContainer*) root_container, RYGEL_EXAMPLE_SERVER_PLUGIN_NAME,
+    RYGEL_EXAMPLE_SERVER_PLUGIN_DESCRIPTION, RYGEL_PLUGIN_CAPABILITIES_NONE);
+  g_object_unref (root_container);
+
+  return self;
+}
+
+
+RygelExampleServerPlugin*
+rygel_example_server_plugin_new (void) {
+  return rygel_example_server_plugin_construct (RYGEL_EXAMPLE_TYPE_SERVER_PLUGIN);
+}
+
+
+static void
+rygel_example_server_plugin_class_init (RygelExampleServerPluginClass *klass) {
+}
+
+
+static void
+rygel_example_server_plugin_init (RygelExampleServerPlugin *self) {
+}
+
+
+
+</pre>
+<pre class="programlisting">
+/*
+ * Copyright (C) 2012 Intel Corporation
+ *
+ * This file is part of Rygel.
+ *
+ * Rygel is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * Rygel is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ */
+
+#ifndef __RYGEL_EXAMPLE_ROOT_CONTAINER_H__
+#define __RYGEL_EXAMPLE_ROOT_CONTAINER_H__
+
+#include &lt;glib.h&gt;
+#include &lt;glib-object.h&gt;
+#include &lt;rygel-server.h&gt;
+
+G_BEGIN_DECLS
+
+#define RYGEL_EXAMPLE_TYPE_ROOT_CONTAINER (rygel_example_root_container_get_type ())
+#define RYGEL_EXAMPLE_ROOT_CONTAINER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), RYGEL_EXAMPLE_TYPE_ROOT_CONTAINER, RygelExampleRootContainer))
+#define RYGEL_EXAMPLE_ROOT_CONTAINER_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), RYGEL_EXAMPLE_TYPE_ROOT_CONTAINER, RygelExampleRootContainerClass))
+#define RYGEL_EXAMPLE_IS_ROOT_CONTAINER(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), RYGEL_EXAMPLE_TYPE_ROOT_CONTAINER))
+#define RYGEL_EXAMPLE_IS_ROOT_CONTAINER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), RYGEL_EXAMPLE_TYPE_ROOT_CONTAINER))
+#define RYGEL_EXAMPLE_ROOT_CONTAINER_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), RYGEL_EXAMPLE_TYPE_ROOT_CONTAINER, RygelExampleRootContainerClass))
+
+typedef struct _RygelExampleRootContainer RygelExampleRootContainer;
+typedef struct _RygelExampleRootContainerClass RygelExampleRootContainerClass;
+
+typedef struct _RygelExampleRootContainerPrivate RygelExampleRootContainerPrivate;
+
+struct _RygelExampleRootContainer {
+  RygelSimpleContainer parent_instance;
+  RygelExampleRootContainerPrivate * priv;
+};
+
+struct _RygelExampleRootContainerClass {
+  RygelSimpleContainerClass parent_class;
+};
+
+RygelExampleRootContainer* rygel_example_root_container_new (const gchar* title);
+
+GType rygel_example_root_container_get_type (void);
+
+G_END_DECLS
+
+#endif /* __RYGEL_EXAMPLE_ROOT_CONTAINER_H__ */
+
+</pre>
+<pre class="programlisting">
+/*
+ * Copyright (C) 2012 Intel Corporation
+ *
+ * This file is part of Rygel.
+ *
+ * Rygel is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * Rygel is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ */
+
+#include "example-root-container.h"
+
+/**
+ * Our derived MediaContainer.
+ * In this example, we just derive from the SimpleContainer,
+ * but a real-world server plugin might need something more sophisticated.
+ */
+
+enum  {
+  RYGEL_EXAMPLE_ROOT_CONTAINER_DUMMY_PROPERTY
+};
+
+G_DEFINE_TYPE (RygelExampleRootContainer, rygel_example_root_container, RYGEL_TYPE_SIMPLE_CONTAINER)
+
+RygelExampleRootContainer* rygel_example_root_container_new (const gchar *title);
+
+static RygelExampleRootContainer*
+rygel_example_root_container_construct (GType object_type, const gchar *title) {
+  RygelExampleRootContainer *self;
+  RygelMediaItem *item;
+
+  g_return_val_if_fail (title != NULL, NULL);
+  
+  self = (RygelExampleRootContainer*) rygel_simple_container_construct_root (object_type, title);
+
+  item = rygel_music_item_new ("test 1", (RygelMediaContainer*) self, "Test 1", RYGEL_MUSIC_ITEM_UPNP_CLASS);
+  rygel_media_item_add_uri (item, "file:///home/murrayc/Music/Madness/05_Baggy_Trousers.mp3");
+  rygel_media_item_set_mime_type (item, "audio/mpeg");
+  rygel_simple_container_add_child_item ((RygelSimpleContainer*) self, item);
+  g_object_unref (item);
+  
+  item = rygel_music_item_new ("test 2", (RygelMediaContainer*) self, "Test 1", RYGEL_MUSIC_ITEM_UPNP_CLASS);
+  rygel_media_item_add_uri (item, "file:///home/murrayc/Music/08%20Busload%20of%20Faith.mp3");
+  rygel_media_item_set_mime_type (item, "audio/mpeg");
+  rygel_simple_container_add_child_item ((RygelSimpleContainer*) self, item);
+  g_object_unref (item);
+
+  return self;
+}
+
+
+RygelExampleRootContainer*
+rygel_example_root_container_new (const gchar *title) {
+  return rygel_example_root_container_construct (RYGEL_EXAMPLE_TYPE_ROOT_CONTAINER, title);
+}
+
+
+static void
+rygel_example_root_container_class_init (RygelExampleRootContainerClass *klass) {
+}
+
+
+static void
+rygel_example_root_container_init (RygelExampleRootContainer *self) {
+}
+
+
+
+
+</pre>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.20.1</div>
+</body>
+</html>

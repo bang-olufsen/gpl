@@ -1,0 +1,37 @@
+From f93efcc961ac9c9586e913ec4c1e2a21f936c14f Mon Sep 17 00:00:00 2001
+From: Hannes Riedl <hannes.riedl@streamunlimited.com>
+Date: Fri, 13 Jun 2014 16:57:09 +0200
+Subject: [PATCH] Bluetooth: btmrvl: Remove AMP device (hci1), as Marvell
+ firmware 14.66.35-p25 drops support for it.
+
+Signed-off-by: Hannes Riedl <hannes.riedl@streamunlimited.com>
+---
+ drivers/bluetooth/btmrvl_sdio.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
+
+diff --git a/drivers/bluetooth/btmrvl_sdio.c b/drivers/bluetooth/btmrvl_sdio.c
+index 01d6da5..8b74bad 100644
+--- a/drivers/bluetooth/btmrvl_sdio.c
++++ b/drivers/bluetooth/btmrvl_sdio.c
+@@ -198,9 +198,6 @@ static const struct sdio_device_id btmrvl_sdio_ids[] = {
+ 	/* Marvell SD8787 Bluetooth device */
+ 	{ SDIO_DEVICE(SDIO_VENDOR_ID_MARVELL, 0x911A),
+ 			.driver_data = (unsigned long) &btmrvl_sdio_sd8787 },
+-	/* Marvell SD8787 Bluetooth AMP device */
+-	{ SDIO_DEVICE(SDIO_VENDOR_ID_MARVELL, 0x911B),
+-			.driver_data = (unsigned long) &btmrvl_sdio_sd8787 },
+ 	/* Marvell SD8797 Bluetooth device */
+ 	{ SDIO_DEVICE(SDIO_VENDOR_ID_MARVELL, 0x912A),
+ 			.driver_data = (unsigned long) &btmrvl_sdio_sd8797 },
+@@ -1388,7 +1385,7 @@ static int btmrvl_sdio_probe(struct sdio_func *func,
+ 	struct btmrvl_private *priv = NULL;
+ 	struct btmrvl_sdio_card *card = NULL;
+ 
+-	BT_INFO("vendor=0x%x, device=0x%x, class=%d, fn=%d",
++	BT_INFO("Vendor=0x%x, Device=0x%x, Class=%d, Fn=%d",
+ 			id->vendor, id->device, id->class, func->num);
+ 
+ 	card = devm_kzalloc(&func->dev, sizeof(*card), GFP_KERNEL);
+-- 
+1.9.1
+

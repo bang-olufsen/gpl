@@ -1,0 +1,115 @@
+From 606b0967979bf94780a217857a59a0e583c33749 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Wed, 26 Aug 2015 11:27:24 +0200
+Subject: [PATCH] ASoC: davinci: Move default DIT setup back to
+ mcasp_dit_hw_param
+
+Reason for adding DIT defalt params to probe function (1b2733a212860803174f00ac456975c662c6117e)
+is unknown but in 4.1 kernel it is doing problems:
+[    0.686644] mtdoops: mtd device (mtddev=name/number) must be supplied
+[    0.694521] platform 48080000.elm: Unable to configure elm - device not probed?
+[    0.734568] musb-hdrc musb-hdrc.0.auto: Need DT for the DMA engine.
+[    0.813629] musb-hdrc musb-hdrc.1.auto: Need DT for the DMA engine.
+[    0.905855] omap_hsmmc 48060000.mmc: unable to get vmmc regulator -517
+[    0.949569] Unhandled fault: external abort on non-linefetch (0x1028) at 0xfa0380a8
+[    0.957628] pgd = c0004000
+[    0.960466] [fa0380a8] *pgd=48011452(bad)
+[    0.964695] Internal error: : 1028 [#1] PREEMPT ARM
+[    0.969813] Modules linked in:
+[    0.973030] CPU: 0 PID: 1 Comm: swapper Not tainted 4.1.0-00038-gcf3de23 #16
+[    0.980421] Hardware name: Generic AM33XX (Flattened Device Tree)
+[    0.986810] task: cf036b40 ti: cf038000 task.ti: cf038000
+[    0.992491] PC is at davinci_mcasp_probe+0x428/0x8c8
+[    0.997720] LR is at _raw_spin_unlock_irqrestore+0x3c/0x74
+[    1.003475] pc : [<c04c60d4>]    lr : [<c0675d00>]    psr: 60000113
+[    1.003475] sp : cf039df0  ip : 00000002  fp : c08f110c
+[    1.015514] r10: 000000c8  r9 : 00000000  r8 : 00000000
+[    1.020993] r7 : c0958f5c  r6 : cf14c400  r5 : cf14c410  r4 : cf475a10
+[    1.027839] r3 : fa038000  r2 : 00000000  r1 : 00000001  r0 : 00000000
+[    1.034687] Flags: nZCv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment kernel
+[    1.042353] Control: 10c5387d  Table: 80004019  DAC: 00000015
+[    1.048378] Process swapper (pid: 1, stack limit = 0xcf038210)
+[    1.054497] Stack: (0xcf039df0 to 0xcf03a000)
+[    1.059070] 9de0:                                     00002000 cf508d50 cf475a10 c0066154
+[    1.067652] 9e00: c091e660 00000001 cfcbdbf8 00000001 00000009 cf507bd0 00000000 00000000
+[    1.076233] 9e20: 00000000 c0154cfc 00000000 00000000 cf14d630 cf507c90 c0816a78 cf14d630
+[    1.084814] 9e40: 00000000 cf507bd0 00000001 cf14c410 cf14c410 cf14c410 fffffdfb c0958dc4
+[    1.093394] 9e60: c0958dc4 00000000 00000000 c037dd28 c037dce4 c115c320 cf14c410 00000000
+[    1.101975] 9e80: c0958dc4 c037c518 cf14c410 c0958dc4 cf14c444 00000000 c08e8748 c037c6fc
+[    1.110555] 9ea0: 00000000 c0958dc4 c037c668 c037aac8 cf0578a4 cf147a10 c0958dc4 cf4f6240
+[    1.119136] 9ec0: c09323a8 c037bc98 c084815c c0958dc4 c0901720 c0958dc4 c0901720 cf4fc040
+[    1.127716] 9ee0: c0962e00 c037ccf8 00000000 c0901720 c0901720 c00096e8 c09160e8 cf037080
+[    1.136297] 9f00: 00000000 cf036b40 00000000 00000006 00000000 00000000 cfefc3e3 c069803c
+[    1.144878] 9f20: 000000c8 c0050460 00000001 00000000 c088f334 cfefc49d 00000006 00000006
+[    1.153459] 9f40: 00000000 c08fb4c0 c08fb988 00000006 c0962e00 c0962e00 c08c2594 c08f1118
+[    1.162038] 9f60: 000000c8 c08c2d34 00000006 00000006 c08c2594 c0054d08 00000001 00000000
+[    1.170619] 9f80: c0054cd0 00002e00 c066ad60 00000000 00000000 00000000 00000000 00000000
+[    1.179200] 9fa0: 00000000 c066ad6c 00000000 c000f1f8 00000000 00000000 00000000 00000000
+[    1.187781] 9fc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+[    1.196362] 9fe0: 00000000 00000000 00000000 00000000 00000013 00000000 00000000 00000000
+[    1.204966] [<c04c60d4>] (davinci_mcasp_probe) from [<c037dd28>] (platform_drv_probe+0x44/0xa4)
+[    1.214101] [<c037dd28>] (platform_drv_probe) from [<c037c518>] (driver_probe_device+0x174/0x280)
+[    1.223414] [<c037c518>] (driver_probe_device) from [<c037c6fc>] (__driver_attach+0x94/0x98)
+[    1.232286] [<c037c6fc>] (__driver_attach) from [<c037aac8>] (bus_for_each_dev+0x60/0x94)
+[    1.240871] [<c037aac8>] (bus_for_each_dev) from [<c037bc98>] (bus_add_driver+0x148/0x1f0)
+[    1.249546] [<c037bc98>] (bus_add_driver) from [<c037ccf8>] (driver_register+0x78/0xf8)
+[    1.257951] [<c037ccf8>] (driver_register) from [<c00096e8>] (do_one_initcall+0x8c/0x1d8)
+[    1.266545] [<c00096e8>] (do_one_initcall) from [<c08c2d34>] (kernel_init_freeable+0x124/0x1c8)
+[    1.275681] [<c08c2d34>] (kernel_init_freeable) from [<c066ad6c>] (kernel_init+0xc/0xe8)
+[    1.284180] [<c066ad6c>] (kernel_init) from [<c000f1f8>] (ret_from_fork+0x14/0x3c)
+[    1.292126] Code: ebfffcc2 e2509000 1a00001c e5943038 (e59320a8)
+[    1.298576] ---[ end trace 6869be21092b4c3f ]---
+[    1.303742] Kernel panic - not syncing: Attempted to kill init! exitcode=0x0000000b
+[    1.303742]
+[    1.313332] drm_kms_helper: panic occurred, switching back to text console
+[    1.320597] ---[ end Kernel panic - not syncing: Attempted to kill init! exitcode=0x00000
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ sound/soc/davinci/davinci-mcasp.c | 16 +++++++---------
+ 1 file changed, 7 insertions(+), 9 deletions(-)
+
+diff --git a/sound/soc/davinci/davinci-mcasp.c b/sound/soc/davinci/davinci-mcasp.c
+index 945513c..2f0154f 100644
+--- a/sound/soc/davinci/davinci-mcasp.c
++++ b/sound/soc/davinci/davinci-mcasp.c
+@@ -955,6 +955,10 @@ static int mcasp_dit_hw_param(struct davinci_mcasp *mcasp,
+ 	u32 cs_value = 0;
+ 	u8 *cs_bytes = (u8*) &cs_value;
+ 
++	/* Set the TX format : 24 bit right rotation, 32 bit slot, Pad 0
++	   and LSB first */
++	mcasp_set_bits(mcasp, DAVINCI_MCASP_TXFMT_REG, TXROT(6) | TXSSZ(15));
++
+ 	if (!mcasp->dat_port)
+ 		busel = TXSEL;
+ 	mcasp_mod_bits(mcasp, DAVINCI_MCASP_TXFMT_REG, busel | FSXDLY(0),
+@@ -971,6 +975,9 @@ static int mcasp_dit_hw_param(struct davinci_mcasp *mcasp,
+ 
+ 	mcasp_clr_bits(mcasp, DAVINCI_MCASP_XEVTCTL_REG, TXDATADMADIS);
+ 
++	/* Only 44100 and 48000 are valid, both have the same setting */
++	mcasp_set_bits(mcasp, DAVINCI_MCASP_AHCLKXCTL_REG, AHCLKXDIV(3));
++
+ 	/* Enable the DIT */
+ 	mcasp_set_bits(mcasp, DAVINCI_MCASP_TXDITCTL_REG, DITEN);
+ 
+@@ -1993,15 +2000,6 @@ static int davinci_mcasp_probe(struct platform_device *pdev)
+ 		goto err;
+ 	}
+ 
+-	/* Defaults for DIT mode */
+-
+-	/* Set the TX format : 24 bit right rotation, 32 bit slot, Pad 0
+-	   and LSB first */
+-	mcasp_set_bits(mcasp, DAVINCI_MCASP_TXFMT_REG, TXROT(6) | TXSSZ(15));
+-
+-	/* Only 44100 and 48000 are valid, both have the same setting */
+-	mcasp_set_bits(mcasp, DAVINCI_MCASP_AHCLKXCTL_REG, AHCLKXDIV(3));
+-
+ 	return 0;
+ 
+ err:
+-- 
+1.9.1
+

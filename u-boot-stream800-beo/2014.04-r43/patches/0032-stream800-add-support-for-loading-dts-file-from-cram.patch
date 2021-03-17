@@ -1,0 +1,157 @@
+From 9772327156613f0ea66056364ad1b3d6b20f5a5e Mon Sep 17 00:00:00 2001
+From: Radek Dostal <radek.dostal@streamunlimited.com>
+Date: Mon, 25 Mar 2013 15:44:29 +0100
+Subject: [PATCH] stream800: add support for loading dts file from cramfs image
+
+Signed-off-by: Matus Ujhelyi <matus.ujhelyi@streamunlimited.com>
+---
+ board/streamunlimited/stream800/board.c | 30 +++++++++++++++++--
+ include/configs/stream800.h             | 52 +++++++++++++++++++++++++++++++--
+ 2 files changed, 77 insertions(+), 5 deletions(-)
+
+diff --git a/board/streamunlimited/stream800/board.c b/board/streamunlimited/stream800/board.c
+index c9eb7bc..e30e3d8 100644
+--- a/board/streamunlimited/stream800/board.c
++++ b/board/streamunlimited/stream800/board.c
+@@ -339,11 +339,16 @@ static void factory_reset(void) {
+ int board_late_init(void)
+ {
+ 
++	/*
++	 * DTBs files are stored in cramfs image, path in cramfs filesystem to the correct file is: /${cramfsdir}/${board_name}_${board_rev}.dts
++	 * Loading of DTB is located in include/configs/stream800.h
++	 * Change any variable of board_name, cramfsdir, board_rev can corrupt board boot !!
++	 */
+ 	setenv("board_name", "stream800");
+ 	switch (get_module_version()) {
+-		case MV_L0: setenv("board_rev", "L0"); break;
+-		case MV_L1: setenv("board_rev", "L1"); break;
+-		case MV_L2: setenv("board_rev", "L2");break;
++		case MV_L0: setenv("board_rev", "l0"); break;
++		case MV_L1: setenv("board_rev", "l1"); break;
++		case MV_L2: setenv("board_rev", "l2");break;
+ 		case MV_unknown:
+ 		default:
+ 			setenv("board_rev", "unknown");
+@@ -351,6 +356,25 @@ int board_late_init(void)
+ 			break;
+ 	}
+ 
++	switch (get_carrier_board_type()) {
++		case CBT_LanDockBoard:
++			setenv("cramfsdir", "lan_dock_board");
++			break;
++		case CBT_SueDemoClientBoard:
++			setenv("cramfsdir", "sue_demo_client_board");
++			break;
++		case CBT_SueFirstCarrierBoard:
++			setenv("cramfsdir", "sue_first_carrier_board");
++			break;
++		case CBT_SueFactoryTestBoard:
++			setenv("cramfsdir", "sue_factory_test_board");
++			break;
++		default:
++			printf("board_late_init: Not supported board!\n");
++			setenv("cramfsdir", "");
++			//panic("Not supported board!");
++	}
++
+ 	if ((board_interface != NULL) && (board_interface->late_init != NULL))
+ 		board_interface->late_init(&board);
+ 
+diff --git a/include/configs/stream800.h b/include/configs/stream800.h
+index fe1976d..3810a2b 100644
+--- a/include/configs/stream800.h
++++ b/include/configs/stream800.h
+@@ -198,6 +198,8 @@
+  * 			Userspace after correct boot should clear FAIL flag.
+  *
+  * METHODS:
++ *		readDts                         - loads DTB file for board from cramfs image, path in cramfs: /${cramfsdir}/${board_name}_${board_rev}.dts
++ *		readUimage                      - loads uImage to RAM
+  *		handle_encm                     - decrypts chunk configured by last "sfu chnkhdr", if it was encrypted
+  *		update_download_from_usb        - loads sfupdate file from usb and saves it into download partition
+  * 		check_bootloaders_need_flashing - check MLO, u-boot, u-boot-env partition in image, set enviroments to signalize that flashing them is needed
+@@ -216,6 +218,10 @@
+  * 		dts_vers                        - version of DTS partition stored in NAND
+  * 		kernel_vers                     - version of kernel stored in NAND
+  * 		rootfs_vers                     - version of rootfs stored in NAND
++ * 		cramfsdir                       - directory in cramfs image where dtb file for this board should be located
++ * 		board_name                      - name of the board, used for locating DTB file in cramfs image
++ * 		board_rev                       - rev of the board, used for locating DTB file in cramfs image
++ * 		cramfsdir                       - directory in cramfs image where dtb file for this board should be located
+  * 		SFU_CHNK_ENCM                   - actual chunk encryption flag in sfupdate file, set by call sfu chnkdr command
+  * 		SFU_CHNK_DATA                   - actual chunk data start address, set by call sfu chnkdr command
+  * 		SFU_CHNK_SIZE                   - actual chunk data size, set by call sfu chnkdr command
+@@ -243,6 +249,8 @@
+     "console=ttyO0,115200n8\0" \
+     "optargs=\0" \
+     "sfu_load_addr=0x80200000\0" \
++    "cramfsaddr=0x80200000\0" \
++    "dtb_load_addr=0x80800000\0" \
+     "wdt_timeout=600\0" \
+     "wdtargs=omap_wdt.timer_margin=600 omap_wdt.pwrup_disable=0\0" \
+ 	"bootargs_defaults=setenv bootargs " \
+@@ -301,7 +309,46 @@
+         _str(CONFIG_DTS_SIZE) "(dts)," \
+         _str(CONFIG_RFS_SIZE) "(rootfs)," \
+         _str(CONFIG_DOWNLOAD_SIZE) "(download)\0" \
+-    "readuImage=nand read ${sfu_load_addr} kernel\0" \
++    "readuImage=" \
++        "if nand read ${sfu_load_addr} kernel; " \
++            "then " \
++            "echo \"INFO: kernel partition load successful\"; " \
++        "else " \
++            "echo \"ERROR: cannot load kernel image from nand\"; " \
++            "reset; " \
++        "fi;\0" \
++\
++\
++    "readDts=" \
++        "if nand read ${sfu_load_addr} dts; " \
++            "then " \
++            "if cramfsload ${dtb_load_addr} /${cramfsdir}/${board_name}_${board_rev}.dts; " \
++                "then " \
++                "echo \"INFO: dts file load successful\"; " \
++                "if fdt addr ${dtb_load_addr} ; " \
++                    "then " \
++                    "echo \"INFO: fdt addr set successful\"; " \
++                    "if fdt resize; " \
++                        "then " \
++                        "echo \"INFO: fdt resize successful\"; " \
++                    "else " \
++                        "echo \"ERROR: cannot resize fdt\"; " \
++                        "reset; " \
++                    "fi; " \
++                "else " \
++                    "echo \"ERROR: cannot set fdt addr\"; " \
++                    "reset; " \
++                "fi; " \
++            "else " \
++                "echo \"ERROR: cannot load DTB file from cramfs\"; " \
++                "reset; " \
++            "fi; " \
++        "else " \
++            "echo \"ERROR: cannot load DTS image from nand\"; " \
++            "reset; " \
++        "fi;\0" \
++\
++\
+     "nandroot=ubi0:stream800-rootfs ubi.mtd=10,2048 rw\0" \
+     "nandrootfstype=ubifs rootwait=1\0" \
+     "nandargs=setenv bootargs console=${console} " \
+@@ -311,9 +358,10 @@
+         "run nandargs; " \
+         "echo \"INFO: loading kernel image into RAM...\"; " \
+         "bstate booting; " \
++        "run readDts; " \
+         "run readuImage; " \
+         "echo \"INFO: booting kernel image...\"; " \
+-        "bootm ${sfu_load_addr}; " \
++        "bootm ${sfu_load_addr} - ${dtb_load_addr} ${bootargs}; " \
+         "echo \"INFO: kernel boot failed...\"; " \
+         "echo \"INFO: resetting...\"; " \
+         "reset;\0" \
+-- 
+2.7.4
+

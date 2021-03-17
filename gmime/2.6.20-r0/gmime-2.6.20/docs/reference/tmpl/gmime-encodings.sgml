@@ -1,0 +1,297 @@
+<!-- ##### SECTION Title ##### -->
+gmime-encodings
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### ENUM GMimeContentEncoding ##### -->
+<para>
+
+</para>
+
+@GMIME_CONTENT_ENCODING_DEFAULT: 
+@GMIME_CONTENT_ENCODING_7BIT: 
+@GMIME_CONTENT_ENCODING_8BIT: 
+@GMIME_CONTENT_ENCODING_BINARY: 
+@GMIME_CONTENT_ENCODING_BASE64: 
+@GMIME_CONTENT_ENCODING_QUOTEDPRINTABLE: 
+@GMIME_CONTENT_ENCODING_UUENCODE: 
+
+<!-- ##### FUNCTION g_mime_content_encoding_from_string ##### -->
+<para>
+
+</para>
+
+@str: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_content_encoding_to_string ##### -->
+<para>
+
+</para>
+
+@encoding: 
+@Returns: 
+
+
+<!-- ##### ENUM GMimeEncodingConstraint ##### -->
+<para>
+
+</para>
+
+@GMIME_ENCODING_CONSTRAINT_7BIT: 
+@GMIME_ENCODING_CONSTRAINT_8BIT: 
+@GMIME_ENCODING_CONSTRAINT_BINARY: 
+
+<!-- ##### STRUCT GMimeEncoding ##### -->
+<para>
+
+</para>
+
+@encoding: 
+@uubuf: 
+@encode: 
+@save: 
+@state: 
+
+<!-- ##### FUNCTION g_mime_encoding_init_encode ##### -->
+<para>
+
+</para>
+
+@state: 
+@encoding: 
+
+
+<!-- ##### FUNCTION g_mime_encoding_init_decode ##### -->
+<para>
+
+</para>
+
+@state: 
+@encoding: 
+
+
+<!-- ##### FUNCTION g_mime_encoding_reset ##### -->
+<para>
+
+</para>
+
+@state: 
+
+
+<!-- ##### FUNCTION g_mime_encoding_outlen ##### -->
+<para>
+
+</para>
+
+@state: 
+@inlen: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_encoding_step ##### -->
+<para>
+
+</para>
+
+@state: 
+@inbuf: 
+@inlen: 
+@outbuf: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_encoding_flush ##### -->
+<para>
+
+</para>
+
+@state: 
+@inbuf: 
+@inlen: 
+@outbuf: 
+@Returns: 
+
+
+<!-- ##### MACRO GMIME_BASE64_ENCODE_LEN ##### -->
+<para>
+
+</para>
+
+@x: 
+
+
+<!-- ##### FUNCTION g_mime_encoding_base64_decode_step ##### -->
+<para>
+
+</para>
+
+@inbuf: 
+@inlen: 
+@outbuf: 
+@state: 
+@save: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_encoding_base64_encode_step ##### -->
+<para>
+
+</para>
+
+@inbuf: 
+@inlen: 
+@outbuf: 
+@state: 
+@save: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_encoding_base64_encode_close ##### -->
+<para>
+
+</para>
+
+@inbuf: 
+@inlen: 
+@outbuf: 
+@state: 
+@save: 
+@Returns: 
+
+
+<!-- ##### MACRO GMIME_UUDECODE_STATE_INIT ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO GMIME_UUDECODE_STATE_BEGIN ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO GMIME_UUDECODE_STATE_END ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO GMIME_UUENCODE_LEN ##### -->
+<para>
+
+</para>
+
+@x: 
+
+
+<!-- ##### FUNCTION g_mime_encoding_uudecode_step ##### -->
+<para>
+
+</para>
+
+@inbuf: 
+@inlen: 
+@outbuf: 
+@state: 
+@save: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_encoding_uuencode_step ##### -->
+<para>
+
+</para>
+
+@inbuf: 
+@inlen: 
+@outbuf: 
+@uubuf: 
+@state: 
+@save: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_encoding_uuencode_close ##### -->
+<para>
+
+</para>
+
+@inbuf: 
+@inlen: 
+@outbuf: 
+@uubuf: 
+@state: 
+@save: 
+@Returns: 
+
+
+<!-- ##### MACRO GMIME_QP_ENCODE_LEN ##### -->
+<para>
+
+</para>
+
+@x: 
+
+
+<!-- ##### FUNCTION g_mime_encoding_quoted_decode_step ##### -->
+<para>
+
+</para>
+
+@inbuf: 
+@inlen: 
+@outbuf: 
+@state: 
+@save: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_encoding_quoted_encode_step ##### -->
+<para>
+
+</para>
+
+@inbuf: 
+@inlen: 
+@outbuf: 
+@state: 
+@save: 
+@Returns: 
+
+
+<!-- ##### FUNCTION g_mime_encoding_quoted_encode_close ##### -->
+<para>
+
+</para>
+
+@inbuf: 
+@inlen: 
+@outbuf: 
+@state: 
+@save: 
+@Returns: 
+
+

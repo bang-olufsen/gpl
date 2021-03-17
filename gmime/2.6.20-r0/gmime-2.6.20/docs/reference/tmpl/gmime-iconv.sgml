@@ -1,0 +1,69 @@
+<!-- ##### SECTION Title ##### -->
+gmime-iconv
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### FUNCTION g_mime_iconv_init ##### -->
+<para>
+
+</para>
+
+@void: 
+
+
+<!-- ##### FUNCTION g_mime_iconv_shutdown ##### -->
+<para>
+
+</para>
+
+@void: 
+
+
+<!-- ##### FUNCTION g_mime_iconv_open ##### -->
+<para>
+
+</para>
+
+@to: 
+@from: 
+@Returns: 
+
+
+<!-- ##### MACRO g_mime_iconv ##### -->
+<para>
+
+</para>
+
+@cd: 
+@inbuf: 
+@inleft: 
+@outbuf: 
+@outleft: 
+
+
+<!-- ##### FUNCTION g_mime_iconv_close ##### -->
+<para>
+
+</para>
+
+@cd: 
+@Returns: 
+
+

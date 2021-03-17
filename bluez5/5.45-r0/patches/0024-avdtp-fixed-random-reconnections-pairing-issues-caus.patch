@@ -1,0 +1,36 @@
+From 7e37f3d94a6d5e5c506bcf71c422b42f0748352c Mon Sep 17 00:00:00 2001
+From: Stanislav Ruzani <stanislav.ruzani@streamunlimited.com>
+Date: Fri, 8 Sep 2017 05:26:39 +0200
+Subject: [PATCH 3/4] avdtp: fixed random reconnections / pairing issues caused
+ by too low DISCONNECT timeout
+
+Signed-off-by: Stanislav Ruzani <stanislav.ruzani@streamunlimited.com>
+---
+ profiles/audio/avdtp.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/profiles/audio/avdtp.c b/profiles/audio/avdtp.c
+index ecec4d1..120926a 100644
+--- a/profiles/audio/avdtp.c
++++ b/profiles/audio/avdtp.c
+@@ -88,7 +88,7 @@ static unsigned int seids;
+ #define REQ_TIMEOUT 6
+ #define SUSPEND_TIMEOUT 10
+ #define ABORT_TIMEOUT 2
+-#define DISCONNECT_TIMEOUT 1
++#define DISCONNECT_TIMEOUT 2000	// ms
+ #define START_TIMEOUT 1
+ 
+ #if __BYTE_ORDER == __LITTLE_ENDIAN
+@@ -1176,7 +1176,7 @@ static void set_disconnect_timer(struct avdtp *session)
+ 	if (session->dc_timer)
+ 		remove_disconnect_timer(session);
+ 
+-	session->dc_timer = g_timeout_add_seconds(DISCONNECT_TIMEOUT,
++	session->dc_timer = g_timeout_add(DISCONNECT_TIMEOUT,
+ 						disconnect_timeout,
+ 						session);
+ }
+-- 
+2.13.0
+

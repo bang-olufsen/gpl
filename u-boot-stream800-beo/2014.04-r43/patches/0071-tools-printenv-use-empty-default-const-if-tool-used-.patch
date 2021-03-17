@@ -1,0 +1,188 @@
+From bc407f9a44bfb5a60d5271c3825d85f564508ac4 Mon Sep 17 00:00:00 2001
+From: Matus Ujhelyi <matus.ujhelyi@streamunlimited.com>
+Date: Fri, 10 Jan 2014 13:32:37 +0100
+Subject: [PATCH] tools: printenv: use empty default const if tool used as
+ printconst and setconst
+
+Signed-off-by: Matus Ujhelyi <matus.ujhelyi@streamunlimited.com>
+---
+ tools/env/fw_env.c      | 65 +++++++++++++++++++++++++++++++++++++------------
+ tools/env/fw_env.h      |  1 +
+ tools/env/fw_env_main.c | 16 ++++++++++++
+ 3 files changed, 67 insertions(+), 15 deletions(-)
+
+diff --git a/tools/env/fw_env.c b/tools/env/fw_env.c
+index 443b19a..f2da9dd 100644
+--- a/tools/env/fw_env.c
++++ b/tools/env/fw_env.c
+@@ -100,6 +100,10 @@ static struct environment environment = {
+ 
+ static int HaveRedundEnv = 0;
+ 
++static char default_constants[] = {
++	"\0"
++};
++
+ static unsigned char active_flag = 1;
+ /* obsolete_flag must be 0 to efficiently set it on NOR flash without erasing */
+ static unsigned char obsolete_flag = 0;
+@@ -111,6 +115,8 @@ static int flash_io (int mode);
+ static char *envmatch (char * s1, char * s2);
+ static int parse_config (void);
+ 
++int use_constants_instead_of_env;
++
+ char * config_file = CONFIG_ENV_FILE;
+ #if defined(CONFIG_FILE)
+ static int get_config (char *);
+@@ -174,20 +180,39 @@ char *fw_getdefenv(char *name)
+ {
+ 	char *env, *nxt;
+ 
+-	for (env = default_environment; *env; env = nxt + 1) {
+-		char *val;
++	if (use_constants_instead_of_env == 0) {
++		for (env = default_environment; *env; env = nxt + 1) {
++			char *val;
+ 
+-		for (nxt = env; *nxt; ++nxt) {
+-			if (nxt >= &default_environment[ENV_SIZE]) {
+-				fprintf(stderr, "## Error: "
+-					"default environment not terminated\n");
+-				return NULL;
++			for (nxt = env; *nxt; ++nxt) {
++				if (nxt >= &default_environment[ENV_SIZE]) {
++					fprintf(stderr, "## Error: "
++						"default environment not terminated\n");
++					return NULL;
++				}
+ 			}
++			val = envmatch(name, env);
++			if (!val)
++				continue;
++			return val;
++		}
++	}
++	else {
++		for (env = default_constants; *env; env = nxt + 1) {
++			char *val;
++
++			for (nxt = env; *nxt; ++nxt) {
++				if (nxt >= &default_constants[ENV_SIZE]) {
++					fprintf(stderr, "## Error: "
++						"default environment not terminated\n");
++					return NULL;
++				}
++			}
++			val = envmatch(name, env);
++			if (!val)
++				continue;
++			return val;
+ 		}
+-		val = envmatch(name, env);
+-		if (!val)
+-			continue;
+-		return val;
+ 	}
+ 	return NULL;
+ }
+@@ -197,10 +222,14 @@ char *fw_getdefenv(char *name)
+  */
+ void fw_print_default_env(void)
+ {
+-	printf("env part size: %d\n", CONFIG_ENV_SIZE);
+ 
+ 	const char *p = default_environment;
+ 	int i = 0;
++
++	printf("env part size: %d\n", CONFIG_ENV_SIZE);
++
++	if (use_constants_instead_of_env == 1)
++		p = default_constants;
+ 	while (i < sizeof(default_environment)) {
+ 		int ret = printf("%s\n", p);
+ 		if (ret < 0) {
+@@ -1135,7 +1164,10 @@ int fw_env_open(void)
+ 		if (!crc0_ok) {
+ 			fprintf (stderr,
+ 				"Warning: Bad CRC, using default environment\n");
+-			memcpy(environment.data, default_environment, sizeof default_environment);
++			if (use_constants_instead_of_env == 0)
++				memcpy(environment.data, default_environment, sizeof default_environment);
++			else
++				memcpy(environment.data, default_constants, sizeof default_constants);
+ 		}
+ 	} else {
+ 		flag0 = *environment.flags;
+@@ -1190,8 +1222,11 @@ int fw_env_open(void)
+ 		} else if (!crc0_ok && !crc1_ok) {
+ 			fprintf (stderr,
+ 				"Warning: Bad CRC, using default environment\n");
+-			memcpy (environment.data, default_environment,
+-				sizeof default_environment);
++
++			if (use_constants_instead_of_env == 0)
++				memcpy(environment.data, default_environment, sizeof default_environment);
++			else
++				memcpy(environment.data, default_constants, sizeof default_constants);
+ 			dev_current = 0;
+ 		} else {
+ 			switch (environment.flag_scheme) {
+diff --git a/tools/env/fw_env.h b/tools/env/fw_env.h
+index ca38c80..d56cebe 100644
+--- a/tools/env/fw_env.h
++++ b/tools/env/fw_env.h
+@@ -65,3 +65,4 @@ extern int fw_env_close(void);
+ 
+ extern unsigned	long  crc32	 (unsigned long, const unsigned char *, unsigned);
+ extern char	* config_file;
++extern int use_constants_instead_of_env;
+diff --git a/tools/env/fw_env_main.c b/tools/env/fw_env_main.c
+index 721b2a0..0b25fd4 100644
+--- a/tools/env/fw_env_main.c
++++ b/tools/env/fw_env_main.c
+@@ -38,6 +38,7 @@
+ #define CMD_SETCONST	"fw_setconst"
+ 
+ extern char * config_file;
++extern int use_constants_instead_of_env;
+ 
+ static struct option long_options[] = {
+ 	{"script", required_argument, NULL, 's'},
+@@ -87,6 +88,7 @@ int main(int argc, char *argv[])
+ 	int lockfd = -1;
+ 	int retval = EXIT_SUCCESS;
+ 	struct flock lock;
++	use_constants_instead_of_env = 0;
+ 
+ 	lock.l_type = F_RDLCK;
+ 	lock.l_len = 0;
+@@ -151,11 +153,25 @@ int main(int argc, char *argv[])
+ 		}
+ 	} else if (strcmp(cmdname, CMD_PRINTCONST) == 0) {
+ 		config_file = CONFIG_CONST_FILE;
++
++		/* !!!! Quick and dirty hack
++		 * default environment changed to default constants
++		 * Expects that env is empty
++		 */
++		use_constants_instead_of_env = 1;
++
+ 		if (print_default_env == 0) {
+ 			if (fw_printenv(argc, argv) != 0)
+ 				retval = EXIT_FAILURE;
+ 		}
+ 	} else if (strcmp(cmdname, CMD_SETCONST) == 0) {
++
++		/* !!!! Quick and dirty hack
++		 * default environment changed to default constants
++		 * Expects that env is empty
++		 */
++		use_constants_instead_of_env = 1;
++
+ 		config_file = CONFIG_CONST_FILE;
+ 		if (!script_file) {
+ 			if (fw_setenv(argc, argv) != 0)
+-- 
+2.7.4
+

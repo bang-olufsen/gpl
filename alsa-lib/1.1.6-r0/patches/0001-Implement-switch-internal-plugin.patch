@@ -1,0 +1,1540 @@
+From 9e6194cb005c27fc821cd109d96c9becdbb2c0fd Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Thu, 2 Jun 2016 16:04:13 +0200
+Subject: [PATCH] Implement switch internal plugin
+
+This plugin can disconnect its slave when control is set.
+
+When switch is on this plugin copies samples from master copy PCM to given
+slave PCM.
+
+When switch is off this plugin discards contents of a PCM stream
+synchronized with softvare clock.
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+
+%% original patch: 0001-Implement-switch-internal-plugin.patch
+---
+ include/pcm.h        |    2 +
+ src/pcm/Makefile.am  |    2 +
+ src/pcm/pcm.c        |    2 +-
+ src/pcm/pcm_switch.c | 1468 ++++++++++++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 1473 insertions(+), 1 deletion(-)
+ create mode 100644 src/pcm/pcm_switch.c
+
+diff --git a/include/pcm.h b/include/pcm.h
+index 5b07823..4469485 100644
+--- a/include/pcm.h
++++ b/include/pcm.h
+@@ -458,6 +458,8 @@ enum _snd_pcm_type {
+ 	SND_PCM_TYPE_EXTPLUG,
+ 	/** Mmap-emulation plugin */
+ 	SND_PCM_TYPE_MMAP_EMUL,
++	/** Switch plugin */
++	SND_PCM_TYPE_SWITCH,
+ 	SND_PCM_TYPE_LAST = SND_PCM_TYPE_MMAP_EMUL
+ };
+ 
+diff --git a/src/pcm/Makefile.am b/src/pcm/Makefile.am
+index 8edbd0b..287d3dc 100644
+--- a/src/pcm/Makefile.am
++++ b/src/pcm/Makefile.am
+@@ -103,6 +103,8 @@ if BUILD_PCM_PLUGIN_MMAP_EMUL
+ libpcm_la_SOURCES += pcm_mmap_emul.c
+ endif
+ 
++libpcm_la_SOURCES += pcm_switch.c
++
+ EXTRA_DIST = pcm_dmix_i386.c pcm_dmix_x86_64.c pcm_dmix_generic.c
+ 
+ noinst_HEADERS = pcm_local.h pcm_plugin.h mask.h mask_inline.h \
+diff --git a/src/pcm/pcm.c b/src/pcm/pcm.c
+index 11aec80..b7a13f9 100644
+--- a/src/pcm/pcm.c
++++ b/src/pcm/pcm.c
+@@ -2398,7 +2398,7 @@ snd_pcm_t *snd_async_handler_get_pcm(snd_async_handler_t *handler)
+ static const char *const build_in_pcms[] = {
+ 	"adpcm", "alaw", "copy", "dmix", "file", "hooks", "hw", "ladspa", "lfloat",
+ 	"linear", "meter", "mulaw", "multi", "null", "empty", "plug", "rate", "route", "share",
+-	"shm", "dsnoop", "dshare", "asym", "iec958", "softvol", "mmap_emul",
++	"shm", "dsnoop", "dshare", "asym", "iec958", "softvol", "mmap_emul", "switch",
+ 	NULL
+ };
+ 
+diff --git a/src/pcm/pcm_switch.c b/src/pcm/pcm_switch.c
+new file mode 100644
+index 0000000..38d3b7e
+--- /dev/null
++++ b/src/pcm/pcm_switch.c
+@@ -0,0 +1,1468 @@
++/**
++ * \file pcm/pcm_switch.c
++ * \ingroup PCM_Plugins
++ * \brief PCM Switch Plugin Interface
++ * \author Simon Mikuda <simon.mikuda@streamunlimited.com>
++ * \date 2016
++ */
++
++#include <time.h>
++
++#include "pcm_local.h"
++#include "pcm_generic.h"
++
++#define LOG(...) SNDERR(__VA_ARGS__)
++//#define DEBUG(...) SNDERR(__VA_ARGS__)
++#define DEBUG(...)
++//#define TRACE(...) SNDERR(__VA_ARGS__)
++#define TRACE(...)
++
++enum {
++	SWITCH_CTL_OFF = 0,
++	SWITCH_CTL_ON,
++
++	/* Last value */
++	MAX_SWITCH_CTL,
++} _switch_ctl_names_enum;
++
++static void apply_switch_value(snd_pcm_t *pcm);
++static const char *const _switch_ctl_names[] = { "Off", "On" };
++
++#ifndef PIC
++/* entry for static linking */
++const char *_snd_module_pcm_switch = "";
++#endif
++
++#ifndef DOC_HIDDEN
++typedef struct {
++	/* This field need to be the first */
++	snd_pcm_generic_t gen;
++	snd_ctl_t *ctl;
++	snd_ctl_elem_value_t elem;
++	int cchannels;
++	int cur_switch;
++	int active_switch;
++	int needs_update;
++	int updating;
++	snd_async_handler_t *async_handler;
++	int has_sw_params;
++	snd_pcm_sw_params_t sw_params;
++	int has_hw_params;
++	snd_pcm_hw_params_t hw_params;
++	snd_config_t *root;
++	snd_pcm_stream_t stream;
++	snd_config_t *conf;
++	snd_config_t *sconf;
++	int stream_mode;
++	snd_htimestamp_t trigger_tstamp;
++	snd_pcm_state_t state;
++	snd_pcm_uframes_t appl_ptr;
++	snd_pcm_uframes_t hw_ptr;
++	snd_pcm_chmap_query_t **chmap;
++	struct timespec clock;
++	unsigned clock_diff_usec;
++} snd_pcm_switch_t;
++#endif
++
++static void update_softvare_clock(snd_pcm_t *pcm)
++{
++	TRACE("");
++	snd_pcm_switch_t *swtch = pcm->private_data;
++
++	struct timespec clock;
++	clock_gettime(CLOCK_MONOTONIC, &clock);
++
++	if (swtch->clock.tv_sec > 0) {
++		u_int64_t forward_usec;
++		unsigned diff_nsec, forward;
++
++		diff_nsec = 1000000000 * (clock.tv_sec - swtch->clock.tv_sec) + (clock.tv_nsec - swtch->clock.tv_nsec);
++		forward_usec = ((u_int64_t) (pcm->rate * diff_nsec) / 1000) + swtch->clock_diff_usec;
++		forward = forward_usec / 1000000;
++		swtch->clock_diff_usec = forward_usec % 1000000;
++
++		snd_pcm_mmap_hw_forward(pcm, forward * pcm->channels);
++	}
++
++	swtch->clock = clock;
++}
++
++static void update_switch_value(snd_pcm_switch_t *swtch)
++{
++	TRACE("");
++
++	if (!swtch->ctl)
++		return;
++
++	if (snd_ctl_elem_read(swtch->ctl, &swtch->elem) < 0)
++		return;
++
++	swtch->cur_switch = swtch->elem.value.integer.value[0];
++}
++
++inline void switch_free(snd_pcm_switch_t *swtch)
++{
++	DEBUG("");
++	if (swtch->async_handler)
++		snd_async_del_handler(swtch->async_handler);
++	if (swtch->gen.close_slave && swtch->gen.slave)
++		snd_pcm_close(swtch->gen.slave);
++	if (swtch->ctl)
++		snd_ctl_close(swtch->ctl);
++	if (swtch->sconf)
++		snd_config_delete(swtch->sconf);
++	if (swtch->conf)
++		snd_config_delete(swtch->conf);
++	if (swtch->root)
++		snd_config_delete(swtch->root);
++	free(swtch);
++}
++
++static int snd_pcm_switch_hw_refine_cprepare(snd_pcm_t *pcm ATTRIBUTE_UNUSED, snd_pcm_hw_params_t *params)
++{
++	DEBUG("");
++	int err;
++	snd_pcm_access_mask_t access_mask = { SND_PCM_ACCBIT_SHM };
++	err = _snd_pcm_hw_param_set_mask(params, SND_PCM_HW_PARAM_ACCESS,
++	                                 &access_mask);
++	if (err < 0)
++		return err;
++	params->info &= ~(SND_PCM_INFO_MMAP | SND_PCM_INFO_MMAP_VALID);
++	return 0;
++}
++
++static int snd_pcm_switch_hw_refine_sprepare(snd_pcm_t *pcm ATTRIBUTE_UNUSED, snd_pcm_hw_params_t *sparams)
++{
++	DEBUG("");
++	snd_pcm_access_mask_t saccess_mask = { SND_PCM_ACCBIT_MMAP };
++	_snd_pcm_hw_params_any(sparams);
++	_snd_pcm_hw_param_set_mask(sparams, SND_PCM_HW_PARAM_ACCESS,
++	                           &saccess_mask);
++	return 0;
++}
++
++static int snd_pcm_switch_hw_refine_schange(snd_pcm_t *pcm ATTRIBUTE_UNUSED, snd_pcm_hw_params_t *params,
++                                            snd_pcm_hw_params_t *sparams)
++{
++	DEBUG("");
++	int err;
++	unsigned int links = ~SND_PCM_HW_PARBIT_ACCESS;
++	err = _snd_pcm_hw_params_refine(sparams, links, params);
++	if (err < 0)
++		return err;
++	return 0;
++}
++
++static int snd_pcm_switch_hw_refine_cchange(snd_pcm_t *pcm ATTRIBUTE_UNUSED, snd_pcm_hw_params_t *params,
++                                            snd_pcm_hw_params_t *sparams)
++{
++	DEBUG("");
++	int err;
++	unsigned int links = ~SND_PCM_HW_PARBIT_ACCESS;
++	err = _snd_pcm_hw_params_refine(params, links, sparams);
++	if (err < 0)
++		return err;
++	return 0;
++}
++
++static int snd_pcm_switch_close(snd_pcm_t *pcm)
++{
++	DEBUG("");
++	snd_pcm_switch_t *swtch = pcm->private_data;
++
++	switch_free(swtch);
++	return 0;
++}
++
++static int snd_pcm_switch_info(snd_pcm_t *pcm, snd_pcm_info_t * info)
++{
++	DEBUG("");
++	snd_pcm_switch_t *swtch = pcm->private_data;
++
++	if (swtch->gen.slave) {
++		return snd_pcm_generic_info(pcm, info);
++	}
++	else {
++		memset(info, 0, sizeof(*info));
++		info->stream = pcm->stream;
++		info->card = -1;
++		if (pcm->name) {
++			strncpy((char *)info->id, pcm->name, sizeof(info->id));
++			strncpy((char *)info->name, pcm->name, sizeof(info->name));
++			strncpy((char *)info->subname, pcm->name, sizeof(info->subname));
++		}
++		info->subdevices_count = 1;
++		return 0;
++	}
++}
++
++static int snd_pcm_switch_hw_refine(snd_pcm_t *pcm, snd_pcm_hw_params_t *params)
++{
++	DEBUG("");
++	snd_pcm_switch_t *swtch = pcm->private_data;
++
++	if (swtch->gen.slave) {
++		return snd_pcm_hw_refine_slave(pcm, params,
++		                               snd_pcm_switch_hw_refine_cprepare,
++		                               snd_pcm_switch_hw_refine_cchange,
++		                               snd_pcm_switch_hw_refine_sprepare,
++		                               snd_pcm_switch_hw_refine_schange,
++		                               snd_pcm_generic_hw_refine);
++	}
++	else {
++		int err = snd_pcm_hw_refine_soft(pcm, params);
++		params->info = SND_PCM_INFO_MMAP | SND_PCM_INFO_MMAP_VALID |
++		               SND_PCM_INFO_RESUME | SND_PCM_INFO_PAUSE;
++		params->fifo_size = 0;
++		return err;
++	}
++}
++
++static int snd_pcm_switch_hw_params(snd_pcm_t *pcm, snd_pcm_hw_params_t *params)
++{
++	TRACE("");
++	snd_pcm_switch_t *swtch = pcm->private_data;
++/*
++	snd_output_t *out;
++	char* buff;
++	snd_output_buffer_open(&out);
++	snd_pcm_hw_params_dump(params, out);
++	DEBUG("%.*s", snd_output_buffer_string(out, &buff), buff);
++	snd_output_close(out);
++*/
++	swtch->has_hw_params = 1;
++	snd_pcm_hw_params_copy(&swtch->hw_params, params);
++
++	if (swtch->gen.slave) {
++		DEBUG("copy");
++		return snd_pcm_hw_params_slave(pcm, params,
++		                               snd_pcm_switch_hw_refine_cchange,
++		                               snd_pcm_switch_hw_refine_sprepare,
++		                               snd_pcm_switch_hw_refine_schange,
++		                               snd_pcm_generic_hw_params);
++	}
++	else {
++		DEBUG("null");
++		return 0;
++	}
++}
++
++static int snd_pcm_switch_hw_free(snd_pcm_t *pcm)
++{
++	DEBUG("");
++	snd_pcm_switch_t *swtch = pcm->private_data;
++
++	swtch->has_hw_params = 0;
++
++	if (swtch->gen.slave) {
++		snd_pcm_generic_hw_free(pcm);
++	}
++	else {
++		return 0;
++	}
++}
++
++static int snd_pcm_switch_sw_params(snd_pcm_t *pcm, snd_pcm_sw_params_t * params)
++{
++	TRACE("");
++	snd_pcm_switch_t *swtch = pcm->private_data;
++/*
++	snd_output_t *out;
++	char* buff;
++	snd_output_buffer_open(&out);
++	snd_pcm_sw_params_dump(params, out);
++	DEBUG("%.*s", snd_output_buffer_string(out, &buff), buff);
++	snd_output_close(out);
++*/
++	swtch->has_sw_params = 1;
++	snd_pcm_sw_params_copy(&swtch->sw_params, params);
++
++	if (swtch->gen.slave) {
++		DEBUG("copy");
++		snd_pcm_generic_sw_params(pcm, params);
++		return 0;
++	}
++	else {
++		DEBUG("null");
++		return 0;
++	}
++}
++
++static int snd_pcm_switch_nonblock(snd_pcm_t *pcm ATTRIBUTE_UNUSED, int nonblock ATTRIBUTE_UNUSED)
++{
++	DEBUG("");
++	snd_pcm_switch_t *swtch = pcm->private_data;
++
++	if (swtch->gen.slave) {
++		snd_pcm_generic_nonblock(pcm, nonblock);
++	}
++	else {
++		return 0;
++	}
++}
++
++static int snd_pcm_switch_async(snd_pcm_t *pcm, int sig, pid_t pid)
++{
++	DEBUG("");
++	snd_pcm_switch_t *swtch = pcm->private_data;
++
++	if (swtch->gen.slave) {
++		return snd_pcm_generic_async(pcm, sig, pid);
++	}
++	else {
++		return -ENOSYS;
++	}
++}
++
++static snd_pcm_chmap_query_t **snd_pcm_switch_query_chmaps(snd_pcm_t *pcm)
++{
++	DEBUG("");
++	snd_pcm_switch_t *swtch = pcm->private_data;
++
++	if (swtch->gen.slave) {
++		return snd_pcm_generic_query_chmaps(pcm);
++	}
++	else {
++		if (swtch->chmap)
++			return _snd_pcm_copy_chmap_query(swtch->chmap);
++		return NULL;
++	}
++
++}
++
++static snd_pcm_chmap_t *snd_pcm_switch_get_chmap(snd_pcm_t *pcm)
++{
++	DEBUG("");
++	snd_pcm_switch_t *swtch = pcm->private_data;
++
++	if (swtch->gen.slave) {
++		return snd_pcm_generic_get_chmap(pcm);
++	}
++	else {
++		if (swtch->chmap)
++			return _snd_pcm_choose_fixed_chmap(pcm, swtch->chmap);
++		return NULL;
++	}
++
++}
++
++static snd_pcm_uframes_t snd_pcm_switch_write_areas(snd_pcm_t *pcm,
++                                                    const snd_pcm_channel_area_t *areas,
++                                                    snd_pcm_uframes_t offset,
++                                                    snd_pcm_uframes_t size,
++                                                    const snd_pcm_channel_area_t *slave_areas,
++                                                    snd_pcm_uframes_t slave_offset,
++                                                    snd_pcm_uframes_t *slave_sizep)
++{
++	TRACE("");
++	if (size > *slave_sizep)
++		size = *slave_sizep;
++
++	snd_pcm_areas_copy(slave_areas, slave_offset,
++	                   areas, offset,
++	                   pcm->channels, size, pcm->format);
++
++	*slave_sizep = size;
++	return size;
++}
++
++static void snd_pcm_switch_dump(snd_pcm_t *pcm, snd_output_t *out)
++{
++	snd_pcm_switch_t *copy = pcm->private_data;
++	snd_output_printf(out, "Copy conversion PCM\n");
++	if (pcm->setup) {
++		snd_output_printf(out, "Its setup is:\n");
++		snd_pcm_dump_setup(pcm, out);
++	}
++	snd_output_printf(out, "Slave: ");
++	snd_pcm_dump(copy->gen.slave, out);
++}
++
++static snd_pcm_sframes_t snd_pcm_switch_avail_update(snd_pcm_t *pcm)
++{
++	snd_pcm_switch_t *swtch = pcm->private_data;
++	snd_pcm_sframes_t slave_size;
++	snd_pcm_uframes_t avail;
++
++	if (!swtch->updating && swtch->needs_update) {
++		if (!swtch->gen.slave || snd_pcm_state(swtch->gen.slave) == SND_PCM_STATE_RUNNING) {
++			swtch->updating = 1;
++			apply_switch_value(pcm);
++		}
++	}
++
++	if (swtch->gen.slave) {
++		snd_pcm_t *slave = swtch->gen.slave;
++		slave_size = snd_pcm_avail_update(slave);
++		TRACE("copy avail=%ld ", slave_size);
++
++		*pcm->hw.ptr = *slave->hw.ptr;
++		return slave_size;
++	}
++	else {
++		update_softvare_clock(pcm);
++
++		avail = snd_pcm_mmap_avail(pcm);
++		TRACE("null avail=%ld", avail);
++		return avail;
++	}
++}
++
++static int snd_pcm_switch_status(snd_pcm_t *pcm, snd_pcm_status_t * status)
++{
++	TRACE("");
++	snd_pcm_switch_t *swtch = pcm->private_data;
++
++	if (swtch->gen.slave) {
++		TRACE("copy");
++		snd_pcm_sframes_t err;
++
++		/* sync with the latest hw and appl ptrs */
++		snd_pcm_switch_avail_update(pcm);
++
++		err = snd_pcm_status(swtch->gen.slave, status);
++		if (err < 0)
++			return err;
++		status->appl_ptr = *pcm->appl.ptr;
++		status->hw_ptr = *pcm->hw.ptr;
++		return 0;
++	}
++	else {
++		TRACE("null");
++		memset(status, 0, sizeof(*status));
++		status->state = swtch->state;
++		status->trigger_tstamp = swtch->trigger_tstamp;
++		gettimestamp(&status->tstamp, pcm->tstamp_type);
++		status->avail = snd_pcm_switch_avail_update(pcm);
++		status->avail_max = pcm->buffer_size;
++
++		status->appl_ptr = *pcm->appl.ptr;
++		status->hw_ptr = *pcm->hw.ptr;
++
++		return 0;
++	}
++}
++
++static snd_pcm_state_t snd_pcm_switch_state(snd_pcm_t *pcm)
++{
++	snd_pcm_switch_t *swtch = pcm->private_data;
++
++	if (swtch->gen.slave) {
++		TRACE("copy state=%d", snd_pcm_state(swtch->gen.slave));
++		return snd_pcm_generic_state(pcm);
++	}
++	else {
++		TRACE("null state=%d", swtch->state);
++		return swtch->state;
++	}
++}
++
++static int snd_pcm_switch_hwsync(snd_pcm_t *pcm)
++{
++	TRACE("");
++	snd_pcm_switch_t *swtch = pcm->private_data;
++
++	if (swtch->gen.slave) {
++		return snd_pcm_generic_hwsync(pcm);
++	}
++	else {
++		return 0;
++	}
++}
++
++static int snd_pcm_switch_delay(snd_pcm_t *pcm, snd_pcm_sframes_t *delayp)
++{
++	DEBUG("");
++	snd_pcm_switch_t *swtch = pcm->private_data;
++
++	if (swtch->gen.slave) {
++		snd_pcm_sframes_t sd;
++		int err = snd_pcm_delay(swtch->gen.slave, &sd);
++		if (err < 0)
++			return err;
++		*delayp = sd;
++		return 0;
++	}
++	else {
++		*delayp = 0;
++		return 0;
++	}
++}
++
++static int snd_pcm_switch_reset(snd_pcm_t *pcm)
++{
++	snd_pcm_switch_t *swtch = pcm->private_data;
++	int err;
++
++	if (swtch->gen.slave) {
++		DEBUG("copy");
++		err = snd_pcm_reset(swtch->gen.slave);
++		if (err < 0) {
++			return err;
++		}
++		swtch->appl_ptr = 0;
++		swtch->hw_ptr = 0;
++		return 0;
++	}
++	else {
++		DEBUG("null");
++		swtch->appl_ptr = 0;
++		swtch->hw_ptr = 0;
++		return 0;
++	}
++}
++
++static int snd_pcm_switch_prepare(snd_pcm_t *pcm)
++{
++	snd_pcm_switch_t *swtch = pcm->private_data;
++	int err;
++
++	if (swtch->gen.slave) {
++		DEBUG("copy");
++		err = snd_pcm_prepare(swtch->gen.slave);
++		if (err < 0) {
++			return err;
++		}
++		swtch->appl_ptr = 0;
++		swtch->hw_ptr = 0;
++		return 0;
++	}
++	else {
++		DEBUG("null");
++		swtch->state = SND_PCM_STATE_PREPARED;
++		return snd_pcm_switch_reset(pcm);
++	}
++}
++
++static int snd_pcm_switch_start(snd_pcm_t *pcm)
++{
++	snd_pcm_switch_t *swtch = pcm->private_data;
++
++	if (swtch->gen.slave) {
++		DEBUG("copy");
++		return snd_pcm_generic_start(pcm);
++	}
++	else {
++		DEBUG("null");
++		swtch->state = SND_PCM_STATE_RUNNING;
++		swtch->hw_ptr = *pcm->appl.ptr;
++		return 0;
++	}
++}
++
++static int snd_pcm_switch_drop(snd_pcm_t *pcm)
++{
++	snd_pcm_switch_t *swtch = pcm->private_data;
++
++	if (swtch->gen.slave) {
++		DEBUG("copy");
++		return snd_pcm_generic_drop(pcm);
++	}
++	else {
++		DEBUG("null state=%d", swtch->state);
++		swtch->state = SND_PCM_STATE_SETUP;
++		return 0;
++	}
++}
++
++static int snd_pcm_switch_drain(snd_pcm_t *pcm)
++{
++	snd_pcm_switch_t *swtch = pcm->private_data;
++
++	if (swtch->gen.slave) {
++		DEBUG("null");
++		return snd_pcm_generic_drain(pcm);
++	}
++	else {
++		DEBUG("copy");
++		swtch->state = SND_PCM_STATE_SETUP;
++		return 0;
++	}
++
++}
++
++static int snd_pcm_switch_pause(snd_pcm_t *pcm, int enable)
++{
++	DEBUG("");
++	snd_pcm_switch_t *swtch = pcm->private_data;
++
++	if (swtch->gen.slave) {
++		return snd_pcm_generic_pause(pcm, enable);
++	}
++	else {
++		if (enable) {
++			if (swtch->state != SND_PCM_STATE_RUNNING)
++				return -EBADFD;
++			swtch->state = SND_PCM_STATE_PAUSED;
++		} else {
++			if (swtch->state != SND_PCM_STATE_PAUSED)
++				return -EBADFD;
++			swtch->state = SND_PCM_STATE_RUNNING;
++		}
++		return 0;
++	}
++}
++
++static snd_pcm_sframes_t snd_pcm_switch_rewindable(snd_pcm_t *pcm)
++{
++	DEBUG("");
++	snd_pcm_switch_t *swtch = pcm->private_data;
++
++	if (swtch->gen.slave) {
++		return snd_pcm_mmap_hw_rewindable(pcm);
++	}
++	else {
++		return pcm->buffer_size;
++	}
++}
++
++static snd_pcm_sframes_t snd_pcm_switch_rewind(snd_pcm_t *pcm, snd_pcm_uframes_t frames)
++{
++	DEBUG("");
++	snd_pcm_switch_t *swtch = pcm->private_data;
++
++	if (swtch->gen.slave) {
++		snd_pcm_sframes_t n = snd_pcm_mmap_hw_rewindable(pcm);
++		snd_pcm_sframes_t sframes;
++
++		if ((snd_pcm_uframes_t)n < frames)
++			frames = n;
++		if (frames == 0)
++			return 0;
++
++		sframes = frames;
++		sframes = snd_pcm_rewind(swtch->gen.slave, sframes);
++		if (sframes < 0) {
++			return sframes;
++		}
++		snd_pcm_mmap_appl_backward(pcm, (snd_pcm_uframes_t) sframes);
++		return (snd_pcm_sframes_t) sframes;
++	}
++	else {
++		switch (swtch->state) {
++		case SND_PCM_STATE_RUNNING:
++			snd_pcm_mmap_hw_backward(pcm, frames);
++			/* Fall through */
++		case SND_PCM_STATE_PREPARED:
++			snd_pcm_mmap_appl_backward(pcm, frames);
++			return frames;
++		default:
++			return -EBADFD;
++		}
++	}
++}
++
++static snd_pcm_sframes_t snd_pcm_switch_forwardable(snd_pcm_t *pcm)
++{
++	DEBUG("");
++	snd_pcm_switch_t *swtch = pcm->private_data;
++
++	if (swtch->gen.slave) {
++		return snd_pcm_mmap_avail(pcm);
++	}
++	else {
++		return 0;
++	}
++}
++
++static snd_pcm_sframes_t snd_pcm_switch_forward(snd_pcm_t *pcm, snd_pcm_uframes_t frames)
++{
++	DEBUG("");
++	snd_pcm_switch_t *swtch = pcm->private_data;
++
++	if (swtch->gen.slave) {
++		snd_pcm_sframes_t n = snd_pcm_switch_forwardable(pcm);
++		snd_pcm_sframes_t sframes;
++
++		if ((snd_pcm_uframes_t)n < frames)
++			frames = n;
++		if (frames == 0)
++			return 0;
++
++		sframes = frames;
++		sframes = INTERNAL(snd_pcm_forward)(swtch->gen.slave, sframes);
++		if (sframes < 0) {
++			return sframes;
++		}
++		snd_pcm_mmap_appl_forward(pcm, (snd_pcm_uframes_t) frames);
++		return (snd_pcm_sframes_t) frames;
++	}
++	else {
++		switch (swtch->state) {
++		case SND_PCM_STATE_RUNNING:
++			snd_pcm_mmap_hw_forward(pcm, frames);
++			/* Fall through */
++		case SND_PCM_STATE_PREPARED:
++			snd_pcm_mmap_appl_forward(pcm, frames);
++			return frames;
++		default:
++			return -EBADFD;
++		}
++	}
++}
++
++static int snd_pcm_switch_resume(snd_pcm_t *pcm)
++{
++	DEBUG("");
++	snd_pcm_switch_t *swtch = pcm->private_data;
++
++	if (swtch->gen.slave) {
++		return snd_pcm_generic_resume(pcm);
++	}
++	else {
++		return 0;
++	}
++}
++
++static void apply_switch_value(snd_pcm_t *pcm)
++{
++	TRACE("");
++
++	snd_pcm_switch_t *swtch = pcm->private_data;
++	snd_pcm_t *slave;
++	snd_pcm_state_t pcm_state;
++
++	swtch->needs_update = 0;
++
++	// sanity checks
++	if ((swtch->cur_switch == SWITCH_CTL_ON && swtch->gen.slave) ||
++	    (swtch->cur_switch == SWITCH_CTL_OFF && !swtch->gen.slave) ||
++	    (swtch->active_switch == swtch->cur_switch)) {
++		return;
++	}
++	swtch->active_switch = swtch->cur_switch;
++
++	if (swtch->cur_switch == SWITCH_CTL_ON)	{
++		DEBUG("~~~ OPEN SLAVE");
++		pcm_state = swtch->state;
++
++		snd_pcm_open_slave(&slave, swtch->root,
++		                   swtch->sconf, swtch->stream,
++		                   swtch->stream_mode, swtch->conf);
++		swtch->gen.slave = slave;
++
++		if (swtch->has_hw_params)
++			snd_pcm_hw_params_slave(pcm, &swtch->hw_params,
++			                        snd_pcm_switch_hw_refine_cchange,
++			                        snd_pcm_switch_hw_refine_sprepare,
++			                        snd_pcm_switch_hw_refine_schange,
++			                        snd_pcm_generic_hw_params);
++		if (swtch->has_sw_params)
++			snd_pcm_generic_sw_params(pcm, &swtch->sw_params);
++	}
++	else {
++		DEBUG("~~~ CLOSE SLAVE");
++		slave = swtch->gen.slave;
++		pcm_state = snd_pcm_state(swtch->gen.slave);
++		clock_gettime(CLOCK_MONOTONIC, &swtch->clock);
++		swtch->gen.slave = NULL;
++		swtch->state = SND_PCM_STATE_OPEN;
++		snd_pcm_close(slave);
++	}
++
++	if (pcm_state == SND_PCM_STATE_PREPARED ||
++	    pcm_state == SND_PCM_STATE_RUNNING) {
++		snd_pcm_switch_prepare(pcm);
++	}
++
++	if (pcm_state == SND_PCM_STATE_RUNNING) {
++		snd_pcm_switch_start(pcm);
++	}
++}
++
++static snd_pcm_sframes_t snd_pcm_switch_xfer_null_areas(snd_pcm_t *pcm,
++                                                        const snd_pcm_channel_area_t *areas ATTRIBUTE_UNUSED,
++                                                        snd_pcm_uframes_t offset ATTRIBUTE_UNUSED,
++                                                        snd_pcm_uframes_t size)
++{
++	TRACE("");
++	snd_pcm_mmap_appl_forward(pcm, size);
++	return size;
++}
++
++static snd_pcm_sframes_t snd_pcm_switch_xfer_write_areas(snd_pcm_t *pcm,
++                                                         const snd_pcm_channel_area_t *areas,
++                                                         snd_pcm_uframes_t offset,
++                                                         snd_pcm_uframes_t size)
++{
++	TRACE("");
++	snd_pcm_switch_t *swtch = pcm->private_data;
++	snd_pcm_t *slave = swtch->gen.slave;
++	snd_pcm_uframes_t xfer = 0;
++	snd_pcm_sframes_t result;
++	int err;
++
++	if (!slave) {
++		DEBUG("Discard data on switch");
++		return snd_pcm_switch_xfer_null_areas(pcm, areas, offset, size);
++	}
++
++	while (size > 0) {
++		snd_pcm_uframes_t frames = size;
++		const snd_pcm_channel_area_t *slave_areas;
++		snd_pcm_uframes_t slave_offset;
++		snd_pcm_uframes_t slave_frames = ULONG_MAX;
++
++		err = snd_pcm_mmap_begin(slave, &slave_areas, &slave_offset, &slave_frames);
++		if (err < 0 || slave_frames == 0)
++			break;
++		frames = snd_pcm_switch_write_areas(pcm, areas, offset, frames,
++		                                    slave_areas, slave_offset, &slave_frames);
++		if (CHECK_SANITY(slave_frames > snd_pcm_mmap_playback_avail(slave))) {
++			SNDMSG("write overflow %ld > %ld", slave_frames,
++			snd_pcm_mmap_playback_avail(slave));
++			return -EPIPE;
++		}
++		snd_pcm_mmap_appl_forward(pcm, frames);
++		result = snd_pcm_mmap_commit(slave, slave_offset, slave_frames);
++		if (result > 0 && (snd_pcm_uframes_t)result != slave_frames) {
++			snd_pcm_sframes_t res;
++			res = slave_frames - result; // undo_write
++			if (res < 0)
++				return xfer > 0 ? (snd_pcm_sframes_t)xfer : res;
++			frames -= res;
++		}
++		if (result <= 0)
++			return xfer > 0 ? (snd_pcm_sframes_t)xfer : result;
++		offset += frames;
++		xfer += frames;
++		size -= frames;
++	}
++	return (snd_pcm_sframes_t)xfer;
++}
++
++static snd_pcm_sframes_t snd_pcm_switch_writei(snd_pcm_t *pcm, const void *buffer, snd_pcm_uframes_t size)
++{
++	snd_pcm_switch_t *swtch = pcm->private_data;
++	snd_pcm_sframes_t frames;
++
++	if (swtch->gen.slave) {
++		snd_pcm_channel_area_t areas[pcm->channels];
++		snd_pcm_areas_from_buf(pcm, areas, (void*)buffer);
++		frames = snd_pcm_write_areas(pcm, areas, 0, size, snd_pcm_switch_xfer_write_areas);
++		TRACE("copy frames=%ld size=%ld", frames, size);
++	}
++	else {
++		frames = snd_pcm_write_areas(pcm, NULL, 0, size, snd_pcm_switch_xfer_null_areas);
++		TRACE("null frames=%ld size=%ld", frames, size);
++
++		/* Force state to running when we recieve data */
++		swtch->state = SND_PCM_STATE_RUNNING;
++	}
++
++	if (frames > 0)
++		swtch->updating = 0;
++
++	/* Don't report errors when updating switch value */
++	if (swtch->updating && frames <= 0)
++		return size;
++
++	return frames;
++}
++
++static snd_pcm_sframes_t snd_pcm_switch_writen(snd_pcm_t *pcm, void **bufs, snd_pcm_uframes_t size)
++{
++	DEBUG("");
++	snd_pcm_switch_t *swtch = pcm->private_data;
++
++	if (swtch->gen.slave) {
++		snd_pcm_channel_area_t areas[pcm->channels];
++		snd_pcm_areas_from_bufs(pcm, areas, bufs);
++		return snd_pcm_write_areas(pcm, areas, 0, size, snd_pcm_switch_xfer_write_areas);
++	}
++	else {
++		return snd_pcm_write_areas(pcm, NULL, 0, size, snd_pcm_switch_xfer_null_areas);
++	}
++}
++
++static snd_pcm_sframes_t snd_pcm_switch_mmap_commit(snd_pcm_t *pcm, snd_pcm_uframes_t offset, snd_pcm_uframes_t size)
++{
++	TRACE("");
++	snd_pcm_switch_t *swtch = pcm->private_data;
++
++	if (swtch->gen.slave) {
++		snd_pcm_t *slave = swtch->gen.slave;
++		const snd_pcm_channel_area_t *areas;
++		snd_pcm_uframes_t appl_offset;
++		snd_pcm_sframes_t slave_size;
++		snd_pcm_sframes_t xfer;
++
++		slave_size = snd_pcm_avail_update(slave);
++		if (slave_size < 0)
++			return slave_size;
++		areas = snd_pcm_mmap_areas(pcm);
++		appl_offset = snd_pcm_mmap_offset(pcm);
++		xfer = 0;
++		while (size > 0 && slave_size > 0) {
++			snd_pcm_uframes_t frames = size;
++			snd_pcm_uframes_t cont = pcm->buffer_size - appl_offset;
++			const snd_pcm_channel_area_t *slave_areas;
++			snd_pcm_uframes_t slave_offset;
++			snd_pcm_uframes_t slave_frames = ULONG_MAX;
++			snd_pcm_sframes_t result;
++			int err;
++
++			err = snd_pcm_mmap_begin(slave, &slave_areas, &slave_offset, &slave_frames);
++			if (err < 0)
++				return xfer > 0 ? xfer : err;
++			if (frames > cont)
++				frames = cont;
++			frames = snd_pcm_switch_write_areas(pcm, areas, appl_offset, frames,
++			                                    slave_areas, slave_offset, &slave_frames);
++			snd_pcm_mmap_appl_forward(pcm, frames);
++			result = snd_pcm_mmap_commit(slave, slave_offset, slave_frames);
++			if (result > 0 && (snd_pcm_uframes_t)result != slave_frames) {
++				snd_pcm_sframes_t res;
++
++				res = slave_frames - result; // undo_write
++				if (res < 0)
++					return xfer > 0 ? xfer : res;
++				frames -= res;
++			}
++			if (result <= 0)
++				return xfer > 0 ? xfer : result;
++			if (frames == cont)
++				appl_offset = 0;
++			else
++				appl_offset += result;
++			size -= frames;
++			slave_size -= frames;
++			xfer += frames;
++		}
++		if (CHECK_SANITY(size)) {
++			SNDMSG("short commit: %ld", size);
++			return -EPIPE;
++		}
++		return xfer;
++	}
++	else {
++		return snd_pcm_switch_forward(pcm, size);
++	}
++}
++
++static int snd_pcm_switch_htimestamp(snd_pcm_t *pcm, snd_pcm_uframes_t *avail, snd_htimestamp_t *tstamp)
++{
++	DEBUG("");
++	snd_pcm_switch_t *swtch = pcm->private_data;
++
++	if (swtch->gen.slave) {
++		return snd_pcm_generic_htimestamp(pcm, avail, tstamp);
++	}
++	else {
++		return snd_pcm_generic_real_htimestamp(pcm, avail, tstamp);
++	}
++}
++
++static int snd_pcm_switch_channel_info(snd_pcm_t *pcm, snd_pcm_channel_info_t *info)
++{
++	DEBUG("");
++	snd_pcm_switch_t *swtch = pcm->private_data;
++
++	if (swtch->gen.slave) {
++		return snd_pcm_generic_channel_info(pcm, info);
++	}
++	else {
++		return 0;
++	}
++}
++
++static int snd_pcm_switch_mmap(snd_pcm_t *pcm)
++{
++	DEBUG("");
++	snd_pcm_switch_t *swtch = pcm->private_data;
++
++	if (swtch->gen.slave) {
++		return snd_pcm_generic_mmap(pcm);
++	}
++	else {
++		return 0;
++	}
++}
++
++static int snd_pcm_switch_munmap(snd_pcm_t *pcm)
++{
++	DEBUG("");
++	snd_pcm_switch_t *swtch = pcm->private_data;
++
++	if (swtch->gen.slave) {
++		return snd_pcm_generic_munmap(pcm);
++	}
++	else {
++		return 0;
++	}
++}
++
++static int snd_pcm_switch_set_chmap(snd_pcm_t *pcm, const snd_pcm_chmap_t *map)
++{
++	DEBUG("");
++	snd_pcm_switch_t *swtch = pcm->private_data;
++
++	if (swtch->gen.slave) {
++		return snd_pcm_generic_set_chmap(pcm, map);
++	}
++	else {
++		return 0;
++	}
++}
++
++static int snd_pcm_switch_link(snd_pcm_t *pcm1, snd_pcm_t *pcm2)
++{
++	DEBUG("");
++	snd_pcm_switch_t *swtch = pcm1->private_data;
++
++	if (swtch->gen.slave) {
++		return snd_pcm_generic_link(pcm1, pcm2);
++	}
++	else {
++		return 0;
++	}
++}
++
++static int snd_pcm_switch_link_slaves(snd_pcm_t *pcm, snd_pcm_t *master)
++{
++	DEBUG("");
++	snd_pcm_switch_t *swtch = pcm->private_data;
++
++	if (swtch->gen.slave) {
++		return snd_pcm_generic_link_slaves(pcm, master);
++	}
++	else {
++		return 0;
++	}
++}
++
++static int snd_pcm_switch_unlink(snd_pcm_t *pcm)
++{
++	DEBUG("");
++	snd_pcm_switch_t *swtch = pcm->private_data;
++
++	if (swtch->gen.slave) {
++		return snd_pcm_generic_unlink(pcm);
++	}
++	else {
++		return 0;
++	}
++}
++
++static int snd_pcm_switch_may_wait_for_avail_min(snd_pcm_t *pcm, snd_pcm_uframes_t avail)
++{
++	TRACE("");
++	snd_pcm_switch_t *swtch = pcm->private_data;
++
++	if (swtch->gen.slave) {
++		return snd_pcm_generic_may_wait_for_avail_min(pcm, avail);
++	}
++	else {
++		return 0;
++	}
++}
++
++int snd_pcm_switch_poll_descriptors_count(snd_pcm_t *pcm)
++{
++	TRACE("");
++	snd_pcm_switch_t *swtch = pcm->private_data;
++
++	if (swtch->gen.slave) {
++		return snd_pcm_generic_poll_descriptors_count(pcm);
++	}
++	else {
++		return 0;
++	}
++}
++
++static int snd_pcm_switch_poll_descriptors(snd_pcm_t *pcm, struct pollfd *pfds, unsigned int space)
++{
++	TRACE("");
++	snd_pcm_switch_t *swtch = pcm->private_data;
++
++	if (swtch->gen.slave) {
++		return snd_pcm_generic_poll_descriptors(pcm, pfds, space);
++	}
++	else {
++		return 0;
++	}
++}
++
++static int snd_pcm_switch_poll_revents(snd_pcm_t *pcm, struct pollfd *pfds, unsigned int nfds, unsigned short *revents)
++{
++	snd_pcm_switch_t *swtch = pcm->private_data;
++
++	if (swtch->gen.slave) {
++		TRACE("copy");
++		return snd_pcm_generic_poll_revents(pcm, pfds, nfds, revents);
++	}
++	else {
++		TRACE("null");
++		if (nfds == 1) {
++			*revents = pfds->revents;
++			return 0;
++		}
++		return -EINVAL;
++	}
++}
++
++static void switch_ctl_async_handler(snd_async_handler_t *handler)
++{
++	TRACE("");
++	snd_pcm_t *pcm;
++	snd_pcm_switch_t *swtch;
++	int old_value, new_value;
++
++	pcm = snd_async_handler_get_callback_private(handler);
++	swtch = pcm->private_data;
++
++	old_value = swtch->cur_switch;
++	update_switch_value(swtch);
++	new_value = swtch->cur_switch;
++
++	if (old_value != new_value) {
++		DEBUG("~~~ Switch changed (updating=%d, needs_update=%d)", swtch->updating, swtch->needs_update);
++		if (swtch->updating || snd_pcm_switch_state(pcm) == SND_PCM_STATE_RUNNING)
++			swtch->needs_update = !swtch->needs_update;
++		else
++			apply_switch_value(pcm);
++	}
++}
++
++static int add_user_ctl(snd_pcm_switch_t *swtch, snd_ctl_elem_info_t *cinfo)
++{
++	int err = snd_ctl_elem_add_enumerated(swtch->ctl, &cinfo->id, 1, MAX_SWITCH_CTL, _switch_ctl_names);
++	if (err < 0) {
++		return err;
++	}
++
++	int def_val = SWITCH_CTL_ON;
++	swtch->elem.value.enumerated.item[0] = def_val;
++	swtch->cur_switch = def_val;
++
++	return snd_ctl_elem_write(swtch->ctl, &swtch->elem);
++}
++
++/*
++ * load and set up user-control
++ * returns 0 if the user-control is found or created,
++ * or a negative error code
++ */
++static int switch_load_control(snd_pcm_t *pcm, snd_pcm_switch_t *swtch,
++                               int ctl_card, snd_ctl_elem_id_t *ctl_id)
++{
++	DEBUG("");
++	char tmp_name[32];
++	snd_pcm_info_t *info;
++	snd_ctl_elem_info_t *cinfo;
++	int err;
++
++	if (ctl_card < 0) {
++		snd_pcm_info_alloca(&info);
++		err = snd_pcm_info(pcm, info);
++		if (err < 0)
++			return err;
++		ctl_card = snd_pcm_info_get_card(info);
++		if (ctl_card < 0) {
++			SNDERR("No card defined for switch control");
++			return -EINVAL;
++		}
++	}
++	sprintf(tmp_name, "hw:%d", ctl_card);
++
++	err = snd_ctl_open(&swtch->ctl, tmp_name, 0);
++	if (err < 0) {
++		SNDERR("Cannot open CTL %s", tmp_name);
++		return err;
++	}
++
++	swtch->elem.id = *ctl_id;
++
++	snd_ctl_elem_info_alloca(&cinfo);
++	snd_ctl_elem_info_set_id(cinfo, ctl_id);
++
++	err = snd_ctl_elem_info(swtch->ctl, cinfo);
++	if (err < 0) {
++		if (err != -ENOENT) {
++			SNDERR("Cannot get info for CTL %s", tmp_name);
++			return err;
++		}
++		err = add_user_ctl(swtch, cinfo);
++		if (err < 0) {
++			SNDERR("Cannot add a control");
++			return err;
++		}
++	}
++	else if (cinfo->type != SND_CTL_ELEM_TYPE_ENUMERATED ||
++	         cinfo->count != 1) {
++		err = snd_ctl_elem_remove(swtch->ctl, &cinfo->id);
++		if (err < 0) {
++			SNDERR("Control %s mismatch", tmp_name);
++			return err;
++		}
++		snd_ctl_elem_info_set_id(cinfo, ctl_id); /* reset numid */
++		err = add_user_ctl(swtch, cinfo);
++		if (err < 0) {
++			SNDERR("Cannot add a control");
++			return err;
++		}
++	}
++	else {
++		update_switch_value(swtch);
++	}
++
++	err = snd_ctl_subscribe_events(swtch->ctl, 1);
++	if (err < 0) {
++		SNDERR("Cannot suscribe to control events");
++		return err;
++	}
++
++	err = snd_async_add_ctl_handler(&swtch->async_handler, swtch->ctl, switch_ctl_async_handler, pcm);
++	if (err < 0) {
++		SNDERR("Cannot add a control handler");
++		return err;
++	}
++
++	return 0;
++}
++
++static const snd_pcm_ops_t snd_pcm_switch_ops = {
++	.close = snd_pcm_switch_close,
++	.info = snd_pcm_switch_info,
++	.hw_refine = snd_pcm_switch_hw_refine,
++	.hw_params = snd_pcm_switch_hw_params,
++	.hw_free = snd_pcm_switch_hw_free,
++	.sw_params = snd_pcm_switch_sw_params,
++	.channel_info = snd_pcm_switch_channel_info,
++	.dump = snd_pcm_switch_dump,
++	.nonblock = snd_pcm_switch_nonblock,
++	.async = snd_pcm_switch_async,
++	.mmap = snd_pcm_switch_mmap,
++	.munmap = snd_pcm_switch_munmap,
++	.query_chmaps = snd_pcm_switch_query_chmaps,
++	.get_chmap = snd_pcm_switch_get_chmap,
++	.set_chmap = snd_pcm_switch_set_chmap,
++};
++
++static const snd_pcm_fast_ops_t snd_pcm_switch_fast_ops = {
++	.status = snd_pcm_switch_status,
++	.state = snd_pcm_switch_state,
++	.hwsync = snd_pcm_switch_hwsync,
++	.delay = snd_pcm_switch_delay,
++	.prepare = snd_pcm_switch_prepare,
++	.reset = snd_pcm_switch_reset,
++	.start = snd_pcm_switch_start,
++	.drop = snd_pcm_switch_drop,
++	.drain = snd_pcm_switch_drain,
++	.pause = snd_pcm_switch_pause,
++	.rewindable = snd_pcm_switch_rewindable,
++	.rewind = snd_pcm_switch_rewind,
++	.forwardable = snd_pcm_switch_forwardable,
++	.forward = snd_pcm_switch_forward,
++	.resume = snd_pcm_switch_resume,
++	.link = snd_pcm_switch_link,
++	.link_slaves = snd_pcm_switch_link_slaves,
++	.unlink = snd_pcm_switch_unlink,
++	.writei = snd_pcm_switch_writei,
++	.writen = snd_pcm_switch_writen,
++	.avail_update = snd_pcm_switch_avail_update,
++	.mmap_commit = snd_pcm_switch_mmap_commit,
++	.htimestamp = snd_pcm_switch_htimestamp,
++	.poll_descriptors_count = snd_pcm_switch_poll_descriptors_count,
++	.poll_descriptors = snd_pcm_switch_poll_descriptors,
++	.poll_revents = snd_pcm_switch_poll_revents,
++	.may_wait_for_avail_min = snd_pcm_switch_may_wait_for_avail_min,
++};
++
++/**
++ * \brief Creates a new copy PCM
++ * \param pcmp Returns created PCM handle
++ * \param name Name of PCM
++ * \param stream Stream type
++ * \param ctl_card card index of the control
++ * \param ctl_id The control element
++ * \param slave Slave PCM handle
++ * \param close_slave When set, the slave PCM handle is closed with copy PCM
++ * \retval zero on success otherwise a negative error code
++ * \warning Using of this function might be dangerous in the sense
++ *          of compatibility reasons. The prototype might be freely
++ *          changed in future.
++ */
++int snd_pcm_switch_open(snd_pcm_t **pcmp, const char *name,
++                        snd_pcm_stream_t stream, int mode,
++                        int ctl_card, snd_ctl_elem_id_t *ctl_id,
++                        int cchannels,
++                        snd_pcm_t *slave, int close_slave)
++{
++	DEBUG("");
++	snd_pcm_t *pcm;
++	snd_pcm_switch_t *swtch;
++	int err;
++
++	assert(pcmp);
++	assert(slave);
++
++	if (stream != SND_PCM_STREAM_PLAYBACK) {
++		SYSERR("Only PLAYBACK mode is supported");
++		return -EINVAL;
++	}
++
++	swtch = calloc(1, sizeof(snd_pcm_switch_t));
++	if (!swtch) {
++		return -ENOMEM;
++	}
++	swtch->state = SND_PCM_STATE_OPEN;
++	swtch->cur_switch = SWITCH_CTL_ON;
++	swtch->active_switch = swtch->cur_switch;
++	swtch->cchannels = cchannels;
++	swtch->gen.slave = slave;
++	swtch->gen.close_slave = close_slave;
++
++	err = snd_pcm_new(&pcm, SND_PCM_TYPE_SWITCH, name,
++	                  slave->stream, slave->mode);
++	if (err < 0) {
++		switch_free(swtch);
++		return err;
++	}
++	pcm->ops = &snd_pcm_switch_ops;
++	pcm->fast_ops = &snd_pcm_switch_fast_ops;
++	pcm->private_data = swtch;
++	pcm->poll_events = slave->poll_events;
++	pcm->tstamp_type = slave->tstamp_type;
++
++	err = switch_load_control(pcm, swtch, ctl_card, ctl_id);
++	if (err < 0) {
++		switch_free(swtch);
++		return err;
++	}
++
++	snd_pcm_set_hw_ptr(pcm, &swtch->hw_ptr, -1, 0);
++	snd_pcm_set_appl_ptr(pcm, &swtch->appl_ptr, -1, 0);
++
++	*pcmp = pcm;
++
++	return 0;
++}
++
++/* in pcm_misc.c */
++int snd_pcm_parse_control_id(snd_config_t *conf, snd_ctl_elem_id_t *ctl_id, int *cardp,
++                             int *cchannelsp, int *hwctlp);
++
++/*! \page pcm_plugins
++
++\section pcm_plugins_switch Plugin: switch
++
++This plugin can disconnect its slave when control is set.
++
++When switch is on this plugin copies samples from master copy PCM to given
++slave PCM.
++
++When switch is off this plugin discards contents of a PCM stream synchronized
++with softvare clock.
++
++\code
++pcm.name {
++	type switch		# Switch PCM
++	slave STR		# Slave name
++	# or
++	slave {			# Slave definition
++		pcm STR		# Slave PCM name
++		# or
++		pcm { }		# Slave PCM definition
++	}
++}
++\endcode
++
++\subsection pcm_plugins_switch_funcref Function reference
++
++<UL>
++  <LI>snd_pcm_switch_open()
++  <LI>_snd_pcm_switch_open()
++</UL>
++
++*/
++
++/**
++ * \brief Creates a new switch PCM
++ * \param pcmp Returns created PCM handle
++ * \param name Name of PCM
++ * \param root Root configuration node
++ * \param conf Configuration node with copy PCM description
++ * \param stream Stream type
++ * \param mode Stream mode
++ * \retval zero on success otherwise a negative error code
++ * \warning Using of this function might be dangerous in the sense
++ *          of compatibility reasons. The prototype might be freely
++ *          changed in future.
++ */
++int _snd_pcm_switch_open(snd_pcm_t **pcmp, const char *name,
++                         snd_config_t *root, snd_config_t *conf,
++                         snd_pcm_stream_t stream, int mode)
++{
++	DEBUG("");
++
++	snd_config_iterator_t i, next;
++	snd_pcm_t *spcm = NULL;
++	snd_config_t *slave = NULL, *sconf;
++	snd_config_t *control = NULL;
++	snd_ctl_elem_id_t *ctl_id;
++	int ctl_card = -1, cchannels = 2, err;
++
++	snd_config_for_each(i, next, conf) {
++		snd_config_t *n = snd_config_iterator_entry(i);
++		const char *id;
++		if (snd_config_get_id(n, &id) < 0)
++			continue;
++		if (snd_pcm_conf_generic_id(id))
++			continue;
++		if (strcmp(id, "slave") == 0) {
++			slave = n;
++			continue;
++		}
++		if (strcmp(id, "control") == 0) {
++			control = n;
++			continue;
++		}
++		SNDERR("Unknown field %s", id);
++		return -EINVAL;
++	}
++	if (!slave) {
++		SNDERR("slave is not defined");
++		return -EINVAL;
++	}
++	if (!control) {
++		SNDERR("control is not defined");
++		return -EINVAL;
++	}
++
++	err = snd_pcm_slave_conf(root, slave, &sconf, 0);
++	if (err < 0)
++		return err;
++
++	err = snd_pcm_open_slave(&spcm, root, sconf, stream, mode, conf);
++	if (err < 0)
++		return err;
++
++	snd_ctl_elem_id_alloca(&ctl_id);
++	err = snd_pcm_parse_control_id(control, ctl_id, &ctl_card, &cchannels, NULL);
++	if (err < 0) {
++		snd_pcm_close(spcm);
++		return err;
++	}
++
++	err = snd_pcm_switch_open(pcmp, name, stream, mode, ctl_card, ctl_id, cchannels, spcm, 1);
++	if (err < 0)
++		snd_pcm_close(spcm);
++
++	snd_pcm_switch_t *swtch = (*pcmp)->private_data;
++	snd_config_copy(&swtch->conf, conf);
++	snd_config_copy(&swtch->root, root);
++	swtch->sconf = sconf;
++	swtch->stream = stream;
++	swtch->stream_mode = mode;
++
++	DEBUG("Switch opened");
++
++	apply_switch_value(*pcmp);
++
++	return err;
++}
++
++#ifndef DOC_HIDDEN
++SND_DLSYM_BUILD_VERSION(_snd_pcm_switch_open, SND_PCM_DLSYM_VERSION);
++#endif
+-- 
+2.7.4
+

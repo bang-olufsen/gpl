@@ -1,0 +1,1585 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GIObjectInfo: GObject Introspection Reference Manual</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
+<link rel="home" href="index.html" title="GObject Introspection Reference Manual">
+<link rel="up" href="ch01.html" title="GIRepository">
+<link rel="prev" href="gi-GIUnionInfo.html" title="GIUnionInfo">
+<link rel="next" href="gi-GIInterfaceInfo.html" title="GIInterfaceInfo">
+<meta name="generator" content="GTK-Doc V1.29.1 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#gi-GIObjectInfo.description" class="shortcut">Description</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="gi-GIUnionInfo.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="gi-GIInterfaceInfo.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry">
+<a name="gi-GIObjectInfo"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="gi-GIObjectInfo.top_of_page"></a>GIObjectInfo</span></h2>
+<p>GIObjectInfo — Struct representing a GObject</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1">
+<a name="gi-GIObjectInfo.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="functions_return">
+<col class="functions_name">
+</colgroup>
+<tbody>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name">
+<a class="link" href="gi-GIObjectInfo.html#GI-IS-OBJECT-INFO:CAPS" title="GI_IS_OBJECT_INFO()">GI_IS_OBJECT_INFO</a><span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">gboolean</span>
+</td>
+<td class="function_name">
+<a class="link" href="gi-GIObjectInfo.html#g-object-info-get-abstract" title="g_object_info_get_abstract ()">g_object_info_get_abstract</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">gboolean</span>
+</td>
+<td class="function_name">
+<a class="link" href="gi-GIObjectInfo.html#g-object-info-get-fundamental" title="g_object_info_get_fundamental ()">g_object_info_get_fundamental</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="returnvalue">GIObjectInfo</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="gi-GIObjectInfo.html#g-object-info-get-parent" title="g_object_info_get_parent ()">g_object_info_get_parent</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">const <span class="returnvalue">gchar</span> *
+</td>
+<td class="function_name">
+<a class="link" href="gi-GIObjectInfo.html#g-object-info-get-type-name" title="g_object_info_get_type_name ()">g_object_info_get_type_name</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">const <span class="returnvalue">gchar</span> *
+</td>
+<td class="function_name">
+<a class="link" href="gi-GIObjectInfo.html#g-object-info-get-type-init" title="g_object_info_get_type_init ()">g_object_info_get_type_init</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">gint</span>
+</td>
+<td class="function_name">
+<a class="link" href="gi-GIObjectInfo.html#g-object-info-get-n-constants" title="g_object_info_get_n_constants ()">g_object_info_get_n_constants</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="gi-GIConstantInfo.html#GIConstantInfo" title="GIConstantInfo"><span class="returnvalue">GIConstantInfo</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="gi-GIObjectInfo.html#g-object-info-get-constant" title="g_object_info_get_constant ()">g_object_info_get_constant</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">gint</span>
+</td>
+<td class="function_name">
+<a class="link" href="gi-GIObjectInfo.html#g-object-info-get-n-fields" title="g_object_info_get_n_fields ()">g_object_info_get_n_fields</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="gi-GIFieldInfo.html#GIFieldInfo" title="GIFieldInfo"><span class="returnvalue">GIFieldInfo</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="gi-GIObjectInfo.html#g-object-info-get-field" title="g_object_info_get_field ()">g_object_info_get_field</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">gint</span>
+</td>
+<td class="function_name">
+<a class="link" href="gi-GIObjectInfo.html#g-object-info-get-n-interfaces" title="g_object_info_get_n_interfaces ()">g_object_info_get_n_interfaces</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="gi-GIInterfaceInfo.html#GIInterfaceInfo" title="GIInterfaceInfo"><span class="returnvalue">GIInterfaceInfo</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="gi-GIObjectInfo.html#g-object-info-get-interface" title="g_object_info_get_interface ()">g_object_info_get_interface</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">gint</span>
+</td>
+<td class="function_name">
+<a class="link" href="gi-GIObjectInfo.html#g-object-info-get-n-methods" title="g_object_info_get_n_methods ()">g_object_info_get_n_methods</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="gi-GIFunctionInfo.html#GIFunctionInfo" title="GIFunctionInfo"><span class="returnvalue">GIFunctionInfo</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="gi-GIObjectInfo.html#g-object-info-get-method" title="g_object_info_get_method ()">g_object_info_get_method</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="gi-GIFunctionInfo.html#GIFunctionInfo" title="GIFunctionInfo"><span class="returnvalue">GIFunctionInfo</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="gi-GIObjectInfo.html#g-object-info-find-method" title="g_object_info_find_method ()">g_object_info_find_method</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="gi-GIFunctionInfo.html#GIFunctionInfo" title="GIFunctionInfo"><span class="returnvalue">GIFunctionInfo</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="gi-GIObjectInfo.html#g-object-info-find-method-using-interfaces" title="g_object_info_find_method_using_interfaces ()">g_object_info_find_method_using_interfaces</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">gint</span>
+</td>
+<td class="function_name">
+<a class="link" href="gi-GIObjectInfo.html#g-object-info-get-n-properties" title="g_object_info_get_n_properties ()">g_object_info_get_n_properties</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="gi-GIPropertyInfo.html#GIPropertyInfo" title="GIPropertyInfo"><span class="returnvalue">GIPropertyInfo</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="gi-GIObjectInfo.html#g-object-info-get-property" title="g_object_info_get_property ()">g_object_info_get_property</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">gint</span>
+</td>
+<td class="function_name">
+<a class="link" href="gi-GIObjectInfo.html#g-object-info-get-n-signals" title="g_object_info_get_n_signals ()">g_object_info_get_n_signals</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="gi-GISignalInfo.html#GISignalInfo" title="GISignalInfo"><span class="returnvalue">GISignalInfo</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="gi-GIObjectInfo.html#g-object-info-get-signal" title="g_object_info_get_signal ()">g_object_info_get_signal</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="gi-GISignalInfo.html#GISignalInfo" title="GISignalInfo"><span class="returnvalue">GISignalInfo</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="gi-GIObjectInfo.html#g-object-info-find-signal" title="g_object_info_find_signal ()">g_object_info_find_signal</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">gint</span>
+</td>
+<td class="function_name">
+<a class="link" href="gi-GIObjectInfo.html#g-object-info-get-n-vfuncs" title="g_object_info_get_n_vfuncs ()">g_object_info_get_n_vfuncs</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="gi-GIVFuncInfo.html#GIVFuncInfo" title="GIVFuncInfo"><span class="returnvalue">GIVFuncInfo</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="gi-GIObjectInfo.html#g-object-info-get-vfunc" title="g_object_info_get_vfunc ()">g_object_info_get_vfunc</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="gi-GIVFuncInfo.html#GIVFuncInfo" title="GIVFuncInfo"><span class="returnvalue">GIVFuncInfo</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="gi-GIObjectInfo.html#g-object-info-find-vfunc" title="g_object_info_find_vfunc ()">g_object_info_find_vfunc</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="gi-GIVFuncInfo.html#GIVFuncInfo" title="GIVFuncInfo"><span class="returnvalue">GIVFuncInfo</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="gi-GIObjectInfo.html#g-object-info-find-vfunc-using-interfaces" title="g_object_info_find_vfunc_using_interfaces ()">g_object_info_find_vfunc_using_interfaces</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="gi-GIStructInfo.html#GIStructInfo" title="GIStructInfo"><span class="returnvalue">GIStructInfo</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="gi-GIObjectInfo.html#g-object-info-get-class-struct" title="g_object_info_get_class_struct ()">g_object_info_get_class_struct</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">const <span class="returnvalue">char</span> *
+</td>
+<td class="function_name">
+<a class="link" href="gi-GIObjectInfo.html#g-object-info-get-ref-function" title="g_object_info_get_ref_function ()">g_object_info_get_ref_function</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="gi-GIObjectInfo.html#GIObjectInfoRefFunction" title="GIObjectInfoRefFunction ()"><span class="returnvalue">GIObjectInfoRefFunction</span></a>
+</td>
+<td class="function_name">
+<a class="link" href="gi-GIObjectInfo.html#g-object-info-get-ref-function-pointer" title="g_object_info_get_ref_function_pointer ()">g_object_info_get_ref_function_pointer</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">const <span class="returnvalue">char</span> *
+</td>
+<td class="function_name">
+<a class="link" href="gi-GIObjectInfo.html#g-object-info-get-unref-function" title="g_object_info_get_unref_function ()">g_object_info_get_unref_function</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="gi-GIObjectInfo.html#GIObjectInfoUnrefFunction" title="GIObjectInfoUnrefFunction ()"><span class="returnvalue">GIObjectInfoUnrefFunction</span></a>
+</td>
+<td class="function_name">
+<a class="link" href="gi-GIObjectInfo.html#g-object-info-get-unref-function-pointer" title="g_object_info_get_unref_function_pointer ()">g_object_info_get_unref_function_pointer</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">const <span class="returnvalue">char</span> *
+</td>
+<td class="function_name">
+<a class="link" href="gi-GIObjectInfo.html#g-object-info-get-set-value-function" title="g_object_info_get_set_value_function ()">g_object_info_get_set_value_function</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="gi-GIObjectInfo.html#GIObjectInfoSetValueFunction" title="GIObjectInfoSetValueFunction ()"><span class="returnvalue">GIObjectInfoSetValueFunction</span></a>
+</td>
+<td class="function_name">
+<a class="link" href="gi-GIObjectInfo.html#g-object-info-get-set-value-function-pointer" title="g_object_info_get_set_value_function_pointer ()">g_object_info_get_set_value_function_pointer</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">const <span class="returnvalue">char</span> *
+</td>
+<td class="function_name">
+<a class="link" href="gi-GIObjectInfo.html#g-object-info-get-get-value-function" title="g_object_info_get_get_value_function ()">g_object_info_get_get_value_function</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="gi-GIObjectInfo.html#GIObjectInfoGetValueFunction" title="GIObjectInfoGetValueFunction ()"><span class="returnvalue">GIObjectInfoGetValueFunction</span></a>
+</td>
+<td class="function_name">
+<a class="link" href="gi-GIObjectInfo.html#g-object-info-get-get-value-function-pointer" title="g_object_info_get_get_value_function_pointer ()">g_object_info_get_get_value_function_pointer</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span> *
+</td>
+<td class="function_name">
+<span class="c_punctuation">(</span><a class="link" href="gi-GIObjectInfo.html#GIObjectInfoRefFunction" title="GIObjectInfoRefFunction ()">*GIObjectInfoRefFunction</a><span class="c_punctuation">)</span> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<span class="c_punctuation">(</span><a class="link" href="gi-GIObjectInfo.html#GIObjectInfoUnrefFunction" title="GIObjectInfoUnrefFunction ()">*GIObjectInfoUnrefFunction</a><span class="c_punctuation">)</span> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<span class="c_punctuation">(</span><a class="link" href="gi-GIObjectInfo.html#GIObjectInfoSetValueFunction" title="GIObjectInfoSetValueFunction ()">*GIObjectInfoSetValueFunction</a><span class="c_punctuation">)</span> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span> *
+</td>
+<td class="function_name">
+<span class="c_punctuation">(</span><a class="link" href="gi-GIObjectInfo.html#GIObjectInfoGetValueFunction" title="GIObjectInfoGetValueFunction ()">*GIObjectInfoGetValueFunction</a><span class="c_punctuation">)</span> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="gi-GIObjectInfo.other"></a><h2>Types and Values</h2>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="name">
+<col class="description">
+</colgroup>
+<tbody><tr>
+<td class="typedef_keyword">typedef</td>
+<td class="function_name"><a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo">GIObjectInfo</a></td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="gi-GIObjectInfo.description"></a><h2>Description</h2>
+<p>GIObjectInfo represents a <span class="type">GObject</span>. This doesn't represent a specific
+instance of a GObject, instead this represent the object type (eg class).</p>
+<p>A GObject has methods, fields, properties, signals, interfaces, constants
+and virtual functions.</p>
+<div class="refsect1">
+<a name="gi-giobjectinfo.struct-hierarchy"></a><h2>Struct hierarchy</h2>
+<pre class="synopsis">
+  <a class="link" href="gi-GIBaseInfo.html" title="GIBaseInfo">GIBaseInfo</a>
+   +----<a class="link" href="gi-GIRegisteredTypeInfo.html" title="GIRegisteredTypeInfo">GIRegisteredTypeInfo</a>
+         +----GIObjectInfo
+</pre>
+</div>
+</div>
+<div class="refsect1">
+<a name="gi-GIObjectInfo.functions_details"></a><h2>Functions</h2>
+<div class="refsect2">
+<a name="GI-IS-OBJECT-INFO:CAPS"></a><h3>GI_IS_OBJECT_INFO()</h3>
+<pre class="programlisting">#define             GI_IS_OBJECT_INFO(info)</pre>
+<p>Checks if <em class="parameter"><code>info</code></em>
+ is a <a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a>.</p>
+<div class="refsect3">
+<a name="GI-IS-OBJECT-INFO.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>an info structure</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-object-info-get-abstract"></a><h3>g_object_info_get_abstract ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>
+g_object_info_get_abstract (<em class="parameter"><code><a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a> *info</code></em>);</pre>
+<p>Obtain if the object type is an abstract type, eg if it cannot be
+instantiated</p>
+<div class="refsect3">
+<a name="g-object-info-get-abstract.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>a <a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="g-object-info-get-abstract.returns"></a><h4>Returns</h4>
+<p> <code class="literal">TRUE</code> if the object type is abstract</p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-object-info-get-fundamental"></a><h3>g_object_info_get_fundamental ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>
+g_object_info_get_fundamental (<em class="parameter"><code><a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a> *info</code></em>);</pre>
+<p>Obtain if the object type is of a fundamental type which is not
+G_TYPE_OBJECT. This is mostly for supporting GstMiniObject.</p>
+<div class="refsect3">
+<a name="g-object-info-get-fundamental.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>a <a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="g-object-info-get-fundamental.returns"></a><h4>Returns</h4>
+<p> <code class="literal">TRUE</code> if the object type is a fundamental type</p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-object-info-get-parent"></a><h3>g_object_info_get_parent ()</h3>
+<pre class="programlisting"><a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="returnvalue">GIObjectInfo</span></a> *
+g_object_info_get_parent (<em class="parameter"><code><a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a> *info</code></em>);</pre>
+<p>Obtain the parent of the object type.</p>
+<div class="refsect3">
+<a name="g-object-info-get-parent.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>a <a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="g-object-info-get-parent.returns"></a><h4>Returns</h4>
+<p>the <a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a>. Free the struct by calling
+<a class="link" href="gi-GIBaseInfo.html#g-base-info-unref" title="g_base_info_unref ()"><code class="function">g_base_info_unref()</code></a> when done. </p>
+<p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-object-info-get-type-name"></a><h3>g_object_info_get_type_name ()</h3>
+<pre class="programlisting">const <span class="returnvalue">gchar</span> *
+g_object_info_get_type_name (<em class="parameter"><code><a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a> *info</code></em>);</pre>
+<p>Obtain the name of the objects class/type.</p>
+<div class="refsect3">
+<a name="g-object-info-get-type-name.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>a <a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="g-object-info-get-type-name.returns"></a><h4>Returns</h4>
+<p> name of the objects type</p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-object-info-get-type-init"></a><h3>g_object_info_get_type_init ()</h3>
+<pre class="programlisting">const <span class="returnvalue">gchar</span> *
+g_object_info_get_type_init (<em class="parameter"><code><a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a> *info</code></em>);</pre>
+<p>Obtain the function which when called will return the GType
+function for which this object type is registered.</p>
+<div class="refsect3">
+<a name="g-object-info-get-type-init.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>a <a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="g-object-info-get-type-init.returns"></a><h4>Returns</h4>
+<p> the type init function</p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-object-info-get-n-constants"></a><h3>g_object_info_get_n_constants ()</h3>
+<pre class="programlisting"><span class="returnvalue">gint</span>
+g_object_info_get_n_constants (<em class="parameter"><code><a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a> *info</code></em>);</pre>
+<p>Obtain the number of constants that this object type has.</p>
+<div class="refsect3">
+<a name="g-object-info-get-n-constants.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>a <a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="g-object-info-get-n-constants.returns"></a><h4>Returns</h4>
+<p> number of constants</p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-object-info-get-constant"></a><h3>g_object_info_get_constant ()</h3>
+<pre class="programlisting"><a class="link" href="gi-GIConstantInfo.html#GIConstantInfo" title="GIConstantInfo"><span class="returnvalue">GIConstantInfo</span></a> *
+g_object_info_get_constant (<em class="parameter"><code><a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a> *info</code></em>,
+                            <em class="parameter"><code><span class="type">gint</span> n</code></em>);</pre>
+<p>Obtain an object type constant at index <em class="parameter"><code>n</code></em>
+.</p>
+<div class="refsect3">
+<a name="g-object-info-get-constant.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>a <a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>n</p></td>
+<td class="parameter_description"><p>index of constant to get</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="g-object-info-get-constant.returns"></a><h4>Returns</h4>
+<p>the <a class="link" href="gi-GIConstantInfo.html#GIConstantInfo" title="GIConstantInfo"><span class="type">GIConstantInfo</span></a>. Free the struct by calling
+<a class="link" href="gi-GIBaseInfo.html#g-base-info-unref" title="g_base_info_unref ()"><code class="function">g_base_info_unref()</code></a> when done. </p>
+<p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-object-info-get-n-fields"></a><h3>g_object_info_get_n_fields ()</h3>
+<pre class="programlisting"><span class="returnvalue">gint</span>
+g_object_info_get_n_fields (<em class="parameter"><code><a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a> *info</code></em>);</pre>
+<p>Obtain the number of fields that this object type has.</p>
+<div class="refsect3">
+<a name="g-object-info-get-n-fields.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>a <a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="g-object-info-get-n-fields.returns"></a><h4>Returns</h4>
+<p> number of fields</p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-object-info-get-field"></a><h3>g_object_info_get_field ()</h3>
+<pre class="programlisting"><a class="link" href="gi-GIFieldInfo.html#GIFieldInfo" title="GIFieldInfo"><span class="returnvalue">GIFieldInfo</span></a> *
+g_object_info_get_field (<em class="parameter"><code><a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a> *info</code></em>,
+                         <em class="parameter"><code><span class="type">gint</span> n</code></em>);</pre>
+<p>Obtain an object type field at index <em class="parameter"><code>n</code></em>
+.</p>
+<div class="refsect3">
+<a name="g-object-info-get-field.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>a <a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>n</p></td>
+<td class="parameter_description"><p>index of field to get</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="g-object-info-get-field.returns"></a><h4>Returns</h4>
+<p>the <a class="link" href="gi-GIFieldInfo.html#GIFieldInfo" title="GIFieldInfo"><span class="type">GIFieldInfo</span></a>. Free the struct by calling
+<a class="link" href="gi-GIBaseInfo.html#g-base-info-unref" title="g_base_info_unref ()"><code class="function">g_base_info_unref()</code></a> when done. </p>
+<p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-object-info-get-n-interfaces"></a><h3>g_object_info_get_n_interfaces ()</h3>
+<pre class="programlisting"><span class="returnvalue">gint</span>
+g_object_info_get_n_interfaces (<em class="parameter"><code><a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a> *info</code></em>);</pre>
+<p>Obtain the number of interfaces that this object type has.</p>
+<div class="refsect3">
+<a name="g-object-info-get-n-interfaces.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>a <a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="g-object-info-get-n-interfaces.returns"></a><h4>Returns</h4>
+<p> number of interfaces</p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-object-info-get-interface"></a><h3>g_object_info_get_interface ()</h3>
+<pre class="programlisting"><a class="link" href="gi-GIInterfaceInfo.html#GIInterfaceInfo" title="GIInterfaceInfo"><span class="returnvalue">GIInterfaceInfo</span></a> *
+g_object_info_get_interface (<em class="parameter"><code><a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a> *info</code></em>,
+                             <em class="parameter"><code><span class="type">gint</span> n</code></em>);</pre>
+<p>Obtain an object type interface at index <em class="parameter"><code>n</code></em>
+.</p>
+<div class="refsect3">
+<a name="g-object-info-get-interface.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>a <a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>n</p></td>
+<td class="parameter_description"><p>index of interface to get</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="g-object-info-get-interface.returns"></a><h4>Returns</h4>
+<p>the <a class="link" href="gi-GIInterfaceInfo.html#GIInterfaceInfo" title="GIInterfaceInfo"><span class="type">GIInterfaceInfo</span></a>. Free the struct by calling
+<a class="link" href="gi-GIBaseInfo.html#g-base-info-unref" title="g_base_info_unref ()"><code class="function">g_base_info_unref()</code></a> when done. </p>
+<p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-object-info-get-n-methods"></a><h3>g_object_info_get_n_methods ()</h3>
+<pre class="programlisting"><span class="returnvalue">gint</span>
+g_object_info_get_n_methods (<em class="parameter"><code><a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a> *info</code></em>);</pre>
+<p>Obtain the number of methods that this object type has.</p>
+<div class="refsect3">
+<a name="g-object-info-get-n-methods.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>a <a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="g-object-info-get-n-methods.returns"></a><h4>Returns</h4>
+<p> number of methods</p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-object-info-get-method"></a><h3>g_object_info_get_method ()</h3>
+<pre class="programlisting"><a class="link" href="gi-GIFunctionInfo.html#GIFunctionInfo" title="GIFunctionInfo"><span class="returnvalue">GIFunctionInfo</span></a> *
+g_object_info_get_method (<em class="parameter"><code><a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a> *info</code></em>,
+                          <em class="parameter"><code><span class="type">gint</span> n</code></em>);</pre>
+<p>Obtain an object type method at index <em class="parameter"><code>n</code></em>
+.</p>
+<div class="refsect3">
+<a name="g-object-info-get-method.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>a <a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>n</p></td>
+<td class="parameter_description"><p>index of method to get</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="g-object-info-get-method.returns"></a><h4>Returns</h4>
+<p>the <a class="link" href="gi-GIFunctionInfo.html#GIFunctionInfo" title="GIFunctionInfo"><span class="type">GIFunctionInfo</span></a>. Free the struct by calling
+<a class="link" href="gi-GIBaseInfo.html#g-base-info-unref" title="g_base_info_unref ()"><code class="function">g_base_info_unref()</code></a> when done. </p>
+<p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-object-info-find-method"></a><h3>g_object_info_find_method ()</h3>
+<pre class="programlisting"><a class="link" href="gi-GIFunctionInfo.html#GIFunctionInfo" title="GIFunctionInfo"><span class="returnvalue">GIFunctionInfo</span></a> *
+g_object_info_find_method (<em class="parameter"><code><a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a> *info</code></em>,
+                           <em class="parameter"><code>const <span class="type">gchar</span> *name</code></em>);</pre>
+<p>Obtain a method of the object type given a <em class="parameter"><code>name</code></em>
+. <code class="literal">NULL</code> will be
+returned if there's no method available with that name.</p>
+<div class="refsect3">
+<a name="g-object-info-find-method.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>a <a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>name</p></td>
+<td class="parameter_description"><p>name of method to obtain</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="g-object-info-find-method.returns"></a><h4>Returns</h4>
+<p>the <a class="link" href="gi-GIFunctionInfo.html#GIFunctionInfo" title="GIFunctionInfo"><span class="type">GIFunctionInfo</span></a>. Free the struct by calling
+<a class="link" href="gi-GIBaseInfo.html#g-base-info-unref" title="g_base_info_unref ()"><code class="function">g_base_info_unref()</code></a> when done. </p>
+<p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-object-info-find-method-using-interfaces"></a><h3>g_object_info_find_method_using_interfaces ()</h3>
+<pre class="programlisting"><a class="link" href="gi-GIFunctionInfo.html#GIFunctionInfo" title="GIFunctionInfo"><span class="returnvalue">GIFunctionInfo</span></a> *
+g_object_info_find_method_using_interfaces
+                               (<em class="parameter"><code><a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a> *info</code></em>,
+                                <em class="parameter"><code>const <span class="type">gchar</span> *name</code></em>,
+                                <em class="parameter"><code><a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a> **implementor</code></em>);</pre>
+<p>Obtain a method of the object given a <em class="parameter"><code>name</code></em>
+, searching both the
+object <em class="parameter"><code>info</code></em>
+ and any interfaces it implements.  <code class="literal">NULL</code> will be
+returned if there's no method available with that name.</p>
+<p>Note that this function does *not* search parent classes; you will have
+to chain up if that's desired.</p>
+<div class="refsect3">
+<a name="g-object-info-find-method-using-interfaces.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>a <a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>name</p></td>
+<td class="parameter_description"><p>name of method to obtain</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>implementor</p></td>
+<td class="parameter_description"><p>The implementor of the interface. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Parameter for returning results. Default is transfer full."><span class="acronym">out</span></acronym>][<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="g-object-info-find-method-using-interfaces.returns"></a><h4>Returns</h4>
+<p>the <a class="link" href="gi-GIFunctionInfo.html#GIFunctionInfo" title="GIFunctionInfo"><span class="type">GIFunctionInfo</span></a>. Free the struct by calling
+<a class="link" href="gi-GIBaseInfo.html#g-base-info-unref" title="g_base_info_unref ()"><code class="function">g_base_info_unref()</code></a> when done. </p>
+<p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-object-info-get-n-properties"></a><h3>g_object_info_get_n_properties ()</h3>
+<pre class="programlisting"><span class="returnvalue">gint</span>
+g_object_info_get_n_properties (<em class="parameter"><code><a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a> *info</code></em>);</pre>
+<p>Obtain the number of properties that this object type has.</p>
+<div class="refsect3">
+<a name="g-object-info-get-n-properties.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>a <a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="g-object-info-get-n-properties.returns"></a><h4>Returns</h4>
+<p> number of properties</p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-object-info-get-property"></a><h3>g_object_info_get_property ()</h3>
+<pre class="programlisting"><a class="link" href="gi-GIPropertyInfo.html#GIPropertyInfo" title="GIPropertyInfo"><span class="returnvalue">GIPropertyInfo</span></a> *
+g_object_info_get_property (<em class="parameter"><code><a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a> *info</code></em>,
+                            <em class="parameter"><code><span class="type">gint</span> n</code></em>);</pre>
+<p>Obtain an object type property at index <em class="parameter"><code>n</code></em>
+.</p>
+<div class="refsect3">
+<a name="g-object-info-get-property.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>a <a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>n</p></td>
+<td class="parameter_description"><p>index of property to get</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="g-object-info-get-property.returns"></a><h4>Returns</h4>
+<p>the <a class="link" href="gi-GIPropertyInfo.html#GIPropertyInfo" title="GIPropertyInfo"><span class="type">GIPropertyInfo</span></a>. Free the struct by calling
+<a class="link" href="gi-GIBaseInfo.html#g-base-info-unref" title="g_base_info_unref ()"><code class="function">g_base_info_unref()</code></a> when done. </p>
+<p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-object-info-get-n-signals"></a><h3>g_object_info_get_n_signals ()</h3>
+<pre class="programlisting"><span class="returnvalue">gint</span>
+g_object_info_get_n_signals (<em class="parameter"><code><a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a> *info</code></em>);</pre>
+<p>Obtain the number of signals that this object type has.</p>
+<div class="refsect3">
+<a name="g-object-info-get-n-signals.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>a <a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="g-object-info-get-n-signals.returns"></a><h4>Returns</h4>
+<p> number of signals</p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-object-info-get-signal"></a><h3>g_object_info_get_signal ()</h3>
+<pre class="programlisting"><a class="link" href="gi-GISignalInfo.html#GISignalInfo" title="GISignalInfo"><span class="returnvalue">GISignalInfo</span></a> *
+g_object_info_get_signal (<em class="parameter"><code><a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a> *info</code></em>,
+                          <em class="parameter"><code><span class="type">gint</span> n</code></em>);</pre>
+<p>Obtain an object type signal at index <em class="parameter"><code>n</code></em>
+.</p>
+<div class="refsect3">
+<a name="g-object-info-get-signal.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>a <a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>n</p></td>
+<td class="parameter_description"><p>index of signal to get</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="g-object-info-get-signal.returns"></a><h4>Returns</h4>
+<p>the <a class="link" href="gi-GISignalInfo.html#GISignalInfo" title="GISignalInfo"><span class="type">GISignalInfo</span></a>. Free the struct by calling
+<a class="link" href="gi-GIBaseInfo.html#g-base-info-unref" title="g_base_info_unref ()"><code class="function">g_base_info_unref()</code></a> when done. </p>
+<p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-object-info-find-signal"></a><h3>g_object_info_find_signal ()</h3>
+<pre class="programlisting"><a class="link" href="gi-GISignalInfo.html#GISignalInfo" title="GISignalInfo"><span class="returnvalue">GISignalInfo</span></a> *
+g_object_info_find_signal (<em class="parameter"><code><a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a> *info</code></em>,
+                           <em class="parameter"><code>const <span class="type">gchar</span> *name</code></em>);</pre>
+<p>TODO</p>
+<div class="refsect3">
+<a name="g-object-info-find-signal.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>a <a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>name</p></td>
+<td class="parameter_description"><p>Name of signal</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="g-object-info-find-signal.returns"></a><h4>Returns</h4>
+<p>Info for the signal with name <em class="parameter"><code>name</code></em>
+in <em class="parameter"><code>info</code></em>
+, or <code class="literal">NULL</code> on failure. </p>
+<p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-object-info-get-n-vfuncs"></a><h3>g_object_info_get_n_vfuncs ()</h3>
+<pre class="programlisting"><span class="returnvalue">gint</span>
+g_object_info_get_n_vfuncs (<em class="parameter"><code><a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a> *info</code></em>);</pre>
+<p>Obtain the number of virtual functions that this object type has.</p>
+<div class="refsect3">
+<a name="g-object-info-get-n-vfuncs.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>a <a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="g-object-info-get-n-vfuncs.returns"></a><h4>Returns</h4>
+<p> number of virtual functions</p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-object-info-get-vfunc"></a><h3>g_object_info_get_vfunc ()</h3>
+<pre class="programlisting"><a class="link" href="gi-GIVFuncInfo.html#GIVFuncInfo" title="GIVFuncInfo"><span class="returnvalue">GIVFuncInfo</span></a> *
+g_object_info_get_vfunc (<em class="parameter"><code><a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a> *info</code></em>,
+                         <em class="parameter"><code><span class="type">gint</span> n</code></em>);</pre>
+<p>Obtain an object type virtual function at index <em class="parameter"><code>n</code></em>
+.</p>
+<div class="refsect3">
+<a name="g-object-info-get-vfunc.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>a <a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>n</p></td>
+<td class="parameter_description"><p>index of virtual function to get</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="g-object-info-get-vfunc.returns"></a><h4>Returns</h4>
+<p>the <a class="link" href="gi-GIVFuncInfo.html#GIVFuncInfo" title="GIVFuncInfo"><span class="type">GIVFuncInfo</span></a>. Free the struct by calling
+<a class="link" href="gi-GIBaseInfo.html#g-base-info-unref" title="g_base_info_unref ()"><code class="function">g_base_info_unref()</code></a> when done. </p>
+<p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-object-info-find-vfunc"></a><h3>g_object_info_find_vfunc ()</h3>
+<pre class="programlisting"><a class="link" href="gi-GIVFuncInfo.html#GIVFuncInfo" title="GIVFuncInfo"><span class="returnvalue">GIVFuncInfo</span></a> *
+g_object_info_find_vfunc (<em class="parameter"><code><a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a> *info</code></em>,
+                          <em class="parameter"><code>const <span class="type">gchar</span> *name</code></em>);</pre>
+<p>Locate a virtual function slot with name <em class="parameter"><code>name</code></em>
+. Note that the namespace
+for virtuals is distinct from that of methods; there may or may not be
+a concrete method associated for a virtual. If there is one, it may
+be retrieved using <a class="link" href="gi-GIVFuncInfo.html#g-vfunc-info-get-invoker" title="g_vfunc_info_get_invoker ()"><code class="function">g_vfunc_info_get_invoker()</code></a>, otherwise <code class="literal">NULL</code> will be
+returned.
+See the documentation for <a class="link" href="gi-GIVFuncInfo.html#g-vfunc-info-get-invoker" title="g_vfunc_info_get_invoker ()"><code class="function">g_vfunc_info_get_invoker()</code></a> for more
+information on invoking virtuals.</p>
+<div class="refsect3">
+<a name="g-object-info-find-vfunc.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>a <a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>name</p></td>
+<td class="parameter_description"><p>The name of a virtual function to find.</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="g-object-info-find-vfunc.returns"></a><h4>Returns</h4>
+<p>the <a class="link" href="gi-GIVFuncInfo.html#GIVFuncInfo" title="GIVFuncInfo"><span class="type">GIVFuncInfo</span></a>, or <code class="literal">NULL</code>. Free it with
+<a class="link" href="gi-GIBaseInfo.html#g-base-info-unref" title="g_base_info_unref ()"><code class="function">g_base_info_unref()</code></a> when done. </p>
+<p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-object-info-find-vfunc-using-interfaces"></a><h3>g_object_info_find_vfunc_using_interfaces ()</h3>
+<pre class="programlisting"><a class="link" href="gi-GIVFuncInfo.html#GIVFuncInfo" title="GIVFuncInfo"><span class="returnvalue">GIVFuncInfo</span></a> *
+g_object_info_find_vfunc_using_interfaces
+                               (<em class="parameter"><code><a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a> *info</code></em>,
+                                <em class="parameter"><code>const <span class="type">gchar</span> *name</code></em>,
+                                <em class="parameter"><code><a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a> **implementor</code></em>);</pre>
+<p>Locate a virtual function slot with name <em class="parameter"><code>name</code></em>
+, searching both the object
+<em class="parameter"><code>info</code></em>
+ and any interfaces it implements.  Note that the namespace for
+virtuals is distinct from that of methods; there may or may not be a
+concrete method associated for a virtual. If there is one, it may be
+retrieved using <a class="link" href="gi-GIVFuncInfo.html#g-vfunc-info-get-invoker" title="g_vfunc_info_get_invoker ()"><code class="function">g_vfunc_info_get_invoker()</code></a>, otherwise <code class="literal">NULL</code> will be
+returned.</p>
+<p>Note that this function does *not* search parent classes; you will have
+to chain up if that's desired.</p>
+<div class="refsect3">
+<a name="g-object-info-find-vfunc-using-interfaces.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>a <a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>name</p></td>
+<td class="parameter_description"><p>name of method to obtain</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>implementor</p></td>
+<td class="parameter_description"><p>The implementor of the interface. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Parameter for returning results. Default is transfer full."><span class="acronym">out</span></acronym>][<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="g-object-info-find-vfunc-using-interfaces.returns"></a><h4>Returns</h4>
+<p>the <a class="link" href="gi-GIFunctionInfo.html#GIFunctionInfo" title="GIFunctionInfo"><span class="type">GIFunctionInfo</span></a>. Free the struct by calling
+<a class="link" href="gi-GIBaseInfo.html#g-base-info-unref" title="g_base_info_unref ()"><code class="function">g_base_info_unref()</code></a> when done. </p>
+<p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-object-info-get-class-struct"></a><h3>g_object_info_get_class_struct ()</h3>
+<pre class="programlisting"><a class="link" href="gi-GIStructInfo.html#GIStructInfo" title="GIStructInfo"><span class="returnvalue">GIStructInfo</span></a> *
+g_object_info_get_class_struct (<em class="parameter"><code><a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a> *info</code></em>);</pre>
+<p>Every <span class="type">GObject</span> has two structures; an instance structure and a class
+structure.  This function returns the metadata for the class structure.</p>
+<div class="refsect3">
+<a name="g-object-info-get-class-struct.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>a <a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="g-object-info-get-class-struct.returns"></a><h4>Returns</h4>
+<p>the <a class="link" href="gi-GIStructInfo.html#GIStructInfo" title="GIStructInfo"><span class="type">GIStructInfo</span></a> or <code class="literal">NULL</code>. Free with
+<a class="link" href="gi-GIBaseInfo.html#g-base-info-unref" title="g_base_info_unref ()"><code class="function">g_base_info_unref()</code></a> when done. </p>
+<p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-object-info-get-ref-function"></a><h3>g_object_info_get_ref_function ()</h3>
+<pre class="programlisting">const <span class="returnvalue">char</span> *
+g_object_info_get_ref_function (<em class="parameter"><code><a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a> *info</code></em>);</pre>
+<p>Obtain the symbol name of the function that should be called to ref this
+object type. It's mainly used fundamental types. The type signature for
+the symbol is <a class="link" href="gi-GIObjectInfo.html#GIObjectInfoRefFunction" title="GIObjectInfoRefFunction ()"><code class="literal">GIObjectInfoRefFunction</code></a>, to fetch the function pointer
+see <a class="link" href="gi-GIObjectInfo.html#g-object-info-get-ref-function" title="g_object_info_get_ref_function ()"><code class="function">g_object_info_get_ref_function()</code></a>.</p>
+<div class="refsect3">
+<a name="g-object-info-get-ref-function.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>a <a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="g-object-info-get-ref-function.returns"></a><h4>Returns</h4>
+<p> the symbol or <code class="literal">NULL</code></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-object-info-get-ref-function-pointer"></a><h3>g_object_info_get_ref_function_pointer ()</h3>
+<pre class="programlisting"><a class="link" href="gi-GIObjectInfo.html#GIObjectInfoRefFunction" title="GIObjectInfoRefFunction ()"><span class="returnvalue">GIObjectInfoRefFunction</span></a>
+g_object_info_get_ref_function_pointer
+                               (<em class="parameter"><code><a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a> *info</code></em>);</pre>
+<p>Obtain a pointer to a function which can be used to
+increase the reference count an instance of this object type.
+This takes derivation into account and will reversely traverse
+the base classes of this type, starting at the top type.</p>
+<p><span class="annotation">[<acronym title="Exposed in C code, not necessarily available in other languages."><span class="acronym">skip</span></acronym>]</span></p>
+<div class="refsect3">
+<a name="g-object-info-get-ref-function-pointer.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>a <a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="g-object-info-get-ref-function-pointer.returns"></a><h4>Returns</h4>
+<p> the function pointer or <code class="literal">NULL</code></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-object-info-get-unref-function"></a><h3>g_object_info_get_unref_function ()</h3>
+<pre class="programlisting">const <span class="returnvalue">char</span> *
+g_object_info_get_unref_function (<em class="parameter"><code><a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a> *info</code></em>);</pre>
+<p>Obtain the symbol name of the function that should be called to unref this
+object type. It's mainly used fundamental types. The type signature for
+the symbol is <a class="link" href="gi-GIObjectInfo.html#GIObjectInfoUnrefFunction" title="GIObjectInfoUnrefFunction ()"><code class="literal">GIObjectInfoUnrefFunction</code></a>, to fetch the function pointer
+see <a class="link" href="gi-GIObjectInfo.html#g-object-info-get-unref-function" title="g_object_info_get_unref_function ()"><code class="function">g_object_info_get_unref_function()</code></a>.</p>
+<div class="refsect3">
+<a name="g-object-info-get-unref-function.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>a <a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="g-object-info-get-unref-function.returns"></a><h4>Returns</h4>
+<p> the symbol or <code class="literal">NULL</code></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-object-info-get-unref-function-pointer"></a><h3>g_object_info_get_unref_function_pointer ()</h3>
+<pre class="programlisting"><a class="link" href="gi-GIObjectInfo.html#GIObjectInfoUnrefFunction" title="GIObjectInfoUnrefFunction ()"><span class="returnvalue">GIObjectInfoUnrefFunction</span></a>
+g_object_info_get_unref_function_pointer
+                               (<em class="parameter"><code><a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a> *info</code></em>);</pre>
+<p>Obtain a pointer to a function which can be used to
+decrease the reference count an instance of this object type.
+This takes derivation into account and will reversely traverse
+the base classes of this type, starting at the top type.</p>
+<p><span class="annotation">[<acronym title="Exposed in C code, not necessarily available in other languages."><span class="acronym">skip</span></acronym>]</span></p>
+<div class="refsect3">
+<a name="g-object-info-get-unref-function-pointer.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>a <a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="g-object-info-get-unref-function-pointer.returns"></a><h4>Returns</h4>
+<p> the function pointer or <code class="literal">NULL</code></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-object-info-get-set-value-function"></a><h3>g_object_info_get_set_value_function ()</h3>
+<pre class="programlisting">const <span class="returnvalue">char</span> *
+g_object_info_get_set_value_function (<em class="parameter"><code><a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a> *info</code></em>);</pre>
+<p>Obtain the symbol name of the function that should be called to convert
+set a GValue giving an object instance pointer of this object type.
+I's mainly used fundamental types. The type signature for the symbol
+is <a class="link" href="gi-GIObjectInfo.html#GIObjectInfoSetValueFunction" title="GIObjectInfoSetValueFunction ()"><code class="literal">GIObjectInfoSetValueFunction</code></a>, to fetch the function pointer
+see <a class="link" href="gi-GIObjectInfo.html#g-object-info-get-set-value-function" title="g_object_info_get_set_value_function ()"><code class="function">g_object_info_get_set_value_function()</code></a>.</p>
+<div class="refsect3">
+<a name="g-object-info-get-set-value-function.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>a <a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="g-object-info-get-set-value-function.returns"></a><h4>Returns</h4>
+<p> the symbol or <code class="literal">NULL</code></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-object-info-get-set-value-function-pointer"></a><h3>g_object_info_get_set_value_function_pointer ()</h3>
+<pre class="programlisting"><a class="link" href="gi-GIObjectInfo.html#GIObjectInfoSetValueFunction" title="GIObjectInfoSetValueFunction ()"><span class="returnvalue">GIObjectInfoSetValueFunction</span></a>
+g_object_info_get_set_value_function_pointer
+                               (<em class="parameter"><code><a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a> *info</code></em>);</pre>
+<p>Obtain a pointer to a function which can be used to
+set a GValue given an instance of this object type.
+This takes derivation into account and will reversely traverse
+the base classes of this type, starting at the top type.</p>
+<p><span class="annotation">[<acronym title="Exposed in C code, not necessarily available in other languages."><span class="acronym">skip</span></acronym>]</span></p>
+<div class="refsect3">
+<a name="g-object-info-get-set-value-function-pointer.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>a <a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="g-object-info-get-set-value-function-pointer.returns"></a><h4>Returns</h4>
+<p> the function pointer or <code class="literal">NULL</code></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-object-info-get-get-value-function"></a><h3>g_object_info_get_get_value_function ()</h3>
+<pre class="programlisting">const <span class="returnvalue">char</span> *
+g_object_info_get_get_value_function (<em class="parameter"><code><a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a> *info</code></em>);</pre>
+<p>Obtain the symbol name of the function that should be called to convert
+an object instance pointer of this object type to a GValue.
+I's mainly used fundamental types. The type signature for the symbol
+is <a class="link" href="gi-GIObjectInfo.html#GIObjectInfoGetValueFunction" title="GIObjectInfoGetValueFunction ()"><code class="literal">GIObjectInfoGetValueFunction</code></a>, to fetch the function pointer
+see <a class="link" href="gi-GIObjectInfo.html#g-object-info-get-get-value-function" title="g_object_info_get_get_value_function ()"><code class="function">g_object_info_get_get_value_function()</code></a>.</p>
+<div class="refsect3">
+<a name="g-object-info-get-get-value-function.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>a <a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="g-object-info-get-get-value-function.returns"></a><h4>Returns</h4>
+<p> the symbol or <code class="literal">NULL</code></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-object-info-get-get-value-function-pointer"></a><h3>g_object_info_get_get_value_function_pointer ()</h3>
+<pre class="programlisting"><a class="link" href="gi-GIObjectInfo.html#GIObjectInfoGetValueFunction" title="GIObjectInfoGetValueFunction ()"><span class="returnvalue">GIObjectInfoGetValueFunction</span></a>
+g_object_info_get_get_value_function_pointer
+                               (<em class="parameter"><code><a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a> *info</code></em>);</pre>
+<p>Obtain a pointer to a function which can be used to
+extract an instance of this object type out of a GValue.
+This takes derivation into account and will reversely traverse
+the base classes of this type, starting at the top type.</p>
+<p><span class="annotation">[<acronym title="Exposed in C code, not necessarily available in other languages."><span class="acronym">skip</span></acronym>]</span></p>
+<div class="refsect3">
+<a name="g-object-info-get-get-value-function-pointer.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>a <a class="link" href="gi-GIObjectInfo.html#GIObjectInfo" title="GIObjectInfo"><span class="type">GIObjectInfo</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="g-object-info-get-get-value-function-pointer.returns"></a><h4>Returns</h4>
+<p> the function pointer or <code class="literal">NULL</code></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GIObjectInfoRefFunction"></a><h3>GIObjectInfoRefFunction ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span> *
+<span class="c_punctuation">(</span>*GIObjectInfoRefFunction<span class="c_punctuation">)</span> (<em class="parameter"><code><span class="type">void</span> *object</code></em>);</pre>
+<p>Increases the reference count of an object instance.</p>
+<p><span class="annotation">[<acronym title="Exposed in C code, not necessarily available in other languages."><span class="acronym">skip</span></acronym>]</span></p>
+<div class="refsect3">
+<a name="GIObjectInfoRefFunction.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>object</p></td>
+<td class="parameter_description"><p>object instance pointer</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="GIObjectInfoRefFunction.returns"></a><h4>Returns</h4>
+<p>the object instance. </p>
+<p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GIObjectInfoUnrefFunction"></a><h3>GIObjectInfoUnrefFunction ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+<span class="c_punctuation">(</span>*GIObjectInfoUnrefFunction<span class="c_punctuation">)</span> (<em class="parameter"><code><span class="type">void</span> *object</code></em>);</pre>
+<p>Decreases the reference count of an object instance.</p>
+<p><span class="annotation">[<acronym title="Exposed in C code, not necessarily available in other languages."><span class="acronym">skip</span></acronym>]</span></p>
+<div class="refsect3">
+<a name="GIObjectInfoUnrefFunction.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>object</p></td>
+<td class="parameter_description"><p>object instance pointer</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GIObjectInfoSetValueFunction"></a><h3>GIObjectInfoSetValueFunction ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+<span class="c_punctuation">(</span>*GIObjectInfoSetValueFunction<span class="c_punctuation">)</span> (<em class="parameter"><code><span class="type">GValue</span> *value</code></em>,
+                                 <em class="parameter"><code><span class="type">void</span> *object</code></em>);</pre>
+<p>Update <em class="parameter"><code>value</code></em>
+ and attach the object instance pointer <em class="parameter"><code>object</code></em>
+ to it.</p>
+<p><span class="annotation">[<acronym title="Exposed in C code, not necessarily available in other languages."><span class="acronym">skip</span></acronym>]</span></p>
+<div class="refsect3">
+<a name="GIObjectInfoSetValueFunction.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>value</p></td>
+<td class="parameter_description"><p>a <span class="type">GValue</span></p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>object</p></td>
+<td class="parameter_description"><p>object instance pointer</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GIObjectInfoGetValueFunction"></a><h3>GIObjectInfoGetValueFunction ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span> *
+<span class="c_punctuation">(</span>*GIObjectInfoGetValueFunction<span class="c_punctuation">)</span> (<em class="parameter"><code>const <span class="type">GValue</span> *value</code></em>);</pre>
+<p>Extract an object instance out of <em class="parameter"><code>value</code></em>
+</p>
+<p><span class="annotation">[<acronym title="Exposed in C code, not necessarily available in other languages."><span class="acronym">skip</span></acronym>]</span></p>
+<div class="refsect3">
+<a name="GIObjectInfoGetValueFunction.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>value</p></td>
+<td class="parameter_description"><p>a <span class="type">GValue</span></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="GIObjectInfoGetValueFunction.returns"></a><h4>Returns</h4>
+<p>the object instance. </p>
+<p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span></p>
+</div>
+</div>
+</div>
+<div class="refsect1">
+<a name="gi-GIObjectInfo.other_details"></a><h2>Types and Values</h2>
+<div class="refsect2">
+<a name="GIObjectInfo"></a><h3>GIObjectInfo</h3>
+<pre class="programlisting">typedef GIBaseInfo GIObjectInfo;
+</pre>
+<p>Represents an object.</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>Generated by GTK-Doc V1.29.1</div>
+</body>
+</html>

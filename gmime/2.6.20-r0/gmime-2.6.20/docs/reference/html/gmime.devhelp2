@@ -1,0 +1,741 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE book PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "">
+<book xmlns="http://www.devhelp.net/book" title="GMime 2.6 Reference Manual" link="index.html" author="Jeffrey Stedfast" name="gmime" version="2" language="c">
+  <chapters>
+    <sub name="GMime Overview" link="gmime.html">
+      <sub name="Compiling the GMime libraries" link="gmime-building.html"/>
+      <sub name="Compiling GMime Applications" link="gmime-compiling.html"/>
+      <sub name="Changes from 1.0 to 2.0" link="gmime-changes-2-0.html"/>
+      <sub name="Changes from 2.0 to 2.2" link="gmime-changes-2-2.html"/>
+      <sub name="Changes from 2.2 to 2.4" link="gmime-changes-2-4.html"/>
+      <sub name="Changes from 2.4 to 2.6" link="gmime-changes-2-6.html"/>
+      <sub name="Mailing lists and bug reports" link="gmime-resources.html"/>
+      <sub name="Frequently Asked Questions" link="gmime-question-index.html"/>
+    </sub>
+    <sub name="GMime Fundamentals" link="fundamentals.html">
+      <sub name="GMime Streams" link="gmime-streams.html"/>
+      <sub name="GMime Stream Filters" link="gmime-filters.html"/>
+      <sub name="GMime Data Wrappers" link="gmime-data-wrappers.html"/>
+    </sub>
+    <sub name="GMime Core Reference" link="core.html">
+      <sub name="gmime" link="gmime-gmime.html"/>
+      <sub name="gmime-charset" link="gmime-gmime-charset.html"/>
+      <sub name="gmime-iconv" link="gmime-gmime-iconv.html"/>
+      <sub name="gmime-iconv-utils" link="gmime-gmime-iconv-utils.html"/>
+      <sub name="gmime-encodings" link="gmime-gmime-encodings.html"/>
+      <sub name="gmime-utils" link="gmime-gmime-utils.html"/>
+    </sub>
+    <sub name="GMime Classes" link="classes.html">
+      <sub name="Class hierarchy" link="ch01.html"/>
+      <sub name="Streams" link="Streams.html">
+        <sub name="GMimeStream" link="GMimeStream.html"/>
+        <sub name="GMimeStreamFile" link="GMimeStreamFile.html"/>
+        <sub name="GMimeStreamFs" link="GMimeStreamFs.html"/>
+        <sub name="GMimeStreamMem" link="GMimeStreamMem.html"/>
+        <sub name="GMimeStreamMmap" link="GMimeStreamMmap.html"/>
+        <sub name="GMimeStreamNull" link="GMimeStreamNull.html"/>
+        <sub name="GMimeStreamFilter" link="GMimeStreamFilter.html"/>
+        <sub name="GMimeStreamBuffer" link="GMimeStreamBuffer.html"/>
+        <sub name="GMimeStreamPipe" link="GMimeStreamPipe.html"/>
+        <sub name="GMimeStreamCat" link="GMimeStreamCat.html"/>
+      </sub>
+      <sub name="Stream Filters" link="Filters.html">
+        <sub name="GMimeFilter" link="GMimeFilter.html"/>
+        <sub name="GMimeFilterBasic" link="GMimeFilterBasic.html"/>
+        <sub name="GMimeFilterBest" link="GMimeFilterBest.html"/>
+        <sub name="GMimeFilterCharset" link="GMimeFilterCharset.html"/>
+        <sub name="GMimeFilterCRLF" link="GMimeFilterCRLF.html"/>
+        <sub name="GMimeFilterEnriched" link="GMimeFilterEnriched.html"/>
+        <sub name="GMimeFilterFrom" link="GMimeFilterFrom.html"/>
+        <sub name="GMimeFilterGZip" link="GMimeFilterGZip.html"/>
+        <sub name="GMimeFilterHTML" link="GMimeFilterHTML.html"/>
+        <sub name="GMimeFilterMd5" link="GMimeFilterMd5.html"/>
+        <sub name="GMimeFilterStrip" link="GMimeFilterStrip.html"/>
+        <sub name="GMimeFilterWindows" link="GMimeFilterWindows.html"/>
+        <sub name="GMimeFilterYenc" link="GMimeFilterYenc.html"/>
+      </sub>
+      <sub name="Data Wrappers" link="DataWrappers.html">
+        <sub name="GMimeDataWrapper" link="GMimeDataWrapper.html"/>
+      </sub>
+      <sub name="Message and MIME Headers" link="Headers.html">
+        <sub name="GMimeHeader" link="gmime-GMimeHeader.html"/>
+        <sub name="GMimeContentType" link="GMimeContentType.html"/>
+        <sub name="GMimeContentDisposition" link="GMimeContentDisposition.html"/>
+        <sub name="GMimeParam" link="gmime-GMimeParam.html"/>
+      </sub>
+      <sub name="Internet Addresses" link="InternetAddresses.html">
+        <sub name="InternetAddress" link="InternetAddress.html"/>
+        <sub name="InternetAddressGroup" link="InternetAddressGroup.html"/>
+        <sub name="InternetAddressMailbox" link="InternetAddressMailbox.html"/>
+        <sub name="InternetAddressList" link="InternetAddressList.html"/>
+      </sub>
+      <sub name="MIME Messages and Parts" link="MimeParts.html">
+        <sub name="GMimeObject" link="GMimeObject.html"/>
+        <sub name="GMimeMessage" link="GMimeMessage.html"/>
+        <sub name="GMimePart" link="GMimePart.html"/>
+        <sub name="GMimeMultipart" link="GMimeMultipart.html"/>
+        <sub name="GMimeMultipartEncrypted" link="GMimeMultipartEncrypted.html"/>
+        <sub name="GMimeMultipartSigned" link="GMimeMultipartSigned.html"/>
+        <sub name="GMimeMessagePart" link="GMimeMessagePart.html"/>
+        <sub name="GMimeMessagePartial" link="GMimeMessagePartial.html"/>
+        <sub name="GMimePartIter" link="gmime-GMimePartIter.html"/>
+      </sub>
+      <sub name="Parsing Messages and MIME Parts" link="Parsers.html">
+        <sub name="GMimeParser" link="GMimeParser.html"/>
+      </sub>
+      <sub name="Cryptography Contexts" link="CryptoContexts.html">
+        <sub name="GMimeCertificate" link="GMimeCertificate.html"/>
+        <sub name="GMimeSignature" link="GMimeSignature.html"/>
+        <sub name="GMimeCryptoContext" link="GMimeCryptoContext.html"/>
+        <sub name="GMimeGpgContext" link="GMimeGpgContext.html"/>
+        <sub name="GMimePkcs7Context" link="GMimePkcs7Context.html"/>
+      </sub>
+    </sub>
+  </chapters>
+  <functions>
+    <keyword type="macro" name="GMIME_MAJOR_VERSION" link="gmime-gmime.html#GMIME-MAJOR-VERSION:CAPS"/>
+    <keyword type="macro" name="GMIME_MICRO_VERSION" link="gmime-gmime.html#GMIME-MICRO-VERSION:CAPS"/>
+    <keyword type="macro" name="GMIME_MINOR_VERSION" link="gmime-gmime.html#GMIME-MINOR-VERSION:CAPS"/>
+    <keyword type="macro" name="GMIME_BINARY_AGE" link="gmime-gmime.html#GMIME-BINARY-AGE:CAPS"/>
+    <keyword type="macro" name="GMIME_INTERFACE_AGE" link="gmime-gmime.html#GMIME-INTERFACE-AGE:CAPS"/>
+    <keyword type="macro" name="GMIME_CHECK_VERSION()" link="gmime-gmime.html#GMIME-CHECK-VERSION:CAPS"/>
+    <keyword type="macro" name="GMIME_ENABLE_RFC2047_WORKAROUNDS" link="gmime-gmime.html#GMIME-ENABLE-RFC2047-WORKAROUNDS:CAPS"/>
+    <keyword type="macro" name="GMIME_ENABLE_USE_ONLY_USER_CHARSETS" link="gmime-gmime.html#GMIME-ENABLE-USE-ONLY-USER-CHARSETS:CAPS" since="2.6.16"/>
+    <keyword type="function" name="g_mime_init ()" link="gmime-gmime.html#g-mime-init"/>
+    <keyword type="function" name="g_mime_shutdown ()" link="gmime-gmime.html#g-mime-shutdown"/>
+    <keyword type="variable" name="gmime_major_version" link="gmime-gmime.html#gmime-major-version"/>
+    <keyword type="variable" name="gmime_minor_version" link="gmime-gmime.html#gmime-minor-version"/>
+    <keyword type="variable" name="gmime_micro_version" link="gmime-gmime.html#gmime-micro-version"/>
+    <keyword type="variable" name="gmime_binary_age" link="gmime-gmime.html#gmime-binary-age"/>
+    <keyword type="variable" name="gmime_interface_age" link="gmime-gmime.html#gmime-interface-age"/>
+    <keyword type="function" name="g_mime_check_version ()" link="gmime-gmime.html#g-mime-check-version"/>
+    <keyword type="struct" name="struct GMimeCharset" link="gmime-gmime-charset.html#GMimeCharset"/>
+    <keyword type="function" name="g_mime_charset_map_init ()" link="gmime-gmime-charset.html#g-mime-charset-map-init"/>
+    <keyword type="function" name="g_mime_charset_map_shutdown ()" link="gmime-gmime-charset.html#g-mime-charset-map-shutdown"/>
+    <keyword type="function" name="g_mime_locale_charset ()" link="gmime-gmime-charset.html#g-mime-locale-charset"/>
+    <keyword type="function" name="g_mime_locale_language ()" link="gmime-gmime-charset.html#g-mime-locale-language"/>
+    <keyword type="function" name="g_mime_charset_language ()" link="gmime-gmime-charset.html#g-mime-charset-language"/>
+    <keyword type="function" name="g_mime_charset_canon_name ()" link="gmime-gmime-charset.html#g-mime-charset-canon-name"/>
+    <keyword type="function" name="g_mime_charset_iconv_name ()" link="gmime-gmime-charset.html#g-mime-charset-iconv-name"/>
+    <keyword type="function" name="g_mime_charset_name ()" link="gmime-gmime-charset.html#g-mime-charset-name" deprecated=""/>
+    <keyword type="function" name="g_mime_charset_locale_name ()" link="gmime-gmime-charset.html#g-mime-charset-locale-name" deprecated=""/>
+    <keyword type="function" name="g_mime_charset_iso_to_windows ()" link="gmime-gmime-charset.html#g-mime-charset-iso-to-windows"/>
+    <keyword type="function" name="g_mime_charset_init ()" link="gmime-gmime-charset.html#g-mime-charset-init"/>
+    <keyword type="function" name="g_mime_charset_step ()" link="gmime-gmime-charset.html#g-mime-charset-step"/>
+    <keyword type="function" name="g_mime_charset_best_name ()" link="gmime-gmime-charset.html#g-mime-charset-best-name"/>
+    <keyword type="function" name="g_mime_charset_best ()" link="gmime-gmime-charset.html#g-mime-charset-best"/>
+    <keyword type="function" name="g_mime_charset_can_encode ()" link="gmime-gmime-charset.html#g-mime-charset-can-encode"/>
+    <keyword type="function" name="g_mime_set_user_charsets ()" link="gmime-gmime-charset.html#g-mime-set-user-charsets"/>
+    <keyword type="function" name="g_mime_user_charsets ()" link="gmime-gmime-charset.html#g-mime-user-charsets"/>
+    <keyword type="function" name="g_mime_iconv_init ()" link="gmime-gmime-iconv.html#g-mime-iconv-init"/>
+    <keyword type="function" name="g_mime_iconv_shutdown ()" link="gmime-gmime-iconv.html#g-mime-iconv-shutdown"/>
+    <keyword type="function" name="g_mime_iconv_open ()" link="gmime-gmime-iconv.html#g-mime-iconv-open"/>
+    <keyword type="macro" name="g_mime_iconv()" link="gmime-gmime-iconv.html#g-mime-iconv"/>
+    <keyword type="function" name="g_mime_iconv_close ()" link="gmime-gmime-iconv.html#g-mime-iconv-close"/>
+    <keyword type="function" name="g_mime_iconv_strdup ()" link="gmime-gmime-iconv-utils.html#g-mime-iconv-strdup"/>
+    <keyword type="function" name="g_mime_iconv_strndup ()" link="gmime-gmime-iconv-utils.html#g-mime-iconv-strndup"/>
+    <keyword type="function" name="g_mime_iconv_utf8_to_locale ()" link="gmime-gmime-iconv-utils.html#g-mime-iconv-utf8-to-locale"/>
+    <keyword type="function" name="g_mime_iconv_utf8_to_locale_length ()" link="gmime-gmime-iconv-utils.html#g-mime-iconv-utf8-to-locale-length"/>
+    <keyword type="function" name="g_mime_iconv_locale_to_utf8 ()" link="gmime-gmime-iconv-utils.html#g-mime-iconv-locale-to-utf8"/>
+    <keyword type="function" name="g_mime_iconv_locale_to_utf8_length ()" link="gmime-gmime-iconv-utils.html#g-mime-iconv-locale-to-utf8-length"/>
+    <keyword type="enum" name="enum GMimeContentEncoding" link="gmime-gmime-encodings.html#GMimeContentEncoding"/>
+    <keyword type="function" name="g_mime_content_encoding_from_string ()" link="gmime-gmime-encodings.html#g-mime-content-encoding-from-string"/>
+    <keyword type="function" name="g_mime_content_encoding_to_string ()" link="gmime-gmime-encodings.html#g-mime-content-encoding-to-string"/>
+    <keyword type="enum" name="enum GMimeEncodingConstraint" link="gmime-gmime-encodings.html#GMimeEncodingConstraint"/>
+    <keyword type="struct" name="struct GMimeEncoding" link="gmime-gmime-encodings.html#GMimeEncoding"/>
+    <keyword type="function" name="g_mime_encoding_init_encode ()" link="gmime-gmime-encodings.html#g-mime-encoding-init-encode"/>
+    <keyword type="function" name="g_mime_encoding_init_decode ()" link="gmime-gmime-encodings.html#g-mime-encoding-init-decode"/>
+    <keyword type="function" name="g_mime_encoding_reset ()" link="gmime-gmime-encodings.html#g-mime-encoding-reset"/>
+    <keyword type="function" name="g_mime_encoding_outlen ()" link="gmime-gmime-encodings.html#g-mime-encoding-outlen"/>
+    <keyword type="function" name="g_mime_encoding_step ()" link="gmime-gmime-encodings.html#g-mime-encoding-step"/>
+    <keyword type="function" name="g_mime_encoding_flush ()" link="gmime-gmime-encodings.html#g-mime-encoding-flush"/>
+    <keyword type="macro" name="GMIME_BASE64_ENCODE_LEN()" link="gmime-gmime-encodings.html#GMIME-BASE64-ENCODE-LEN:CAPS"/>
+    <keyword type="function" name="g_mime_encoding_base64_decode_step ()" link="gmime-gmime-encodings.html#g-mime-encoding-base64-decode-step"/>
+    <keyword type="function" name="g_mime_encoding_base64_encode_step ()" link="gmime-gmime-encodings.html#g-mime-encoding-base64-encode-step"/>
+    <keyword type="function" name="g_mime_encoding_base64_encode_close ()" link="gmime-gmime-encodings.html#g-mime-encoding-base64-encode-close"/>
+    <keyword type="macro" name="GMIME_UUDECODE_STATE_INIT" link="gmime-gmime-encodings.html#GMIME-UUDECODE-STATE-INIT:CAPS"/>
+    <keyword type="macro" name="GMIME_UUDECODE_STATE_BEGIN" link="gmime-gmime-encodings.html#GMIME-UUDECODE-STATE-BEGIN:CAPS"/>
+    <keyword type="macro" name="GMIME_UUDECODE_STATE_END" link="gmime-gmime-encodings.html#GMIME-UUDECODE-STATE-END:CAPS"/>
+    <keyword type="macro" name="GMIME_UUENCODE_LEN()" link="gmime-gmime-encodings.html#GMIME-UUENCODE-LEN:CAPS"/>
+    <keyword type="function" name="g_mime_encoding_uudecode_step ()" link="gmime-gmime-encodings.html#g-mime-encoding-uudecode-step"/>
+    <keyword type="function" name="g_mime_encoding_uuencode_step ()" link="gmime-gmime-encodings.html#g-mime-encoding-uuencode-step"/>
+    <keyword type="function" name="g_mime_encoding_uuencode_close ()" link="gmime-gmime-encodings.html#g-mime-encoding-uuencode-close"/>
+    <keyword type="macro" name="GMIME_QP_ENCODE_LEN()" link="gmime-gmime-encodings.html#GMIME-QP-ENCODE-LEN:CAPS"/>
+    <keyword type="function" name="g_mime_encoding_quoted_decode_step ()" link="gmime-gmime-encodings.html#g-mime-encoding-quoted-decode-step"/>
+    <keyword type="function" name="g_mime_encoding_quoted_encode_step ()" link="gmime-gmime-encodings.html#g-mime-encoding-quoted-encode-step"/>
+    <keyword type="function" name="g_mime_encoding_quoted_encode_close ()" link="gmime-gmime-encodings.html#g-mime-encoding-quoted-encode-close"/>
+    <keyword type="struct" name="struct GMimeReferences" link="gmime-gmime-utils.html#GMimeReferences"/>
+    <keyword type="function" name="g_mime_utils_header_decode_date ()" link="gmime-gmime-utils.html#g-mime-utils-header-decode-date"/>
+    <keyword type="function" name="g_mime_utils_header_format_date ()" link="gmime-gmime-utils.html#g-mime-utils-header-format-date"/>
+    <keyword type="function" name="g_mime_utils_generate_message_id ()" link="gmime-gmime-utils.html#g-mime-utils-generate-message-id"/>
+    <keyword type="function" name="g_mime_utils_decode_message_id ()" link="gmime-gmime-utils.html#g-mime-utils-decode-message-id"/>
+    <keyword type="function" name="g_mime_references_get_message_id ()" link="gmime-gmime-utils.html#g-mime-references-get-message-id"/>
+    <keyword type="function" name="g_mime_references_get_next ()" link="gmime-gmime-utils.html#g-mime-references-get-next"/>
+    <keyword type="function" name="g_mime_references_decode ()" link="gmime-gmime-utils.html#g-mime-references-decode"/>
+    <keyword type="function" name="g_mime_references_append ()" link="gmime-gmime-utils.html#g-mime-references-append"/>
+    <keyword type="function" name="g_mime_references_clear ()" link="gmime-gmime-utils.html#g-mime-references-clear"/>
+    <keyword type="function" name="g_mime_references_free ()" link="gmime-gmime-utils.html#g-mime-references-free"/>
+    <keyword type="function" name="g_mime_utils_header_fold ()" link="gmime-gmime-utils.html#g-mime-utils-header-fold"/>
+    <keyword type="function" name="g_mime_utils_header_printf ()" link="gmime-gmime-utils.html#g-mime-utils-header-printf"/>
+    <keyword type="function" name="g_mime_utils_quote_string ()" link="gmime-gmime-utils.html#g-mime-utils-quote-string"/>
+    <keyword type="function" name="g_mime_utils_unquote_string ()" link="gmime-gmime-utils.html#g-mime-utils-unquote-string"/>
+    <keyword type="function" name="g_mime_utils_text_is_8bit ()" link="gmime-gmime-utils.html#g-mime-utils-text-is-8bit"/>
+    <keyword type="function" name="g_mime_utils_best_encoding ()" link="gmime-gmime-utils.html#g-mime-utils-best-encoding"/>
+    <keyword type="function" name="g_mime_utils_decode_8bit ()" link="gmime-gmime-utils.html#g-mime-utils-decode-8bit"/>
+    <keyword type="function" name="g_mime_utils_header_decode_text ()" link="gmime-gmime-utils.html#g-mime-utils-header-decode-text"/>
+    <keyword type="function" name="g_mime_utils_header_encode_text ()" link="gmime-gmime-utils.html#g-mime-utils-header-encode-text"/>
+    <keyword type="function" name="g_mime_utils_header_decode_phrase ()" link="gmime-gmime-utils.html#g-mime-utils-header-decode-phrase"/>
+    <keyword type="function" name="g_mime_utils_header_encode_phrase ()" link="gmime-gmime-utils.html#g-mime-utils-header-encode-phrase"/>
+    <keyword type="function" name="g_mime_utils_structured_header_fold ()" link="gmime-gmime-utils.html#g-mime-utils-structured-header-fold"/>
+    <keyword type="function" name="g_mime_utils_unstructured_header_fold ()" link="gmime-gmime-utils.html#g-mime-utils-unstructured-header-fold"/>
+    <keyword type="enum" name="enum GMimeSeekWhence" link="GMimeStream.html#GMimeSeekWhence"/>
+    <keyword type="struct" name="GMimeStreamIOVector" link="GMimeStream.html#GMimeStreamIOVector"/>
+    <keyword type="struct" name="struct GMimeStream" link="GMimeStream.html#GMimeStream-struct"/>
+    <keyword type="function" name="g_mime_stream_construct ()" link="GMimeStream.html#g-mime-stream-construct"/>
+    <keyword type="function" name="g_mime_stream_read ()" link="GMimeStream.html#g-mime-stream-read"/>
+    <keyword type="function" name="g_mime_stream_write ()" link="GMimeStream.html#g-mime-stream-write"/>
+    <keyword type="function" name="g_mime_stream_flush ()" link="GMimeStream.html#g-mime-stream-flush"/>
+    <keyword type="function" name="g_mime_stream_seek ()" link="GMimeStream.html#g-mime-stream-seek"/>
+    <keyword type="function" name="g_mime_stream_tell ()" link="GMimeStream.html#g-mime-stream-tell"/>
+    <keyword type="function" name="g_mime_stream_reset ()" link="GMimeStream.html#g-mime-stream-reset"/>
+    <keyword type="function" name="g_mime_stream_eos ()" link="GMimeStream.html#g-mime-stream-eos"/>
+    <keyword type="function" name="g_mime_stream_close ()" link="GMimeStream.html#g-mime-stream-close"/>
+    <keyword type="function" name="g_mime_stream_length ()" link="GMimeStream.html#g-mime-stream-length"/>
+    <keyword type="function" name="g_mime_stream_substream ()" link="GMimeStream.html#g-mime-stream-substream"/>
+    <keyword type="function" name="g_mime_stream_set_bounds ()" link="GMimeStream.html#g-mime-stream-set-bounds"/>
+    <keyword type="function" name="g_mime_stream_write_string ()" link="GMimeStream.html#g-mime-stream-write-string"/>
+    <keyword type="function" name="g_mime_stream_printf ()" link="GMimeStream.html#g-mime-stream-printf"/>
+    <keyword type="function" name="g_mime_stream_write_to_stream ()" link="GMimeStream.html#g-mime-stream-write-to-stream"/>
+    <keyword type="function" name="g_mime_stream_writev ()" link="GMimeStream.html#g-mime-stream-writev"/>
+    <keyword type="struct" name="struct GMimeStreamFile" link="GMimeStreamFile.html#GMimeStreamFile-struct"/>
+    <keyword type="function" name="g_mime_stream_file_new ()" link="GMimeStreamFile.html#g-mime-stream-file-new"/>
+    <keyword type="function" name="g_mime_stream_file_new_with_bounds ()" link="GMimeStreamFile.html#g-mime-stream-file-new-with-bounds"/>
+    <keyword type="function" name="g_mime_stream_file_new_for_path ()" link="GMimeStreamFile.html#g-mime-stream-file-new-for-path" since="2.6.18"/>
+    <keyword type="function" name="g_mime_stream_file_get_owner ()" link="GMimeStreamFile.html#g-mime-stream-file-get-owner"/>
+    <keyword type="function" name="g_mime_stream_file_set_owner ()" link="GMimeStreamFile.html#g-mime-stream-file-set-owner"/>
+    <keyword type="struct" name="struct GMimeStreamFs" link="GMimeStreamFs.html#GMimeStreamFs-struct"/>
+    <keyword type="function" name="g_mime_stream_fs_new ()" link="GMimeStreamFs.html#g-mime-stream-fs-new"/>
+    <keyword type="function" name="g_mime_stream_fs_new_with_bounds ()" link="GMimeStreamFs.html#g-mime-stream-fs-new-with-bounds"/>
+    <keyword type="function" name="g_mime_stream_fs_new_for_path ()" link="GMimeStreamFs.html#g-mime-stream-fs-new-for-path" since="2.6.18"/>
+    <keyword type="function" name="g_mime_stream_fs_get_owner ()" link="GMimeStreamFs.html#g-mime-stream-fs-get-owner"/>
+    <keyword type="function" name="g_mime_stream_fs_set_owner ()" link="GMimeStreamFs.html#g-mime-stream-fs-set-owner"/>
+    <keyword type="struct" name="struct GMimeStreamMem" link="GMimeStreamMem.html#GMimeStreamMem-struct"/>
+    <keyword type="function" name="g_mime_stream_mem_new ()" link="GMimeStreamMem.html#g-mime-stream-mem-new"/>
+    <keyword type="function" name="g_mime_stream_mem_new_with_byte_array ()" link="GMimeStreamMem.html#g-mime-stream-mem-new-with-byte-array"/>
+    <keyword type="function" name="g_mime_stream_mem_new_with_buffer ()" link="GMimeStreamMem.html#g-mime-stream-mem-new-with-buffer"/>
+    <keyword type="function" name="g_mime_stream_mem_get_byte_array ()" link="GMimeStreamMem.html#g-mime-stream-mem-get-byte-array"/>
+    <keyword type="function" name="g_mime_stream_mem_set_byte_array ()" link="GMimeStreamMem.html#g-mime-stream-mem-set-byte-array"/>
+    <keyword type="function" name="g_mime_stream_mem_get_owner ()" link="GMimeStreamMem.html#g-mime-stream-mem-get-owner"/>
+    <keyword type="function" name="g_mime_stream_mem_set_owner ()" link="GMimeStreamMem.html#g-mime-stream-mem-set-owner"/>
+    <keyword type="struct" name="struct GMimeStreamMmap" link="GMimeStreamMmap.html#GMimeStreamMmap-struct"/>
+    <keyword type="function" name="g_mime_stream_mmap_new ()" link="GMimeStreamMmap.html#g-mime-stream-mmap-new"/>
+    <keyword type="function" name="g_mime_stream_mmap_new_with_bounds ()" link="GMimeStreamMmap.html#g-mime-stream-mmap-new-with-bounds"/>
+    <keyword type="struct" name="struct GMimeStreamNull" link="GMimeStreamNull.html#GMimeStreamNull-struct"/>
+    <keyword type="function" name="g_mime_stream_null_new ()" link="GMimeStreamNull.html#g-mime-stream-null-new"/>
+    <keyword type="struct" name="struct GMimeStreamFilter" link="GMimeStreamFilter.html#GMimeStreamFilter-struct"/>
+    <keyword type="function" name="g_mime_stream_filter_new ()" link="GMimeStreamFilter.html#g-mime-stream-filter-new"/>
+    <keyword type="function" name="g_mime_stream_filter_add ()" link="GMimeStreamFilter.html#g-mime-stream-filter-add"/>
+    <keyword type="function" name="g_mime_stream_filter_remove ()" link="GMimeStreamFilter.html#g-mime-stream-filter-remove"/>
+    <keyword type="enum" name="enum GMimeStreamBufferMode" link="GMimeStreamBuffer.html#GMimeStreamBufferMode"/>
+    <keyword type="struct" name="struct GMimeStreamBuffer" link="GMimeStreamBuffer.html#GMimeStreamBuffer-struct"/>
+    <keyword type="function" name="g_mime_stream_buffer_new ()" link="GMimeStreamBuffer.html#g-mime-stream-buffer-new"/>
+    <keyword type="function" name="g_mime_stream_buffer_gets ()" link="GMimeStreamBuffer.html#g-mime-stream-buffer-gets"/>
+    <keyword type="function" name="g_mime_stream_buffer_readln ()" link="GMimeStreamBuffer.html#g-mime-stream-buffer-readln"/>
+    <keyword type="struct" name="struct GMimeStreamPipe" link="GMimeStreamPipe.html#GMimeStreamPipe-struct"/>
+    <keyword type="function" name="g_mime_stream_pipe_new ()" link="GMimeStreamPipe.html#g-mime-stream-pipe-new"/>
+    <keyword type="function" name="g_mime_stream_pipe_get_owner ()" link="GMimeStreamPipe.html#g-mime-stream-pipe-get-owner"/>
+    <keyword type="function" name="g_mime_stream_pipe_set_owner ()" link="GMimeStreamPipe.html#g-mime-stream-pipe-set-owner"/>
+    <keyword type="struct" name="struct GMimeStreamCat" link="GMimeStreamCat.html#GMimeStreamCat-struct"/>
+    <keyword type="function" name="g_mime_stream_cat_new ()" link="GMimeStreamCat.html#g-mime-stream-cat-new"/>
+    <keyword type="function" name="g_mime_stream_cat_add_source ()" link="GMimeStreamCat.html#g-mime-stream-cat-add-source"/>
+    <keyword type="struct" name="struct GMimeFilter" link="GMimeFilter.html#GMimeFilter-struct"/>
+    <keyword type="function" name="g_mime_filter_copy ()" link="GMimeFilter.html#g-mime-filter-copy"/>
+    <keyword type="function" name="g_mime_filter_filter ()" link="GMimeFilter.html#g-mime-filter-filter"/>
+    <keyword type="function" name="g_mime_filter_complete ()" link="GMimeFilter.html#g-mime-filter-complete"/>
+    <keyword type="function" name="g_mime_filter_reset ()" link="GMimeFilter.html#g-mime-filter-reset"/>
+    <keyword type="function" name="g_mime_filter_backup ()" link="GMimeFilter.html#g-mime-filter-backup"/>
+    <keyword type="function" name="g_mime_filter_set_size ()" link="GMimeFilter.html#g-mime-filter-set-size"/>
+    <keyword type="struct" name="struct GMimeFilterBasic" link="GMimeFilterBasic.html#GMimeFilterBasic-struct"/>
+    <keyword type="function" name="g_mime_filter_basic_new ()" link="GMimeFilterBasic.html#g-mime-filter-basic-new"/>
+    <keyword type="struct" name="struct GMimeFilterBest" link="GMimeFilterBest.html#GMimeFilterBest-struct"/>
+    <keyword type="enum" name="enum GMimeFilterBestFlags" link="GMimeFilterBest.html#GMimeFilterBestFlags"/>
+    <keyword type="function" name="g_mime_filter_best_new ()" link="GMimeFilterBest.html#g-mime-filter-best-new"/>
+    <keyword type="function" name="g_mime_filter_best_charset ()" link="GMimeFilterBest.html#g-mime-filter-best-charset"/>
+    <keyword type="function" name="g_mime_filter_best_encoding ()" link="GMimeFilterBest.html#g-mime-filter-best-encoding"/>
+    <keyword type="struct" name="struct GMimeFilterCharset" link="GMimeFilterCharset.html#GMimeFilterCharset-struct"/>
+    <keyword type="function" name="g_mime_filter_charset_new ()" link="GMimeFilterCharset.html#g-mime-filter-charset-new"/>
+    <keyword type="struct" name="struct GMimeFilterCRLF" link="GMimeFilterCRLF.html#GMimeFilterCRLF-struct"/>
+    <keyword type="function" name="g_mime_filter_crlf_new ()" link="GMimeFilterCRLF.html#g-mime-filter-crlf-new"/>
+    <keyword type="macro" name="GMIME_FILTER_ENRICHED_IS_RICHTEXT" link="GMimeFilterEnriched.html#GMIME-FILTER-ENRICHED-IS-RICHTEXT:CAPS"/>
+    <keyword type="struct" name="struct GMimeFilterEnriched" link="GMimeFilterEnriched.html#GMimeFilterEnriched-struct"/>
+    <keyword type="function" name="g_mime_filter_enriched_new ()" link="GMimeFilterEnriched.html#g-mime-filter-enriched-new"/>
+    <keyword type="struct" name="struct GMimeFilterFrom" link="GMimeFilterFrom.html#GMimeFilterFrom-struct"/>
+    <keyword type="enum" name="enum GMimeFilterFromMode" link="GMimeFilterFrom.html#GMimeFilterFromMode"/>
+    <keyword type="function" name="g_mime_filter_from_new ()" link="GMimeFilterFrom.html#g-mime-filter-from-new"/>
+    <keyword type="struct" name="struct GMimeFilterGZip" link="GMimeFilterGZip.html#GMimeFilterGZip-struct"/>
+    <keyword type="enum" name="enum GMimeFilterGZipMode" link="GMimeFilterGZip.html#GMimeFilterGZipMode"/>
+    <keyword type="function" name="g_mime_filter_gzip_new ()" link="GMimeFilterGZip.html#g-mime-filter-gzip-new"/>
+    <keyword type="struct" name="struct GMimeFilterHTML" link="GMimeFilterHTML.html#GMimeFilterHTML-struct"/>
+    <keyword type="macro" name="GMIME_FILTER_HTML_PRE" link="GMimeFilterHTML.html#GMIME-FILTER-HTML-PRE:CAPS"/>
+    <keyword type="macro" name="GMIME_FILTER_HTML_CONVERT_NL" link="GMimeFilterHTML.html#GMIME-FILTER-HTML-CONVERT-NL:CAPS"/>
+    <keyword type="macro" name="GMIME_FILTER_HTML_CONVERT_SPACES" link="GMimeFilterHTML.html#GMIME-FILTER-HTML-CONVERT-SPACES:CAPS"/>
+    <keyword type="macro" name="GMIME_FILTER_HTML_CONVERT_URLS" link="GMimeFilterHTML.html#GMIME-FILTER-HTML-CONVERT-URLS:CAPS"/>
+    <keyword type="macro" name="GMIME_FILTER_HTML_MARK_CITATION" link="GMimeFilterHTML.html#GMIME-FILTER-HTML-MARK-CITATION:CAPS"/>
+    <keyword type="macro" name="GMIME_FILTER_HTML_CONVERT_ADDRESSES" link="GMimeFilterHTML.html#GMIME-FILTER-HTML-CONVERT-ADDRESSES:CAPS"/>
+    <keyword type="macro" name="GMIME_FILTER_HTML_ESCAPE_8BIT" link="GMimeFilterHTML.html#GMIME-FILTER-HTML-ESCAPE-8BIT:CAPS"/>
+    <keyword type="macro" name="GMIME_FILTER_HTML_CITE" link="GMimeFilterHTML.html#GMIME-FILTER-HTML-CITE:CAPS"/>
+    <keyword type="function" name="g_mime_filter_html_new ()" link="GMimeFilterHTML.html#g-mime-filter-html-new"/>
+    <keyword type="struct" name="struct GMimeFilterMd5" link="GMimeFilterMd5.html#GMimeFilterMd5-struct"/>
+    <keyword type="function" name="g_mime_filter_md5_new ()" link="GMimeFilterMd5.html#g-mime-filter-md5-new"/>
+    <keyword type="function" name="g_mime_filter_md5_get_digest ()" link="GMimeFilterMd5.html#g-mime-filter-md5-get-digest"/>
+    <keyword type="struct" name="struct GMimeFilterStrip" link="GMimeFilterStrip.html#GMimeFilterStrip-struct"/>
+    <keyword type="function" name="g_mime_filter_strip_new ()" link="GMimeFilterStrip.html#g-mime-filter-strip-new"/>
+    <keyword type="struct" name="struct GMimeFilterWindows" link="GMimeFilterWindows.html#GMimeFilterWindows-struct"/>
+    <keyword type="function" name="g_mime_filter_windows_new ()" link="GMimeFilterWindows.html#g-mime-filter-windows-new"/>
+    <keyword type="function" name="g_mime_filter_windows_is_windows_charset ()" link="GMimeFilterWindows.html#g-mime-filter-windows-is-windows-charset"/>
+    <keyword type="function" name="g_mime_filter_windows_real_charset ()" link="GMimeFilterWindows.html#g-mime-filter-windows-real-charset"/>
+    <keyword type="struct" name="struct GMimeFilterYenc" link="GMimeFilterYenc.html#GMimeFilterYenc-struct"/>
+    <keyword type="function" name="g_mime_filter_yenc_new ()" link="GMimeFilterYenc.html#g-mime-filter-yenc-new"/>
+    <keyword type="function" name="g_mime_filter_yenc_set_state ()" link="GMimeFilterYenc.html#g-mime-filter-yenc-set-state"/>
+    <keyword type="function" name="g_mime_filter_yenc_set_crc ()" link="GMimeFilterYenc.html#g-mime-filter-yenc-set-crc"/>
+    <keyword type="function" name="g_mime_filter_yenc_get_crc ()" link="GMimeFilterYenc.html#g-mime-filter-yenc-get-crc"/>
+    <keyword type="function" name="g_mime_filter_yenc_get_pcrc ()" link="GMimeFilterYenc.html#g-mime-filter-yenc-get-pcrc"/>
+    <keyword type="macro" name="GMIME_YENCODE_CRC_INIT" link="GMimeFilterYenc.html#GMIME-YENCODE-CRC-INIT:CAPS"/>
+    <keyword type="macro" name="GMIME_YENCODE_CRC_FINAL()" link="GMimeFilterYenc.html#GMIME-YENCODE-CRC-FINAL:CAPS"/>
+    <keyword type="macro" name="GMIME_YENCODE_STATE_INIT" link="GMimeFilterYenc.html#GMIME-YENCODE-STATE-INIT:CAPS"/>
+    <keyword type="macro" name="GMIME_YDECODE_STATE_INIT" link="GMimeFilterYenc.html#GMIME-YDECODE-STATE-INIT:CAPS"/>
+    <keyword type="macro" name="GMIME_YDECODE_STATE_EOLN" link="GMimeFilterYenc.html#GMIME-YDECODE-STATE-EOLN:CAPS"/>
+    <keyword type="macro" name="GMIME_YDECODE_STATE_ESCAPE" link="GMimeFilterYenc.html#GMIME-YDECODE-STATE-ESCAPE:CAPS"/>
+    <keyword type="macro" name="GMIME_YDECODE_STATE_END" link="GMimeFilterYenc.html#GMIME-YDECODE-STATE-END:CAPS"/>
+    <keyword type="macro" name="GMIME_YDECODE_STATE_BEGIN" link="GMimeFilterYenc.html#GMIME-YDECODE-STATE-BEGIN:CAPS"/>
+    <keyword type="macro" name="GMIME_YDECODE_STATE_DECODE" link="GMimeFilterYenc.html#GMIME-YDECODE-STATE-DECODE:CAPS"/>
+    <keyword type="macro" name="GMIME_YDECODE_STATE_PART" link="GMimeFilterYenc.html#GMIME-YDECODE-STATE-PART:CAPS"/>
+    <keyword type="function" name="g_mime_ydecode_step ()" link="GMimeFilterYenc.html#g-mime-ydecode-step"/>
+    <keyword type="function" name="g_mime_yencode_step ()" link="GMimeFilterYenc.html#g-mime-yencode-step"/>
+    <keyword type="function" name="g_mime_yencode_close ()" link="GMimeFilterYenc.html#g-mime-yencode-close"/>
+    <keyword type="struct" name="struct GMimeDataWrapper" link="GMimeDataWrapper.html#GMimeDataWrapper-struct"/>
+    <keyword type="function" name="g_mime_data_wrapper_new ()" link="GMimeDataWrapper.html#g-mime-data-wrapper-new"/>
+    <keyword type="function" name="g_mime_data_wrapper_new_with_stream ()" link="GMimeDataWrapper.html#g-mime-data-wrapper-new-with-stream"/>
+    <keyword type="function" name="g_mime_data_wrapper_set_stream ()" link="GMimeDataWrapper.html#g-mime-data-wrapper-set-stream"/>
+    <keyword type="function" name="g_mime_data_wrapper_get_stream ()" link="GMimeDataWrapper.html#g-mime-data-wrapper-get-stream"/>
+    <keyword type="function" name="g_mime_data_wrapper_set_encoding ()" link="GMimeDataWrapper.html#g-mime-data-wrapper-set-encoding"/>
+    <keyword type="function" name="g_mime_data_wrapper_get_encoding ()" link="GMimeDataWrapper.html#g-mime-data-wrapper-get-encoding"/>
+    <keyword type="function" name="g_mime_data_wrapper_write_to_stream ()" link="GMimeDataWrapper.html#g-mime-data-wrapper-write-to-stream"/>
+    <keyword type="struct" name="struct GMimeHeaderIter" link="gmime-GMimeHeader.html#GMimeHeaderIter"/>
+    <keyword type="struct" name="GMimeHeaderList" link="gmime-GMimeHeader.html#GMimeHeaderList"/>
+    <keyword type="function" name="GMimeHeaderWriter ()" link="gmime-GMimeHeader.html#GMimeHeaderWriter"/>
+    <keyword type="function" name="GMimeHeaderForeachFunc ()" link="gmime-GMimeHeader.html#GMimeHeaderForeachFunc"/>
+    <keyword type="function" name="g_mime_header_iter_new ()" link="gmime-GMimeHeader.html#g-mime-header-iter-new"/>
+    <keyword type="function" name="g_mime_header_iter_free ()" link="gmime-GMimeHeader.html#g-mime-header-iter-free"/>
+    <keyword type="function" name="g_mime_header_iter_copy ()" link="gmime-GMimeHeader.html#g-mime-header-iter-copy"/>
+    <keyword type="function" name="g_mime_header_iter_copy_to ()" link="gmime-GMimeHeader.html#g-mime-header-iter-copy-to"/>
+    <keyword type="function" name="g_mime_header_iter_equal ()" link="gmime-GMimeHeader.html#g-mime-header-iter-equal"/>
+    <keyword type="function" name="g_mime_header_iter_first ()" link="gmime-GMimeHeader.html#g-mime-header-iter-first"/>
+    <keyword type="function" name="g_mime_header_iter_last ()" link="gmime-GMimeHeader.html#g-mime-header-iter-last"/>
+    <keyword type="function" name="g_mime_header_iter_next ()" link="gmime-GMimeHeader.html#g-mime-header-iter-next"/>
+    <keyword type="function" name="g_mime_header_iter_prev ()" link="gmime-GMimeHeader.html#g-mime-header-iter-prev"/>
+    <keyword type="function" name="g_mime_header_iter_is_valid ()" link="gmime-GMimeHeader.html#g-mime-header-iter-is-valid"/>
+    <keyword type="function" name="g_mime_header_iter_get_name ()" link="gmime-GMimeHeader.html#g-mime-header-iter-get-name"/>
+    <keyword type="function" name="g_mime_header_iter_get_value ()" link="gmime-GMimeHeader.html#g-mime-header-iter-get-value"/>
+    <keyword type="function" name="g_mime_header_iter_set_value ()" link="gmime-GMimeHeader.html#g-mime-header-iter-set-value"/>
+    <keyword type="function" name="g_mime_header_iter_remove ()" link="gmime-GMimeHeader.html#g-mime-header-iter-remove"/>
+    <keyword type="function" name="g_mime_header_list_new ()" link="gmime-GMimeHeader.html#g-mime-header-list-new"/>
+    <keyword type="function" name="g_mime_header_list_destroy ()" link="gmime-GMimeHeader.html#g-mime-header-list-destroy"/>
+    <keyword type="function" name="g_mime_header_list_clear ()" link="gmime-GMimeHeader.html#g-mime-header-list-clear"/>
+    <keyword type="function" name="g_mime_header_list_contains ()" link="gmime-GMimeHeader.html#g-mime-header-list-contains"/>
+    <keyword type="function" name="g_mime_header_list_prepend ()" link="gmime-GMimeHeader.html#g-mime-header-list-prepend"/>
+    <keyword type="function" name="g_mime_header_list_append ()" link="gmime-GMimeHeader.html#g-mime-header-list-append"/>
+    <keyword type="function" name="g_mime_header_list_remove ()" link="gmime-GMimeHeader.html#g-mime-header-list-remove"/>
+    <keyword type="function" name="g_mime_header_list_set ()" link="gmime-GMimeHeader.html#g-mime-header-list-set"/>
+    <keyword type="function" name="g_mime_header_list_get ()" link="gmime-GMimeHeader.html#g-mime-header-list-get"/>
+    <keyword type="function" name="g_mime_header_list_get_iter ()" link="gmime-GMimeHeader.html#g-mime-header-list-get-iter"/>
+    <keyword type="function" name="g_mime_header_list_foreach ()" link="gmime-GMimeHeader.html#g-mime-header-list-foreach"/>
+    <keyword type="function" name="g_mime_header_list_register_writer ()" link="gmime-GMimeHeader.html#g-mime-header-list-register-writer"/>
+    <keyword type="function" name="g_mime_header_list_write_to_stream ()" link="gmime-GMimeHeader.html#g-mime-header-list-write-to-stream"/>
+    <keyword type="function" name="g_mime_header_list_to_string ()" link="gmime-GMimeHeader.html#g-mime-header-list-to-string"/>
+    <keyword type="function" name="g_mime_header_list_get_stream ()" link="gmime-GMimeHeader.html#g-mime-header-list-get-stream"/>
+    <keyword type="function" name="g_mime_header_list_set_stream ()" link="gmime-GMimeHeader.html#g-mime-header-list-set-stream"/>
+    <keyword type="struct" name="struct GMimeContentType" link="GMimeContentType.html#GMimeContentType-struct"/>
+    <keyword type="function" name="g_mime_content_type_new ()" link="GMimeContentType.html#g-mime-content-type-new"/>
+    <keyword type="function" name="g_mime_content_type_new_from_string ()" link="GMimeContentType.html#g-mime-content-type-new-from-string"/>
+    <keyword type="function" name="g_mime_content_type_to_string ()" link="GMimeContentType.html#g-mime-content-type-to-string"/>
+    <keyword type="function" name="g_mime_content_type_is_type ()" link="GMimeContentType.html#g-mime-content-type-is-type"/>
+    <keyword type="function" name="g_mime_content_type_get_media_type ()" link="GMimeContentType.html#g-mime-content-type-get-media-type"/>
+    <keyword type="function" name="g_mime_content_type_set_media_type ()" link="GMimeContentType.html#g-mime-content-type-set-media-type"/>
+    <keyword type="function" name="g_mime_content_type_get_media_subtype ()" link="GMimeContentType.html#g-mime-content-type-get-media-subtype"/>
+    <keyword type="function" name="g_mime_content_type_set_media_subtype ()" link="GMimeContentType.html#g-mime-content-type-set-media-subtype"/>
+    <keyword type="function" name="g_mime_content_type_get_params ()" link="GMimeContentType.html#g-mime-content-type-get-params"/>
+    <keyword type="function" name="g_mime_content_type_set_params ()" link="GMimeContentType.html#g-mime-content-type-set-params"/>
+    <keyword type="function" name="g_mime_content_type_get_parameter ()" link="GMimeContentType.html#g-mime-content-type-get-parameter"/>
+    <keyword type="function" name="g_mime_content_type_set_parameter ()" link="GMimeContentType.html#g-mime-content-type-set-parameter"/>
+    <keyword type="macro" name="GMIME_DISPOSITION_ATTACHMENT" link="GMimeContentDisposition.html#GMIME-DISPOSITION-ATTACHMENT:CAPS"/>
+    <keyword type="macro" name="GMIME_DISPOSITION_INLINE" link="GMimeContentDisposition.html#GMIME-DISPOSITION-INLINE:CAPS"/>
+    <keyword type="struct" name="struct GMimeContentDisposition" link="GMimeContentDisposition.html#GMimeContentDisposition-struct"/>
+    <keyword type="function" name="g_mime_content_disposition_new ()" link="GMimeContentDisposition.html#g-mime-content-disposition-new"/>
+    <keyword type="function" name="g_mime_content_disposition_new_from_string ()" link="GMimeContentDisposition.html#g-mime-content-disposition-new-from-string"/>
+    <keyword type="function" name="g_mime_content_disposition_set_disposition ()" link="GMimeContentDisposition.html#g-mime-content-disposition-set-disposition"/>
+    <keyword type="function" name="g_mime_content_disposition_get_disposition ()" link="GMimeContentDisposition.html#g-mime-content-disposition-get-disposition"/>
+    <keyword type="function" name="g_mime_content_disposition_get_params ()" link="GMimeContentDisposition.html#g-mime-content-disposition-get-params"/>
+    <keyword type="function" name="g_mime_content_disposition_set_params ()" link="GMimeContentDisposition.html#g-mime-content-disposition-set-params"/>
+    <keyword type="function" name="g_mime_content_disposition_set_parameter ()" link="GMimeContentDisposition.html#g-mime-content-disposition-set-parameter"/>
+    <keyword type="function" name="g_mime_content_disposition_get_parameter ()" link="GMimeContentDisposition.html#g-mime-content-disposition-get-parameter"/>
+    <keyword type="function" name="g_mime_content_disposition_to_string ()" link="GMimeContentDisposition.html#g-mime-content-disposition-to-string"/>
+    <keyword type="struct" name="struct GMimeParam" link="gmime-GMimeParam.html#GMimeParam"/>
+    <keyword type="function" name="g_mime_param_new ()" link="gmime-GMimeParam.html#g-mime-param-new"/>
+    <keyword type="function" name="g_mime_param_new_from_string ()" link="gmime-GMimeParam.html#g-mime-param-new-from-string"/>
+    <keyword type="function" name="g_mime_param_destroy ()" link="gmime-GMimeParam.html#g-mime-param-destroy"/>
+    <keyword type="function" name="g_mime_param_next ()" link="gmime-GMimeParam.html#g-mime-param-next"/>
+    <keyword type="function" name="g_mime_param_get_name ()" link="gmime-GMimeParam.html#g-mime-param-get-name"/>
+    <keyword type="function" name="g_mime_param_get_value ()" link="gmime-GMimeParam.html#g-mime-param-get-value"/>
+    <keyword type="function" name="g_mime_param_append ()" link="gmime-GMimeParam.html#g-mime-param-append"/>
+    <keyword type="function" name="g_mime_param_append_param ()" link="gmime-GMimeParam.html#g-mime-param-append-param"/>
+    <keyword type="function" name="g_mime_param_write_to_string ()" link="gmime-GMimeParam.html#g-mime-param-write-to-string"/>
+    <keyword type="struct" name="struct InternetAddress" link="InternetAddress.html#InternetAddress-struct"/>
+    <keyword type="function" name="internet_address_get_name ()" link="InternetAddress.html#internet-address-get-name"/>
+    <keyword type="function" name="internet_address_set_name ()" link="InternetAddress.html#internet-address-set-name"/>
+    <keyword type="function" name="internet_address_to_string ()" link="InternetAddress.html#internet-address-to-string"/>
+    <keyword type="struct" name="struct InternetAddressGroup" link="InternetAddressGroup.html#InternetAddressGroup-struct"/>
+    <keyword type="function" name="internet_address_group_new ()" link="InternetAddressGroup.html#internet-address-group-new"/>
+    <keyword type="function" name="internet_address_group_get_members ()" link="InternetAddressGroup.html#internet-address-group-get-members"/>
+    <keyword type="function" name="internet_address_group_set_members ()" link="InternetAddressGroup.html#internet-address-group-set-members"/>
+    <keyword type="function" name="internet_address_group_add_member ()" link="InternetAddressGroup.html#internet-address-group-add-member"/>
+    <keyword type="struct" name="struct InternetAddressMailbox" link="InternetAddressMailbox.html#InternetAddressMailbox-struct"/>
+    <keyword type="function" name="internet_address_mailbox_new ()" link="InternetAddressMailbox.html#internet-address-mailbox-new"/>
+    <keyword type="function" name="internet_address_mailbox_get_addr ()" link="InternetAddressMailbox.html#internet-address-mailbox-get-addr"/>
+    <keyword type="function" name="internet_address_mailbox_set_addr ()" link="InternetAddressMailbox.html#internet-address-mailbox-set-addr"/>
+    <keyword type="struct" name="struct InternetAddressList" link="InternetAddressList.html#InternetAddressList-struct"/>
+    <keyword type="function" name="internet_address_list_new ()" link="InternetAddressList.html#internet-address-list-new"/>
+    <keyword type="function" name="internet_address_list_length ()" link="InternetAddressList.html#internet-address-list-length"/>
+    <keyword type="function" name="internet_address_list_clear ()" link="InternetAddressList.html#internet-address-list-clear"/>
+    <keyword type="function" name="internet_address_list_add ()" link="InternetAddressList.html#internet-address-list-add"/>
+    <keyword type="function" name="internet_address_list_insert ()" link="InternetAddressList.html#internet-address-list-insert"/>
+    <keyword type="function" name="internet_address_list_remove ()" link="InternetAddressList.html#internet-address-list-remove"/>
+    <keyword type="function" name="internet_address_list_remove_at ()" link="InternetAddressList.html#internet-address-list-remove-at"/>
+    <keyword type="function" name="internet_address_list_contains ()" link="InternetAddressList.html#internet-address-list-contains"/>
+    <keyword type="function" name="internet_address_list_index_of ()" link="InternetAddressList.html#internet-address-list-index-of"/>
+    <keyword type="function" name="internet_address_list_get_address ()" link="InternetAddressList.html#internet-address-list-get-address"/>
+    <keyword type="function" name="internet_address_list_set_address ()" link="InternetAddressList.html#internet-address-list-set-address"/>
+    <keyword type="function" name="internet_address_list_prepend ()" link="InternetAddressList.html#internet-address-list-prepend"/>
+    <keyword type="function" name="internet_address_list_append ()" link="InternetAddressList.html#internet-address-list-append"/>
+    <keyword type="function" name="internet_address_list_to_string ()" link="InternetAddressList.html#internet-address-list-to-string"/>
+    <keyword type="function" name="internet_address_list_parse_string ()" link="InternetAddressList.html#internet-address-list-parse-string"/>
+    <keyword type="function" name="internet_address_list_writer ()" link="InternetAddressList.html#internet-address-list-writer"/>
+    <keyword type="struct" name="struct GMimeObject" link="GMimeObject.html#GMimeObject-struct"/>
+    <keyword type="function" name="GMimeObjectForeachFunc ()" link="GMimeObject.html#GMimeObjectForeachFunc"/>
+    <keyword type="function" name="g_mime_object_register_type ()" link="GMimeObject.html#g-mime-object-register-type"/>
+    <keyword type="function" name="g_mime_object_new ()" link="GMimeObject.html#g-mime-object-new"/>
+    <keyword type="function" name="g_mime_object_new_type ()" link="GMimeObject.html#g-mime-object-new-type"/>
+    <keyword type="function" name="g_mime_object_set_content_type ()" link="GMimeObject.html#g-mime-object-set-content-type"/>
+    <keyword type="function" name="g_mime_object_get_content_type ()" link="GMimeObject.html#g-mime-object-get-content-type"/>
+    <keyword type="function" name="g_mime_object_set_content_type_parameter ()" link="GMimeObject.html#g-mime-object-set-content-type-parameter"/>
+    <keyword type="function" name="g_mime_object_get_content_type_parameter ()" link="GMimeObject.html#g-mime-object-get-content-type-parameter"/>
+    <keyword type="function" name="g_mime_object_set_disposition ()" link="GMimeObject.html#g-mime-object-set-disposition"/>
+    <keyword type="function" name="g_mime_object_get_disposition ()" link="GMimeObject.html#g-mime-object-get-disposition"/>
+    <keyword type="function" name="g_mime_object_set_content_disposition ()" link="GMimeObject.html#g-mime-object-set-content-disposition"/>
+    <keyword type="function" name="g_mime_object_get_content_disposition ()" link="GMimeObject.html#g-mime-object-get-content-disposition"/>
+    <keyword type="function" name="g_mime_object_set_content_disposition_parameter ()" link="GMimeObject.html#g-mime-object-set-content-disposition-parameter"/>
+    <keyword type="function" name="g_mime_object_get_content_disposition_parameter ()" link="GMimeObject.html#g-mime-object-get-content-disposition-parameter"/>
+    <keyword type="function" name="g_mime_object_set_content_id ()" link="GMimeObject.html#g-mime-object-set-content-id"/>
+    <keyword type="function" name="g_mime_object_get_content_id ()" link="GMimeObject.html#g-mime-object-get-content-id"/>
+    <keyword type="function" name="g_mime_object_prepend_header ()" link="GMimeObject.html#g-mime-object-prepend-header"/>
+    <keyword type="function" name="g_mime_object_append_header ()" link="GMimeObject.html#g-mime-object-append-header"/>
+    <keyword type="function" name="g_mime_object_remove_header ()" link="GMimeObject.html#g-mime-object-remove-header"/>
+    <keyword type="function" name="g_mime_object_set_header ()" link="GMimeObject.html#g-mime-object-set-header"/>
+    <keyword type="function" name="g_mime_object_get_header ()" link="GMimeObject.html#g-mime-object-get-header"/>
+    <keyword type="function" name="g_mime_object_get_headers ()" link="GMimeObject.html#g-mime-object-get-headers"/>
+    <keyword type="function" name="g_mime_object_get_header_list ()" link="GMimeObject.html#g-mime-object-get-header-list"/>
+    <keyword type="function" name="g_mime_object_write_to_stream ()" link="GMimeObject.html#g-mime-object-write-to-stream"/>
+    <keyword type="function" name="g_mime_object_to_string ()" link="GMimeObject.html#g-mime-object-to-string"/>
+    <keyword type="function" name="g_mime_object_encode ()" link="GMimeObject.html#g-mime-object-encode"/>
+    <keyword type="enum" name="enum GMimeRecipientType" link="GMimeMessage.html#GMimeRecipientType"/>
+    <keyword type="struct" name="struct GMimeMessage" link="GMimeMessage.html#GMimeMessage-struct"/>
+    <keyword type="function" name="g_mime_message_new ()" link="GMimeMessage.html#g-mime-message-new"/>
+    <keyword type="function" name="g_mime_message_set_sender ()" link="GMimeMessage.html#g-mime-message-set-sender"/>
+    <keyword type="function" name="g_mime_message_get_sender ()" link="GMimeMessage.html#g-mime-message-get-sender"/>
+    <keyword type="function" name="g_mime_message_set_reply_to ()" link="GMimeMessage.html#g-mime-message-set-reply-to"/>
+    <keyword type="function" name="g_mime_message_get_reply_to ()" link="GMimeMessage.html#g-mime-message-get-reply-to"/>
+    <keyword type="function" name="g_mime_message_add_recipient ()" link="GMimeMessage.html#g-mime-message-add-recipient"/>
+    <keyword type="function" name="g_mime_message_get_recipients ()" link="GMimeMessage.html#g-mime-message-get-recipients"/>
+    <keyword type="function" name="g_mime_message_get_all_recipients ()" link="GMimeMessage.html#g-mime-message-get-all-recipients"/>
+    <keyword type="function" name="g_mime_message_set_subject ()" link="GMimeMessage.html#g-mime-message-set-subject"/>
+    <keyword type="function" name="g_mime_message_get_subject ()" link="GMimeMessage.html#g-mime-message-get-subject"/>
+    <keyword type="function" name="g_mime_message_set_date ()" link="GMimeMessage.html#g-mime-message-set-date"/>
+    <keyword type="function" name="g_mime_message_get_date ()" link="GMimeMessage.html#g-mime-message-get-date"/>
+    <keyword type="function" name="g_mime_message_set_date_as_string ()" link="GMimeMessage.html#g-mime-message-set-date-as-string"/>
+    <keyword type="function" name="g_mime_message_get_date_as_string ()" link="GMimeMessage.html#g-mime-message-get-date-as-string"/>
+    <keyword type="function" name="g_mime_message_set_message_id ()" link="GMimeMessage.html#g-mime-message-set-message-id"/>
+    <keyword type="function" name="g_mime_message_get_message_id ()" link="GMimeMessage.html#g-mime-message-get-message-id"/>
+    <keyword type="function" name="g_mime_message_set_mime_part ()" link="GMimeMessage.html#g-mime-message-set-mime-part"/>
+    <keyword type="function" name="g_mime_message_get_mime_part ()" link="GMimeMessage.html#g-mime-message-get-mime-part"/>
+    <keyword type="function" name="g_mime_message_foreach ()" link="GMimeMessage.html#g-mime-message-foreach"/>
+    <keyword type="function" name="g_mime_message_get_body ()" link="GMimeMessage.html#g-mime-message-get-body"/>
+    <keyword type="struct" name="struct GMimePart" link="GMimePart.html#GMimePart-struct"/>
+    <keyword type="function" name="g_mime_part_new ()" link="GMimePart.html#g-mime-part-new"/>
+    <keyword type="function" name="g_mime_part_new_with_type ()" link="GMimePart.html#g-mime-part-new-with-type"/>
+    <keyword type="function" name="g_mime_part_set_content_description ()" link="GMimePart.html#g-mime-part-set-content-description"/>
+    <keyword type="function" name="g_mime_part_get_content_description ()" link="GMimePart.html#g-mime-part-get-content-description"/>
+    <keyword type="function" name="g_mime_part_set_content_id ()" link="GMimePart.html#g-mime-part-set-content-id"/>
+    <keyword type="function" name="g_mime_part_get_content_id ()" link="GMimePart.html#g-mime-part-get-content-id"/>
+    <keyword type="function" name="g_mime_part_set_content_md5 ()" link="GMimePart.html#g-mime-part-set-content-md5"/>
+    <keyword type="function" name="g_mime_part_get_content_md5 ()" link="GMimePart.html#g-mime-part-get-content-md5"/>
+    <keyword type="function" name="g_mime_part_verify_content_md5 ()" link="GMimePart.html#g-mime-part-verify-content-md5"/>
+    <keyword type="function" name="g_mime_part_set_content_location ()" link="GMimePart.html#g-mime-part-set-content-location"/>
+    <keyword type="function" name="g_mime_part_get_content_location ()" link="GMimePart.html#g-mime-part-get-content-location"/>
+    <keyword type="function" name="g_mime_part_set_content_encoding ()" link="GMimePart.html#g-mime-part-set-content-encoding"/>
+    <keyword type="function" name="g_mime_part_get_content_encoding ()" link="GMimePart.html#g-mime-part-get-content-encoding"/>
+    <keyword type="function" name="g_mime_part_get_best_content_encoding ()" link="GMimePart.html#g-mime-part-get-best-content-encoding"/>
+    <keyword type="function" name="g_mime_part_set_filename ()" link="GMimePart.html#g-mime-part-set-filename"/>
+    <keyword type="function" name="g_mime_part_get_filename ()" link="GMimePart.html#g-mime-part-get-filename"/>
+    <keyword type="function" name="g_mime_part_get_content_object ()" link="GMimePart.html#g-mime-part-get-content-object"/>
+    <keyword type="function" name="g_mime_part_set_content_object ()" link="GMimePart.html#g-mime-part-set-content-object"/>
+    <keyword type="struct" name="struct GMimeMultipart" link="GMimeMultipart.html#GMimeMultipart-struct"/>
+    <keyword type="function" name="g_mime_multipart_new ()" link="GMimeMultipart.html#g-mime-multipart-new"/>
+    <keyword type="function" name="g_mime_multipart_new_with_subtype ()" link="GMimeMultipart.html#g-mime-multipart-new-with-subtype"/>
+    <keyword type="function" name="g_mime_multipart_set_preface ()" link="GMimeMultipart.html#g-mime-multipart-set-preface"/>
+    <keyword type="function" name="g_mime_multipart_get_preface ()" link="GMimeMultipart.html#g-mime-multipart-get-preface"/>
+    <keyword type="function" name="g_mime_multipart_set_postface ()" link="GMimeMultipart.html#g-mime-multipart-set-postface"/>
+    <keyword type="function" name="g_mime_multipart_get_postface ()" link="GMimeMultipart.html#g-mime-multipart-get-postface"/>
+    <keyword type="function" name="g_mime_multipart_set_boundary ()" link="GMimeMultipart.html#g-mime-multipart-set-boundary"/>
+    <keyword type="function" name="g_mime_multipart_get_boundary ()" link="GMimeMultipart.html#g-mime-multipart-get-boundary"/>
+    <keyword type="function" name="g_mime_multipart_get_count ()" link="GMimeMultipart.html#g-mime-multipart-get-count"/>
+    <keyword type="function" name="g_mime_multipart_contains ()" link="GMimeMultipart.html#g-mime-multipart-contains"/>
+    <keyword type="function" name="g_mime_multipart_index_of ()" link="GMimeMultipart.html#g-mime-multipart-index-of"/>
+    <keyword type="function" name="g_mime_multipart_add ()" link="GMimeMultipart.html#g-mime-multipart-add"/>
+    <keyword type="function" name="g_mime_multipart_clear ()" link="GMimeMultipart.html#g-mime-multipart-clear"/>
+    <keyword type="function" name="g_mime_multipart_insert ()" link="GMimeMultipart.html#g-mime-multipart-insert"/>
+    <keyword type="function" name="g_mime_multipart_remove ()" link="GMimeMultipart.html#g-mime-multipart-remove"/>
+    <keyword type="function" name="g_mime_multipart_remove_at ()" link="GMimeMultipart.html#g-mime-multipart-remove-at"/>
+    <keyword type="function" name="g_mime_multipart_replace ()" link="GMimeMultipart.html#g-mime-multipart-replace"/>
+    <keyword type="function" name="g_mime_multipart_get_part ()" link="GMimeMultipart.html#g-mime-multipart-get-part"/>
+    <keyword type="function" name="g_mime_multipart_foreach ()" link="GMimeMultipart.html#g-mime-multipart-foreach"/>
+    <keyword type="function" name="g_mime_multipart_get_subpart_from_content_id ()" link="GMimeMultipart.html#g-mime-multipart-get-subpart-from-content-id"/>
+    <keyword type="struct" name="struct GMimeMultipartEncrypted" link="GMimeMultipartEncrypted.html#GMimeMultipartEncrypted-struct"/>
+    <keyword type="function" name="g_mime_multipart_encrypted_new ()" link="GMimeMultipartEncrypted.html#g-mime-multipart-encrypted-new"/>
+    <keyword type="function" name="g_mime_multipart_encrypted_encrypt ()" link="GMimeMultipartEncrypted.html#g-mime-multipart-encrypted-encrypt"/>
+    <keyword type="function" name="g_mime_multipart_encrypted_decrypt ()" link="GMimeMultipartEncrypted.html#g-mime-multipart-encrypted-decrypt"/>
+    <keyword type="struct" name="struct GMimeMultipartSigned" link="GMimeMultipartSigned.html#GMimeMultipartSigned-struct"/>
+    <keyword type="function" name="g_mime_multipart_signed_new ()" link="GMimeMultipartSigned.html#g-mime-multipart-signed-new"/>
+    <keyword type="function" name="g_mime_multipart_signed_sign ()" link="GMimeMultipartSigned.html#g-mime-multipart-signed-sign"/>
+    <keyword type="function" name="g_mime_multipart_signed_verify ()" link="GMimeMultipartSigned.html#g-mime-multipart-signed-verify"/>
+    <keyword type="struct" name="struct GMimeMessagePart" link="GMimeMessagePart.html#GMimeMessagePart-struct"/>
+    <keyword type="function" name="g_mime_message_part_new ()" link="GMimeMessagePart.html#g-mime-message-part-new"/>
+    <keyword type="function" name="g_mime_message_part_new_with_message ()" link="GMimeMessagePart.html#g-mime-message-part-new-with-message"/>
+    <keyword type="function" name="g_mime_message_part_get_message ()" link="GMimeMessagePart.html#g-mime-message-part-get-message"/>
+    <keyword type="function" name="g_mime_message_part_set_message ()" link="GMimeMessagePart.html#g-mime-message-part-set-message"/>
+    <keyword type="struct" name="struct GMimeMessagePartial" link="GMimeMessagePartial.html#GMimeMessagePartial-struct"/>
+    <keyword type="function" name="g_mime_message_partial_new ()" link="GMimeMessagePartial.html#g-mime-message-partial-new"/>
+    <keyword type="function" name="g_mime_message_partial_get_id ()" link="GMimeMessagePartial.html#g-mime-message-partial-get-id"/>
+    <keyword type="function" name="g_mime_message_partial_get_number ()" link="GMimeMessagePartial.html#g-mime-message-partial-get-number"/>
+    <keyword type="function" name="g_mime_message_partial_get_total ()" link="GMimeMessagePartial.html#g-mime-message-partial-get-total"/>
+    <keyword type="function" name="g_mime_message_partial_reconstruct_message ()" link="GMimeMessagePartial.html#g-mime-message-partial-reconstruct-message"/>
+    <keyword type="function" name="g_mime_message_partial_split_message ()" link="GMimeMessagePartial.html#g-mime-message-partial-split-message"/>
+    <keyword type="struct" name="GMimePartIter" link="gmime-GMimePartIter.html#GMimePartIter"/>
+    <keyword type="function" name="g_mime_part_iter_new ()" link="gmime-GMimePartIter.html#g-mime-part-iter-new"/>
+    <keyword type="function" name="g_mime_part_iter_free ()" link="gmime-GMimePartIter.html#g-mime-part-iter-free"/>
+    <keyword type="function" name="g_mime_part_iter_reset ()" link="gmime-GMimePartIter.html#g-mime-part-iter-reset"/>
+    <keyword type="function" name="g_mime_part_iter_jump_to ()" link="gmime-GMimePartIter.html#g-mime-part-iter-jump-to"/>
+    <keyword type="function" name="g_mime_part_iter_is_valid ()" link="gmime-GMimePartIter.html#g-mime-part-iter-is-valid"/>
+    <keyword type="function" name="g_mime_part_iter_next ()" link="gmime-GMimePartIter.html#g-mime-part-iter-next"/>
+    <keyword type="function" name="g_mime_part_iter_prev ()" link="gmime-GMimePartIter.html#g-mime-part-iter-prev"/>
+    <keyword type="function" name="g_mime_part_iter_get_toplevel ()" link="gmime-GMimePartIter.html#g-mime-part-iter-get-toplevel"/>
+    <keyword type="function" name="g_mime_part_iter_get_current ()" link="gmime-GMimePartIter.html#g-mime-part-iter-get-current"/>
+    <keyword type="function" name="g_mime_part_iter_get_parent ()" link="gmime-GMimePartIter.html#g-mime-part-iter-get-parent"/>
+    <keyword type="function" name="g_mime_part_iter_get_path ()" link="gmime-GMimePartIter.html#g-mime-part-iter-get-path"/>
+    <keyword type="function" name="g_mime_part_iter_replace ()" link="gmime-GMimePartIter.html#g-mime-part-iter-replace"/>
+    <keyword type="function" name="g_mime_part_iter_remove ()" link="gmime-GMimePartIter.html#g-mime-part-iter-remove"/>
+    <keyword type="struct" name="struct GMimeParser" link="GMimeParser.html#GMimeParser-struct"/>
+    <keyword type="function" name="GMimeParserHeaderRegexFunc ()" link="GMimeParser.html#GMimeParserHeaderRegexFunc"/>
+    <keyword type="function" name="g_mime_parser_new ()" link="GMimeParser.html#g-mime-parser-new"/>
+    <keyword type="function" name="g_mime_parser_new_with_stream ()" link="GMimeParser.html#g-mime-parser-new-with-stream"/>
+    <keyword type="function" name="g_mime_parser_init_with_stream ()" link="GMimeParser.html#g-mime-parser-init-with-stream"/>
+    <keyword type="function" name="g_mime_parser_get_persist_stream ()" link="GMimeParser.html#g-mime-parser-get-persist-stream"/>
+    <keyword type="function" name="g_mime_parser_set_persist_stream ()" link="GMimeParser.html#g-mime-parser-set-persist-stream"/>
+    <keyword type="function" name="g_mime_parser_get_scan_from ()" link="GMimeParser.html#g-mime-parser-get-scan-from"/>
+    <keyword type="function" name="g_mime_parser_set_scan_from ()" link="GMimeParser.html#g-mime-parser-set-scan-from"/>
+    <keyword type="function" name="g_mime_parser_get_respect_content_length ()" link="GMimeParser.html#g-mime-parser-get-respect-content-length"/>
+    <keyword type="function" name="g_mime_parser_set_respect_content_length ()" link="GMimeParser.html#g-mime-parser-set-respect-content-length"/>
+    <keyword type="function" name="g_mime_parser_set_header_regex ()" link="GMimeParser.html#g-mime-parser-set-header-regex"/>
+    <keyword type="function" name="g_mime_parser_tell ()" link="GMimeParser.html#g-mime-parser-tell"/>
+    <keyword type="function" name="g_mime_parser_eos ()" link="GMimeParser.html#g-mime-parser-eos"/>
+    <keyword type="function" name="g_mime_parser_construct_part ()" link="GMimeParser.html#g-mime-parser-construct-part"/>
+    <keyword type="function" name="g_mime_parser_construct_message ()" link="GMimeParser.html#g-mime-parser-construct-message"/>
+    <keyword type="function" name="g_mime_parser_get_from ()" link="GMimeParser.html#g-mime-parser-get-from"/>
+    <keyword type="function" name="g_mime_parser_get_from_offset ()" link="GMimeParser.html#g-mime-parser-get-from-offset"/>
+    <keyword type="function" name="g_mime_parser_get_headers_begin ()" link="GMimeParser.html#g-mime-parser-get-headers-begin"/>
+    <keyword type="function" name="g_mime_parser_get_headers_end ()" link="GMimeParser.html#g-mime-parser-get-headers-end"/>
+    <keyword type="enum" name="enum GMimePubKeyAlgo" link="GMimeCertificate.html#GMimePubKeyAlgo"/>
+    <keyword type="enum" name="enum GMimeDigestAlgo" link="GMimeCertificate.html#GMimeDigestAlgo"/>
+    <keyword type="enum" name="enum GMimeCertificateTrust" link="GMimeCertificate.html#GMimeCertificateTrust"/>
+    <keyword type="struct" name="struct GMimeCertificate" link="GMimeCertificate.html#GMimeCertificate-struct"/>
+    <keyword type="function" name="g_mime_certificate_new ()" link="GMimeCertificate.html#g-mime-certificate-new"/>
+    <keyword type="function" name="g_mime_certificate_get_pubkey_algo ()" link="GMimeCertificate.html#g-mime-certificate-get-pubkey-algo"/>
+    <keyword type="function" name="g_mime_certificate_set_pubkey_algo ()" link="GMimeCertificate.html#g-mime-certificate-set-pubkey-algo"/>
+    <keyword type="function" name="g_mime_certificate_get_digest_algo ()" link="GMimeCertificate.html#g-mime-certificate-get-digest-algo"/>
+    <keyword type="function" name="g_mime_certificate_set_digest_algo ()" link="GMimeCertificate.html#g-mime-certificate-set-digest-algo"/>
+    <keyword type="function" name="g_mime_certificate_get_issuer_serial ()" link="GMimeCertificate.html#g-mime-certificate-get-issuer-serial"/>
+    <keyword type="function" name="g_mime_certificate_set_issuer_serial ()" link="GMimeCertificate.html#g-mime-certificate-set-issuer-serial"/>
+    <keyword type="function" name="g_mime_certificate_get_issuer_name ()" link="GMimeCertificate.html#g-mime-certificate-get-issuer-name"/>
+    <keyword type="function" name="g_mime_certificate_set_issuer_name ()" link="GMimeCertificate.html#g-mime-certificate-set-issuer-name"/>
+    <keyword type="function" name="g_mime_certificate_get_fingerprint ()" link="GMimeCertificate.html#g-mime-certificate-get-fingerprint"/>
+    <keyword type="function" name="g_mime_certificate_set_fingerprint ()" link="GMimeCertificate.html#g-mime-certificate-set-fingerprint"/>
+    <keyword type="function" name="g_mime_certificate_get_created ()" link="GMimeCertificate.html#g-mime-certificate-get-created"/>
+    <keyword type="function" name="g_mime_certificate_set_created ()" link="GMimeCertificate.html#g-mime-certificate-set-created"/>
+    <keyword type="function" name="g_mime_certificate_get_expires ()" link="GMimeCertificate.html#g-mime-certificate-get-expires"/>
+    <keyword type="function" name="g_mime_certificate_set_expires ()" link="GMimeCertificate.html#g-mime-certificate-set-expires"/>
+    <keyword type="function" name="g_mime_certificate_get_key_id ()" link="GMimeCertificate.html#g-mime-certificate-get-key-id"/>
+    <keyword type="function" name="g_mime_certificate_set_key_id ()" link="GMimeCertificate.html#g-mime-certificate-set-key-id"/>
+    <keyword type="function" name="g_mime_certificate_get_trust ()" link="GMimeCertificate.html#g-mime-certificate-get-trust"/>
+    <keyword type="function" name="g_mime_certificate_set_trust ()" link="GMimeCertificate.html#g-mime-certificate-set-trust"/>
+    <keyword type="function" name="g_mime_certificate_get_email ()" link="GMimeCertificate.html#g-mime-certificate-get-email"/>
+    <keyword type="function" name="g_mime_certificate_set_email ()" link="GMimeCertificate.html#g-mime-certificate-set-email"/>
+    <keyword type="function" name="g_mime_certificate_get_name ()" link="GMimeCertificate.html#g-mime-certificate-get-name"/>
+    <keyword type="function" name="g_mime_certificate_set_name ()" link="GMimeCertificate.html#g-mime-certificate-set-name"/>
+    <keyword type="struct" name="struct GMimeCertificateList" link="GMimeCertificate.html#GMimeCertificateList-struct"/>
+    <keyword type="function" name="g_mime_certificate_list_new ()" link="GMimeCertificate.html#g-mime-certificate-list-new"/>
+    <keyword type="function" name="g_mime_certificate_list_length ()" link="GMimeCertificate.html#g-mime-certificate-list-length"/>
+    <keyword type="function" name="g_mime_certificate_list_clear ()" link="GMimeCertificate.html#g-mime-certificate-list-clear"/>
+    <keyword type="function" name="g_mime_certificate_list_add ()" link="GMimeCertificate.html#g-mime-certificate-list-add"/>
+    <keyword type="function" name="g_mime_certificate_list_insert ()" link="GMimeCertificate.html#g-mime-certificate-list-insert"/>
+    <keyword type="function" name="g_mime_certificate_list_remove ()" link="GMimeCertificate.html#g-mime-certificate-list-remove"/>
+    <keyword type="function" name="g_mime_certificate_list_remove_at ()" link="GMimeCertificate.html#g-mime-certificate-list-remove-at"/>
+    <keyword type="function" name="g_mime_certificate_list_contains ()" link="GMimeCertificate.html#g-mime-certificate-list-contains"/>
+    <keyword type="function" name="g_mime_certificate_list_index_of ()" link="GMimeCertificate.html#g-mime-certificate-list-index-of"/>
+    <keyword type="function" name="g_mime_certificate_list_get_certificate ()" link="GMimeCertificate.html#g-mime-certificate-list-get-certificate"/>
+    <keyword type="function" name="g_mime_certificate_list_set_certificate ()" link="GMimeCertificate.html#g-mime-certificate-list-set-certificate"/>
+    <keyword type="enum" name="enum GMimeSignatureStatus" link="GMimeSignature.html#GMimeSignatureStatus"/>
+    <keyword type="enum" name="enum GMimeSignatureError" link="GMimeSignature.html#GMimeSignatureError"/>
+    <keyword type="struct" name="struct GMimeSignature" link="GMimeSignature.html#GMimeSignature-struct"/>
+    <keyword type="function" name="g_mime_signature_new ()" link="GMimeSignature.html#g-mime-signature-new"/>
+    <keyword type="function" name="g_mime_signature_get_certificate ()" link="GMimeSignature.html#g-mime-signature-get-certificate"/>
+    <keyword type="function" name="g_mime_signature_set_certificate ()" link="GMimeSignature.html#g-mime-signature-set-certificate"/>
+    <keyword type="function" name="g_mime_signature_get_status ()" link="GMimeSignature.html#g-mime-signature-get-status"/>
+    <keyword type="function" name="g_mime_signature_set_status ()" link="GMimeSignature.html#g-mime-signature-set-status"/>
+    <keyword type="function" name="g_mime_signature_get_errors ()" link="GMimeSignature.html#g-mime-signature-get-errors"/>
+    <keyword type="function" name="g_mime_signature_set_errors ()" link="GMimeSignature.html#g-mime-signature-set-errors"/>
+    <keyword type="function" name="g_mime_signature_get_created ()" link="GMimeSignature.html#g-mime-signature-get-created"/>
+    <keyword type="function" name="g_mime_signature_set_created ()" link="GMimeSignature.html#g-mime-signature-set-created"/>
+    <keyword type="function" name="g_mime_signature_get_expires ()" link="GMimeSignature.html#g-mime-signature-get-expires"/>
+    <keyword type="function" name="g_mime_signature_set_expires ()" link="GMimeSignature.html#g-mime-signature-set-expires"/>
+    <keyword type="struct" name="struct GMimeSignatureList" link="GMimeSignature.html#GMimeSignatureList-struct"/>
+    <keyword type="function" name="g_mime_signature_list_new ()" link="GMimeSignature.html#g-mime-signature-list-new"/>
+    <keyword type="function" name="g_mime_signature_list_length ()" link="GMimeSignature.html#g-mime-signature-list-length"/>
+    <keyword type="function" name="g_mime_signature_list_clear ()" link="GMimeSignature.html#g-mime-signature-list-clear"/>
+    <keyword type="function" name="g_mime_signature_list_add ()" link="GMimeSignature.html#g-mime-signature-list-add"/>
+    <keyword type="function" name="g_mime_signature_list_insert ()" link="GMimeSignature.html#g-mime-signature-list-insert"/>
+    <keyword type="function" name="g_mime_signature_list_remove ()" link="GMimeSignature.html#g-mime-signature-list-remove"/>
+    <keyword type="function" name="g_mime_signature_list_remove_at ()" link="GMimeSignature.html#g-mime-signature-list-remove-at"/>
+    <keyword type="function" name="g_mime_signature_list_contains ()" link="GMimeSignature.html#g-mime-signature-list-contains"/>
+    <keyword type="function" name="g_mime_signature_list_index_of ()" link="GMimeSignature.html#g-mime-signature-list-index-of"/>
+    <keyword type="function" name="g_mime_signature_list_get_signature ()" link="GMimeSignature.html#g-mime-signature-list-get-signature"/>
+    <keyword type="function" name="g_mime_signature_list_set_signature ()" link="GMimeSignature.html#g-mime-signature-list-set-signature"/>
+    <keyword type="function" name="GMimePasswordRequestFunc ()" link="GMimeCryptoContext.html#GMimePasswordRequestFunc"/>
+    <keyword type="struct" name="struct GMimeCryptoContext" link="GMimeCryptoContext.html#GMimeCryptoContext-struct"/>
+    <keyword type="function" name="g_mime_crypto_context_set_request_password ()" link="GMimeCryptoContext.html#g-mime-crypto-context-set-request-password"/>
+    <keyword type="function" name="g_mime_crypto_context_get_signature_protocol ()" link="GMimeCryptoContext.html#g-mime-crypto-context-get-signature-protocol"/>
+    <keyword type="function" name="g_mime_crypto_context_get_encryption_protocol ()" link="GMimeCryptoContext.html#g-mime-crypto-context-get-encryption-protocol"/>
+    <keyword type="function" name="g_mime_crypto_context_get_key_exchange_protocol ()" link="GMimeCryptoContext.html#g-mime-crypto-context-get-key-exchange-protocol"/>
+    <keyword type="function" name="g_mime_crypto_context_digest_id ()" link="GMimeCryptoContext.html#g-mime-crypto-context-digest-id"/>
+    <keyword type="function" name="g_mime_crypto_context_digest_name ()" link="GMimeCryptoContext.html#g-mime-crypto-context-digest-name"/>
+    <keyword type="function" name="g_mime_crypto_context_sign ()" link="GMimeCryptoContext.html#g-mime-crypto-context-sign"/>
+    <keyword type="function" name="g_mime_crypto_context_verify ()" link="GMimeCryptoContext.html#g-mime-crypto-context-verify"/>
+    <keyword type="function" name="g_mime_crypto_context_encrypt ()" link="GMimeCryptoContext.html#g-mime-crypto-context-encrypt"/>
+    <keyword type="function" name="g_mime_crypto_context_decrypt ()" link="GMimeCryptoContext.html#g-mime-crypto-context-decrypt"/>
+    <keyword type="function" name="g_mime_crypto_context_import_keys ()" link="GMimeCryptoContext.html#g-mime-crypto-context-import-keys"/>
+    <keyword type="function" name="g_mime_crypto_context_export_keys ()" link="GMimeCryptoContext.html#g-mime-crypto-context-export-keys"/>
+    <keyword type="enum" name="enum GMimeCipherAlgo" link="GMimeCryptoContext.html#GMimeCipherAlgo"/>
+    <keyword type="struct" name="struct GMimeDecryptResult" link="GMimeCryptoContext.html#GMimeDecryptResult"/>
+    <keyword type="function" name="g_mime_decrypt_result_new ()" link="GMimeCryptoContext.html#g-mime-decrypt-result-new"/>
+    <keyword type="function" name="g_mime_decrypt_result_get_recipients ()" link="GMimeCryptoContext.html#g-mime-decrypt-result-get-recipients"/>
+    <keyword type="function" name="g_mime_decrypt_result_set_recipients ()" link="GMimeCryptoContext.html#g-mime-decrypt-result-set-recipients"/>
+    <keyword type="function" name="g_mime_decrypt_result_get_signatures ()" link="GMimeCryptoContext.html#g-mime-decrypt-result-get-signatures"/>
+    <keyword type="function" name="g_mime_decrypt_result_set_signatures ()" link="GMimeCryptoContext.html#g-mime-decrypt-result-set-signatures"/>
+    <keyword type="function" name="g_mime_decrypt_result_get_cipher ()" link="GMimeCryptoContext.html#g-mime-decrypt-result-get-cipher"/>
+    <keyword type="function" name="g_mime_decrypt_result_set_cipher ()" link="GMimeCryptoContext.html#g-mime-decrypt-result-set-cipher"/>
+    <keyword type="function" name="g_mime_decrypt_result_get_mdc ()" link="GMimeCryptoContext.html#g-mime-decrypt-result-get-mdc"/>
+    <keyword type="function" name="g_mime_decrypt_result_set_mdc ()" link="GMimeCryptoContext.html#g-mime-decrypt-result-set-mdc"/>
+    <keyword type="struct" name="struct GMimeGpgContext" link="GMimeGpgContext.html#GMimeGpgContext-struct"/>
+    <keyword type="function" name="g_mime_gpg_context_new ()" link="GMimeGpgContext.html#g-mime-gpg-context-new"/>
+    <keyword type="function" name="g_mime_gpg_context_get_always_trust ()" link="GMimeGpgContext.html#g-mime-gpg-context-get-always-trust"/>
+    <keyword type="function" name="g_mime_gpg_context_set_always_trust ()" link="GMimeGpgContext.html#g-mime-gpg-context-set-always-trust"/>
+    <keyword type="function" name="g_mime_gpg_context_get_auto_key_retrieve ()" link="GMimeGpgContext.html#g-mime-gpg-context-get-auto-key-retrieve"/>
+    <keyword type="function" name="g_mime_gpg_context_set_auto_key_retrieve ()" link="GMimeGpgContext.html#g-mime-gpg-context-set-auto-key-retrieve"/>
+    <keyword type="function" name="g_mime_gpg_context_get_use_agent ()" link="GMimeGpgContext.html#g-mime-gpg-context-get-use-agent"/>
+    <keyword type="function" name="g_mime_gpg_context_set_use_agent ()" link="GMimeGpgContext.html#g-mime-gpg-context-set-use-agent"/>
+    <keyword type="struct" name="struct GMimePkcs7Context" link="GMimePkcs7Context.html#GMimePkcs7Context-struct"/>
+    <keyword type="function" name="g_mime_pkcs7_context_new ()" link="GMimePkcs7Context.html#g-mime-pkcs7-context-new"/>
+    <keyword type="function" name="g_mime_pkcs7_context_get_always_trust ()" link="GMimePkcs7Context.html#g-mime-pkcs7-context-get-always-trust"/>
+    <keyword type="function" name="g_mime_pkcs7_context_set_always_trust ()" link="GMimePkcs7Context.html#g-mime-pkcs7-context-set-always-trust"/>
+    <keyword type="constant" name="GMIME_CONTENT_ENCODING_DEFAULT" link="gmime-gmime-encodings.html#GMIME-CONTENT-ENCODING-DEFAULT:CAPS"/>
+    <keyword type="constant" name="GMIME_CONTENT_ENCODING_7BIT" link="gmime-gmime-encodings.html#GMIME-CONTENT-ENCODING-7BIT:CAPS"/>
+    <keyword type="constant" name="GMIME_CONTENT_ENCODING_8BIT" link="gmime-gmime-encodings.html#GMIME-CONTENT-ENCODING-8BIT:CAPS"/>
+    <keyword type="constant" name="GMIME_CONTENT_ENCODING_BINARY" link="gmime-gmime-encodings.html#GMIME-CONTENT-ENCODING-BINARY:CAPS"/>
+    <keyword type="constant" name="GMIME_CONTENT_ENCODING_BASE64" link="gmime-gmime-encodings.html#GMIME-CONTENT-ENCODING-BASE64:CAPS"/>
+    <keyword type="constant" name="GMIME_CONTENT_ENCODING_QUOTEDPRINTABLE" link="gmime-gmime-encodings.html#GMIME-CONTENT-ENCODING-QUOTEDPRINTABLE:CAPS"/>
+    <keyword type="constant" name="GMIME_CONTENT_ENCODING_UUENCODE" link="gmime-gmime-encodings.html#GMIME-CONTENT-ENCODING-UUENCODE:CAPS"/>
+    <keyword type="constant" name="GMIME_ENCODING_CONSTRAINT_7BIT" link="gmime-gmime-encodings.html#GMIME-ENCODING-CONSTRAINT-7BIT:CAPS"/>
+    <keyword type="constant" name="GMIME_ENCODING_CONSTRAINT_8BIT" link="gmime-gmime-encodings.html#GMIME-ENCODING-CONSTRAINT-8BIT:CAPS"/>
+    <keyword type="constant" name="GMIME_ENCODING_CONSTRAINT_BINARY" link="gmime-gmime-encodings.html#GMIME-ENCODING-CONSTRAINT-BINARY:CAPS"/>
+    <keyword type="constant" name="GMIME_STREAM_SEEK_SET" link="GMimeStream.html#GMIME-STREAM-SEEK-SET:CAPS"/>
+    <keyword type="constant" name="GMIME_STREAM_SEEK_CUR" link="GMimeStream.html#GMIME-STREAM-SEEK-CUR:CAPS"/>
+    <keyword type="constant" name="GMIME_STREAM_SEEK_END" link="GMimeStream.html#GMIME-STREAM-SEEK-END:CAPS"/>
+    <keyword type="constant" name="GMIME_STREAM_BUFFER_CACHE_READ" link="GMimeStreamBuffer.html#GMIME-STREAM-BUFFER-CACHE-READ:CAPS"/>
+    <keyword type="constant" name="GMIME_STREAM_BUFFER_BLOCK_READ" link="GMimeStreamBuffer.html#GMIME-STREAM-BUFFER-BLOCK-READ:CAPS"/>
+    <keyword type="constant" name="GMIME_STREAM_BUFFER_BLOCK_WRITE" link="GMimeStreamBuffer.html#GMIME-STREAM-BUFFER-BLOCK-WRITE:CAPS"/>
+    <keyword type="constant" name="GMIME_FILTER_BEST_CHARSET" link="GMimeFilterBest.html#GMIME-FILTER-BEST-CHARSET:CAPS"/>
+    <keyword type="constant" name="GMIME_FILTER_BEST_ENCODING" link="GMimeFilterBest.html#GMIME-FILTER-BEST-ENCODING:CAPS"/>
+    <keyword type="constant" name="GMIME_FILTER_FROM_MODE_DEFAULT" link="GMimeFilterFrom.html#GMIME-FILTER-FROM-MODE-DEFAULT:CAPS"/>
+    <keyword type="constant" name="GMIME_FILTER_FROM_MODE_ESCAPE" link="GMimeFilterFrom.html#GMIME-FILTER-FROM-MODE-ESCAPE:CAPS"/>
+    <keyword type="constant" name="GMIME_FILTER_FROM_MODE_ARMOR" link="GMimeFilterFrom.html#GMIME-FILTER-FROM-MODE-ARMOR:CAPS"/>
+    <keyword type="constant" name="GMIME_FILTER_GZIP_MODE_ZIP" link="GMimeFilterGZip.html#GMIME-FILTER-GZIP-MODE-ZIP:CAPS"/>
+    <keyword type="constant" name="GMIME_FILTER_GZIP_MODE_UNZIP" link="GMimeFilterGZip.html#GMIME-FILTER-GZIP-MODE-UNZIP:CAPS"/>
+    <keyword type="constant" name="GMIME_RECIPIENT_TYPE_TO" link="GMimeMessage.html#GMIME-RECIPIENT-TYPE-TO:CAPS"/>
+    <keyword type="constant" name="GMIME_RECIPIENT_TYPE_CC" link="GMimeMessage.html#GMIME-RECIPIENT-TYPE-CC:CAPS"/>
+    <keyword type="constant" name="GMIME_RECIPIENT_TYPE_BCC" link="GMimeMessage.html#GMIME-RECIPIENT-TYPE-BCC:CAPS"/>
+    <keyword type="constant" name="GMIME_PUBKEY_ALGO_DEFAULT" link="GMimeCertificate.html#GMIME-PUBKEY-ALGO-DEFAULT:CAPS"/>
+    <keyword type="constant" name="GMIME_PUBKEY_ALGO_RSA" link="GMimeCertificate.html#GMIME-PUBKEY-ALGO-RSA:CAPS"/>
+    <keyword type="constant" name="GMIME_PUBKEY_ALGO_RSA_E" link="GMimeCertificate.html#GMIME-PUBKEY-ALGO-RSA-E:CAPS"/>
+    <keyword type="constant" name="GMIME_PUBKEY_ALGO_RSA_S" link="GMimeCertificate.html#GMIME-PUBKEY-ALGO-RSA-S:CAPS"/>
+    <keyword type="constant" name="GMIME_PUBKEY_ALGO_ELG_E" link="GMimeCertificate.html#GMIME-PUBKEY-ALGO-ELG-E:CAPS"/>
+    <keyword type="constant" name="GMIME_PUBKEY_ALGO_DSA" link="GMimeCertificate.html#GMIME-PUBKEY-ALGO-DSA:CAPS"/>
+    <keyword type="constant" name="GMIME_PUBKEY_ALGO_ELG" link="GMimeCertificate.html#GMIME-PUBKEY-ALGO-ELG:CAPS"/>
+    <keyword type="constant" name="GMIME_DIGEST_ALGO_DEFAULT" link="GMimeCertificate.html#GMIME-DIGEST-ALGO-DEFAULT:CAPS"/>
+    <keyword type="constant" name="GMIME_DIGEST_ALGO_MD5" link="GMimeCertificate.html#GMIME-DIGEST-ALGO-MD5:CAPS"/>
+    <keyword type="constant" name="GMIME_DIGEST_ALGO_SHA1" link="GMimeCertificate.html#GMIME-DIGEST-ALGO-SHA1:CAPS"/>
+    <keyword type="constant" name="GMIME_DIGEST_ALGO_RIPEMD160" link="GMimeCertificate.html#GMIME-DIGEST-ALGO-RIPEMD160:CAPS"/>
+    <keyword type="constant" name="GMIME_DIGEST_ALGO_MD2" link="GMimeCertificate.html#GMIME-DIGEST-ALGO-MD2:CAPS"/>
+    <keyword type="constant" name="GMIME_DIGEST_ALGO_TIGER192" link="GMimeCertificate.html#GMIME-DIGEST-ALGO-TIGER192:CAPS"/>
+    <keyword type="constant" name="GMIME_DIGEST_ALGO_HAVAL5160" link="GMimeCertificate.html#GMIME-DIGEST-ALGO-HAVAL5160:CAPS"/>
+    <keyword type="constant" name="GMIME_DIGEST_ALGO_SHA256" link="GMimeCertificate.html#GMIME-DIGEST-ALGO-SHA256:CAPS"/>
+    <keyword type="constant" name="GMIME_DIGEST_ALGO_SHA384" link="GMimeCertificate.html#GMIME-DIGEST-ALGO-SHA384:CAPS"/>
+    <keyword type="constant" name="GMIME_DIGEST_ALGO_SHA512" link="GMimeCertificate.html#GMIME-DIGEST-ALGO-SHA512:CAPS"/>
+    <keyword type="constant" name="GMIME_DIGEST_ALGO_SHA224" link="GMimeCertificate.html#GMIME-DIGEST-ALGO-SHA224:CAPS"/>
+    <keyword type="constant" name="GMIME_DIGEST_ALGO_MD4" link="GMimeCertificate.html#GMIME-DIGEST-ALGO-MD4:CAPS"/>
+    <keyword type="constant" name="GMIME_CERTIFICATE_TRUST_NONE" link="GMimeCertificate.html#GMIME-CERTIFICATE-TRUST-NONE:CAPS"/>
+    <keyword type="constant" name="GMIME_CERTIFICATE_TRUST_NEVER" link="GMimeCertificate.html#GMIME-CERTIFICATE-TRUST-NEVER:CAPS"/>
+    <keyword type="constant" name="GMIME_CERTIFICATE_TRUST_UNDEFINED" link="GMimeCertificate.html#GMIME-CERTIFICATE-TRUST-UNDEFINED:CAPS"/>
+    <keyword type="constant" name="GMIME_CERTIFICATE_TRUST_MARGINAL" link="GMimeCertificate.html#GMIME-CERTIFICATE-TRUST-MARGINAL:CAPS"/>
+    <keyword type="constant" name="GMIME_CERTIFICATE_TRUST_FULLY" link="GMimeCertificate.html#GMIME-CERTIFICATE-TRUST-FULLY:CAPS"/>
+    <keyword type="constant" name="GMIME_CERTIFICATE_TRUST_ULTIMATE" link="GMimeCertificate.html#GMIME-CERTIFICATE-TRUST-ULTIMATE:CAPS"/>
+    <keyword type="constant" name="GMIME_SIGNATURE_STATUS_GOOD" link="GMimeSignature.html#GMIME-SIGNATURE-STATUS-GOOD:CAPS"/>
+    <keyword type="constant" name="GMIME_SIGNATURE_STATUS_ERROR" link="GMimeSignature.html#GMIME-SIGNATURE-STATUS-ERROR:CAPS"/>
+    <keyword type="constant" name="GMIME_SIGNATURE_STATUS_BAD" link="GMimeSignature.html#GMIME-SIGNATURE-STATUS-BAD:CAPS"/>
+    <keyword type="constant" name="GMIME_SIGNATURE_ERROR_NONE" link="GMimeSignature.html#GMIME-SIGNATURE-ERROR-NONE:CAPS"/>
+    <keyword type="constant" name="GMIME_SIGNATURE_ERROR_EXPSIG" link="GMimeSignature.html#GMIME-SIGNATURE-ERROR-EXPSIG:CAPS"/>
+    <keyword type="constant" name="GMIME_SIGNATURE_ERROR_NO_PUBKEY" link="GMimeSignature.html#GMIME-SIGNATURE-ERROR-NO-PUBKEY:CAPS"/>
+    <keyword type="constant" name="GMIME_SIGNATURE_ERROR_EXPKEYSIG" link="GMimeSignature.html#GMIME-SIGNATURE-ERROR-EXPKEYSIG:CAPS"/>
+    <keyword type="constant" name="GMIME_SIGNATURE_ERROR_REVKEYSIG" link="GMimeSignature.html#GMIME-SIGNATURE-ERROR-REVKEYSIG:CAPS"/>
+    <keyword type="constant" name="GMIME_SIGNATURE_ERROR_UNSUPP_ALGO" link="GMimeSignature.html#GMIME-SIGNATURE-ERROR-UNSUPP-ALGO:CAPS"/>
+    <keyword type="constant" name="GMIME_CIPHER_ALGO_DEFAULT" link="GMimeCryptoContext.html#GMIME-CIPHER-ALGO-DEFAULT:CAPS"/>
+    <keyword type="constant" name="GMIME_CIPHER_ALGO_IDEA" link="GMimeCryptoContext.html#GMIME-CIPHER-ALGO-IDEA:CAPS"/>
+    <keyword type="constant" name="GMIME_CIPHER_ALGO_3DES" link="GMimeCryptoContext.html#GMIME-CIPHER-ALGO-3DES:CAPS"/>
+    <keyword type="constant" name="GMIME_CIPHER_ALGO_CAST5" link="GMimeCryptoContext.html#GMIME-CIPHER-ALGO-CAST5:CAPS"/>
+    <keyword type="constant" name="GMIME_CIPHER_ALGO_BLOWFISH" link="GMimeCryptoContext.html#GMIME-CIPHER-ALGO-BLOWFISH:CAPS"/>
+    <keyword type="constant" name="GMIME_CIPHER_ALGO_AES" link="GMimeCryptoContext.html#GMIME-CIPHER-ALGO-AES:CAPS"/>
+    <keyword type="constant" name="GMIME_CIPHER_ALGO_AES192" link="GMimeCryptoContext.html#GMIME-CIPHER-ALGO-AES192:CAPS"/>
+    <keyword type="constant" name="GMIME_CIPHER_ALGO_AES256" link="GMimeCryptoContext.html#GMIME-CIPHER-ALGO-AES256:CAPS"/>
+    <keyword type="constant" name="GMIME_CIPHER_ALGO_TWOFISH" link="GMimeCryptoContext.html#GMIME-CIPHER-ALGO-TWOFISH:CAPS"/>
+    <keyword type="constant" name="GMIME_CIPHER_ALGO_CAMELLIA128" link="GMimeCryptoContext.html#GMIME-CIPHER-ALGO-CAMELLIA128:CAPS"/>
+    <keyword type="constant" name="GMIME_CIPHER_ALGO_CAMELLIA192" link="GMimeCryptoContext.html#GMIME-CIPHER-ALGO-CAMELLIA192:CAPS"/>
+    <keyword type="constant" name="GMIME_CIPHER_ALGO_CAMELLIA256" link="GMimeCryptoContext.html#GMIME-CIPHER-ALGO-CAMELLIA256:CAPS"/>
+  </functions>
+</book>

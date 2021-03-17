@@ -1,0 +1,205 @@
+From 175e435dcd40c3f16f9ecbcd2905956d1ca2bd74 Mon Sep 17 00:00:00 2001
+From: Milan Plzik <milan.plzik@streamunlimited.com>
+Date: Fri, 13 Feb 2015 15:35:22 +0100
+Subject: [PATCH] Reindent QPlayDescription.xml.in
+
+Signed-off-by: Xia Zhou <xia.zhou@streamunlimited.com>
+Signed-off-by: Milan Plzik <milan.plzik@streamunlimited.com>
+---
+ data/xml/QPlayDescription.xml.in | 181 +++++++++++++++++++--------------------
+ 1 file changed, 90 insertions(+), 91 deletions(-)
+ mode change 100755 => 100644 data/xml/QPlayDescription.xml.in
+
+diff --git a/data/xml/QPlayDescription.xml.in b/data/xml/QPlayDescription.xml.in
+old mode 100755
+new mode 100644
+index d63ab29..0dfe043
+--- a/data/xml/QPlayDescription.xml.in
++++ b/data/xml/QPlayDescription.xml.in
+@@ -1,92 +1,91 @@
+ <?xml version="1.0"?>
+-<scpd
+-  xmlns="urn:schemas-upnp-org:service-1-0">
+-	<specVersion>
+-		<major>1</major>
+-		<minor>0</minor>
+-	</specVersion>
+-	<actionList>
+-		<action>
+-			<name>SetNetwork</name>
+-			<argumentList>
+-				<argument>
+-					<name>SSID</name>
+-					<direction>in</direction>
+-					<relatedStateVariable>A_ARG_TYPE_SSID</relatedStateVariable>
+-				</argument>
+-				<argument>
+-					<name>Key</name>
+-					<direction>in</direction>
+-					<relatedStateVariable>A_ARG_TYPE_Key</relatedStateVariable>
+-				</argument>
+-			</argumentList>
+-		</action>
+-		<action>
+-			<name>QPlayAuth</name>
+-			<argumentList>
+-				<argument>
+-					<name>Seed</name>
+-					<direction>in</direction>
+-					<relatedStateVariable>A_ARG_TYPE_Seed</relatedStateVariable>
+-				</argument>
+-				<argument>
+-					<name>Code</name>
+-					<direction>out</direction>
+-					<relatedStateVariable>A_ARG_TYPE_Code</relatedStateVariable>
+-				</argument>
+-				<argument>
+-					<name>MID</name>
+-					<direction>out</direction>
+-					<relatedStateVariable>A_ARG_TYPE_MID</relatedStateVariable>
+-				</argument>
+-				<argument>
+-					<name>DID</name>
+-					<direction>out</direction>
+-					<relatedStateVariable>A_ARG_TYPE_DID</relatedStateVariable>
+-				</argument>
+-			</argumentList>
+-		</action>
+-	</actionList>
+-	<serviceStateTable>
+-		<stateVariable sendEvents="no">
+-			<name>A_ARG_TYPE_SSID</name>
+-			<dataType>string</dataType>
+-		</stateVariable>
+-		<stateVariable sendEvents="no">
+-			<name>A_ARG_TYPE_Key</name>
+-			<dataType>string</dataType>
+-		</stateVariable>
+-		<stateVariable sendEvents="no">
+-			<name>A_ARG_TYPE_Seed</name>
+-			<dataType>string</dataType>
+-		</stateVariable>
+-		<stateVariable sendEvents="no">
+-			<name>A_ARG_TYPE_Code</name>
+-			<dataType>string</dataType>
+-		</stateVariable>
+-		<stateVariable sendEvents="no">
+-			<name>A_ARG_TYPE_MID</name>
+-			<dataType>string</dataType>
+-		</stateVariable>
+-		<stateVariable sendEvents="no">
+-			<name>A_ARG_TYPE_DID</name>
+-			<dataType>string</dataType>
+-		</stateVariable>
+-		<stateVariable sendEvents="no">
+-			<name>A_ARG_TYPE_InstanceID</name>
+-			<dataType>ui4</dataType>
+-		</stateVariable>
+-		<stateVariable sendEvents="no">
+-			<name>AVTransportURI</name>
+-			<dataType>string</dataType>
+-		</stateVariable>
+-		<stateVariable sendEvents="no">
+-			<name>AVTransportURIMetaData</name>
+-			<dataType>string</dataType>
+-		</stateVariable>
+-		<stateVariable sendEvents="yes">
+-+			<name>FakeState</name>
+-+			<dataType>ui4</dataType>
+-+		</stateVariable>
+-	</serviceStateTable>
+-</scpd>
+\ No newline at end of file
++<scpd xmlns="urn:schemas-upnp-org:service-1-0">
++    <specVersion>
++        <major>1</major>
++        <minor>0</minor>
++    </specVersion>
++    <actionList>
++        <action>
++            <name>SetNetwork</name>
++            <argumentList>
++                <argument>
++                    <name>SSID</name>
++                    <direction>in</direction>
++                    <relatedStateVariable>A_ARG_TYPE_SSID</relatedStateVariable>
++                </argument>
++                <argument>
++                    <name>Key</name>
++                    <direction>in</direction>
++                    <relatedStateVariable>A_ARG_TYPE_Key</relatedStateVariable>
++                </argument>
++            </argumentList>
++        </action>
++        <action>
++            <name>QPlayAuth</name>
++            <argumentList>
++                <argument>
++                    <name>Seed</name>
++                    <direction>in</direction>
++                    <relatedStateVariable>A_ARG_TYPE_Seed</relatedStateVariable>
++                </argument>
++                <argument>
++                    <name>Code</name>
++                    <direction>out</direction>
++                    <relatedStateVariable>A_ARG_TYPE_Code</relatedStateVariable>
++                </argument>
++                <argument>
++                    <name>MID</name>
++                    <direction>out</direction>
++                    <relatedStateVariable>A_ARG_TYPE_MID</relatedStateVariable>
++                </argument>
++                <argument>
++                    <name>DID</name>
++                    <direction>out</direction>
++                    <relatedStateVariable>A_ARG_TYPE_DID</relatedStateVariable>
++                </argument>
++            </argumentList>
++        </action>
++    </actionList>
++    <serviceStateTable>
++        <stateVariable sendEvents="no">
++            <name>A_ARG_TYPE_SSID</name>
++            <dataType>string</dataType>
++        </stateVariable>
++        <stateVariable sendEvents="no">
++            <name>A_ARG_TYPE_Key</name>
++            <dataType>string</dataType>
++        </stateVariable>
++        <stateVariable sendEvents="no">
++            <name>A_ARG_TYPE_Seed</name>
++            <dataType>string</dataType>
++        </stateVariable>
++        <stateVariable sendEvents="no">
++            <name>A_ARG_TYPE_Code</name>
++            <dataType>string</dataType>
++        </stateVariable>
++        <stateVariable sendEvents="no">
++            <name>A_ARG_TYPE_MID</name>
++            <dataType>string</dataType>
++        </stateVariable>
++        <stateVariable sendEvents="no">
++            <name>A_ARG_TYPE_DID</name>
++            <dataType>string</dataType>
++        </stateVariable>
++        <stateVariable sendEvents="no">
++            <name>A_ARG_TYPE_InstanceID</name>
++            <dataType>ui4</dataType>
++        </stateVariable>
++        <stateVariable sendEvents="no">
++            <name>AVTransportURI</name>
++            <dataType>string</dataType>
++        </stateVariable>
++        <stateVariable sendEvents="no">
++            <name>AVTransportURIMetaData</name>
++            <dataType>string</dataType>
++        </stateVariable>
++        <stateVariable sendEvents="yes">
++            <name>FakeState</name>
++            <dataType>ui4</dataType>
++        </stateVariable>
++    </serviceStateTable>
++</scpd>
+-- 
+1.9.1
+

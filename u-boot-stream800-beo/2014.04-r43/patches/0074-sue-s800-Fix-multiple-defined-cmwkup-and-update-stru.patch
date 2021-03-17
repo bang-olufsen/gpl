@@ -1,0 +1,39 @@
+From 52cf96718f875192340c3851832014d345a30f34 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Fri, 11 Apr 2014 07:25:22 +0200
+Subject: [PATCH] sue:s800: Fix multiple defined cmwkup and update struct entry
+ name
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ board/streamunlimited/stream800/adc.c | 7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
+
+diff --git a/board/streamunlimited/stream800/adc.c b/board/streamunlimited/stream800/adc.c
+index db940cc..941e91b 100644
+--- a/board/streamunlimited/stream800/adc.c
++++ b/board/streamunlimited/stream800/adc.c
+@@ -78,9 +78,6 @@
+ #define REG_DMAREQ(X)			(0xec	+ ((X) * 0xc))
+ #define REG_FIFODATA(X)			(0x100	+ ((X) * 0x100))
+ 
+-// For accessing CM_WKUP_ADC_TSC_CLKCTRL Register - this register manages the ADC clocks.
+-static const struct cm_wkuppll *cmwkup = (struct cm_wkuppll *)CM_WKUP;
+-
+ static unsigned long int adc_readl(unsigned long reg)
+ {
+ 	return readl(TSC_ADC_SS_REG_BASE + reg);
+@@ -94,8 +91,8 @@ static void adc_writel(unsigned long val, unsigned long reg)
+ int init_adc(void)
+ {
+ 	/* enable hardware module */
+-	writel(PRCM_MOD_EN, &cmwkup->wkup_adc_tsc_ctrl);
+-	while (readl(&cmwkup->wkup_adc_tsc_ctrl) != PRCM_MOD_EN);
++	writel(PRCM_MOD_EN, &cmwkup->wkup_adctscctrl);
++	while (readl(&cmwkup->wkup_adctscctrl) != PRCM_MOD_EN);
+ 
+ 	printf("%s(): HW revision 0x%08lx\n", __func__, adc_readl(REG_REVISION));
+ 
+-- 
+2.7.4
+

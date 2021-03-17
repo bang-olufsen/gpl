@@ -1,0 +1,35 @@
+From 64c31498bdf93e82c3a06919671393191d023f60 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Wed, 3 Aug 2016 18:15:09 +0200
+Subject: [PATCH] Don't check for Encryption change when accepting new l2cap
+ connections
+
+If l2cap connection is unauthorized we will drop it later.
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ net/bluetooth/l2cap_core.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
+index 06c3bf8..5fa3b71 100644
+--- a/net/bluetooth/l2cap_core.c
++++ b/net/bluetooth/l2cap_core.c
+@@ -3782,12 +3782,14 @@ static struct l2cap_chan *l2cap_connect(struct l2cap_conn *conn,
+ 	l2cap_chan_lock(pchan);
+ 
+ 	/* Check if the ACL is secure enough (if not SDP) */
++	/* HACK: disable checking encryption change for marvell bluetooth module
+ 	if (psm != cpu_to_le16(L2CAP_PSM_SDP) &&
+ 	    !hci_conn_check_link_mode(conn->hcon)) {
+ 		conn->disc_reason = HCI_ERROR_AUTH_FAILURE;
+ 		result = L2CAP_CR_SEC_BLOCK;
+ 		goto response;
+ 	}
++	*/
+ 
+ 	result = L2CAP_CR_NO_MEM;
+ 
+-- 
+1.9.1
+

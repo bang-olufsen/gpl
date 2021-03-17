@@ -1,0 +1,40 @@
+From d55410de5ce85ad4ebdcdb2b149d6a66379714e7 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@gmail.com>
+Date: Mon, 5 Oct 2015 14:32:09 +0200
+Subject: [PATCH] ASoC: spdif: Add S32_LE support
+
+Signed-off-by: Marek Belisko <marek.belisko@gmail.com>
+---
+ sound/soc/codecs/spdif_receiver.c    | 1 +
+ sound/soc/codecs/spdif_transmitter.c | 3 ++-
+ 2 files changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/sound/soc/codecs/spdif_receiver.c b/sound/soc/codecs/spdif_receiver.c
+index 3ec41ccb..19a6589 100644
+--- a/sound/soc/codecs/spdif_receiver.c
++++ b/sound/soc/codecs/spdif_receiver.c
+@@ -35,6 +35,7 @@ static const struct snd_soc_dapm_route dir_routes[] = {
+ #define STUB_FORMATS	(SNDRV_PCM_FMTBIT_S16_LE | \
+ 			SNDRV_PCM_FMTBIT_S20_3LE | \
+ 			SNDRV_PCM_FMTBIT_S24_LE | \
++			SNDRV_PCM_FMTBIT_S32_LE | \
+ 			SNDRV_PCM_FMTBIT_IEC958_SUBFRAME_LE)
+ 
+ static struct snd_soc_codec_driver soc_codec_spdif_dir = {
+diff --git a/sound/soc/codecs/spdif_transmitter.c b/sound/soc/codecs/spdif_transmitter.c
+index ef634a9..d542624 100644
+--- a/sound/soc/codecs/spdif_transmitter.c
++++ b/sound/soc/codecs/spdif_transmitter.c
+@@ -27,7 +27,8 @@
+ #define STUB_RATES	SNDRV_PCM_RATE_8000_192000
+ #define STUB_FORMATS	(SNDRV_PCM_FMTBIT_S16_LE | \
+ 			SNDRV_PCM_FMTBIT_S20_3LE | \
+-			SNDRV_PCM_FMTBIT_S24_LE)
++			SNDRV_PCM_FMTBIT_S24_LE | \
++			SNDRV_PCM_FMTBIT_S32_LE)
+ 
+ static const struct snd_soc_dapm_widget dit_widgets[] = {
+ 	SND_SOC_DAPM_OUTPUT("spdif-out"),
+-- 
+1.9.1
+

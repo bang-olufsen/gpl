@@ -1,0 +1,30 @@
+From 8aa9b84977e23b61fe473a28525d0bda7e54e91d Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Fri, 6 Nov 2020 13:28:35 +0100
+Subject: [PATCH] GstSoupHttpSrc: Turn off strict SSL HTTP mode
+
+---
+ ext/soup/gstsouphttpsrc.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/ext/soup/gstsouphttpsrc.c b/ext/soup/gstsouphttpsrc.c
+index f06c923..4cbe598 100644
+--- a/ext/soup/gstsouphttpsrc.c
++++ b/ext/soup/gstsouphttpsrc.c
+@@ -126,7 +126,7 @@ enum
+ #define DEFAULT_SOUP_LOG_LEVEL       SOUP_LOGGER_LOG_HEADERS
+ #define DEFAULT_COMPRESS             FALSE
+ #define DEFAULT_KEEP_ALIVE           TRUE
+-#define DEFAULT_SSL_STRICT           TRUE
++#define DEFAULT_SSL_STRICT           FALSE
+ #define DEFAULT_SSL_CA_FILE          NULL
+ #define DEFAULT_SSL_USE_SYSTEM_CA_FILE TRUE
+ #define DEFAULT_TLS_DATABASE         NULL
+@@ -1771,6 +1771,7 @@ gst_soup_http_src_read_buffer (GstSoupHTTPSrc * src, GstBuffer ** outbuf)
+     if (read_bytes < 0 ||
+         (src->have_size && src->read_position < src->content_size)) {
+       /* Maybe the server disconnected, retry */
++      GST_ERROR_OBJECT (src, "Read %" G_GSSIZE_FORMAT " bytes from http input, problems connecting to the server: %s", read_bytes, src->location);
+       ret = GST_FLOW_CUSTOM_ERROR;
+     } else {
+       g_object_unref (src->msg);

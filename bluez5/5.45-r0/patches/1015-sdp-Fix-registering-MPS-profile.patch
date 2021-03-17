@@ -1,0 +1,30 @@
+From 000b137bc311783a5762e5b13a45255920d95950 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Tue, 30 May 2017 12:49:18 +0200
+Subject: [PATCH] sdp: Fix registering MPS profile
+
+Feature "(Dis-)connection order behaviour" is available only for MPMD
+(Multiple profiles multiple devices)
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ src/sdpd-service.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/src/sdpd-service.c b/src/sdpd-service.c
+index c3ee3eb..d9372ba 100644
+--- a/src/sdpd-service.c
++++ b/src/sdpd-service.c
+@@ -591,6 +591,9 @@ static sdp_record_t *mps_record(int mpmd)
+ 	if (mpmd) {
+ 		mpmd_features = sdp_data_alloc(SDP_UINT64, &mpmd_feat);
+ 		sdp_attr_add(record, SDP_ATTR_MPMD_SCENARIOS, mpmd_features);
++	} else {
++		// (Dis-)connection order behaviour is available only for MPMD
++		deps = deps & ~MPS_DEPS_DIS_CONNECTION_ORDER_BEHAVIOR;
+ 	}
+ 
+ 	dependencies = sdp_data_alloc(SDP_UINT16, &deps);
+-- 
+2.7.4
+

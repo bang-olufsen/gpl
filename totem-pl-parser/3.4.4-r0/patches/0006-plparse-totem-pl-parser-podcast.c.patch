@@ -1,0 +1,31 @@
+From 84cce415fffbc1b6b8eeb4365f6c5ff34cf6bca2 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Fri, 6 Nov 2020 10:13:52 +0100
+Subject: [PATCH] plparse/totem-pl-parser-podcast.c
+
+---
+ plparse/totem-pl-parser-podcast.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/plparse/totem-pl-parser-podcast.c b/plparse/totem-pl-parser-podcast.c
+index ee3ead1..1ec6e50 100644
+--- a/plparse/totem-pl-parser-podcast.c
++++ b/plparse/totem-pl-parser-podcast.c
+@@ -25,7 +25,7 @@
+ #include <glib.h>
+ 
+ #ifndef TOTEM_PL_PARSER_MINI
+-#include <libsoup/soup-gnome.h>
++#include <libsoup/soup.h>
+ #include "xmlparser.h"
+ #include "totem-pl-parser.h"
+ #include "totem-disc.h"
+@@ -611,7 +611,7 @@ totem_pl_parser_load_http_itunes (const char *uri,
+ 		g_print ("Loading ITMS playlist '%s'\n", uri);
+ 
+ 	session = soup_session_sync_new_with_options (
+-	    SOUP_SESSION_ADD_FEATURE_BY_TYPE, SOUP_TYPE_GNOME_FEATURES_2_26,
++	    SOUP_SESSION_ADD_FEATURE_BY_TYPE,
+ 	    SOUP_SESSION_ADD_FEATURE_BY_TYPE, SOUP_TYPE_CONTENT_DECODER,
+ 	    SOUP_SESSION_USER_AGENT, "iTunes/10.0.0",
+ 	    SOUP_SESSION_ACCEPT_LANGUAGE_AUTO, TRUE,

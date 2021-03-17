@@ -1,0 +1,39 @@
+From bdee27b43758ab13f2fb66069c219c9a369b19f2 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Sat, 1 Sep 2018 14:30:23 +0200
+Subject: [PATCH] avrcp: Fix absolute volume notification
+
+According to AVRCP specification only when CHANGED event is received we
+should deregister notification.
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ profiles/audio/avrcp.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
+
+diff --git a/profiles/audio/avrcp.c b/profiles/audio/avrcp.c
+index 348ef3b..9946149 100644
+--- a/profiles/audio/avrcp.c
++++ b/profiles/audio/avrcp.c
+@@ -4504,17 +4504,13 @@ static int avrcp_event(struct avrcp *session, uint8_t id, const void *data)
+ 					session->transaction_events[id],
+ 					code, AVC_SUBUNIT_PANEL,
+ 					buf, size + AVRCP_HEADER_LENGTH);
+-	if (err < 0)
+-		return err;
+-
+-	/* Unregister event as per AVRCP 1.3 spec, section 5.4.2 */
+-	session->registered_events ^= 1 << id;
+ 
+ 	return err;
+ }
+ 
+ int avrcp_set_volume(struct btd_device *dev, uint8_t volume, bool notify)
+ {
++	DBG("volume=%d notify=%d", volume, notify);
+ 	struct avrcp_server *server;
+ 	struct avrcp *session;
+ 	uint8_t buf[AVRCP_HEADER_LENGTH + 1];
+-- 
+2.7.4
+

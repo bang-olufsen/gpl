@@ -1,0 +1,75 @@
+@node ax_warning_default_pkgconfig
+@unnumberedsec ax_warning_default_pkgconfig
+
+@majorheading Synopsis
+
+@smallexample
+AX_WARNING_DEFAULT_PKGCONFIGDIR [(dirvariable [,[defsetting][,[A][,[N/A]]]])]
+AX_ENABLE_DEFAULT_PKGCONFIGDIR [(dirvariable [,defsetting])]
+@end smallexample
+
+@majorheading Description
+
+print a warning message if the $(datadir)/aclocal directory is not in
+the dirlist searched by the aclocal tool. This macro is useful if some
+`make install` would target $(datadir)/aclocal to install an autoconf m4
+file of your project to be picked up by other projects.
+
+@smallexample
+ default $1 dirvariable = pkgconfigdir
+ default $2 defsetting  = $@{libdir@}/pkgconfig
+ default $3 action = nothing to do
+ default $4 action = warn the user about mismatch
+@end smallexample
+
+In the _WARNING_ variant, the defsetting is not placed in dirvariable
+nor is it ac_subst'ed in any way. The default fail-action $4 is to send
+a warning message to the user, and the default accept-action $3 is
+nothing. It is expected that a Makefile is generated with
+pkgconfigdir=$@{libdir@}/pkgconfig
+
+The _ENABLE_ variant however will set not only the $pkgconfigdir shell
+var of the script, but it is also AC-SUBST'ed on default - and
+furthermore a configure option "--enable-default-pkgconfigdir" is
+provided. Only if that option is set then $2 default is not set to the
+canonic default in the a $prefix subpath but instead $2 default is set
+to the primary path where `pkg-config` looks for .pc files. The user may
+also override the default on the command line.
+
+@majorheading Source Code
+
+Download the
+@uref{http://git.savannah.gnu.org/gitweb/?p=autoconf-archive.git;a=blob_plain;f=m4/ax_warning_default_pkgconfig.m4,latest
+version of @file{ax_warning_default_pkgconfig.m4}} or browse
+@uref{http://git.savannah.gnu.org/gitweb/?p=autoconf-archive.git;a=history;f=m4/ax_warning_default_pkgconfig.m4,the
+macro's revision history}.
+
+@majorheading License
+
+@w{Copyright @copyright{} 2008 Guido U. Draheim @email{guidod@@gmx.de}}
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the
+Free Software Foundation; either version 3 of the License, or (at your
+option) any later version.
+
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+Public License for more details.
+
+You should have received a copy of the GNU General Public License along
+with this program. If not, see <https://www.gnu.org/licenses/>.
+
+As a special exception, the respective Autoconf Macro's copyright owner
+gives unlimited permission to copy, distribute and modify the configure
+scripts that are the output of Autoconf when processing the Macro. You
+need not follow the terms of the GNU General Public License when using
+or distributing such scripts, even though portions of the text of the
+Macro appear in them. The GNU General Public License (GPL) does govern
+all other use of the material that constitutes the Autoconf Macro.
+
+This special exception to the GPL applies to versions of the Autoconf
+Macro released by the Autoconf Archive. When you make and distribute a
+modified version of the Autoconf Macro, you may extend this special
+exception to the GPL to apply to your modified version as well.

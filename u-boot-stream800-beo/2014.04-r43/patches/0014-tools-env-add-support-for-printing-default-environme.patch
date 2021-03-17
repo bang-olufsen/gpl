@@ -1,0 +1,103 @@
+From 5355d0d7c25fbd9044a74f2c96868327572411e3 Mon Sep 17 00:00:00 2001
+From: Martin Flaska <martin.flaska@streamunlimited.com>
+Date: Fri, 18 Jan 2013 13:35:47 +0100
+Subject: [PATCH] tools: env: add support for printing default environment
+
+Signed-off-by: Martin Flaska <martin.flaska@streamunlimited.com>
+---
+ tools/env/fw_env.c      | 20 ++++++++++++++++++++
+ tools/env/fw_env.h      |  1 +
+ tools/env/fw_env_main.c | 15 ++++++++++++---
+ 3 files changed, 33 insertions(+), 3 deletions(-)
+
+diff --git a/tools/env/fw_env.c b/tools/env/fw_env.c
+index d228cc3..f5c9f56 100644
+--- a/tools/env/fw_env.c
++++ b/tools/env/fw_env.c
+@@ -192,6 +192,26 @@ char *fw_getdefenv(char *name)
+ }
+ 
+ /*
++ * Print the default env. definition
++ */
++void fw_print_default_env(void)
++{
++	printf("env part size: %d\n", CONFIG_ENV_SIZE);
++
++	const char *p = default_environment;
++	int i = 0;
++	while (i < sizeof(default_environment)) {
++		int ret = printf("%s\n", p);
++		if (ret < 0) {
++			fprintf(stderr, "Failed to print default environment variables.\n");
++			return;
++		}
++		i += ret;
++		p += ret;
++	}
++}
++
++/*
+  * Print the current definition of one, or more, or all
+  * environment variables
+  */
+diff --git a/tools/env/fw_env.h b/tools/env/fw_env.h
+index aff471b..1a64866 100644
+--- a/tools/env/fw_env.h
++++ b/tools/env/fw_env.h
+@@ -53,6 +53,7 @@
+ #endif
+ 
+ extern int   fw_printenv(int argc, char *argv[]);
++extern void fw_print_default_env(void);
+ extern char *fw_getenv  (char *name);
+ extern int fw_setenv  (int argc, char *argv[]);
+ extern int fw_parse_script(char *fname);
+diff --git a/tools/env/fw_env_main.c b/tools/env/fw_env_main.c
+index 42243c5..234c361 100644
+--- a/tools/env/fw_env_main.c
++++ b/tools/env/fw_env_main.c
+@@ -47,6 +47,7 @@ void usage(void)
+ 	fprintf(stderr, "fw_printenv/fw_setenv, "
+ 		"a command line interface to U-Boot environment\n\n"
+ 		"usage:\tfw_printenv [-n] [variable name]\n"
++		"\tfw_printenv -d\n"
+ 		"\tfw_setenv [variable name] [variable value]\n"
+ 		"\tfw_setenv -s [ file ]\n"
+ 		"\tfw_setenv -s - < [ file ]\n\n"
+@@ -102,12 +103,16 @@ int main(int argc, char *argv[])
+ 		cmdname = p + 1;
+ 	}
+ 
+-	while ((c = getopt_long (argc, argv, "ns:h",
++	while ((c = getopt_long (argc, argv, "ns:dh",
+ 		long_options, NULL)) != EOF) {
+ 		switch (c) {
+ 		case 'n':
+ 			/* handled in fw_printenv */
+ 			break;
++		case 'd':
++			print_default_env = 1;
++			/* handled in fw_printenv */
++			break;
+ 		case 's':
+ 			script_file = optarg;
+ 			break;
+@@ -123,8 +128,12 @@ int main(int argc, char *argv[])
+ 	}
+ 
+ 	if (strcmp(cmdname, CMD_PRINTENV) == 0) {
+-		if (fw_printenv(argc, argv) != 0)
+-			retval = EXIT_FAILURE;
++		if (print_default_env != 0) {
++			fw_print_default_env();
++		} else {
++			if (fw_printenv(argc, argv) != 0)
++				retval = EXIT_FAILURE;
++		}
+ 	} else if (strcmp(cmdname, CMD_SETENV) == 0) {
+ 		if (!script_file) {
+ 			if (fw_setenv(argc, argv) != 0)
+-- 
+2.7.4
+

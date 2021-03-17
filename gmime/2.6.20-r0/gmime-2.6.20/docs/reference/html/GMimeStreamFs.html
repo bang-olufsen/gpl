@@ -1,0 +1,231 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GMimeStreamFs</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="GMime 2.6 Reference Manual">
+<link rel="up" href="Streams.html" title="Streams">
+<link rel="prev" href="GMimeStreamFile.html" title="GMimeStreamFile">
+<link rel="next" href="GMimeStreamMem.html" title="GMimeStreamMem">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="GMimeStreamFile.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="Streams.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">GMime 2.6 Reference Manual</th>
+<td><a accesskey="n" href="GMimeStreamMem.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#GMimeStreamFs.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#GMimeStreamFs.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#GMimeStreamFs.object-hierarchy" class="shortcut">Object Hierarchy</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="GMimeStreamFs"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="GMimeStreamFs.top_of_page"></a>GMimeStreamFs</span></h2>
+<p>GMimeStreamFs — A low-level FileSystem stream</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="GMimeStreamFs.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">struct              <a class="link" href="GMimeStreamFs.html#GMimeStreamFs-struct" title="struct GMimeStreamFs">GMimeStreamFs</a>;
+<a class="link" href="GMimeStream.html" title="GMimeStream"><span class="returnvalue">GMimeStream</span></a> *       <a class="link" href="GMimeStreamFs.html#g-mime-stream-fs-new" title="g_mime_stream_fs_new ()">g_mime_stream_fs_new</a>                (<em class="parameter"><code><span class="type">int</span> fd</code></em>);
+<a class="link" href="GMimeStream.html" title="GMimeStream"><span class="returnvalue">GMimeStream</span></a> *       <a class="link" href="GMimeStreamFs.html#g-mime-stream-fs-new-with-bounds" title="g_mime_stream_fs_new_with_bounds ()">g_mime_stream_fs_new_with_bounds</a>    (<em class="parameter"><code><span class="type">int</span> fd</code></em>,
+                                                         <em class="parameter"><code><span class="type">gint64</span> start</code></em>,
+                                                         <em class="parameter"><code><span class="type">gint64</span> end</code></em>);
+<a class="link" href="GMimeStream.html" title="GMimeStream"><span class="returnvalue">GMimeStream</span></a> *       <a class="link" href="GMimeStreamFs.html#g-mime-stream-fs-new-for-path" title="g_mime_stream_fs_new_for_path ()">g_mime_stream_fs_new_for_path</a>       (<em class="parameter"><code>const <span class="type">char</span> *path</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> flags</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> mode</code></em>);
+<span class="returnvalue">gboolean</span>            <a class="link" href="GMimeStreamFs.html#g-mime-stream-fs-get-owner" title="g_mime_stream_fs_get_owner ()">g_mime_stream_fs_get_owner</a>          (<em class="parameter"><code><a class="link" href="GMimeStreamFs.html" title="GMimeStreamFs"><span class="type">GMimeStreamFs</span></a> *stream</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimeStreamFs.html#g-mime-stream-fs-set-owner" title="g_mime_stream_fs_set_owner ()">g_mime_stream_fs_set_owner</a>          (<em class="parameter"><code><a class="link" href="GMimeStreamFs.html" title="GMimeStreamFs"><span class="type">GMimeStreamFs</span></a> *stream</code></em>,
+                                                         <em class="parameter"><code><span class="type">gboolean</span> owner</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="GMimeStreamFs.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  GObject
+   +----<a class="link" href="GMimeStream.html" title="GMimeStream">GMimeStream</a>
+         +----GMimeStreamFs
+</pre>
+</div>
+<div class="refsect1">
+<a name="GMimeStreamFs.description"></a><h2>Description</h2>
+<p>
+A simple <a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a> implementation that sits on top of the
+low-level UNIX file descriptor based I/O layer.
+</p>
+</div>
+<div class="refsect1">
+<a name="GMimeStreamFs.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="GMimeStreamFs-struct"></a><h3>struct GMimeStreamFs</h3>
+<pre class="programlisting">struct GMimeStreamFs;</pre>
+<p>
+A <a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a> wrapper around POSIX file descriptors.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-stream-fs-new"></a><h3>g_mime_stream_fs_new ()</h3>
+<pre class="programlisting"><a class="link" href="GMimeStream.html" title="GMimeStream"><span class="returnvalue">GMimeStream</span></a> *       g_mime_stream_fs_new                (<em class="parameter"><code><span class="type">int</span> fd</code></em>);</pre>
+<p>
+Creates a new <a class="link" href="GMimeStreamFs.html" title="GMimeStreamFs"><span class="type">GMimeStreamFs</span></a> object around <em class="parameter"><code>fd</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>fd</code></em> :</span></p></td>
+<td>a file descriptor</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a stream using <em class="parameter"><code>fd</code></em>.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-stream-fs-new-with-bounds"></a><h3>g_mime_stream_fs_new_with_bounds ()</h3>
+<pre class="programlisting"><a class="link" href="GMimeStream.html" title="GMimeStream"><span class="returnvalue">GMimeStream</span></a> *       g_mime_stream_fs_new_with_bounds    (<em class="parameter"><code><span class="type">int</span> fd</code></em>,
+                                                         <em class="parameter"><code><span class="type">gint64</span> start</code></em>,
+                                                         <em class="parameter"><code><span class="type">gint64</span> end</code></em>);</pre>
+<p>
+Creates a new <a class="link" href="GMimeStreamFs.html" title="GMimeStreamFs"><span class="type">GMimeStreamFs</span></a> object around <em class="parameter"><code>fd</code></em> with bounds <em class="parameter"><code>start</code></em>
+and <em class="parameter"><code>end</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>fd</code></em> :</span></p></td>
+<td>a file descriptor</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>start</code></em> :</span></p></td>
+<td>start boundary</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>end</code></em> :</span></p></td>
+<td>end boundary</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a stream using <em class="parameter"><code>fd</code></em> with bounds <em class="parameter"><code>start</code></em> and <em class="parameter"><code>end</code></em>.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-stream-fs-new-for-path"></a><h3>g_mime_stream_fs_new_for_path ()</h3>
+<pre class="programlisting"><a class="link" href="GMimeStream.html" title="GMimeStream"><span class="returnvalue">GMimeStream</span></a> *       g_mime_stream_fs_new_for_path       (<em class="parameter"><code>const <span class="type">char</span> *path</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> flags</code></em>,
+                                                         <em class="parameter"><code><span class="type">int</span> mode</code></em>);</pre>
+<p>
+Creates a new <a class="link" href="GMimeStreamFs.html" title="GMimeStreamFs"><span class="type">GMimeStreamFs</span></a> object for the specified <em class="parameter"><code>path</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>path</code></em> :</span></p></td>
+<td>the path to a file</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>flags</code></em> :</span></p></td>
+<td>as in open(2)</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>mode</code></em> :</span></p></td>
+<td>as in open(2)</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a stream using for reading and/or writing to the specified
+file path or <code class="literal">NULL</code> on error.</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 2.6.18</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-stream-fs-get-owner"></a><h3>g_mime_stream_fs_get_owner ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>            g_mime_stream_fs_get_owner          (<em class="parameter"><code><a class="link" href="GMimeStreamFs.html" title="GMimeStreamFs"><span class="type">GMimeStreamFs</span></a> *stream</code></em>);</pre>
+<p>
+Gets whether or not <em class="parameter"><code>stream</code></em> owns the backend file descriptor.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>stream</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeStreamFs.html" title="GMimeStreamFs"><span class="type">GMimeStreamFs</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>
+<code class="literal">TRUE</code> if <em class="parameter"><code>stream</code></em> owns the backend file descriptor or <code class="literal">FALSE</code>
+otherwise.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-stream-fs-set-owner"></a><h3>g_mime_stream_fs_set_owner ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_stream_fs_set_owner          (<em class="parameter"><code><a class="link" href="GMimeStreamFs.html" title="GMimeStreamFs"><span class="type">GMimeStreamFs</span></a> *stream</code></em>,
+                                                         <em class="parameter"><code><span class="type">gboolean</span> owner</code></em>);</pre>
+<p>
+Sets whether or not <em class="parameter"><code>stream</code></em> owns the backend file descriptor.
+</p>
+<p>
+Note: <em class="parameter"><code>owner</code></em> should be <code class="literal">TRUE</code> if the stream should <code class="function">close()</code> the
+backend file descriptor when destroyed or <code class="literal">FALSE</code> otherwise.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>stream</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeStreamFs.html" title="GMimeStreamFs"><span class="type">GMimeStreamFs</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>owner</code></em> :</span></p></td>
+<td>
+<code class="literal">TRUE</code> if this stream should own the file descriptor or <code class="literal">FALSE</code> otherwise</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<div class="refsect1">
+<a name="GMimeStreamFs.see-also"></a><h2>See Also</h2>
+<a class="link" href="GMimeStream.html" title="GMimeStream"><span class="type">GMimeStream</span></a>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

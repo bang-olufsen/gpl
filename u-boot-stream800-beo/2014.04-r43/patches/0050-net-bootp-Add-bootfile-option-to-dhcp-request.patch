@@ -1,0 +1,29 @@
+From 49fc85d6d19dfe26334e70b1100a384e6556791d Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Tue, 5 Aug 2014 15:11:07 +0200
+Subject: [PATCH] net: bootp: Add bootfile option to dhcp request
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ net/bootp.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/net/bootp.c b/net/bootp.c
+index 9bdceb5..8ba94f4 100644
+--- a/net/bootp.c
++++ b/net/bootp.c
+@@ -500,6 +500,11 @@ static int DhcpExtended(u8 *e, int message_type, IPaddr_t ServerID,
+ 	*e++  = 150;
+ 	*cnt += 1;
+ #endif
++#if defined(CONFIG_BOOTP_BOOTILE)
++	*e++ = 67;
++	*cnt += 1;
++#endif
++
+ 	/* no options, so back up to avoid sending an empty request list */
+ 	if (*cnt == 0)
+ 		e -= 2;
+-- 
+2.7.4
+

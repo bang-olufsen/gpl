@@ -1,0 +1,20 @@
+* More about extending tools - gupnp-dlna-info-2.0 could show DLNA
+  profiles restrictions and discovered metadata attributes.
+  gupnp-dlna-ls-profiles-2.0 could show restrictions of listed DLNA
+  profiles.
+
+* Write a GStreamer-only utility for creating a GstEncodingProfile
+  from GUPnPDLNAProfile. That could be easily done when above points
+  are done.
+
+* Bring the tests back to life. And make them being run on make check.
+
+* Don't export all functions out there. There should be some linker
+  flag that either takes a regexp for functions to export or takes a
+  file listing them. Otherwise using G_GNUC_INTERNAL for every
+  function not to be exported will be tedious.
+
+* Read TODO.old for some ideas.
+
+* Add a gupnp-dlna-metadata.h main headers. Maybe make the single include
+  headers the only includable ones.

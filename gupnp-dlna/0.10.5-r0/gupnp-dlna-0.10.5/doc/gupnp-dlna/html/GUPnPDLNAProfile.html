@@ -1,0 +1,465 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GUPnPDLNAProfile: GUPnP DLNA Reference Manual</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
+<link rel="home" href="index.html" title="GUPnP DLNA Reference Manual">
+<link rel="up" href="ch01.html" title="GUPnP DLNA">
+<link rel="prev" href="GUPnPDLNAProfileGuesser.html" title="GUPnPDLNAProfileGuesser">
+<link rel="next" href="GUPnPDLNAInformation.html" title="GUPnPDLNAInformation">
+<meta name="generator" content="GTK-Doc V1.25.1 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#GUPnPDLNAProfile.description" class="shortcut">Description</a></span><span id="nav_hierarchy">  <span class="dim">|</span> 
+                  <a href="#GUPnPDLNAProfile.object-hierarchy" class="shortcut">Object Hierarchy</a></span><span id="nav_properties">  <span class="dim">|</span> 
+                  <a href="#GUPnPDLNAProfile.properties" class="shortcut">Properties</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="GUPnPDLNAProfileGuesser.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="GUPnPDLNAInformation.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry">
+<a name="GUPnPDLNAProfile"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="GUPnPDLNAProfile.top_of_page"></a>GUPnPDLNAProfile</span></h2>
+<p>GUPnPDLNAProfile — Object representing a DLNA profile</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1">
+<a name="GUPnPDLNAProfile.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="functions_return">
+<col class="functions_name">
+</colgroup>
+<tbody>
+<tr>
+<td class="function_type">const <span class="returnvalue">gchar</span> *
+</td>
+<td class="function_name">
+<a class="link" href="GUPnPDLNAProfile.html#gupnp-dlna-profile-get-name" title="gupnp_dlna_profile_get_name ()">gupnp_dlna_profile_get_name</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">const <span class="returnvalue">gchar</span> *
+</td>
+<td class="function_name">
+<a class="link" href="GUPnPDLNAProfile.html#gupnp-dlna-profile-get-mime" title="gupnp_dlna_profile_get_mime ()">gupnp_dlna_profile_get_mime</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">gboolean</span>
+</td>
+<td class="function_name">
+<a class="link" href="GUPnPDLNAProfile.html#gupnp-dlna-profile-get-extended" title="gupnp_dlna_profile_get_extended ()">gupnp_dlna_profile_get_extended</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">GList</span> *
+</td>
+<td class="function_name">
+<a class="link" href="GUPnPDLNAProfile.html#gupnp-dlna-profile-get-container-restrictions" title="gupnp_dlna_profile_get_container_restrictions ()">gupnp_dlna_profile_get_container_restrictions</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">GList</span> *
+</td>
+<td class="function_name">
+<a class="link" href="GUPnPDLNAProfile.html#gupnp-dlna-profile-get-audio-restrictions" title="gupnp_dlna_profile_get_audio_restrictions ()">gupnp_dlna_profile_get_audio_restrictions</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">GList</span> *
+</td>
+<td class="function_name">
+<a class="link" href="GUPnPDLNAProfile.html#gupnp-dlna-profile-get-image-restrictions" title="gupnp_dlna_profile_get_image_restrictions ()">gupnp_dlna_profile_get_image_restrictions</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">GList</span> *
+</td>
+<td class="function_name">
+<a class="link" href="GUPnPDLNAProfile.html#gupnp-dlna-profile-get-video-restrictions" title="gupnp_dlna_profile_get_video_restrictions ()">gupnp_dlna_profile_get_video_restrictions</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="GUPnPDLNAProfile.properties"></a><h2>Properties</h2>
+<div class="informaltable"><table class="informaltable" border="0">
+<colgroup>
+<col width="150px" class="properties_type">
+<col width="300px" class="properties_name">
+<col width="200px" class="properties_flags">
+</colgroup>
+<tbody>
+<tr>
+<td class="property_type"><span class="type">gpointer</span></td>
+<td class="property_name"><a class="link" href="GUPnPDLNAProfile.html#GUPnPDLNAProfile--audio-restrictions" title="The “audio-restrictions” property">audio-restrictions</a></td>
+<td class="property_flags">Read / Write / Construct Only</td>
+</tr>
+<tr>
+<td class="property_type"><span class="type">gpointer</span></td>
+<td class="property_name"><a class="link" href="GUPnPDLNAProfile.html#GUPnPDLNAProfile--container-restrictions" title="The “container-restrictions” property">container-restrictions</a></td>
+<td class="property_flags">Read / Write / Construct Only</td>
+</tr>
+<tr>
+<td class="property_type"><span class="type">gboolean</span></td>
+<td class="property_name"><a class="link" href="GUPnPDLNAProfile.html#GUPnPDLNAProfile--extended" title="The “extended” property">extended</a></td>
+<td class="property_flags">Read / Write / Construct Only</td>
+</tr>
+<tr>
+<td class="property_type"><span class="type">gpointer</span></td>
+<td class="property_name"><a class="link" href="GUPnPDLNAProfile.html#GUPnPDLNAProfile--image-restrictions" title="The “image-restrictions” property">image-restrictions</a></td>
+<td class="property_flags">Read / Write / Construct Only</td>
+</tr>
+<tr>
+<td class="property_type">
+<span class="type">gchar</span> *</td>
+<td class="property_name"><a class="link" href="GUPnPDLNAProfile.html#GUPnPDLNAProfile--mime" title="The “mime” property">mime</a></td>
+<td class="property_flags">Read / Write / Construct Only</td>
+</tr>
+<tr>
+<td class="property_type">
+<span class="type">gchar</span> *</td>
+<td class="property_name"><a class="link" href="GUPnPDLNAProfile.html#GUPnPDLNAProfile--name" title="The “name” property">name</a></td>
+<td class="property_flags">Read / Write / Construct Only</td>
+</tr>
+<tr>
+<td class="property_type"><span class="type">gpointer</span></td>
+<td class="property_name"><a class="link" href="GUPnPDLNAProfile.html#GUPnPDLNAProfile--video-restrictions" title="The “video-restrictions” property">video-restrictions</a></td>
+<td class="property_flags">Read / Write / Construct Only</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="GUPnPDLNAProfile.other"></a><h2>Types and Values</h2>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="name">
+<col class="description">
+</colgroup>
+<tbody>
+<tr>
+<td class="datatype_keyword"> </td>
+<td class="function_name"><a class="link" href="GUPnPDLNAProfile.html#GUPnPDLNAProfile-struct" title="GUPnPDLNAProfile">GUPnPDLNAProfile</a></td>
+</tr>
+<tr>
+<td class="datatype_keyword"> </td>
+<td class="function_name"><a class="link" href="GUPnPDLNAProfile.html#GUPnPDLNAProfileClass" title="GUPnPDLNAProfileClass">GUPnPDLNAProfileClass</a></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="GUPnPDLNAProfile.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="screen">    GObject
+    <span class="lineart">╰──</span> GUPnPDLNAProfile
+</pre>
+</div>
+<div class="refsect1">
+<a name="GUPnPDLNAProfile.description"></a><h2>Description</h2>
+<p>The <a class="link" href="GUPnPDLNAProfileGuesser.html" title="GUPnPDLNAProfileGuesser"><span class="type">GUPnPDLNAProfileGuesser</span></a> object provides a few APIs that return
+<a class="link" href="GUPnPDLNAProfile.html" title="GUPnPDLNAProfile"><span class="type">GUPnPDLNAProfile</span></a> objects. These represent a single DLNA
+profile. Each <a class="link" href="GUPnPDLNAProfile.html" title="GUPnPDLNAProfile"><span class="type">GUPnPDLNAProfile</span></a> has a name (the name of the DLNA
+profile) and the corresponding MIME type.</p>
+<p>Public representation of the various audio/container/image/video
+restrictions specified for that DLNA profile is to be added.</p>
+</div>
+<div class="refsect1">
+<a name="GUPnPDLNAProfile.functions_details"></a><h2>Functions</h2>
+<div class="refsect2">
+<a name="gupnp-dlna-profile-get-name"></a><h3>gupnp_dlna_profile_get_name ()</h3>
+<pre class="programlisting">const <span class="returnvalue">gchar</span> *
+gupnp_dlna_profile_get_name (<em class="parameter"><code><a class="link" href="GUPnPDLNAProfile.html" title="GUPnPDLNAProfile"><span class="type">GUPnPDLNAProfile</span></a> *profile</code></em>);</pre>
+<div class="refsect3">
+<a name="gupnp-dlna-profile-get-name.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>profile</p></td>
+<td class="parameter_description"><p>The <a class="link" href="GUPnPDLNAProfile.html" title="GUPnPDLNAProfile"><span class="type">GUPnPDLNAProfile</span></a> object.</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="gupnp-dlna-profile-get-name.returns"></a><h4>Returns</h4>
+<p> The name of the DLNA profile represented by <em class="parameter"><code>profile</code></em>
+.</p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="gupnp-dlna-profile-get-mime"></a><h3>gupnp_dlna_profile_get_mime ()</h3>
+<pre class="programlisting">const <span class="returnvalue">gchar</span> *
+gupnp_dlna_profile_get_mime (<em class="parameter"><code><a class="link" href="GUPnPDLNAProfile.html" title="GUPnPDLNAProfile"><span class="type">GUPnPDLNAProfile</span></a> *profile</code></em>);</pre>
+<div class="refsect3">
+<a name="gupnp-dlna-profile-get-mime.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>profile</p></td>
+<td class="parameter_description"><p>The <a class="link" href="GUPnPDLNAProfile.html" title="GUPnPDLNAProfile"><span class="type">GUPnPDLNAProfile</span></a> object.</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="gupnp-dlna-profile-get-mime.returns"></a><h4>Returns</h4>
+<p> The DLNA MIME type of the DLNA profile represented by <em class="parameter"><code>profile</code></em>
+.</p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="gupnp-dlna-profile-get-extended"></a><h3>gupnp_dlna_profile_get_extended ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>
+gupnp_dlna_profile_get_extended (<em class="parameter"><code><a class="link" href="GUPnPDLNAProfile.html" title="GUPnPDLNAProfile"><span class="type">GUPnPDLNAProfile</span></a> *profile</code></em>);</pre>
+<div class="refsect3">
+<a name="gupnp-dlna-profile-get-extended.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>profile</p></td>
+<td class="parameter_description"><p>The <a class="link" href="GUPnPDLNAProfile.html" title="GUPnPDLNAProfile"><span class="type">GUPnPDLNAProfile</span></a> object.</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="gupnp-dlna-profile-get-extended.returns"></a><h4>Returns</h4>
+<p> <code class="literal">TRUE</code> if <em class="parameter"><code>profile</code></em>
+is extended one and <code class="literal">FALSE</code> otherwise.</p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="gupnp-dlna-profile-get-container-restrictions"></a><h3>gupnp_dlna_profile_get_container_restrictions ()</h3>
+<pre class="programlisting"><span class="returnvalue">GList</span> *
+gupnp_dlna_profile_get_container_restrictions
+                               (<em class="parameter"><code><a class="link" href="GUPnPDLNAProfile.html" title="GUPnPDLNAProfile"><span class="type">GUPnPDLNAProfile</span></a> *profile</code></em>);</pre>
+<p>Gets a list of container restrictions.</p>
+<div class="refsect3">
+<a name="gupnp-dlna-profile-get-container-restrictions.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>profile</p></td>
+<td class="parameter_description"><p> A profile. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="gupnp-dlna-profile-get-container-restrictions.returns"></a><h4>Returns</h4>
+<p>Container restrictions. Do not modify. </p>
+<p><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Generics and defining elements of containers and arrays."><span class="acronym">element-type</span></acronym> GUPnPDLNARestriction]</span></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="gupnp-dlna-profile-get-audio-restrictions"></a><h3>gupnp_dlna_profile_get_audio_restrictions ()</h3>
+<pre class="programlisting"><span class="returnvalue">GList</span> *
+gupnp_dlna_profile_get_audio_restrictions
+                               (<em class="parameter"><code><a class="link" href="GUPnPDLNAProfile.html" title="GUPnPDLNAProfile"><span class="type">GUPnPDLNAProfile</span></a> *profile</code></em>);</pre>
+<p>Gets a list of audio restrictions.</p>
+<div class="refsect3">
+<a name="gupnp-dlna-profile-get-audio-restrictions.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>profile</p></td>
+<td class="parameter_description"><p> A profile. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="gupnp-dlna-profile-get-audio-restrictions.returns"></a><h4>Returns</h4>
+<p> Audio
+restrictions. Do not modify. </p>
+<p><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Generics and defining elements of containers and arrays."><span class="acronym">element-type</span></acronym> GUPnPDLNARestriction]</span></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="gupnp-dlna-profile-get-image-restrictions"></a><h3>gupnp_dlna_profile_get_image_restrictions ()</h3>
+<pre class="programlisting"><span class="returnvalue">GList</span> *
+gupnp_dlna_profile_get_image_restrictions
+                               (<em class="parameter"><code><a class="link" href="GUPnPDLNAProfile.html" title="GUPnPDLNAProfile"><span class="type">GUPnPDLNAProfile</span></a> *profile</code></em>);</pre>
+<p>Gets a list of image restrictions.</p>
+<div class="refsect3">
+<a name="gupnp-dlna-profile-get-image-restrictions.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>profile</p></td>
+<td class="parameter_description"><p> A profile. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="gupnp-dlna-profile-get-image-restrictions.returns"></a><h4>Returns</h4>
+<p> Image
+restrictions. Do not modify. </p>
+<p><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Generics and defining elements of containers and arrays."><span class="acronym">element-type</span></acronym> GUPnPDLNARestriction]</span></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="gupnp-dlna-profile-get-video-restrictions"></a><h3>gupnp_dlna_profile_get_video_restrictions ()</h3>
+<pre class="programlisting"><span class="returnvalue">GList</span> *
+gupnp_dlna_profile_get_video_restrictions
+                               (<em class="parameter"><code><a class="link" href="GUPnPDLNAProfile.html" title="GUPnPDLNAProfile"><span class="type">GUPnPDLNAProfile</span></a> *profile</code></em>);</pre>
+<p>Gets a list of video restrictions.</p>
+<div class="refsect3">
+<a name="gupnp-dlna-profile-get-video-restrictions.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>profile</p></td>
+<td class="parameter_description"><p> A profile. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="gupnp-dlna-profile-get-video-restrictions.returns"></a><h4>Returns</h4>
+<p> Video
+restrictions. Do not modify. </p>
+<p><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Generics and defining elements of containers and arrays."><span class="acronym">element-type</span></acronym> GUPnPDLNARestriction]</span></p>
+</div>
+</div>
+</div>
+<div class="refsect1">
+<a name="GUPnPDLNAProfile.other_details"></a><h2>Types and Values</h2>
+<div class="refsect2">
+<a name="GUPnPDLNAProfile-struct"></a><h3>GUPnPDLNAProfile</h3>
+<pre class="programlisting">typedef struct _GUPnPDLNAProfile GUPnPDLNAProfile;</pre>
+<p>The top-level object used for the in-memory representation of the
+DLNA Profiles.</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GUPnPDLNAProfileClass"></a><h3>GUPnPDLNAProfileClass</h3>
+<pre class="programlisting">typedef struct {
+        GObjectClass parent_class;
+} GUPnPDLNAProfileClass;
+</pre>
+<div class="refsect3">
+<a name="GUPnPDLNAProfileClass.members"></a><h4>Members</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="300px" class="struct_members_name">
+<col class="struct_members_description">
+<col width="200px" class="struct_members_annotations">
+</colgroup>
+<tbody></tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="refsect1">
+<a name="GUPnPDLNAProfile.property-details"></a><h2>Property Details</h2>
+<div class="refsect2">
+<a name="GUPnPDLNAProfile--audio-restrictions"></a><h3>The <code class="literal">“audio-restrictions”</code> property</h3>
+<pre class="programlisting">  “audio-restrictions”       <span class="type">gpointer</span></pre>
+<p>Audio restrictions for the DLNA Profile.</p>
+<p>Flags: Read / Write / Construct Only</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GUPnPDLNAProfile--container-restrictions"></a><h3>The <code class="literal">“container-restrictions”</code> property</h3>
+<pre class="programlisting">  “container-restrictions”   <span class="type">gpointer</span></pre>
+<p>Container restrictions for the DLNA Profile.</p>
+<p>Flags: Read / Write / Construct Only</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GUPnPDLNAProfile--extended"></a><h3>The <code class="literal">“extended”</code> property</h3>
+<pre class="programlisting">  “extended”                 <span class="type">gboolean</span></pre>
+<p>Whether the DLNA profile is not a part of DLNA specification.</p>
+<p>Flags: Read / Write / Construct Only</p>
+<p>Default value: FALSE</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GUPnPDLNAProfile--image-restrictions"></a><h3>The <code class="literal">“image-restrictions”</code> property</h3>
+<pre class="programlisting">  “image-restrictions”       <span class="type">gpointer</span></pre>
+<p>Image restrictions for the DLNA Profile.</p>
+<p>Flags: Read / Write / Construct Only</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GUPnPDLNAProfile--mime"></a><h3>The <code class="literal">“mime”</code> property</h3>
+<pre class="programlisting">  “mime”                     <span class="type">gchar</span> *</pre>
+<p>MIME type of the DLNA profile.</p>
+<p>Flags: Read / Write / Construct Only</p>
+<p>Default value: NULL</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GUPnPDLNAProfile--name"></a><h3>The <code class="literal">“name”</code> property</h3>
+<pre class="programlisting">  “name”                     <span class="type">gchar</span> *</pre>
+<p>Name of the DLNA profile.</p>
+<p>Flags: Read / Write / Construct Only</p>
+<p>Default value: NULL</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="GUPnPDLNAProfile--video-restrictions"></a><h3>The <code class="literal">“video-restrictions”</code> property</h3>
+<pre class="programlisting">  “video-restrictions”       <span class="type">gpointer</span></pre>
+<p>Video restrictions for the DLNA Profile.</p>
+<p>Flags: Read / Write / Construct Only</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>Generated by GTK-Doc V1.25.1</div>
+</body>
+</html>

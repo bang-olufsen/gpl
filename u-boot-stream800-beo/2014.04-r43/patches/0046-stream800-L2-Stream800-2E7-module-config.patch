@@ -1,0 +1,26 @@
+From a09e37b5a015076b71c4228eb8ae3c6a25bbff47 Mon Sep 17 00:00:00 2001
+From: Vladimir Koutny <vladimir.koutny@streamunlimited.com>
+Date: Tue, 16 Jul 2013 09:25:44 +0200
+Subject: [PATCH] stream800: L2 - Stream800/2E7 module config
+
+Signed-off-by: Vladimir Koutny <vladimir.koutny@streamunlimited.com>
+---
+ board/streamunlimited/stream800/board.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/board/streamunlimited/stream800/board.c b/board/streamunlimited/stream800/board.c
+index ff2cd1f..800ae09 100755
+--- a/board/streamunlimited/stream800/board.c
++++ b/board/streamunlimited/stream800/board.c
+@@ -195,6 +195,8 @@ static struct SupportedModules {
+ 	// and Bluetooth are auto-detected at runtime:
+ 	{MV_L2,		0xCCC,	0xD54,	0x111,	0x199},
+ 	{MV_L2,		0xCCC,	0xD54,	0x199,	0x222},
++	// L2 - Stream800/2E7 (no wifi/bt module)
++	{MV_L2,		0xCCC,	0xD54,	0x2aa,	0x333},
+ 	// TODO: add another stream800 module revisions here
+ };
+ 
+-- 
+2.7.4
+

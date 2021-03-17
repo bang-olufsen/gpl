@@ -1,0 +1,519 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GMimePart</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
+<link rel="home" href="index.html" title="GMime 2.6 Reference Manual">
+<link rel="up" href="MimeParts.html" title="MIME Messages and Parts">
+<link rel="prev" href="GMimeMessage.html" title="GMimeMessage">
+<link rel="next" href="GMimeMultipart.html" title="GMimeMultipart">
+<meta name="generator" content="GTK-Doc V1.18 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="GMimeMessage.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="MimeParts.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">GMime 2.6 Reference Manual</th>
+<td><a accesskey="n" href="GMimeMultipart.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts">
+<a href="#GMimePart.synopsis" class="shortcut">Top</a>
+                   | 
+                  <a href="#GMimePart.description" class="shortcut">Description</a>
+                   | 
+                  <a href="#GMimePart.object-hierarchy" class="shortcut">Object Hierarchy</a>
+</td></tr>
+</table>
+<div class="refentry">
+<a name="GMimePart"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="GMimePart.top_of_page"></a>GMimePart</span></h2>
+<p>GMimePart — MIME parts</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<a name="GMimePart.synopsis"></a><h2>Synopsis</h2>
+<pre class="synopsis">struct              <a class="link" href="GMimePart.html#GMimePart-struct" title="struct GMimePart">GMimePart</a>;
+<a class="link" href="GMimePart.html" title="GMimePart"><span class="returnvalue">GMimePart</span></a> *         <a class="link" href="GMimePart.html#g-mime-part-new" title="g_mime_part_new ()">g_mime_part_new</a>                     (<em class="parameter"><code><span class="type">void</span></code></em>);
+<a class="link" href="GMimePart.html" title="GMimePart"><span class="returnvalue">GMimePart</span></a> *         <a class="link" href="GMimePart.html#g-mime-part-new-with-type" title="g_mime_part_new_with_type ()">g_mime_part_new_with_type</a>           (<em class="parameter"><code>const <span class="type">char</span> *type</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *subtype</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimePart.html#g-mime-part-set-content-description" title="g_mime_part_set_content_description ()">g_mime_part_set_content_description</a> (<em class="parameter"><code><a class="link" href="GMimePart.html" title="GMimePart"><span class="type">GMimePart</span></a> *mime_part</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *description</code></em>);
+const <span class="returnvalue">char</span> *        <a class="link" href="GMimePart.html#g-mime-part-get-content-description" title="g_mime_part_get_content_description ()">g_mime_part_get_content_description</a> (<em class="parameter"><code><a class="link" href="GMimePart.html" title="GMimePart"><span class="type">GMimePart</span></a> *mime_part</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimePart.html#g-mime-part-set-content-id" title="g_mime_part_set_content_id ()">g_mime_part_set_content_id</a>          (<em class="parameter"><code><a class="link" href="GMimePart.html" title="GMimePart"><span class="type">GMimePart</span></a> *mime_part</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *content_id</code></em>);
+const <span class="returnvalue">char</span> *        <a class="link" href="GMimePart.html#g-mime-part-get-content-id" title="g_mime_part_get_content_id ()">g_mime_part_get_content_id</a>          (<em class="parameter"><code><a class="link" href="GMimePart.html" title="GMimePart"><span class="type">GMimePart</span></a> *mime_part</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimePart.html#g-mime-part-set-content-md5" title="g_mime_part_set_content_md5 ()">g_mime_part_set_content_md5</a>         (<em class="parameter"><code><a class="link" href="GMimePart.html" title="GMimePart"><span class="type">GMimePart</span></a> *mime_part</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *content_md5</code></em>);
+const <span class="returnvalue">char</span> *        <a class="link" href="GMimePart.html#g-mime-part-get-content-md5" title="g_mime_part_get_content_md5 ()">g_mime_part_get_content_md5</a>         (<em class="parameter"><code><a class="link" href="GMimePart.html" title="GMimePart"><span class="type">GMimePart</span></a> *mime_part</code></em>);
+<span class="returnvalue">gboolean</span>            <a class="link" href="GMimePart.html#g-mime-part-verify-content-md5" title="g_mime_part_verify_content_md5 ()">g_mime_part_verify_content_md5</a>      (<em class="parameter"><code><a class="link" href="GMimePart.html" title="GMimePart"><span class="type">GMimePart</span></a> *mime_part</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimePart.html#g-mime-part-set-content-location" title="g_mime_part_set_content_location ()">g_mime_part_set_content_location</a>    (<em class="parameter"><code><a class="link" href="GMimePart.html" title="GMimePart"><span class="type">GMimePart</span></a> *mime_part</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *content_location</code></em>);
+const <span class="returnvalue">char</span> *        <a class="link" href="GMimePart.html#g-mime-part-get-content-location" title="g_mime_part_get_content_location ()">g_mime_part_get_content_location</a>    (<em class="parameter"><code><a class="link" href="GMimePart.html" title="GMimePart"><span class="type">GMimePart</span></a> *mime_part</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimePart.html#g-mime-part-set-content-encoding" title="g_mime_part_set_content_encoding ()">g_mime_part_set_content_encoding</a>    (<em class="parameter"><code><a class="link" href="GMimePart.html" title="GMimePart"><span class="type">GMimePart</span></a> *mime_part</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="gmime-gmime-encodings.html#GMimeContentEncoding" title="enum GMimeContentEncoding"><span class="type">GMimeContentEncoding</span></a> encoding</code></em>);
+<a class="link" href="gmime-gmime-encodings.html#GMimeContentEncoding" title="enum GMimeContentEncoding"><span class="returnvalue">GMimeContentEncoding</span></a> <a class="link" href="GMimePart.html#g-mime-part-get-content-encoding" title="g_mime_part_get_content_encoding ()">g_mime_part_get_content_encoding</a>   (<em class="parameter"><code><a class="link" href="GMimePart.html" title="GMimePart"><span class="type">GMimePart</span></a> *mime_part</code></em>);
+<a class="link" href="gmime-gmime-encodings.html#GMimeContentEncoding" title="enum GMimeContentEncoding"><span class="returnvalue">GMimeContentEncoding</span></a> <a class="link" href="GMimePart.html#g-mime-part-get-best-content-encoding" title="g_mime_part_get_best_content_encoding ()">g_mime_part_get_best_content_encoding</a>
+                                                        (<em class="parameter"><code><a class="link" href="GMimePart.html" title="GMimePart"><span class="type">GMimePart</span></a> *mime_part</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="gmime-gmime-encodings.html#GMimeEncodingConstraint" title="enum GMimeEncodingConstraint"><span class="type">GMimeEncodingConstraint</span></a> constraint</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimePart.html#g-mime-part-set-filename" title="g_mime_part_set_filename ()">g_mime_part_set_filename</a>            (<em class="parameter"><code><a class="link" href="GMimePart.html" title="GMimePart"><span class="type">GMimePart</span></a> *mime_part</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *filename</code></em>);
+const <span class="returnvalue">char</span> *        <a class="link" href="GMimePart.html#g-mime-part-get-filename" title="g_mime_part_get_filename ()">g_mime_part_get_filename</a>            (<em class="parameter"><code><a class="link" href="GMimePart.html" title="GMimePart"><span class="type">GMimePart</span></a> *mime_part</code></em>);
+<a class="link" href="GMimeDataWrapper.html" title="GMimeDataWrapper"><span class="returnvalue">GMimeDataWrapper</span></a> *  <a class="link" href="GMimePart.html#g-mime-part-get-content-object" title="g_mime_part_get_content_object ()">g_mime_part_get_content_object</a>      (<em class="parameter"><code><a class="link" href="GMimePart.html" title="GMimePart"><span class="type">GMimePart</span></a> *mime_part</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="GMimePart.html#g-mime-part-set-content-object" title="g_mime_part_set_content_object ()">g_mime_part_set_content_object</a>      (<em class="parameter"><code><a class="link" href="GMimePart.html" title="GMimePart"><span class="type">GMimePart</span></a> *mime_part</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeDataWrapper.html" title="GMimeDataWrapper"><span class="type">GMimeDataWrapper</span></a> *content</code></em>);
+</pre>
+</div>
+<div class="refsect1">
+<a name="GMimePart.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="synopsis">
+  GObject
+   +----<a class="link" href="GMimeObject.html" title="GMimeObject">GMimeObject</a>
+         +----GMimePart
+               +----<a class="link" href="GMimeMessagePartial.html" title="GMimeMessagePartial">GMimeMessagePartial</a>
+</pre>
+</div>
+<div class="refsect1">
+<a name="GMimePart.description"></a><h2>Description</h2>
+<p>
+A <a class="link" href="GMimePart.html" title="GMimePart"><span class="type">GMimePart</span></a> represents any MIME leaf part (meaning it has no
+sub-parts).
+</p>
+</div>
+<div class="refsect1">
+<a name="GMimePart.details"></a><h2>Details</h2>
+<div class="refsect2">
+<a name="GMimePart-struct"></a><h3>struct GMimePart</h3>
+<pre class="programlisting">struct GMimePart;</pre>
+<p>
+A leaf-node MIME part object.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-part-new"></a><h3>g_mime_part_new ()</h3>
+<pre class="programlisting"><a class="link" href="GMimePart.html" title="GMimePart"><span class="returnvalue">GMimePart</span></a> *         g_mime_part_new                     (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>
+Creates a new MIME Part object with a default content-type of
+text/plain.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>an empty MIME Part object with a default content-type of
+text/plain.</td>
+</tr></tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-part-new-with-type"></a><h3>g_mime_part_new_with_type ()</h3>
+<pre class="programlisting"><a class="link" href="GMimePart.html" title="GMimePart"><span class="returnvalue">GMimePart</span></a> *         g_mime_part_new_with_type           (<em class="parameter"><code>const <span class="type">char</span> *type</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *subtype</code></em>);</pre>
+<p>
+Creates a new MIME Part with a sepcified type.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>type</code></em> :</span></p></td>
+<td>content-type string</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>subtype</code></em> :</span></p></td>
+<td>content-subtype string</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>an empty MIME Part object with the specified content-type.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-part-set-content-description"></a><h3>g_mime_part_set_content_description ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_part_set_content_description (<em class="parameter"><code><a class="link" href="GMimePart.html" title="GMimePart"><span class="type">GMimePart</span></a> *mime_part</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *description</code></em>);</pre>
+<p>
+Set the content description for the specified mime part.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>mime_part</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimePart.html" title="GMimePart"><span class="type">GMimePart</span></a> object</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>description</code></em> :</span></p></td>
+<td>content description</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-part-get-content-description"></a><h3>g_mime_part_get_content_description ()</h3>
+<pre class="programlisting">const <span class="returnvalue">char</span> *        g_mime_part_get_content_description (<em class="parameter"><code><a class="link" href="GMimePart.html" title="GMimePart"><span class="type">GMimePart</span></a> *mime_part</code></em>);</pre>
+<p>
+Gets the value of the Content-Description for the specified mime
+part if it exists or <code class="literal">NULL</code> otherwise.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>mime_part</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimePart.html" title="GMimePart"><span class="type">GMimePart</span></a> object</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the content description for the specified mime part.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-part-set-content-id"></a><h3>g_mime_part_set_content_id ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_part_set_content_id          (<em class="parameter"><code><a class="link" href="GMimePart.html" title="GMimePart"><span class="type">GMimePart</span></a> *mime_part</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *content_id</code></em>);</pre>
+<p>
+Set the content id for the specified mime part.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>mime_part</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimePart.html" title="GMimePart"><span class="type">GMimePart</span></a> object</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>content_id</code></em> :</span></p></td>
+<td>content id</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-part-get-content-id"></a><h3>g_mime_part_get_content_id ()</h3>
+<pre class="programlisting">const <span class="returnvalue">char</span> *        g_mime_part_get_content_id          (<em class="parameter"><code><a class="link" href="GMimePart.html" title="GMimePart"><span class="type">GMimePart</span></a> *mime_part</code></em>);</pre>
+<p>
+Gets the content-id of the specified mime part if it exists, or
+<code class="literal">NULL</code> otherwise.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>mime_part</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimePart.html" title="GMimePart"><span class="type">GMimePart</span></a> object</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the content id for the specified mime part.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-part-set-content-md5"></a><h3>g_mime_part_set_content_md5 ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_part_set_content_md5         (<em class="parameter"><code><a class="link" href="GMimePart.html" title="GMimePart"><span class="type">GMimePart</span></a> *mime_part</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *content_md5</code></em>);</pre>
+<p>
+Set the content md5 for the specified mime part.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>mime_part</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimePart.html" title="GMimePart"><span class="type">GMimePart</span></a> object</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>content_md5</code></em> :</span></p></td>
+<td>content md5 or <code class="literal">NULL</code> to generate the md5 digest.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-part-get-content-md5"></a><h3>g_mime_part_get_content_md5 ()</h3>
+<pre class="programlisting">const <span class="returnvalue">char</span> *        g_mime_part_get_content_md5         (<em class="parameter"><code><a class="link" href="GMimePart.html" title="GMimePart"><span class="type">GMimePart</span></a> *mime_part</code></em>);</pre>
+<p>
+Gets the md5sum contained in the Content-Md5 header of the
+specified mime part if it exists, or <code class="literal">NULL</code> otherwise.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>mime_part</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimePart.html" title="GMimePart"><span class="type">GMimePart</span></a> object</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the content md5 for the specified mime part.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-part-verify-content-md5"></a><h3>g_mime_part_verify_content_md5 ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>            g_mime_part_verify_content_md5      (<em class="parameter"><code><a class="link" href="GMimePart.html" title="GMimePart"><span class="type">GMimePart</span></a> *mime_part</code></em>);</pre>
+<p>
+Verify the content md5 for the specified mime part.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>mime_part</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimePart.html" title="GMimePart"><span class="type">GMimePart</span></a> object</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>
+<code class="literal">TRUE</code> if the md5 is valid or <code class="literal">FALSE</code> otherwise. Note: will
+return <code class="literal">FALSE</code> if the mime part does not contain a Content-MD5.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-part-set-content-location"></a><h3>g_mime_part_set_content_location ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_part_set_content_location    (<em class="parameter"><code><a class="link" href="GMimePart.html" title="GMimePart"><span class="type">GMimePart</span></a> *mime_part</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *content_location</code></em>);</pre>
+<p>
+Set the content location for the specified mime part.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>mime_part</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimePart.html" title="GMimePart"><span class="type">GMimePart</span></a> object</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>content_location</code></em> :</span></p></td>
+<td>content location</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-part-get-content-location"></a><h3>g_mime_part_get_content_location ()</h3>
+<pre class="programlisting">const <span class="returnvalue">char</span> *        g_mime_part_get_content_location    (<em class="parameter"><code><a class="link" href="GMimePart.html" title="GMimePart"><span class="type">GMimePart</span></a> *mime_part</code></em>);</pre>
+<p>
+Gets the value of the Content-Location header if it exists, or
+<code class="literal">NULL</code> otherwise.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>mime_part</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimePart.html" title="GMimePart"><span class="type">GMimePart</span></a> object</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the content location for the specified mime part.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-part-set-content-encoding"></a><h3>g_mime_part_set_content_encoding ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_part_set_content_encoding    (<em class="parameter"><code><a class="link" href="GMimePart.html" title="GMimePart"><span class="type">GMimePart</span></a> *mime_part</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="gmime-gmime-encodings.html#GMimeContentEncoding" title="enum GMimeContentEncoding"><span class="type">GMimeContentEncoding</span></a> encoding</code></em>);</pre>
+<p>
+Set the content encoding for the specified mime part.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>mime_part</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimePart.html" title="GMimePart"><span class="type">GMimePart</span></a> object</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>encoding</code></em> :</span></p></td>
+<td>a <a class="link" href="gmime-gmime-encodings.html#GMimeContentEncoding" title="enum GMimeContentEncoding"><span class="type">GMimeContentEncoding</span></a>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-part-get-content-encoding"></a><h3>g_mime_part_get_content_encoding ()</h3>
+<pre class="programlisting"><a class="link" href="gmime-gmime-encodings.html#GMimeContentEncoding" title="enum GMimeContentEncoding"><span class="returnvalue">GMimeContentEncoding</span></a> g_mime_part_get_content_encoding   (<em class="parameter"><code><a class="link" href="GMimePart.html" title="GMimePart"><span class="type">GMimePart</span></a> *mime_part</code></em>);</pre>
+<p>
+Gets the content encoding of the mime part.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>mime_part</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimePart.html" title="GMimePart"><span class="type">GMimePart</span></a> object</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the content encoding for the specified mime part.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-part-get-best-content-encoding"></a><h3>g_mime_part_get_best_content_encoding ()</h3>
+<pre class="programlisting"><a class="link" href="gmime-gmime-encodings.html#GMimeContentEncoding" title="enum GMimeContentEncoding"><span class="returnvalue">GMimeContentEncoding</span></a> g_mime_part_get_best_content_encoding
+                                                        (<em class="parameter"><code><a class="link" href="GMimePart.html" title="GMimePart"><span class="type">GMimePart</span></a> *mime_part</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="gmime-gmime-encodings.html#GMimeEncodingConstraint" title="enum GMimeEncodingConstraint"><span class="type">GMimeEncodingConstraint</span></a> constraint</code></em>);</pre>
+<p>
+Calculates the most efficient content encoding for the <em class="parameter"><code>mime_part</code></em>
+given the <em class="parameter"><code>constraint</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>mime_part</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimePart.html" title="GMimePart"><span class="type">GMimePart</span></a> object</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>constraint</code></em> :</span></p></td>
+<td>a <a class="link" href="gmime-gmime-encodings.html#GMimeEncodingConstraint" title="enum GMimeEncodingConstraint"><span class="type">GMimeEncodingConstraint</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the best content encoding for the specified mime part.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-part-set-filename"></a><h3>g_mime_part_set_filename ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_part_set_filename            (<em class="parameter"><code><a class="link" href="GMimePart.html" title="GMimePart"><span class="type">GMimePart</span></a> *mime_part</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">char</span> *filename</code></em>);</pre>
+<p>
+Sets the "filename" parameter on the Content-Disposition and also sets the
+"name" parameter on the Content-Type.
+</p>
+<p>
+Note: The <em class="parameter"><code>filename</code></em> string should be in UTF-8.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>mime_part</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimePart.html" title="GMimePart"><span class="type">GMimePart</span></a> object</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>filename</code></em> :</span></p></td>
+<td>the file name</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-part-get-filename"></a><h3>g_mime_part_get_filename ()</h3>
+<pre class="programlisting">const <span class="returnvalue">char</span> *        g_mime_part_get_filename            (<em class="parameter"><code><a class="link" href="GMimePart.html" title="GMimePart"><span class="type">GMimePart</span></a> *mime_part</code></em>);</pre>
+<p>
+Gets the filename of the specificed mime part, or <code class="literal">NULL</code> if the
+<em class="parameter"><code>mime_part</code></em> does not have the filename or name parameter set.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>mime_part</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimePart.html" title="GMimePart"><span class="type">GMimePart</span></a> object</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the filename of the specified <em class="parameter"><code>mime_part</code></em> or <code class="literal">NULL</code> if
+neither of the parameters is set. If a file name is set, the
+returned string will be in UTF-8.</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-part-get-content-object"></a><h3>g_mime_part_get_content_object ()</h3>
+<pre class="programlisting"><a class="link" href="GMimeDataWrapper.html" title="GMimeDataWrapper"><span class="returnvalue">GMimeDataWrapper</span></a> *  g_mime_part_get_content_object      (<em class="parameter"><code><a class="link" href="GMimePart.html" title="GMimePart"><span class="type">GMimePart</span></a> *mime_part</code></em>);</pre>
+<p>
+Gets the internal data-wrapper of the specified mime part, or <code class="literal">NULL</code>
+on error.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>mime_part</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimePart.html" title="GMimePart"><span class="type">GMimePart</span></a> object</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the data-wrapper for the mime part's
+contents. <span class="annotation">[<a href="http://foldoc.org/transfer%20none"><span class="acronym">transfer none</span></a>]</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-mime-part-set-content-object"></a><h3>g_mime_part_set_content_object ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                g_mime_part_set_content_object      (<em class="parameter"><code><a class="link" href="GMimePart.html" title="GMimePart"><span class="type">GMimePart</span></a> *mime_part</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="GMimeDataWrapper.html" title="GMimeDataWrapper"><span class="type">GMimeDataWrapper</span></a> *content</code></em>);</pre>
+<p>
+Sets the content object on the mime part.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>mime_part</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimePart.html" title="GMimePart"><span class="type">GMimePart</span></a> object</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>content</code></em> :</span></p></td>
+<td>a <a class="link" href="GMimeDataWrapper.html" title="GMimeDataWrapper"><span class="type">GMimeDataWrapper</span></a> content object</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.18</div>
+</body>
+</html>

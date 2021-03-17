@@ -1,0 +1,31 @@
+From eb7d112a40cd3b509e5b7614aa9d57939f4caa6b Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Fri, 22 Sep 2017 11:52:15 +0200
+Subject: [PATCH] audio/a2dp: Keep streams in "streaming" state forever
+
+This should fix unnecessary source changes to bluetooth
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ profiles/audio/a2dp.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/profiles/audio/a2dp.c b/profiles/audio/a2dp.c
+index 64b8583..279430e 100644
+--- a/profiles/audio/a2dp.c
++++ b/profiles/audio/a2dp.c
+@@ -851,9 +851,11 @@ static gboolean start_ind(struct avdtp *session, struct avdtp_local_sep *sep,
+ 
+ 	if (!a2dp_sep->locked) {
+ 		a2dp_sep->session = avdtp_ref(session);
++		/* Keep streams in "streaming" state forever
+ 		a2dp_sep->suspend_timer = g_timeout_add_seconds(SUSPEND_TIMEOUT,
+ 						(GSourceFunc) suspend_timeout,
+ 						a2dp_sep);
++		*/
+ 	}
+ 
+ 	if (!a2dp_sep->starting)
+-- 
+2.7.4
+

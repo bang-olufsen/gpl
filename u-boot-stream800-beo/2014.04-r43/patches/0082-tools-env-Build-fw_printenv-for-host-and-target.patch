@@ -1,0 +1,58 @@
+From 161f1d316e4e5e18036617f4b99febf678812992 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Fri, 11 Apr 2014 09:14:26 +0200
+Subject: [PATCH] tools:env: Build fw_printenv for host and target
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ tools/env/Makefile | 28 +++++++++++++---------------
+ 1 file changed, 13 insertions(+), 15 deletions(-)
+
+diff --git a/tools/env/Makefile b/tools/env/Makefile
+index fcb752d..76a621a 100644
+--- a/tools/env/Makefile
++++ b/tools/env/Makefile
+@@ -8,27 +8,25 @@
+ # fw_printenv is supposed to run on the target system, which means it should be
+ # built with cross tools. Although it may look weird, we only replace "HOSTCC"
+ # with "CC" here for the maximum code reuse of scripts/Makefile.host.
+-HOSTCC = $(CC)
++
++HOSTSRCS := $(srctree)/tools/env/*.c
++HEADERS := fw_env.h $(OBJTREE)/include/config.h
+ 
+ # Compile for a hosted environment on the target
+-HOST_EXTRACFLAGS  = $(patsubst -I%,-idirafter%, $(UBOOTINCLUDE)) \
++HOSTCFLAGS  = $(patsubst -I%,-idirafter%, $(UBOOTINCLUDE)) \
+ 		-idirafter $(srctree)/tools/env \
+-		-DUSE_HOSTCC \
+-		-DTEXT_BASE=$(TEXT_BASE)
++                -DUSE_HOSTCC \
++                -DTEXT_BASE=$(TEXT_BASE) \
+ 
+ ifeq ($(MTD_VERSION),old)
+-HOST_EXTRACFLAGS += -DMTD_OLD
++HOSTCFLAGS += -DMTD_OLD
+ endif
+ 
+-always := fw_printenv
+-hostprogs-y := fw_printenv_unstripped
+-
+-fw_printenv_unstripped-objs := fw_env.o fw_env_main.o \
+-	crc32.o ctype.o linux_string.o \
+-	env_attr.o env_flags.o
++always := fw_printenv_host fw_printenv
+ 
+-quiet_cmd_strip = STRIP   $@
+-      cmd_strip = $(STRIP) -o $@ $<
++$(obj)/fw_printenv: FORCE
++	$(CC) $(HOSTCFLAGS) $(HOSTLDFLAGS) -o $@ $(HOSTSRCS)
++	$(STRIP) $@
+ 
+-$(obj)/fw_printenv: $(obj)/fw_printenv_unstripped FORCE
+-	$(call if_changed,strip)
++$(obj)/fw_printenv_host: FORCE
++	$(HOSTCC) $(HOSTCFLAGS) $(HOSTLDFLAGS) -o $@ $(HOSTSRCS)
+-- 
+2.7.4
+

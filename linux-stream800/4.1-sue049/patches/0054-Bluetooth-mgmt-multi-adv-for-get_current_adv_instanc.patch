@@ -1,0 +1,32 @@
+From 2e5ad1dcf0396900df540730ebb0844667340868 Mon Sep 17 00:00:00 2001
+From: Florian Grandel <fgrandel@gmail.com>
+Date: Thu, 18 Jun 2015 03:16:39 +0200
+Subject: [PATCH] Bluetooth: mgmt: multi adv for get_current_adv_instance()
+
+Replaces the hard coded instance identifier in
+get_current_adv_instance() with the actual current instance identifier
+so that this method is prepared to work with more than one advertising
+instance.
+
+Signed-off-by: Florian Grandel <fgrandel@gmail.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+---
+ net/bluetooth/mgmt.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
+index bba57dc..e9f191e 100644
+--- a/net/bluetooth/mgmt.c
++++ b/net/bluetooth/mgmt.c
+@@ -841,7 +841,7 @@ static u8 get_current_adv_instance(struct hci_dev *hdev)
+ 	 */
+ 	if (hci_dev_test_flag(hdev, HCI_ADVERTISING_INSTANCE) &&
+ 	    !hci_dev_test_flag(hdev, HCI_ADVERTISING))
+-		return 0x01;
++		return hdev->cur_adv_instance;
+ 
+ 	return 0x00;
+ }
+-- 
+2.7.4
+

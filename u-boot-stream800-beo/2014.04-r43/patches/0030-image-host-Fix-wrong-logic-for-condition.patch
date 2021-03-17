@@ -1,0 +1,36 @@
+From 1424e0ef7f23665a5a3c83cbcfce6547d8d83efc Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Fri, 2 May 2014 08:54:53 +0200
+Subject: [PATCH] image-host: Fix wrong logic for condition
+
+In case of error we get negative value not positive. Also print error message in case
+error occurred.
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ tools/image-host.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/tools/image-host.c b/tools/image-host.c
+index cb36477..5aacdf2 100644
+--- a/tools/image-host.c
++++ b/tools/image-host.c
+@@ -610,9 +610,12 @@ static int fit_config_process_sig(const char *keydir, void *keydest,
+ 	if (keydest) {
+ 		ret = info.algo->add_verify_data(&info, keydest);
+ 		if (ret) {
+-			printf("Failed to add verification data for '%s' signature node in '%s' image node\n",
+-			       node_name, conf_name);
+-			return ret == FDT_ERR_NOSPACE ? -ENOSPC : -EIO;
++			if (ret == -FDT_ERR_NOSPACE)
++				printf("Retrying with more space allocated\n");
++			else
++				printf("Failed to add verification data for '%s' signature node in '%s' image node\n",
++				       node_name, conf_name);
++			return ret == -FDT_ERR_NOSPACE ? -ENOSPC : -EIO;
+ 		}
+ 	}
+ 
+-- 
+2.7.4
+

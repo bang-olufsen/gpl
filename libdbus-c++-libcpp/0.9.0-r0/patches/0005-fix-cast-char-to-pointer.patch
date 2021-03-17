@@ -1,0 +1,24 @@
+From 81ea45b6d112cccfc122f558207bf8a1651a8302 Mon Sep 17 00:00:00 2001
+From: Martin Geier <martin.geier@streamunlimited.com>
+Date: Tue, 27 Jun 2017 16:17:18 +0200
+Subject: [PATCH] fix cast char to pointer
+
+Signed-off-by: Martin Geier <martin.geier@streamunlimited.com>
+---
+ src/pipe.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/pipe.cpp b/src/pipe.cpp
+index 45c2ba6..3098184 100644
+--- a/src/pipe.cpp
++++ b/src/pipe.cpp
+@@ -83,5 +83,5 @@ ssize_t Pipe::read(void *buffer, unsigned int &nbytes)
+ void Pipe::signal()
+ {
+   // TODO: ignoring return of read/write generates warning; maybe relevant for eventloop work...
+-  ::write(_fd_write, '\0', 1);
++  ::write(_fd_write, "\0", 1);
+ }
+-- 
+2.7.4
+

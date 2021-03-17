@@ -1,0 +1,69 @@
+From 053b7dae7b2c87f4cb69802fcded709c0fb1a08c Mon Sep 17 00:00:00 2001
+From: Fionn Cleary <fionn.cleary@streamunlimited.com>
+Date: Tue, 12 Aug 2014 18:44:15 +0200
+Subject: [PATCH] arm33xx/pwm: Fix compiler warnings
+
+Should all be uncontroversial, all are either unused variables or
+functions, missing includes, incorrect declarations () vs (void).
+
+Signed-off-by: Fionn Cleary <fionn.cleary@streamunlimited.com>
+---
+ arch/arm/cpu/armv7/am33xx/pwm.c        | 7 ++-----
+ arch/arm/include/asm/arch-am33xx/pwm.h | 2 +-
+ 2 files changed, 3 insertions(+), 6 deletions(-)
+
+diff --git a/arch/arm/cpu/armv7/am33xx/pwm.c b/arch/arm/cpu/armv7/am33xx/pwm.c
+index 460593e..f4780c7 100644
+--- a/arch/arm/cpu/armv7/am33xx/pwm.c
++++ b/arch/arm/cpu/armv7/am33xx/pwm.c
+@@ -32,6 +32,7 @@
+ #include <asm/io.h>
+ #include <asm/arch/pwm.h>
+ #include <asm/arch/clock.h>
++#include <asm/arch/cpu.h>
+ #include <asm/arch/hardware.h>
+ 
+ #define PERIOD_MAX 0xFFFF
+@@ -146,7 +147,6 @@ int pwm_enable(int pwm_id)
+ {
+ 	struct am33xx_pwm *pwm = get_base(pwm_id);
+ 	unsigned short aqcsfrc_val, aqcsfrc_mask;
+-	int ret;
+ 
+ 	if (!VALID_PWM(pwm_id)) {
+ 		printf("Allowed pwm id is out of boundary (max 5).\n");
+@@ -189,7 +189,7 @@ void pwm_disable(int pwm_id)
+ 
+ 	if (!VALID_PWM(pwm_id)) {
+ 		printf("Allowed pwm id is out of boundary (max 5).\n");
+-		return -1;
++		return;
+ 	}
+ 
+ 	printf("%s - id:%d\n", __func__, pwm_id);
+@@ -327,9 +327,6 @@ int pwm_config(int pwm_id, int duty_ns, int period_ns)
+ 
+ int pwm_init(int pwm_id, int div, int invert)
+ {
+-	struct am33xx_pwm *base = get_base(pwm_id);
+-	unsigned int val;
+-
+ 	if (!VALID_PWM(pwm_id)) {
+ 		printf("Allowed pwm id is out of boundary (max 5).\n");
+ 		return -1;
+diff --git a/arch/arm/include/asm/arch-am33xx/pwm.h b/arch/arm/include/asm/arch-am33xx/pwm.h
+index f257568..35aad99 100644
+--- a/arch/arm/include/asm/arch-am33xx/pwm.h
++++ b/arch/arm/include/asm/arch-am33xx/pwm.h
+@@ -127,7 +127,7 @@ struct am33xx_pwm {
+ struct ehrpwm_chip {
+ 	int polarity;
+ 	int div;
+-	unsigned long period_cycles[NUM_PWM_CHANNEL]
++	unsigned long period_cycles[NUM_PWM_CHANNEL];
+ };
+ 
+ 
+-- 
+2.7.4
+

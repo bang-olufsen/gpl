@@ -1,0 +1,6 @@
+[_presets_]
+version=1.0
+element-name=avenc_wmv1
+
+[Rygel DLNA preset]
+bitrate=1200000

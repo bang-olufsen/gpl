@@ -1,0 +1,225 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>GISignalInfo: GObject Introspection Reference Manual</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.79.1">
+<link rel="home" href="index.html" title="GObject Introspection Reference Manual">
+<link rel="up" href="ch01.html" title="GIRepository">
+<link rel="prev" href="gi-GICallbackInfo.html" title="GICallbackInfo">
+<link rel="next" href="gi-GIVFuncInfo.html" title="GIVFuncInfo">
+<meta name="generator" content="GTK-Doc V1.29.1 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#gi-GISignalInfo.description" class="shortcut">Description</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="ch01.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="gi-GICallbackInfo.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="gi-GIVFuncInfo.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry">
+<a name="gi-GISignalInfo"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="gi-GISignalInfo.top_of_page"></a>GISignalInfo</span></h2>
+<p>GISignalInfo — Struct representing a signal</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1">
+<a name="gi-GISignalInfo.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="functions_return">
+<col class="functions_name">
+</colgroup>
+<tbody>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name">
+<a class="link" href="gi-GISignalInfo.html#GI-IS-SIGNAL-INFO:CAPS" title="GI_IS_SIGNAL_INFO()">GI_IS_SIGNAL_INFO</a><span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">GSignalFlags</span>
+</td>
+<td class="function_name">
+<a class="link" href="gi-GISignalInfo.html#g-signal-info-get-flags" title="g_signal_info_get_flags ()">g_signal_info_get_flags</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="gi-GIVFuncInfo.html#GIVFuncInfo" title="GIVFuncInfo"><span class="returnvalue">GIVFuncInfo</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="gi-GISignalInfo.html#g-signal-info-get-class-closure" title="g_signal_info_get_class_closure ()">g_signal_info_get_class_closure</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">gboolean</span>
+</td>
+<td class="function_name">
+<a class="link" href="gi-GISignalInfo.html#g-signal-info-true-stops-emit" title="g_signal_info_true_stops_emit ()">g_signal_info_true_stops_emit</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="gi-GISignalInfo.other"></a><h2>Types and Values</h2>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="name">
+<col class="description">
+</colgroup>
+<tbody><tr>
+<td class="typedef_keyword">typedef</td>
+<td class="function_name"><a class="link" href="gi-GISignalInfo.html#GISignalInfo" title="GISignalInfo">GISignalInfo</a></td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="gi-GISignalInfo.description"></a><h2>Description</h2>
+<p>GISignalInfo represents a signal. It's a sub-struct of <a class="link" href="gi-GICallableInfo.html#GICallableInfo" title="GICallableInfo"><span class="type">GICallableInfo</span></a>
+and contains a set of flags and a class closure.</p>
+<p>See <a class="link" href="gi-GICallableInfo.html#GICallableInfo" title="GICallableInfo"><span class="type">GICallableInfo</span></a> for information on how to retreive arguments
+and other metadata from the signal.</p>
+<div class="refsect1">
+<a name="gi-gisignalinfo.struct-hierarchy"></a><h2>Struct hierarchy</h2>
+<pre class="synopsis">
+  <a class="link" href="gi-GIBaseInfo.html" title="GIBaseInfo">GIBaseInfo</a>
+   +----<a class="link" href="gi-GICallableInfo.html" title="GICallableInfo">GICallableInfo</a>
+         +----<a class="link" href="gi-GIFunctionInfo.html" title="GIFunctionInfo">GIFunctionInfo</a>
+         +----GISignalInfo
+         +----<a class="link" href="gi-GIVFuncInfo.html" title="GIVFuncInfo">GIVFuncInfo</a>
+</pre>
+</div>
+</div>
+<div class="refsect1">
+<a name="gi-GISignalInfo.functions_details"></a><h2>Functions</h2>
+<div class="refsect2">
+<a name="GI-IS-SIGNAL-INFO:CAPS"></a><h3>GI_IS_SIGNAL_INFO()</h3>
+<pre class="programlisting">#define             GI_IS_SIGNAL_INFO(info)</pre>
+<p>Checks if <em class="parameter"><code>info</code></em>
+ is a <a class="link" href="gi-GISignalInfo.html#GISignalInfo" title="GISignalInfo"><span class="type">GISignalInfo</span></a>.</p>
+<div class="refsect3">
+<a name="GI-IS-SIGNAL-INFO.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>an info structure</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-signal-info-get-flags"></a><h3>g_signal_info_get_flags ()</h3>
+<pre class="programlisting"><span class="returnvalue">GSignalFlags</span>
+g_signal_info_get_flags (<em class="parameter"><code><a class="link" href="gi-GISignalInfo.html#GISignalInfo" title="GISignalInfo"><span class="type">GISignalInfo</span></a> *info</code></em>);</pre>
+<p>Obtain the flags for this signal info. See <span class="type">GSignalFlags</span> for
+more information about possible flag values.</p>
+<div class="refsect3">
+<a name="g-signal-info-get-flags.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>a <a class="link" href="gi-GISignalInfo.html#GISignalInfo" title="GISignalInfo"><span class="type">GISignalInfo</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="g-signal-info-get-flags.returns"></a><h4>Returns</h4>
+<p> the flags</p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-signal-info-get-class-closure"></a><h3>g_signal_info_get_class_closure ()</h3>
+<pre class="programlisting"><a class="link" href="gi-GIVFuncInfo.html#GIVFuncInfo" title="GIVFuncInfo"><span class="returnvalue">GIVFuncInfo</span></a> *
+g_signal_info_get_class_closure (<em class="parameter"><code><a class="link" href="gi-GISignalInfo.html#GISignalInfo" title="GISignalInfo"><span class="type">GISignalInfo</span></a> *info</code></em>);</pre>
+<p>Obtain the class closure for this signal if one is set. The class
+closure is a virtual function on the type that the signal belongs to.
+If the signal lacks a closure <code class="literal">NULL</code> will be returned.</p>
+<div class="refsect3">
+<a name="g-signal-info-get-class-closure.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>a <a class="link" href="gi-GISignalInfo.html#GISignalInfo" title="GISignalInfo"><span class="type">GISignalInfo</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="g-signal-info-get-class-closure.returns"></a><h4>Returns</h4>
+<p>the class closure or <code class="literal">NULL</code>. </p>
+<p><span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="g-signal-info-true-stops-emit"></a><h3>g_signal_info_true_stops_emit ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>
+g_signal_info_true_stops_emit (<em class="parameter"><code><a class="link" href="gi-GISignalInfo.html#GISignalInfo" title="GISignalInfo"><span class="type">GISignalInfo</span></a> *info</code></em>);</pre>
+<p>Obtain if the returning true in the signal handler will
+stop the emission of the signal.</p>
+<div class="refsect3">
+<a name="g-signal-info-true-stops-emit.parameters"></a><h4>Parameters</h4>
+<div class="informaltable"><table class="informaltable" width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>info</p></td>
+<td class="parameter_description"><p>a <a class="link" href="gi-GISignalInfo.html#GISignalInfo" title="GISignalInfo"><span class="type">GISignalInfo</span></a></p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="g-signal-info-true-stops-emit.returns"></a><h4>Returns</h4>
+<p> <code class="literal">TRUE</code> if returning true stops the signal emission</p>
+</div>
+</div>
+</div>
+<div class="refsect1">
+<a name="gi-GISignalInfo.other_details"></a><h2>Types and Values</h2>
+<div class="refsect2">
+<a name="GISignalInfo"></a><h3>GISignalInfo</h3>
+<pre class="programlisting">typedef GIBaseInfo GISignalInfo;
+</pre>
+<p>Represents a signal.</p>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>Generated by GTK-Doc V1.29.1</div>
+</body>
+</html>

@@ -1,0 +1,302 @@
+From 330cbba584389147789e32c0b21d4de8f3755aa6 Mon Sep 17 00:00:00 2001
+From: Fionn Cleary <fionn.cleary@streamunlimited.com>
+Date: Wed, 17 Sep 2014 16:22:46 +0200
+Subject: [PATCH] stream800: Add support for DDR3 modules
+
+Do board detection before initialising the RAM.
+
+Signed-off-by: Fionn Cleary <fionn.cleary@streamunlimited.com>
+---
+ board/streamunlimited/stream800/board-spl.c     | 136 +++++++++++++++++++-----
+ board/streamunlimited/stream800/board.c         |   3 +
+ board/streamunlimited/stream800/board_defines.c |  41 +++----
+ board/streamunlimited/stream800/board_defines.h |   4 +-
+ 4 files changed, 138 insertions(+), 46 deletions(-)
+
+diff --git a/board/streamunlimited/stream800/board-spl.c b/board/streamunlimited/stream800/board-spl.c
+index 2211d2f..d495513 100644
+--- a/board/streamunlimited/stream800/board-spl.c
++++ b/board/streamunlimited/stream800/board-spl.c
+@@ -43,6 +43,8 @@
+ 
+ DECLARE_GLOBAL_DATA_PTR;
+ 
++/* Definitions for DDR2 */
++
+ static const struct ddr_data ddr2_data = {
+ 	.datardsratio0 = ((MT47H128M16RT25E_RD_DQS<<30) |
+ 			  (MT47H128M16RT25E_RD_DQS<<20) |
+@@ -82,15 +84,15 @@ static const struct cmd_control ddr2_cmd_ctrl_data = {
+ };
+ 
+ static const struct emif_regs ddr2_emif_reg_data = {
+-	.sdram_config = MT47H128M16RT25E_EMIF_SDCFG,
+-	.ref_ctrl = MT47H128M16RT25E_EMIF_SDREF,
+-	.sdram_tim1 = MT47H128M16RT25E_EMIF_TIM1,
+-	.sdram_tim2 = MT47H128M16RT25E_EMIF_TIM2,
+-	.sdram_tim3 = MT47H128M16RT25E_EMIF_TIM3,
+-	.emif_ddr_phy_ctlr_1 = MT47H128M16RT25E_EMIF_READ_LATENCY,
++	.sdram_config		= MT47H128M16RT25E_EMIF_SDCFG,
++	.ref_ctrl		= MT47H128M16RT25E_EMIF_SDREF,
++	.sdram_tim1		= MT47H128M16RT25E_EMIF_TIM1,
++	.sdram_tim2		= MT47H128M16RT25E_EMIF_TIM2,
++	.sdram_tim3		= MT47H128M16RT25E_EMIF_TIM3,
++	.emif_ddr_phy_ctlr_1	= MT47H128M16RT25E_EMIF_READ_LATENCY,
+ };
+ 
+-const struct ctrl_ioregs ioregs = {
++static const struct ctrl_ioregs ioregs_ddr2 = {
+ 	.cm0ioctl		= MT47H128M16RT25E_IOCTRL_VALUE,
+ 	.cm1ioctl		= MT47H128M16RT25E_IOCTRL_VALUE,
+ 	.cm2ioctl		= MT47H128M16RT25E_IOCTRL_VALUE,
+@@ -98,6 +100,79 @@ const struct ctrl_ioregs ioregs = {
+ 	.dt1ioctl		= MT47H128M16RT25E_IOCTRL_VALUE,
+ };
+ 
++/* Definitions for DDR3 */
++
++/* Micron MT41K128M16JT-125E 2Gbit on Stream800DDR3 @ 303MHz */
++#define MT41K128M16JT125E_303_EMIF_READ_LATENCY 0x100006
++#define MT41K128M16JT125E_303_EMIF_TIM1		0x0888A39B
++#define MT41K128M16JT125E_303_EMIF_TIM2		0x26337FDA
++#define MT41K128M16JT125E_303_EMIF_TIM3		0x501F830F
++#define MT41K128M16JT125E_303_EMIF_SDCFG	0x61C14AB2
++#define MT41K128M16JT125E_303_EMIF_SDREF	0x0000093B
++#define MT41K128M16JT125E_303_ZQ_CFG		0x50074BE4
++#define MT41K128M16JT125E_303_RATIO		0x80
++#define MT41K128M16JT125E_303_INVERT_CLKOUT	0x0
++#define MT41K128M16JT125E_303_RD_DQS		0x40
++#define MT41K128M16JT125E_303_WR_DQS		0x40
++#define MT41K128M16JT125E_303_PHY_WR_DATA	0x80
++#define MT41K128M16JT125E_303_PHY_FIFO_WE	0x58
++#define MT41K128M16JT125E_303_IOCTRL_VALUE	0x37B
++
++/* Micron MT41K128M16JT-125E 2Gbit on Stream800DDR3 @ 400MHz */
++#define MT41K128M16JT125E_400_EMIF_READ_LATENCY 0x100007
++#define MT41K128M16JT125E_400_EMIF_TIM1		0x0AAAD4DB
++#define MT41K128M16JT125E_400_EMIF_TIM2		0x26437FDA
++#define MT41K128M16JT125E_400_EMIF_TIM3		0x501F83FF
++#define MT41K128M16JT125E_400_EMIF_SDCFG	0x61C152B2
++#define MT41K128M16JT125E_400_EMIF_SDREF	0x00000C30
++#define MT41K128M16JT125E_400_ZQ_CFG		0x50074BE4
++#define MT41K128M16JT125E_400_RATIO		0x80
++#define MT41K128M16JT125E_400_INVERT_CLKOUT	0x0
++#define MT41K128M16JT125E_400_RD_DQS		0x40
++#define MT41K128M16JT125E_400_WR_DQS		0x40
++#define MT41K128M16JT125E_400_PHY_WR_DATA	0x80
++#define MT41K128M16JT125E_400_PHY_FIFO_WE	0x60
++#define MT41K128M16JT125E_400_IOCTRL_VALUE	0x37B
++
++static const struct ddr_data ddr3_data = {
++	.datardsratio0	= MT41K128M16JT125E_303_RD_DQS,
++	.datawdsratio0	= MT41K128M16JT125E_303_WR_DQS,
++	.datafwsratio0	= MT41K128M16JT125E_303_PHY_FIFO_WE,
++	.datawrsratio0	= MT41K128M16JT125E_303_PHY_WR_DATA,
++};
++
++static const struct cmd_control ddr3_cmd_ctrl_data = {
++	.cmd0csratio	= MT41K128M16JT125E_303_RATIO,
++	.cmd0iclkout	= MT41K128M16JT125E_303_INVERT_CLKOUT,
++
++	.cmd1csratio	= MT41K128M16JT125E_303_RATIO,
++	.cmd1iclkout	= MT41K128M16JT125E_303_INVERT_CLKOUT,
++
++	.cmd2csratio	= MT41K128M16JT125E_303_RATIO,
++	.cmd2iclkout	= MT41K128M16JT125E_303_INVERT_CLKOUT,
++};
++
++static struct emif_regs ddr3_emif_reg_data = {
++	.sdram_config	     = MT41K128M16JT125E_303_EMIF_SDCFG,
++	.ref_ctrl	     = MT41K128M16JT125E_303_EMIF_SDREF,
++	.sdram_tim1	     = MT41K128M16JT125E_303_EMIF_TIM1,
++	.sdram_tim2	     = MT41K128M16JT125E_303_EMIF_TIM2,
++	.sdram_tim3	     = MT41K128M16JT125E_303_EMIF_TIM3,
++	.zq_config	     = MT41K128M16JT125E_303_ZQ_CFG,
++	.emif_ddr_phy_ctlr_1 = (MT41K128M16JT125E_303_EMIF_READ_LATENCY |
++				PHY_EN_DYN_PWRDN),
++};
++
++static const struct ctrl_ioregs ioregs_ddr3 = {
++	.cm0ioctl	= MT41K128M16JT125E_303_IOCTRL_VALUE,
++	.cm1ioctl	= MT41K128M16JT125E_303_IOCTRL_VALUE,
++	.cm2ioctl	= MT41K128M16JT125E_303_IOCTRL_VALUE,
++	.dt0ioctl	= MT41K128M16JT125E_303_IOCTRL_VALUE,
++	.dt1ioctl	= MT41K128M16JT125E_303_IOCTRL_VALUE,
++};
++
++////////////////////////////////////////////////////////////////////////////////
++
+ void set_mux_conf_regs(void)
+ {
+ }
+@@ -126,30 +201,41 @@ void set_uart_mux_conf(void)
+ 
+ void sdram_init(void)
+ {
+-	config_ddr(266, &ioregs, &ddr2_data,
++	struct Stream800Board board;
++	init_adc();
++	board_detect(&board);
++
++	switch (board.moduleVersion) {
++	case MV_L0_DDR3:
++		config_ddr(303, &ioregs_ddr3, &ddr3_data,
++			   &ddr3_cmd_ctrl_data, &ddr3_emif_reg_data, 0);
++		break;
++	case MV_unknown:
++	case MV_L0:
++	case MV_L1:
++	case MV_L2:
++	default:
++		config_ddr(266, &ioregs_ddr2, &ddr2_data,
+ 			   &ddr2_cmd_ctrl_data, &ddr2_emif_reg_data, 0);
++		break;
++	}
+ 
+-	// If we booted from UART, then check carrier type.
+-	if (spl_boot_device() == BOOT_DEVICE_UART) {
+-		// Check for factory test carrier; if so, load from mmc1
+-		struct Stream800Board board;
+-		init_adc();
+-		board_detect(&board);
+-
+-		if (board.carrierBoardType == CBT_SueFactoryTestBoard) {
+-			printf("Running on factory test carrier and booted via UART, loading u-boot.img from mmc1\n");
+-			// mmc1 must be enabled before it initialised.
+-			enable_mmc1_pin_mux();
+-			// Force mmc1 as boot device and set mode to FAT.
+-			gd->arch.omap_boot_params.omap_bootdevice = BOOT_DEVICE_MMC2;
+-			gd->arch.omap_boot_params.omap_bootmode = MMCSD_MODE_FAT;
+-		}
++	/* As we've just done board detection this is a useful spot to do the test
++	 * for a factory carrier board.  If so, and we booted from UART, then load
++	 * u-boot.img from mmc1. */
++	if (spl_boot_device() == BOOT_DEVICE_UART &&
++	    board.carrierBoardType == CBT_SueFactoryTestBoard) {
++		printf("Running on factory test carrier and booted via UART, loading u-boot.img from mmc1\n");
++		/* mmc1 must be enabled before it initialised. */
++		enable_mmc1_pin_mux();
++		/* Force mmc1 as boot device and set mode to FAT. */
++		gd->arch.omap_boot_params.omap_bootdevice = BOOT_DEVICE_MMC2;
++		gd->arch.omap_boot_params.omap_bootmode = MMCSD_MODE_FAT;
+ 	}
+ }
+ 
+ #define OSC	(V_OSCK/1000000)
+-const struct dpll_params dpll_ddr = {
+-		266, OSC-1, 1, -1, -1, -1, -1};
++const struct dpll_params dpll_ddr = {266, OSC-1, 1, -1, -1, -1, -1};
+ 
+ const struct dpll_params *get_dpll_ddr_params(void)
+ {
+diff --git a/board/streamunlimited/stream800/board.c b/board/streamunlimited/stream800/board.c
+index d0ee484..905d404 100755
+--- a/board/streamunlimited/stream800/board.c
++++ b/board/streamunlimited/stream800/board.c
+@@ -372,6 +372,9 @@ int board_late_init(void)
+ 		case MV_L0: setenv("board_rev", "l0"); break;
+ 		case MV_L1: setenv("board_rev", "l1"); break;
+ 		case MV_L2: setenv("board_rev", "l2");break;
++		/* The L0 DDR3 module is effectively a L2 module with DDR3 from
++		 * a device tree POV. */
++		case MV_L0_DDR3: setenv("board_rev", "l2"); break;
+ 		case MV_unknown:
+ 		default:
+ 			setenv("board_rev", "unknown");
+diff --git a/board/streamunlimited/stream800/board_defines.c b/board/streamunlimited/stream800/board_defines.c
+index 667e13b..66afbc1 100644
+--- a/board/streamunlimited/stream800/board_defines.c
++++ b/board/streamunlimited/stream800/board_defines.c
+@@ -3,18 +3,18 @@
+ 
+ #ifndef CONFIG_SPL_BUILD
+ const char *stream800ModuleVersionStrings[] = {
+-	[MV_unknown] = "unknown",
+-	[MV_L0] = "stream800 rev.L0",
+-	[MV_L1] = "stream800 rev.L1",
+-	[MV_L2] = "stream800 rev.L2"
++	[MV_unknown]	= "unknown",
++	[MV_L0]		= "stream800 rev.L0",
++	[MV_L1]		= "stream800 rev.L1",
++	[MV_L2]		= "stream800 rev.L2",
++	[MV_L0_DDR3]	= "stream800 rev.L0 w/ddr3",
+ };
+ 
+ const char *stream800CarrierBoardTypeStrings[] = {
+-	[CBT_unknown]				= "unknown",
++	[CBT_unknown]			= "unknown",
+ 	[CBT_SueFactoryTestBoard]	= "SUE factory test board",
+ 	[CBT_SueFirstCarrierBoard]	= "SUE first carrier board",
+ 	[CBT_SueDemoClientBoard]	= "SUE demo client board",
+-	// CUSTOMIZE: Add name for you board here
+ };
+ 
+ const char *boardStateStrings[] = {
+@@ -28,26 +28,29 @@ const char *boardStateStrings[] = {
+ 
+ static struct SupportedModules {
+ 	Stream800ModuleVersion moduleVersion;
+-	unsigned msb_min;	// Ain0
++	unsigned msb_min;	/* Ain0 */
+ 	unsigned msb_max;
+-	unsigned lsb_min;	// Ain6
++	unsigned lsb_min;	/* Ain6 */
+ 	unsigned lsb_max;
+ } supportedModules[] = {
+ 	{MV_L2,		0xCCC,	0xD54,	0x4CC,	0x555},
+-	// L2 - Stream800/1WEB7 and  L2 - Stream800/2WEB7:
+-	// same config for different ADC values, as RAM
+-	// and Bluetooth are auto-detected at runtime:
++	/* L2 - Stream800/1WEB7 and L2 - Stream800/2WEB7: same config for
++	 * different ADC values, as RAM and Bluetooth are auto-detected at
++	 * runtime: */
+ 	{MV_L2,		0xCCC,	0xD54,	0x111,	0x199},
+ 	{MV_L2,		0xCCC,	0xD54,	0x199,	0x222},
+-	// L2 - Stream800/2E7 (no wifi/bt module)
++	/* L2 - Stream800/2E7 (no wifi/bt module) */
+ 	{MV_L2,		0xCCC,	0xD54,	0x2aa,	0x333},
+-	// L2 - Stream800/1E7 (no wifi/bt module)
+-	{MV_L2,		0xCCC,  0xD54,  0x5dd,  0x666},
+-	// L2 - Stream800/2E7-4 (no wifi/bt module, 4G flash)
+-	{MV_L2,		0xCCC,  0xD54,  0x6ee,  0x777},
+-	// L2 - Stream800/2E8-4 (no wifi/bt module, 800Mhz, 4G flash)
+-	{MV_L2,		0xCCC,  0xD54,  0x777,  0x7ff},
+-	// TODO: add another stream800 module revisions here
++	/* L2 - Stream800/1E7 (no wifi/bt module) */
++	{MV_L2,		0xCCC,	0xD54,	0x5dd,	0x666},
++	/* L2 - Stream800/2E7-4 (no wifi/bt module, 4G flash) */
++	{MV_L2,		0xCCC,	0xD54,	0x6ee,	0x777},
++	/* L2 - Stream800/2E8-4 (no wifi/bt module, 800Mhz, 4G flash) */
++	{MV_L2,		0xCCC,	0xD54,	0x777,	0x7ff},
++	/* L0 - Stream800/2WE8-D3 Teufel */
++	{MV_L0_DDR3,	0x2AA,	0x333,	0x111,	0x199},
++	/* L0 - Stream800/1WEB8-D3 */
++	{MV_L0_DDR3,	0x2AA,	0x333,	0x199,	0x222},
+ };
+ 
+ static struct SupportedCarrierBoards {
+diff --git a/board/streamunlimited/stream800/board_defines.h b/board/streamunlimited/stream800/board_defines.h
+index e64f1d8..3d720c2 100644
+--- a/board/streamunlimited/stream800/board_defines.h
++++ b/board/streamunlimited/stream800/board_defines.h
+@@ -10,7 +10,8 @@ typedef enum {
+ 	MV_unknown,
+ 	MV_L0,
+ 	MV_L1,
+-	MV_L2
++	MV_L2,
++	MV_L0_DDR3,
+ } Stream800ModuleVersion;
+ 
+ extern const char *stream800ModuleVersionStrings[];
+@@ -23,7 +24,6 @@ typedef enum {
+ 	CBT_SueFactoryTestBoard,		///< SUE factory test board
+ 	CBT_SueFirstCarrierBoard,		///< SUE Carrier Board
+ 	CBT_SueDemoClientBoard,			///< SUE demo client
+-	// CUSTOMIZE: Add entry for you board here
+ } Stream800CarrierBoardType;
+ 
+ extern const char *stream800CarrierBoardTypeStrings[];
+-- 
+2.7.4
+

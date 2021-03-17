@@ -1,0 +1,111 @@
+From 838e68a1274fcf39615255f329ec267f26404336 Mon Sep 17 00:00:00 2001
+From: Marek Belisko <marek.belisko@streamunlimited.com>
+Date: Wed, 7 Aug 2013 10:09:35 +0200
+Subject: [PATCH] msub: Extend musb to handle correctly both usb host
+ instances.
+
+Switch second port to host and extend max number of controllers.
+
+Signed-off-by: Marek Belisko <marek.belisko@streamunlimited.com>
+---
+ drivers/usb/musb-new/musb_uboot.c | 23 +++++++++++++----------
+ include/configs/stream800.h       |  3 ++-
+ 2 files changed, 15 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/usb/musb-new/musb_uboot.c b/drivers/usb/musb-new/musb_uboot.c
+index 1b2c095..d7d7947 100644
+--- a/drivers/usb/musb-new/musb_uboot.c
++++ b/drivers/usb/musb-new/musb_uboot.c
+@@ -13,7 +13,7 @@
+ #include "musb_gadget.h"
+ 
+ #ifdef CONFIG_MUSB_HOST
+-static struct musb *host;
++static struct musb *host[CONFIG_USB_MAX_CONTROLLER_COUNT] = { NULL, NULL };
+ static struct usb_hcd hcd;
+ static enum usb_device_speed host_speed;
+ 
+@@ -118,13 +118,13 @@ int usb_lowlevel_init(int index, enum usb_init_type init, void **controller)
+ 	void *mbase;
+ 	int timeout = MUSB_HOST_TIMEOUT;
+ 
+-	if (!host) {
++	if (!host[index]) {
+ 		printf("MUSB host is not registered\n");
+ 		return -ENODEV;
+ 	}
+ 
+-	musb_start(host);
+-	mbase = host->mregs;
++	musb_start(host[index]);
++	mbase = host[index]->mregs;
+ 	do {
+ 		if (musb_readb(mbase, MUSB_DEVCTL) & MUSB_DEVCTL_HM)
+ 			break;
+@@ -137,25 +137,25 @@ int usb_lowlevel_init(int index, enum usb_init_type init, void **controller)
+ 	udelay(30000);
+ 	power = musb_readb(mbase, MUSB_POWER);
+ 	musb_writeb(mbase, MUSB_POWER, ~MUSB_POWER_RESET & power);
+-	host->isr(0, host);
++	host[index]->isr(0, host[index]);
+ 	host_speed = (musb_readb(mbase, MUSB_POWER) & MUSB_POWER_HSMODE) ?
+ 			USB_SPEED_HIGH :
+ 			(musb_readb(mbase, MUSB_DEVCTL) & MUSB_DEVCTL_FSDEV) ?
+ 			USB_SPEED_FULL : USB_SPEED_LOW;
+-	host->is_active = 1;
+-	hcd.hcd_priv = host;
++	host[index]->is_active = 1;
++	hcd.hcd_priv = host[index];
+ 
+ 	return 0;
+ }
+ 
+ int usb_lowlevel_stop(int index)
+ {
+-	if (!host) {
++	if (!host[index]) {
+ 		printf("MUSB host is not registered\n");
+ 		return -ENODEV;
+ 	}
+ 
+-	musb_stop(host);
++	musb_stop(host[index]);
+ 	return 0;
+ }
+ #endif /* CONFIG_MUSB_HOST */
+@@ -217,7 +217,10 @@ int musb_register(struct musb_hdrc_platform_data *plat, void *bdata,
+ 	switch (plat->mode) {
+ #ifdef CONFIG_MUSB_HOST
+ 	case MUSB_HOST:
+-		musbp = &host;
++		if (host[0] == NULL)
++			musbp = &host[0];
++		else
++			musbp = &host[1];
+ 		break;
+ #endif
+ #ifdef CONFIG_MUSB_GADGET
+diff --git a/include/configs/stream800.h b/include/configs/stream800.h
+index 57f7598..2b7d15c 100644
+--- a/include/configs/stream800.h
++++ b/include/configs/stream800.h
+@@ -1083,6 +1083,7 @@
+ /*
+  * USB configuration
+  */
++#define CONFIG_USB_MAX_CONTROLLER_COUNT 2
+ #define CONFIG_USB_MUSB_DSPS
+ #define CONFIG_ARCH_MISC_INIT
+ #define CONFIG_MUSB_GADGET
+@@ -1092,7 +1093,7 @@
+ #define CONFIG_AM335X_USB0
+ #define CONFIG_AM335X_USB0_MODE	MUSB_HOST
+ #define CONFIG_AM335X_USB1
+-#define CONFIG_AM335X_USB1_MODE MUSB_PERIPHERAL
++#define CONFIG_AM335X_USB1_MODE MUSB_HOST
+ 
+ #ifdef CONFIG_MUSB_HOST
+ #define CONFIG_CMD_USB
+-- 
+2.7.4
+

@@ -1,0 +1,49 @@
+From 954a0435bb5c519921bf8c755cbe405bb54ac617 Mon Sep 17 00:00:00 2001
+From: Martin Flaska <martin.flaska@streamunlimited.com>
+Date: Fri, 21 Dec 2012 12:16:16 +0100
+Subject: [PATCH] stream800: add commands for cold & warm reboot
+
+wreset - warm reset (RTC regs retention)
+creset - cold reset
+
+Signed-off-by: Martin Flaska <martin.flaska@streamunlimited.com>
+---
+ board/streamunlimited/stream800/board.c | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
+
+diff --git a/board/streamunlimited/stream800/board.c b/board/streamunlimited/stream800/board.c
+index 5ca5d8b..bdc3718 100644
+--- a/board/streamunlimited/stream800/board.c
++++ b/board/streamunlimited/stream800/board.c
+@@ -315,4 +315,28 @@ try_usbether:
+ 	return n;
+ }
+ 
++static int do_wreset(cmd_tbl_t * cmdtp, int flag, int argc, char * const argv[])
++{
++	writel(0x1, PRM_RSTCTRL);
++	return 0;
++}
++
++U_BOOT_CMD(
++	wreset, 1, 1,  do_wreset,
++	"do warm reset",
++	""
++);
++
++static int do_creset(cmd_tbl_t * cmdtp, int flag, int argc, char * const argv[])
++{
++	writel(0x2, PRM_RSTCTRL);
++	return 0;
++}
++
++U_BOOT_CMD(
++	creset, 1, 1,  do_creset,
++	"do cold reset",
++	""
++);
++
+ #endif	// CONFIG_DRIVER_TI_CPSW) || (CONFIG_USB_ETHER && CONFIG_MUSB_GADGET)
+-- 
+2.7.4
+

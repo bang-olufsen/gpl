@@ -1,0 +1,187 @@
+From 8fd7508443e95ca1535f04ca42a21b1b09f375b9 Mon Sep 17 00:00:00 2001
+From: Simon Mikuda <simon.mikuda@streamunlimited.com>
+Date: Wed, 9 Aug 2017 14:08:04 +0200
+Subject: [PATCH] adapter: Impelement SetConnParams method
+
+This enables to set connection parameters per LE device.
+
+Signed-off-by: Simon Mikuda <simon.mikuda@streamunlimited.com>
+---
+ src/adapter.c | 103 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ src/adapter.h |   3 ++
+ src/device.c  |  30 +++++++++++++++++
+ 3 files changed, 136 insertions(+)
+
+diff --git a/src/adapter.c b/src/adapter.c
+index c3acb8c..082878e 100644
+--- a/src/adapter.c
++++ b/src/adapter.c
+@@ -8674,3 +8674,106 @@ bool btd_le_connect_before_pairing(void)
+ 
+ 	return false;
+ }
++
++bool btd_adapter_set_conn_params(struct btd_adapter *adapter, const bdaddr_t *peer, uint16_t min_interval, uint16_t max_interval, uint16_t latency, uint16_t timeout)
++{
++	GSList *params = NULL;
++	DIR *dir;
++	struct dirent *entry;
++	char dirname[PATH_MAX];
++	bool success = FALSE;
++	uint8_t peer_type;
++
++	snprintf(dirname, PATH_MAX, STORAGEDIR "/%s", adapter_dir(adapter));
++
++	dir = opendir(dirname);
++	if (!dir) {
++		btd_error(adapter->dev_id,
++				"Unable to open adapter storage directory: %s",
++								dirname);
++		return FALSE;
++	}
++
++	while ((entry = readdir(dir)) != NULL) {
++		char filename[PATH_MAX];
++		GKeyFile *key_file;
++		struct conn_param *param;
++		bdaddr_t bdaddr;
++		uint8_t bdaddr_type;
++
++		if (entry->d_type == DT_UNKNOWN)
++			entry->d_type = util_get_dt(dirname, entry->d_name);
++
++		if (entry->d_type != DT_DIR || bachk(entry->d_name) < 0)
++			continue;
++
++		snprintf(filename, PATH_MAX, STORAGEDIR "/%s/%s/info",
++					adapter_dir(adapter), entry->d_name);
++
++		key_file = g_key_file_new();
++		g_key_file_load_from_file(key_file, filename, 0, NULL);
++
++		str2ba(entry->d_name, &bdaddr);
++		bdaddr_type = get_le_addr_type(key_file);
++
++		param = get_conn_param(key_file, entry->d_name, bdaddr_type);
++
++		if (bacmp(&bdaddr, peer) == 0) {
++
++			// Same parameters are already set
++			if (param && param->latency == latency
++				&& param->max_interval == max_interval
++				&& param->min_interval == min_interval
++				&& param->timeout == timeout) {
++				g_key_file_free(key_file);
++				closedir(dir);
++				return TRUE;
++			}
++
++			success = TRUE;
++			peer_type = bdaddr_type;
++
++			if (!param)
++				param = g_new0(struct conn_param, 1);
++
++			bacpy(&param->bdaddr, &bdaddr);
++			param->bdaddr_type = bdaddr_type;
++			param->latency = latency;
++			param->max_interval = max_interval;
++			param->min_interval = min_interval;
++			param->timeout = timeout;
++
++			// update conn params if device is connected
++			struct hci_conn_info_req *cr;
++			int dd = hci_open_dev(hci_get_route(&adapter->bdaddr));
++			if (dd >= 0) {
++				cr = malloc(sizeof(*cr) + sizeof(struct hci_conn_info));
++				bacpy(&cr->bdaddr, &bdaddr);
++				cr->type = 0x80; // LE_LINK (Unofficial value, might still change)
++				if (ioctl(dd, HCIGETCONNINFO, (unsigned long) cr) >= 0) {
++					hci_le_conn_update(dd, htobs(cr->conn_info->handle),
++								htobs(min_interval), htobs(max_interval),
++								htobs(latency), htobs(timeout), 100);
++				}
++				hci_close_dev(dd);
++				free(cr);
++			}
++		}
++
++		if (param)
++			params = g_slist_append(params, param);
++
++		g_key_file_free(key_file);
++	}
++
++	closedir(dir);
++
++	if (success) {
++		load_conn_params(adapter, params);
++		store_conn_param(adapter, peer, peer_type, min_interval, max_interval, latency, timeout);
++	}
++
++	g_slist_free_full(params, g_free);
++
++	return success;
++}
+diff --git a/src/adapter.h b/src/adapter.h
+index f9178d5..a804603 100644
+--- a/src/adapter.h
++++ b/src/adapter.h
+@@ -227,3 +227,6 @@ void btd_adapter_for_each_device(struct btd_adapter *adapter,
+ 
+ bool btd_le_connect_before_pairing(void);
+ 
++bool btd_adapter_set_conn_params(struct btd_adapter *adapter, const bdaddr_t *peer,
++					uint16_t min_interval, uint16_t max_interval,
++					uint16_t latency, uint16_t timeout);
+diff --git a/src/device.c b/src/device.c
+index fd3c55e..f0148a3 100644
+--- a/src/device.c
++++ b/src/device.c
+@@ -2593,6 +2593,33 @@ static DBusMessage *cancel_pairing(DBusConnection *conn, DBusMessage *msg,
+ 	return dbus_message_new_method_return(msg);
+ }
+ 
++static DBusMessage *set_conn_params(DBusConnection *conn, DBusMessage *msg,
++								void *data)
++{
++	struct btd_device *device = data;
++	uint16_t min_interval, max_interval, latency, timeout;
++	bool success;
++
++	if (!dbus_message_get_args(msg, NULL,
++		DBUS_TYPE_UINT16, &min_interval,
++		DBUS_TYPE_UINT16, &max_interval,
++		DBUS_TYPE_UINT16, &latency,
++		DBUS_TYPE_UINT16, &timeout,
++		DBUS_TYPE_INVALID))
++		return btd_error_invalid_args(msg);
++
++	DBG("Set conn params: min_interval=%d max_interval=%d latency=%d timeout=%d",
++		min_interval, max_interval, latency, timeout);
++
++	success = btd_adapter_set_conn_params(device->adapter, &device->bdaddr,
++						min_interval, max_interval, latency, timeout);
++
++	if (success)
++		return dbus_message_new_method_return(msg);
++
++	return btd_error_failed(msg, "Failed to set conn params");
++}
++
+ static DBusMessage *send_volume_pts(DBusConnection *conn, DBusMessage *msg,
+ 								void *data)
+ {
+@@ -2618,6 +2645,9 @@ static const GDBusMethodTable device_methods[] = {
+ 						NULL, disconnect_profile) },
+ 	{ GDBUS_ASYNC_METHOD("Pair", NULL, NULL, pair_device) },
+ 	{ GDBUS_METHOD("CancelPairing", NULL, NULL, cancel_pairing) },
++	{ GDBUS_METHOD("SetConnParams", GDBUS_ARGS( { "min_interval", "q" },
++						{ "max_interval", "q" }, { "latency", "q" },
++						{ "timeout", "q" }), NULL, set_conn_params) },
+ 	{ GDBUS_METHOD("SendVolumePTS", GDBUS_ARGS({ "volume", "y" }),
+ 						NULL, send_volume_pts) },
+ 	{ }
+-- 
+2.7.4
+

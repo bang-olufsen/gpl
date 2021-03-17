@@ -1,0 +1,72 @@
+From 34c115e12d98a368528cbc579945e20e7efec9ba Mon Sep 17 00:00:00 2001
+From: Bernhard Miller <bernhard.miller@streamunlimited.com>
+Date: Wed, 3 Sep 2014 16:41:40 +0200
+Subject: [PATCH] gatttool: add command to send write request with offset in
+ interactive mode
+
+Signed-off-by: Bernhard Miller <bernhard.miller@streamunlimited.com>
+---
+ attrib/interactive.c | 40 ++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 40 insertions(+)
+
+diff --git a/attrib/interactive.c b/attrib/interactive.c
+index d8ad06f..81718cb 100644
+--- a/attrib/interactive.c
++++ b/attrib/interactive.c
+@@ -735,6 +735,44 @@ static void cmd_char_write(int argcp, char **argvp)
+ 	g_free(value);
+ }
+ 
++static void cmd_char_write_offset(int argcp, char **argvp)
++{
++	uint8_t *value;
++	size_t plen;
++	int handle;
++	int offset;
++
++	if (conn_state != STATE_CONNECTED) {
++		printf("Command failed: disconnected\n");
++		return;
++	}
++
++	if (argcp < 4) {
++		printf("Usage: %s <handle> <new value> <offset>\n", argvp[0]);
++		return;
++	}
++
++	handle = strtohandle(argvp[1]);
++	if (handle <= 0) {
++		printf("A valid handle is required\n");
++		return;
++	}
++
++	plen = gatt_attr_data_from_string(argvp[2], &value);
++	if (plen == 0) {
++		g_printerr("Invalid value\n");
++		return;
++	}
++	
++	offset = strtol(argvp[3], NULL, 16);
++	printf("offset=%u\n", offset);
++
++	gatt_write_char_with_offset(attrib, handle, value, plen,
++					char_write_req_cb, NULL, offset);
++
++	g_free(value);
++}
++
+ static void cmd_sec_level(int argcp, char **argvp)
+ {
+ 	GError *gerr = NULL;
+@@ -867,6 +905,8 @@ static struct {
+ 		"Characteristic Value Write (Write Request)" },
+ 	{ "char-write-cmd",	cmd_char_write,	"<handle> <new value>",
+ 		"Characteristic Value Write (No response)" },
++	{ "char-write-off",	cmd_char_write_offset,	"<handle> <new value> <offset>",
++		"Characteristic Value Write (Write Request)" },
+ 	{ "sec-level",		cmd_sec_level,	"[low | medium | high]",
+ 		"Set security level. Default: low" },
+ 	{ "mtu",		cmd_mtu,	"<value>",
+-- 
+2.7.4
+

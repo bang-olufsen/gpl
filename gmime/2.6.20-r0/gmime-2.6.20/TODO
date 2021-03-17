@@ -1,0 +1,49 @@
+The following is a list of known places for possible improvement to
+the GMime library. This list of tasks in no way indicates priority,
+that is to say that there is no rhyme or reason to the order that the
+tasks are presented in.
+
+GMime 2.8 / 3.0 Planning:
+=========================
+
+- Fix g_mime_message_[g,s]set_sender() to take/return an
+  InternetAddressList to be more consistent with the recipient
+  functions as well as being less error-prone.
+
+- Fix g_mime_message_[g,s]et_reply_to() to take/return an
+  InternetAddressList to be more consistent with the recipient
+  functions as well as being less error-prone.
+
+- Modify GMimeStream APIs to take GCancellable and GError arguments.
+
+- Modify g_mime_parser_construct_message() and
+  g_mime_parser_construct_part() methods take GCancellable and GError
+  arguments.
+
+- Should GMimeStreamGIO be modified to take only a GInputStream or a
+  GOutputStream and do away with the GFile API?
+
+- Bump the Glib dependency and just use the newer GMutex APIs
+  directly.
+
+- How about a g_mime_part_get_best_charset()? This one could be
+  awkward since it depends on the content being text and also encoded
+  in UTF-8... [ CONSIDERING ]
+
+- Possibly make the GMime parser incremental. This will be difficult
+  and probably not worth the trouble.
+
+- Would be nice if gmime-sharp could take System.IO.Streams in
+  addition to GMime.Stream.
+
+- Combine GMimeGpgContext and GMimePkcs7Context by using GpgMe for
+  both. This could allow g_mime_multipart_encrypted_decrypt() and
+  g_mime_multipart_signed_verify() to set the appropriate protocol on
+  the CryptoContext so that the caller wouldn't have to figure that
+  out themselves. We'd actually be able to get rid of the need for
+  a GMimeCryptoContext parameter altogether if we could rely on
+  the backend using a gpg-agent for password requests.
+
+
+All questions and comments should be directed toward the author,
+Jeffrey Stedfast <fejj@gnome.org>

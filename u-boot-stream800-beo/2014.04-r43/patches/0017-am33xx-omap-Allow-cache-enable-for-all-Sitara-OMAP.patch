@@ -1,0 +1,191 @@
+From a75f330db5ef67cba044e0a0edcab7bdb58e4080 Mon Sep 17 00:00:00 2001
+From: Simon Glass <sjg@chromium.org>
+Date: Wed, 16 Apr 2014 08:41:36 -0600
+Subject: [PATCH] am33xx/omap: Allow cache enable for all Sitara/OMAP
+
+Enable the cache for all devices, unless CONFIG_SYS_DCACHE_OFF is defined.
+This speeds up the Beaglebone Black boot considerable.
+
+(Tested only on Beaglebone Black with SD card boot)
+
+Signed-off-by: Simon Glass <sjg@chromium.org>
+---
+ arch/arm/cpu/armv7/am33xx/board.c              |  8 ----
+ arch/arm/cpu/armv7/omap-common/Makefile        |  4 ++
+ arch/arm/cpu/armv7/omap-common/hwinit-common.c | 42 -------------------
+ arch/arm/cpu/armv7/omap-common/omap-cache.c    | 56 ++++++++++++++++++++++++++
+ arch/arm/cpu/armv7/omap3/board.c               |  8 ----
+ 5 files changed, 60 insertions(+), 58 deletions(-)
+ create mode 100644 arch/arm/cpu/armv7/omap-common/omap-cache.c
+
+diff --git a/arch/arm/cpu/armv7/am33xx/board.c b/arch/arm/cpu/armv7/am33xx/board.c
+index fb44cc8..92f3f22 100644
+--- a/arch/arm/cpu/armv7/am33xx/board.c
++++ b/arch/arm/cpu/armv7/am33xx/board.c
+@@ -243,11 +243,3 @@ void s_init(void)
+ 	sdram_init();
+ }
+ #endif
+-
+-#ifndef CONFIG_SYS_DCACHE_OFF
+-void enable_caches(void)
+-{
+-	/* Enable D-cache. I-cache is already enabled in start.S */
+-	dcache_enable();
+-}
+-#endif /* !CONFIG_SYS_DCACHE_OFF */
+diff --git a/arch/arm/cpu/armv7/omap-common/Makefile b/arch/arm/cpu/armv7/omap-common/Makefile
+index 59f5352..b7400d5 100644
+--- a/arch/arm/cpu/armv7/omap-common/Makefile
++++ b/arch/arm/cpu/armv7/omap-common/Makefile
+@@ -22,6 +22,10 @@ obj-y	+= pipe3-phy.o
+ obj-$(CONFIG_SCSI_AHCI_PLAT) += sata.o
+ endif
+ 
++ifeq ($(CONFIG_SYS_DCACHE_OFF),)
++obj-y	+= omap-cache.o
++endif
++
+ ifeq ($(CONFIG_OMAP34XX),)
+ obj-y	+= boot-common.o
+ obj-y	+= lowlevel_init.o
+diff --git a/arch/arm/cpu/armv7/omap-common/hwinit-common.c b/arch/arm/cpu/armv7/omap-common/hwinit-common.c
+index 8ebc0ce..16baa73 100644
+--- a/arch/arm/cpu/armv7/omap-common/hwinit-common.c
++++ b/arch/arm/cpu/armv7/omap-common/hwinit-common.c
+@@ -18,13 +18,8 @@
+ #include <asm/emif.h>
+ #include <asm/omap_common.h>
+ #include <linux/compiler.h>
+-#include <asm/cache.h>
+ #include <asm/system.h>
+ 
+-#define ARMV7_DCACHE_WRITEBACK  0xe
+-#define	ARMV7_DOMAIN_CLIENT	1
+-#define ARMV7_DOMAIN_MASK	(0x3 << 0)
+-
+ DECLARE_GLOBAL_DATA_PTR;
+ 
+ void do_set_mux(u32 base, struct pad_conf_entry const *array, int size)
+@@ -260,40 +255,3 @@ int print_cpuinfo(void)
+ 	return 0;
+ }
+ #endif
+-
+-#ifndef CONFIG_SYS_DCACHE_OFF
+-void enable_caches(void)
+-{
+-	/* Enable D-cache. I-cache is already enabled in start.S */
+-	dcache_enable();
+-}
+-
+-void dram_bank_mmu_setup(int bank)
+-{
+-	bd_t *bd = gd->bd;
+-	int	i;
+-
+-	u32 start = bd->bi_dram[bank].start >> 20;
+-	u32 size = bd->bi_dram[bank].size >> 20;
+-	u32 end = start + size;
+-
+-	debug("%s: bank: %d\n", __func__, bank);
+-	for (i = start; i < end; i++)
+-		set_section_dcache(i, ARMV7_DCACHE_WRITEBACK);
+-
+-}
+-
+-void arm_init_domains(void)
+-{
+-	u32 reg;
+-
+-	reg = get_dacr();
+-	/*
+-	* Set DOMAIN to client access so that all permissions
+-	* set in pagetables are validated by the mmu.
+-	*/
+-	reg &= ~ARMV7_DOMAIN_MASK;
+-	reg |= ARMV7_DOMAIN_CLIENT;
+-	set_dacr(reg);
+-}
+-#endif
+diff --git a/arch/arm/cpu/armv7/omap-common/omap-cache.c b/arch/arm/cpu/armv7/omap-common/omap-cache.c
+new file mode 100644
+index 0000000..579bebf
+--- /dev/null
++++ b/arch/arm/cpu/armv7/omap-common/omap-cache.c
+@@ -0,0 +1,56 @@
++/*
++ *
++ * Common functions for OMAP4/5 based boards
++ *
++ * (C) Copyright 2010
++ * Texas Instruments, <www.ti.com>
++ *
++ * Author :
++ *	Aneesh V	<aneesh@ti.com>
++ *	Steve Sakoman	<steve@sakoman.com>
++ *
++ * SPDX-License-Identifier:	GPL-2.0+
++ */
++
++#include <common.h>
++#include <asm/cache.h>
++
++DECLARE_GLOBAL_DATA_PTR;
++
++#define ARMV7_DCACHE_WRITEBACK  0xe
++#define ARMV7_DOMAIN_CLIENT	1
++#define ARMV7_DOMAIN_MASK	(0x3 << 0)
++
++void enable_caches(void)
++{
++	/* Enable D-cache. I-cache is already enabled in start.S */
++	dcache_enable();
++}
++
++void dram_bank_mmu_setup(int bank)
++{
++	bd_t *bd = gd->bd;
++	int	i;
++
++	u32 start = bd->bi_dram[bank].start >> 20;
++	u32 size = bd->bi_dram[bank].size >> 20;
++	u32 end = start + size;
++
++	debug("%s: bank: %d\n", __func__, bank);
++	for (i = start; i < end; i++)
++		set_section_dcache(i, ARMV7_DCACHE_WRITEBACK);
++}
++
++void arm_init_domains(void)
++{
++	u32 reg;
++
++	reg = get_dacr();
++	/*
++	* Set DOMAIN to client access so that all permissions
++	* set in pagetables are validated by the mmu.
++	*/
++	reg &= ~ARMV7_DOMAIN_MASK;
++	reg |= ARMV7_DOMAIN_CLIENT;
++	set_dacr(reg);
++}
+diff --git a/arch/arm/cpu/armv7/omap3/board.c b/arch/arm/cpu/armv7/omap3/board.c
+index 2922816..74c037b 100644
+--- a/arch/arm/cpu/armv7/omap3/board.c
++++ b/arch/arm/cpu/armv7/omap3/board.c
+@@ -478,11 +478,3 @@ void omap3_outer_cache_disable(void)
+ 	omap3_update_aux_cr(0, 0x2);
+ }
+ #endif /* !CONFIG_SYS_L2CACHE_OFF */
+-
+-#ifndef CONFIG_SYS_DCACHE_OFF
+-void enable_caches(void)
+-{
+-	/* Enable D-cache. I-cache is already enabled in start.S */
+-	dcache_enable();
+-}
+-#endif /* !CONFIG_SYS_DCACHE_OFF */
+-- 
+2.7.4
+

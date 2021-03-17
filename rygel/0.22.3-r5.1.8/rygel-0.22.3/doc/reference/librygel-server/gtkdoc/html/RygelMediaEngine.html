@@ -1,0 +1,342 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>librygel-server Reference Manual: RygelMediaEngine</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="index.html" title="librygel-server Reference Manual">
+<link rel="up" href="api-main-list.html" title="librygel-server API Reference">
+<link rel="prev" href="RygelMediaContainer.html" title="RygelMediaContainer">
+<link rel="next" href="RygelMediaItem.html" title="RygelMediaItem">
+<meta name="generator" content="GTK-Doc V1.20.1 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="5"><tr valign="middle">
+<td width="100%" align="left" class="shortcuts">
+<a href="#" class="shortcut">Top</a><span id="nav_description">  <span class="dim">|</span> 
+                  <a href="#RygelMediaEngine.description" class="shortcut">Description</a></span><span id="nav_hierarchy">  <span class="dim">|</span> 
+                  <a href="#RygelMediaEngine.object-hierarchy" class="shortcut">Object Hierarchy</a></span>
+</td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="16" height="16" border="0" alt="Home"></a></td>
+<td><a accesskey="u" href="api-main-list.html"><img src="up.png" width="16" height="16" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="RygelMediaContainer.html"><img src="left.png" width="16" height="16" border="0" alt="Prev"></a></td>
+<td><a accesskey="n" href="RygelMediaItem.html"><img src="right.png" width="16" height="16" border="0" alt="Next"></a></td>
+</tr></table>
+<div class="refentry">
+<a name="RygelMediaEngine"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2><span class="refentrytitle"><a name="RygelMediaEngine.top_of_page"></a>RygelMediaEngine</span></h2>
+<p>RygelMediaEngine — This is the base class for media engines that contain knowledge about the streaming and (optionally) the transcoding and seeking capabilites of the media library in use. Derived classes also instantiate any transcoding objects supported by the media engine and specify the list of media formats the engine is capable of playing.</p>
+</td>
+<td class="gallery_image" valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsect1">
+<a name="RygelMediaEngine.functions"></a><h2>Functions</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="functions_return">
+<col class="functions_name">
+</colgroup>
+<tbody>
+<tr>
+<td class="define_keyword">#define</td>
+<td class="function_name"><a class="link" href="RygelMediaEngine.html#RYGEL-TYPE-MEDIA-ENGINE:CAPS" title="RYGEL_TYPE_MEDIA_ENGINE">RYGEL_TYPE_MEDIA_ENGINE</a></td>
+</tr>
+<tr>
+<td class="function_type">
+<a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="returnvalue">GList</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="RygelMediaEngine.html#rygel-media-engine-get-dlna-profiles" title="rygel_media_engine_get_dlna_profiles ()">rygel_media_engine_get_dlna_profiles</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="returnvalue">GList</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="RygelMediaEngine.html#rygel-media-engine-get-transcoders" title="rygel_media_engine_get_transcoders ()">rygel_media_engine_get_transcoders</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="RygelDataSource.html" title="RygelDataSource"><span class="returnvalue">RygelDataSource</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="RygelMediaEngine.html#rygel-media-engine-create-data-source" title="rygel_media_engine_create_data_source ()">rygel_media_engine_create_data_source</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<span class="returnvalue">void</span>
+</td>
+<td class="function_name">
+<a class="link" href="RygelMediaEngine.html#rygel-media-engine-init" title="rygel_media_engine_init ()">rygel_media_engine_init</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+<tr>
+<td class="function_type">
+<a class="link" href="RygelMediaEngine.html" title="RygelMediaEngine"><span class="returnvalue">RygelMediaEngine</span></a> *
+</td>
+<td class="function_name">
+<a class="link" href="RygelMediaEngine.html#rygel-media-engine-get-default" title="rygel_media_engine_get_default ()">rygel_media_engine_get_default</a> <span class="c_punctuation">()</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="RygelMediaEngine.other"></a><h2>Types and Values</h2>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="name">
+<col class="description">
+</colgroup>
+<tbody>
+<tr>
+<td class="datatype_keyword">struct</td>
+<td class="function_name"><a class="link" href="RygelMediaEngine.html#RygelMediaEngine-struct" title="struct RygelMediaEngine">RygelMediaEngine</a></td>
+</tr>
+<tr>
+<td class="datatype_keyword">struct</td>
+<td class="function_name"><a class="link" href="RygelMediaEngine.html#RygelMediaEngineClass" title="struct RygelMediaEngineClass">RygelMediaEngineClass</a></td>
+</tr>
+<tr>
+<td class="datatype_keyword">enum</td>
+<td class="function_name"><a class="link" href="RygelMediaEngine.html#RygelMediaEngineError" title="enum RygelMediaEngineError">RygelMediaEngineError</a></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect1">
+<a name="RygelMediaEngine.object-hierarchy"></a><h2>Object Hierarchy</h2>
+<pre class="screen">    <a href="../gobject/gobject-The-Base-Object-Type.html#GObject">GObject</a>
+    <span class="lineart">╰──</span> RygelMediaEngine
+</pre>
+</div>
+<div class="refsect1">
+<a name="RygelMediaEngine.description"></a><h2>Description</h2>
+<p>See, for instance, Rygel's built-in "gstreamer" and "simple" media engines, or the external rygel-gst-0-10-media-engine module.</p>
+<p>The actual media engine used by Rygel at runtime is specified by the media-engine configuration key. For instance, in rygel.conf: media-engine=librygel-media-engine-gst.so</p>
+<p>Media engines should also derive their own <a class="link" href="RygelDataSource.html" title="RygelDataSource"><span class="type">RygelDataSource</span></a>, returning an instance of it from <code class="function">create_data_source()</code>.</p>
+<p>If this media engine supports transcoding then it will typically implement a set of transcoding classes, typically with one base class and a number of sub-classes - one for each transcoding format you want to support. These should be returned by the <code class="function">get_transcoders()</code> virtual function. The base transcoder class could provide a generic way to create a <a class="link" href="RygelDataSource.html" title="RygelDataSource"><span class="type">RygelDataSource</span></a> capable of providing Rygel with a transcoded version of a file using the underlying media framework. The sub-classes could contain the various media-framework-specific parameters required to transcode to a given format and implement a heuristic that can be used to order an item's transcoded resources.</p>
+<p>See the &lt;link linkend="implementing-media-engines"&gt;Implementing Media Engines&lt;/link&gt; section.</p>
+</div>
+<div class="refsect1">
+<a name="RygelMediaEngine.functions_details"></a><h2>Functions</h2>
+<div class="refsect2">
+<a name="RYGEL-TYPE-MEDIA-ENGINE:CAPS"></a><h3>RYGEL_TYPE_MEDIA_ENGINE</h3>
+<pre class="programlisting">#define RYGEL_TYPE_MEDIA_ENGINE (rygel_media_engine_get_type ())
+</pre>
+<p>The type for <a class="link" href="RygelMediaEngine.html" title="RygelMediaEngine"><span class="type">RygelMediaEngine</span></a>.</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-media-engine-get-dlna-profiles"></a><h3>rygel_media_engine_get_dlna_profiles ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="returnvalue">GList</span></a> *
+rygel_media_engine_get_dlna_profiles (<em class="parameter"><code><a class="link" href="RygelMediaEngine.html" title="RygelMediaEngine"><span class="type">RygelMediaEngine</span></a> *self</code></em>);</pre>
+<p>Get a list of the DLNA profiles that are supported by this media engine when calling <a class="link" href="RygelMediaEngine.html#rygel-media-engine-create-data-source" title="rygel_media_engine_create_data_source ()"><code class="function">rygel_media_engine_create_data_source()</code></a>.</p>
+<p>Other DLNA profiles may be supported as transcoding targets -</p>
+<p>This information is needed to implement DLNA's ConnectionManager.GetProtocolInfo call and to determine whether Rygel can accept an uploaded file.</p>
+<p><span class="emphasis"><em>See also</em></span>: <a class="link" href="RygelMediaEngine.html#rygel-media-engine-get-transcoders" title="rygel_media_engine_get_transcoders ()"><code class="function">rygel_media_engine_get_transcoders()</code></a>.</p>
+<div class="refsect3">
+<a name="id-1.6.9.7.3.8"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelMediaEngine.html" title="RygelMediaEngine"><span class="type">RygelMediaEngine</span></a> instance</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.6.9.7.3.9"></a><h4>Returns</h4>
+<p> A list of <a href="../librygel-core/RygelDLNAProfile.html"><span class="type">RygelDLNAProfile</span></a>&lt;!-- --&gt;s. </p>
+<p><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-media-engine-get-transcoders"></a><h3>rygel_media_engine_get_transcoders ()</h3>
+<pre class="programlisting"><a href="../glib/glib-Doubly-Linked-Lists.html#GList"><span class="returnvalue">GList</span></a> *
+rygel_media_engine_get_transcoders (<em class="parameter"><code><a class="link" href="RygelMediaEngine.html" title="RygelMediaEngine"><span class="type">RygelMediaEngine</span></a> *self</code></em>);</pre>
+<p>Get a list of the transcoders that are provided by this media engine.</p>
+<div class="refsect3">
+<a name="id-1.6.9.7.4.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelMediaEngine.html" title="RygelMediaEngine"><span class="type">RygelMediaEngine</span></a> instance</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.6.9.7.4.6"></a><h4>Returns</h4>
+<p> A list of <a class="link" href="RygelTranscoder.html" title="RygelTranscoder"><span class="type">RygelTranscoder</span></a>&lt;!-- --&gt;s or null if not supported. </p>
+<p><span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-media-engine-create-data-source"></a><h3>rygel_media_engine_create_data_source ()</h3>
+<pre class="programlisting"><a class="link" href="RygelDataSource.html" title="RygelDataSource"><span class="returnvalue">RygelDataSource</span></a> *
+rygel_media_engine_create_data_source (<em class="parameter"><code><a class="link" href="RygelMediaEngine.html" title="RygelMediaEngine"><span class="type">RygelMediaEngine</span></a> *self</code></em>,
+                                       <em class="parameter"><code>const <a href="../glib/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *uri</code></em>);</pre>
+<p>Get a data source for the URI.</p>
+<div class="refsect3">
+<a name="id-1.6.9.7.5.5"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="parameter_name"><p>self</p></td>
+<td class="parameter_description"><p>the <a class="link" href="RygelMediaEngine.html" title="RygelMediaEngine"><span class="type">RygelMediaEngine</span></a> instance</p></td>
+<td class="parameter_annotations"> </td>
+</tr>
+<tr>
+<td class="parameter_name"><p>uri</p></td>
+<td class="parameter_description"><p>  .  to create the data source for. </p></td>
+<td class="parameter_annotations"><span class="annotation">[<acronym title="Parameter for input. Default is transfer none."><span class="acronym">in</span></acronym>]</span></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<div class="refsect3">
+<a name="id-1.6.9.7.5.6"></a><h4>Returns</h4>
+<p> A data source representing the uri </p>
+<p></p>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-media-engine-init"></a><h3>rygel_media_engine_init ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>
+rygel_media_engine_init (<em class="parameter"><code><a href="../glib/glib-Error-Reporting.html#GError"><span class="type">GError</span></a> **error</code></em>);</pre>
+<div class="refsect3">
+<a name="id-1.6.9.7.6.4"></a><h4>Parameters</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="150px" class="parameters_name">
+<col class="parameters_description">
+<col width="200px" class="parameters_annotations">
+</colgroup>
+<tbody><tr>
+<td class="parameter_name"><p>error</p></td>
+<td class="parameter_description"><p>location to store the error occuring, or <a href="../glib/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a> to ignore</p></td>
+<td class="parameter_annotations"> </td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="rygel-media-engine-get-default"></a><h3>rygel_media_engine_get_default ()</h3>
+<pre class="programlisting"><a class="link" href="RygelMediaEngine.html" title="RygelMediaEngine"><span class="returnvalue">RygelMediaEngine</span></a> *
+rygel_media_engine_get_default (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>Get the singleton instance of the currently used media engine.</p>
+<div class="refsect3">
+<a name="id-1.6.9.7.7.5"></a><h4>Returns</h4>
+<p> An instance of a concrete <a class="link" href="RygelMediaEngine.html" title="RygelMediaEngine"><span class="type">RygelMediaEngine</span></a> implementation. </p>
+<p></p>
+</div>
+</div>
+</div>
+<div class="refsect1">
+<a name="RygelMediaEngine.other_details"></a><h2>Types and Values</h2>
+<div class="refsect2">
+<a name="RygelMediaEngine-struct"></a><h3>struct RygelMediaEngine</h3>
+<pre class="programlisting">struct RygelMediaEngine;</pre>
+<p>This is the base class for media engines that contain knowledge about the streaming and (optionally) the transcoding and seeking capabilites of the media library in use. Derived classes also instantiate any transcoding objects supported by the media engine and specify the list of media formats the engine is capable of playing.</p>
+<p>See, for instance, Rygel's built-in "gstreamer" and "simple" media engines, or the external rygel-gst-0-10-media-engine module.</p>
+<p>The actual media engine used by Rygel at runtime is specified by the media-engine configuration key. For instance, in rygel.conf: media-engine=librygel-media-engine-gst.so</p>
+<p>Media engines should also derive their own <a class="link" href="RygelDataSource.html" title="RygelDataSource"><span class="type">RygelDataSource</span></a>, returning an instance of it from <code class="function">create_data_source()</code>.</p>
+<p>If this media engine supports transcoding then it will typically implement a set of transcoding classes, typically with one base class and a number of sub-classes - one for each transcoding format you want to support. These should be returned by the <code class="function">get_transcoders()</code> virtual function. The base transcoder class could provide a generic way to create a <a class="link" href="RygelDataSource.html" title="RygelDataSource"><span class="type">RygelDataSource</span></a> capable of providing Rygel with a transcoded version of a file using the underlying media framework. The sub-classes could contain the various media-framework-specific parameters required to transcode to a given format and implement a heuristic that can be used to order an item's transcoded resources.</p>
+<p>See the &lt;link linkend="implementing-media-engines"&gt;Implementing Media Engines&lt;/link&gt; section.</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelMediaEngineClass"></a><h3>struct RygelMediaEngineClass</h3>
+<pre class="programlisting">struct RygelMediaEngineClass {
+	GObjectClass parent_class;
+	GList* (*get_dlna_profiles) (RygelMediaEngine* self);
+	GList* (*get_transcoders) (RygelMediaEngine* self);
+	RygelDataSource* (*create_data_source) (RygelMediaEngine* self, const gchar* uri);
+};
+</pre>
+<p>The class structure for <a class="link" href="RygelMediaEngine.html#RYGEL-TYPE-MEDIA-ENGINE:CAPS" title="RYGEL_TYPE_MEDIA_ENGINE"><code class="literal">RYGEL_TYPE_MEDIA_ENGINE</code></a>. All the fields in this structure are private and should never be accessed directly.</p>
+<div class="refsect3">
+<a name="id-1.6.9.8.3.5"></a><h4>Members</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="300px" class="struct_members_name">
+<col class="struct_members_description">
+<col width="200px" class="struct_members_annotations">
+</colgroup>
+<tbody>
+<tr>
+<td class="struct_member_name"><p><a href="../gobject/gobject-The-Base-Object-Type.html#GObjectClass"><span class="type">GObjectClass</span></a> <em class="structfield"><code><a name="RygelMediaEngineClass.parent-class"></a>parent_class</code></em>;</p></td>
+<td class="struct_member_description"><p>the parent class structure</p></td>
+<td class="struct_member_annotations"> </td>
+</tr>
+<tr>
+<td class="struct_member_name"><p><em class="structfield"><code><a name="RygelMediaEngineClass.get-dlna-profiles"></a>get_dlna_profiles</code></em> ()</p></td>
+<td class="struct_member_description"><p>virtual method called by <a class="link" href="RygelMediaEngine.html#rygel-media-engine-get-dlna-profiles" title="rygel_media_engine_get_dlna_profiles ()"><code class="function">rygel_media_engine_get_dlna_profiles()</code></a></p></td>
+<td class="struct_member_annotations"> </td>
+</tr>
+<tr>
+<td class="struct_member_name"><p><em class="structfield"><code><a name="RygelMediaEngineClass.get-transcoders"></a>get_transcoders</code></em> ()</p></td>
+<td class="struct_member_description"><p>virtual method called by <a class="link" href="RygelMediaEngine.html#rygel-media-engine-get-transcoders" title="rygel_media_engine_get_transcoders ()"><code class="function">rygel_media_engine_get_transcoders()</code></a></p></td>
+<td class="struct_member_annotations"> </td>
+</tr>
+<tr>
+<td class="struct_member_name"><p><em class="structfield"><code><a name="RygelMediaEngineClass.create-data-source"></a>create_data_source</code></em> ()</p></td>
+<td class="struct_member_description"><p>virtual method called by <a class="link" href="RygelMediaEngine.html#rygel-media-engine-create-data-source" title="rygel_media_engine_create_data_source ()"><code class="function">rygel_media_engine_create_data_source()</code></a></p></td>
+<td class="struct_member_annotations"> </td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+<hr>
+<div class="refsect2">
+<a name="RygelMediaEngineError"></a><h3>enum RygelMediaEngineError</h3>
+<div class="refsect3">
+<a name="id-1.6.9.8.4.3"></a><h4>Members</h4>
+<div class="informaltable"><table width="100%" border="0">
+<colgroup>
+<col width="300px" class="enum_members_name">
+<col class="enum_members_description">
+<col width="200px" class="enum_members_annotations">
+</colgroup>
+<tbody><tr>
+<td class="enum_member_name"><p><a name="RYGEL-MEDIA-ENGINE-ERROR-NOT-FOUND:CAPS"></a>RYGEL_MEDIA_ENGINE_ERROR_NOT_FOUND</p></td>
+<td> </td>
+<td> </td>
+</tr></tbody>
+</table></div>
+</div>
+</div>
+</div>
+</div>
+<div class="footer">
+<hr>
+          Generated by GTK-Doc V1.20.1</div>
+</body>
+</html>
